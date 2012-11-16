@@ -13,6 +13,6 @@ function guiSetInputEnabled ( enabled )
 			_guiSetInputEnabled ( false )
 		end
 		
-		assert(g_Counter >= 0)
+		assert(g_Counter >= 0, tostring(g_Counter))
 	end
 end

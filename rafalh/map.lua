@@ -155,7 +155,7 @@ function Map:isForbidden(room)
 	assert(room)
 	
 	local max_map_rep = SmGetUInt ("max_map_rep", 0)
-	if (self == getLastMap(room) and max_map_rep > 0 and g_MapRepeats >= max_map_rep) then
+	if (self == getLastMap(room) and max_map_rep > 0 and room.mapRepeats >= max_map_rep) then
 		return "Map cannot be repeated!"
 	end
 	

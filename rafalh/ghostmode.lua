@@ -3,6 +3,8 @@ local g_NoGMWarningMsg = {}
 
 local function GmSetEnabled(room, enabled)
 	local map = getCurrentMap(room)
+	if(not map) then return false end
+	
 	assert(type(map) == "table", type(map))
 	
 	if (map:getSetting("ghostmode")) then
@@ -27,6 +29,8 @@ local function GmOnPlayerQuit ()
 end
 
 function GmSet(room, enabled, quiet)
+	assert(type(room) == "table")
+	
 	local sec = touint ( enabled )
 	if ( sec ) then
 		customMsg ( 0, 255, 0, "Ghostmode enabled for %u seconds!", sec )

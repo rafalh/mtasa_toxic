@@ -120,7 +120,7 @@ function formatMoney ( money )
 		buf = str:sub ( -3 )..","..buf
 		str = str:sub ( 1, -4 )
 	end
-	return ( ( tonumber ( money ) < 0 and "-" ) or "" )..buf:sub ( 1, -2 ).."€"
+	return ( ( tonumber ( money ) < 0 and "-" ) or "" )..buf:sub ( 1, -2 ).." â‚¬"
 end
 
 local _isPedDead = isPedDead

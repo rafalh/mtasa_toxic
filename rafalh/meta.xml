@@ -36,9 +36,9 @@
 	<script src="glass_c.lua" type="client" />
 	<script src="http.lua" />
 	<script src="langs.lua" />
+	<script src="room.lua" />
 	<script src="map.lua" />
 	<script src="maps.lua" />
-	<script src="room.lua" />
 	<script src="map_queue.lua" />
 	<script src="nickblocker.lua" />
 	<script src="nicklocker.lua" />

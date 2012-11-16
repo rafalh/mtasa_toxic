@@ -54,7 +54,7 @@ local function RtTimerProc (room)
 end
 
 local function RtMapStart ()
-	setMapTimer(RtTimerProc, 60 * 1000, 1, g_Root) -- FIXME
+	setMapTimer(RtTimerProc, 60 * 1000, 1, g_RootRoom) -- FIXME
 	g_Poll = false
 end
 

@@ -27,7 +27,7 @@ local function TmMapTimerProc ( roomEl, timer_id, ... )
 end
 
 function setMapTimer ( func, interval, timesToExecute, room, ... )
-	assert(room)
+	assert(type(room) == "table")
 	if(not room.mapTimers) then
 		room.mapTimers = {}
 	end

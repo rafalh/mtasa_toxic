@@ -197,7 +197,7 @@ end
 
 CmdRegister("played", CmdPlayed, false, "Shows how many times map was played")
 
-local function CmdCheck(message, arg)
+local function CmdCheckMap(message, arg)
 	local str = message:sub(arg[1]:len() + 2)
 	if(str:len() >= 3) then
 		local maps = getMapsList()

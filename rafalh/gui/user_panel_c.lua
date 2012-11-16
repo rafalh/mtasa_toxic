@@ -18,6 +18,7 @@ local FADE_DELAY = 200
 local g_Items = {}
 local g_Wnd = false
 local g_CurrentItem = false
+local g_Hiding = false
 
 -- Local functions
 
@@ -92,6 +93,7 @@ local function UpHide ()
 	end
 	
 	guiSetInputEnabled ( false )
+	g_Hiding = true
 end
 
 local function UpCreateGui ()
@@ -138,6 +140,7 @@ local function UpShow ()
 	
 	GaFadeIn ( g_Wnd, FADE_DELAY, PANEL_ALPHA )
 	guiSetInputEnabled ( true )
+	g_Hiding = false
 end
 
 local function UpInit ()
@@ -156,7 +159,7 @@ end
 function UpToggle ()
 	if ( ( not g_Wnd or not guiGetVisible ( g_Wnd ) ) and not g_CurrentItem ) then
 		UpShow ()
-	else
+	elseif(not g_Hiding) then
 		UpHide ()
 	end
 end

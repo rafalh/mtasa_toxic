@@ -11,7 +11,7 @@ addEvent ( "onPollStarting" )
 
 local function onPollStarting ( poll )
 	--outputDebugString ( "onPollStarting", 3 )
-	local room = g_Root
+	local room = g_RootRoom
 	
 	local nextMap = MqPop(room)
 	if(nextMap) then

@@ -1,3 +1,5 @@
+g_RootRoom = Room.create(g_Root)
+
 -------------------
 -- Custom events --
 -------------------
@@ -442,7 +444,7 @@ end
 function getCurrentMapElements(room, type)
 	local map = room.currentMap
 	if(map.res) then
-		return getElementsByType(type, room.resRoot)
+		return getElementsByType(type, map.resRoot)
 	end
 	
 	local roomMgrRes = getResourceFromName("roommgr")
@@ -481,12 +483,10 @@ addEventHandler ("onRoomMapStop", g_Root, function()
 end)
 addEventHandler ("onGamemodeMapStart", g_Root, function(mapRes)
 	local map = Map.create(mapRes)
-	local room = Room.create(g_Root)
-	onMapStart(map, g_Root)
+	onMapStart(map, g_RootRoom)
 end)
 addEventHandler ("onGamemodeMapStop", g_Root, function()
-	local room = Room.create(g_Root)
-	onMapStop(g_Root)
+	onMapStop(g_RootRoom)
 end)
 addEventHandler ("onPlayerFinish", g_Root, onPlayerFinish)
 addEventHandler ("onPlayerWinDD", g_Root, onPlayerWinDD)
