@@ -11,15 +11,16 @@ addEvent ( "onPollStarting" )
 
 local function onPollStarting ( poll )
 	--outputDebugString ( "onPollStarting", 3 )
+	local room = g_Root
 	
-	local nextMap = MqPop()
+	local nextMap = MqPop(room)
 	if(nextMap) then
 		-- cancel poll
 		poll.title = nil
 		
 		-- change map
 		g_StartingQueuedMap = nextMap
-		nextMap:start()
+		nextMap:start(room)
 	else
 		local maps = getMapsList()
 		local vote_type = SmGetStr ( "vote_between_maps" )
@@ -59,14 +60,14 @@ local function onPollStarting ( poll )
 				local map = Map.create(opt[4])
 				local map_name = map:getName()
 				
-				if ( map ~= getLastMap() and opt[1] == map_name ) then
+				if ( map ~= getLastMap(room) and opt[1] == map_name ) then
 					if ( ( random_play_again_vote and map_i > 1 ) or ( map_type_vote and map_i > map_types_count ) ) then
 						table.remove ( poll, i )
 					else
 						if ( map_type_vote ) then
 							local map_type = map:getType()
 							
-							while ( (not map_type or poll_map_types[map_type] or map:isForbidden()) and maps:getCount() > 0 ) do
+							while ( (not map_type or poll_map_types[map_type] or map:isForbidden(room)) and maps:getCount() > 0 ) do
 								map = maps:remove(math.random (1, maps:getCount()))
 								opt[4] = map.res
 								map_type = map:getType()
@@ -75,7 +76,7 @@ local function onPollStarting ( poll )
 							poll_map_types[map_type] = true
 							opt[1] = map_type.name
 						else
-							while ( map:isForbidden() and maps:getCount() > 0 ) do
+							while ( map:isForbidden(room) and maps:getCount() > 0 ) do
 								map = maps:remove(math.random (1, maps:getCount()))
 								opt[4] = map.res
 							end
@@ -99,7 +100,7 @@ local function onPollStarting ( poll )
 						map_i = map_i + 1
 					end
 				else -- Play again
-					if (map:isForbidden()) then
+					if (map:isForbidden(room)) then
 						table.remove(poll, i)
 					else
 						i = i + 1
@@ -117,7 +118,7 @@ local function onPollStarting ( poll )
 		
 		if ( #poll == 0 ) then -- this shouldnt happen
 			outputDebugString ( "No maps in votemap!", 2 )
-			startRandomMap()
+			startRandomMap(room)
 		end
 	end
 	

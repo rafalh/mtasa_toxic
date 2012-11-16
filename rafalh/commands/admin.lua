@@ -238,7 +238,8 @@ end
 CmdRegister ("kill", CmdKill, false, "Kills player", true)
 
 local function CmdRemMap (message, arg)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	if (not map) then return end
 	
 	local reason = message:sub (arg[1]:len () + 2)
@@ -255,7 +256,7 @@ local function CmdRemMap (message, arg)
 	
 	local map_name = map:getName()
 	customMsg (255, 0, 0, "%s has been removed by %s!", map_name, getPlayerName (source))
-	startRandomMap()
+	startRandomMap(room)
 end
 
 CmdRegister ("remmap", CmdRemMap, "resource.rafalh.remmap", "Removes map from server")
@@ -279,6 +280,7 @@ CmdRegister ("restoremap", CmdRestoreMap, "resource.rafalh.restoremap", "Restore
 
 local function CmdMap (message, arg)
 	local mapName = message:sub (arg[1]:len () + 2)
+	local room = g_Players[source].room
 	
 	if (mapName:len () > 1) then
 		local map
@@ -286,7 +288,7 @@ local function CmdMap (message, arg)
 		if (mapName:lower () == "random") then
 			map = getRandomMap ()
 		else
-			map = findMap (mapName)
+			map = findMap (mapName, false)
 		end
 		
 		if (map) then
@@ -298,7 +300,7 @@ local function CmdMap (message, arg)
 				privMsg (source, "%s has been removed!", map_name)
 			else
 				GbCancelBets ()
-				map:start()
+				map:start(room)
 			end
 		else
 			privMsg (source, "Cannot find map \"%s\"!", mapName)
@@ -311,18 +313,19 @@ end
 
 CmdRegister ("map", CmdMap, "command.setmap", "Changes current map")
 
-local function AddMapToQueue (map)
+local function AddMapToQueue (room, map)
 	local map_id = map:getId()
 	local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	if (rows[1].removed ~= "") then
 		local map_name = map:getName()
 		privMsg (source, "%s has been removed!", map_name)
 	else
-		MqAdd (map, true, source)
+		MqAdd (room, map, true, source)
 	end
 end
 
 local function CmdNextMap (message, arg)
+	local room = g_Players[source].room
 	local mapName = message:sub (arg[1]:len () + 2)
 	if (mapName:len () > 1) then
 		local map
@@ -330,13 +333,13 @@ local function CmdNextMap (message, arg)
 		if (mapName:lower () == "random") then
 			map = getRandomMap()
 		elseif (mapName:lower () == "redo") then
-			map = getCurrentMap()
+			map = getCurrentMap(room)
 		else
-			map = findMap(mapName)
+			map = findMap(mapName, false)
 		end
 		
 		if (map) then
-			AddMapToQueue(map)
+			AddMapToQueue(room, map)
 		else
 			privMsg (source, "Cannot find map \"%s\"!", mapName)
 		end
@@ -352,9 +355,9 @@ CmdRegisterAlias ("next", "nextmap", true)
 -- For Admin Panel
 local function onSetNextMap (mapName)
 	if (hasObjectPermissionTo (client, "resource.rafalh.nextmap", false)) then
-		local map = findMap (mapName)
+		local map = findMap (mapName, false)
 		if (map) then
-			AddMapToQueue (map)
+			AddMapToQueue (room, map)
 		end
 	end
 end
@@ -363,10 +366,11 @@ addEvent ("setNextMap_s", true)
 addEventHandler ("setNextMap_s", g_Root, onSetNextMap)
 
 local function CmdCancelNextMap (message, arg)
-	local map = MqRemove(#g_NextMapQueue)
+	local room = g_Players[source].room
+	local map = MqRemove(room)
 	if(map) then
 		local mapName = map:getName()
-		customMsg (128, 255, 196, "%s has been removed from map queue by %s!", mapName, getPlayerName(source))
+		outputMsg(room.el, "#80FFC0", "%s has been removed from map queue by %s!", mapName, getPlayerName(source))
 	else
 		privMsg(source, "Map queue is empty!")
 	end
@@ -376,11 +380,14 @@ CmdRegister ("cancelnext", CmdCancelNextMap, "resource.rafalh.nextmap", "Removes
 
 local function CmdRedo (message, arg)
 	local now = getRealTime ().timestamp
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	if (map and now - g_LastRedo > 10) then
 		GbCancelBets ()
 		g_LastRedo = now
-		map:start()
+		map:start(room)
+	else
+		privMsg(source, "You cannot redo yet "..(now - g_LastRedo).." "..tostring(map))
 	end
 end
 
@@ -554,14 +561,10 @@ CmdRegister ("mergeaccounts", CmdMergeAccounts, "resource.rafalh.mergeaccounts")
 CmdRegisterAlias ("mergeacc", "mergeaccounts")
 
 local function CmdRemTopTime (message, arg)
+	local room = g_Players[source].room
 	local n = touint (arg[2], 0)
 	if (n >= 1 and n <= 8) then
-		local map
-		if (#arg >= 3) then
-			map = findMap (message:sub (arg[1]:len () + arg[2]:len () + 3))
-		else
-			map = getCurrentMap()
-		end
+		local map = getCurrentMap(room)
 		if (map) then
 			local map_id = map:getId()
 			local rows = DbQuery ("SELECT p.player, p.name, bt.time FROM rafalh_besttimes bt, rafalh_players p WHERE map=? AND bt.player=p.player ORDER BY time LIMIT "..(n + 3), map_id)
@@ -589,9 +592,9 @@ local function CmdRemTopTime (message, arg)
 					fileClose (f)
 				end
 				
-				customMsg (255, 0, 0, "%u. toptime (%s by %s) has been removed by %s!", n, formatTimePeriod (rows[n].time / 1000), rows[n].name, getPlayerName (source))
+				outputMsg(room.el, "#FF0000", "%u. toptime (%s by %s) has been removed by %s!", n, formatTimePeriod (rows[n].time / 1000), rows[n].name, getPlayerName (source))
 			else
-				privMsg (source, "There are only %u toptimes saved!", #rows)
+				privMsg(source, "There are only %u toptimes saved!", #rows)
 			end
 		else privMsg (source, "Cannot find map!") end
 	else privMsg (source, "Usage: %s", arg[1].." <toptime number>") end

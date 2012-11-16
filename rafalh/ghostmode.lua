@@ -1,8 +1,10 @@
 local g_NoGMWarningTimeLeft = 0
 local g_NoGMWarningMsg = {}
 
-local function GmSetEnabled ( enabled )
-	local map = getCurrentMap()
+local function GmSetEnabled(room, enabled)
+	local map = getCurrentMap(room)
+	assert(type(map) == "table", type(map))
+	
 	if (map:getSetting("ghostmode")) then
 		return false
 	end
@@ -24,26 +26,26 @@ local function GmOnPlayerQuit ()
 	g_NoGMWarningMsg[source] = nil
 end
 
-function GmSet ( enabled, quiet )
+function GmSet(room, enabled, quiet)
 	local sec = touint ( enabled )
 	if ( sec ) then
 		customMsg ( 0, 255, 0, "Ghostmode enabled for %u seconds!", sec )
-		GmSetEnabled ( true )
+		GmSetEnabled(room, true)
 		
 		local no_gm_warning_time = SmGetUInt ( "no_gm_warning_time", 0 )
 		local sec_before_warning = gm_time - no_gm_warning_time
 		
-		setMapTimer ( function ()
+		setMapTimer ( function (room)
 			g_NoGMWarningMsg = {}
 			g_NoGMWarningTimeLeft = no_gm_warning_time
 			for player, pdata in pairs ( g_Players ) do
 				g_NoGMWarningMsg[player] = addScreenMsg ( "Ghostmode will be disabled in "..g_NoGMWarningTimeLeft.." seconds!", player, g_NoGMWarningTimeLeft * 1000 )
 			end
-			setMapTimer ( function ()
+			setMapTimer ( function (room)
 				g_NoGMWarningTimeLeft = g_NoGMWarningTimeLeft - 1
 				if ( g_NoGMWarningTimeLeft <= 0 ) then
-					if ( GmIsEnabled () ) then
-						GmSetEnabled ( false )
+					if ( GmIsEnabled (room) ) then
+						GmSetEnabled(room, false)
 						customMsg ( 255, 0, 0, "Ghostmode disabled!" )
 					end
 				else
@@ -51,10 +53,10 @@ function GmSet ( enabled, quiet )
 						textItemSetText ( msg, "Ghostmode will be disabled in "..g_NoGMWarningTimeLeft.." seconds!" )
 					end
 				end
-			end, 1000, g_NoGMWarningTimeLeft )
-		end, sec_before_warning * 1000, 1 )
+			end, 1000, g_NoGMWarningTimeLeft, room )
+		end, sec_before_warning * 1000, 1, room )
 	else
-		GmSetEnabled ( enabled )
+		GmSetEnabled(room, enabled)
 		if ( not quiet ) then
 			if ( enabled ) then
 				customMsg ( 0, 255, 0, "Ghostmode enabled!" )
@@ -65,7 +67,7 @@ function GmSet ( enabled, quiet )
 	end
 end
 
-function GmIsEnabled ()
+function GmIsEnabled(room)
 	local race_res = getResourceFromName ( "race" )
 	
 	if ( race_res and getResourceState ( race_res ) == "running" ) then

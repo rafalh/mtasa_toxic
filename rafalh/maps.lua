@@ -1,49 +1,69 @@
----------------------
--- Local variables --
----------------------
-
-local g_Initialized = false
-local g_Recording = false
-local g_WinningStreakPlayer = false
-local g_WinningStreakLen = 0
-local g_CurrentMap = false
-local g_LastMap = false
-local g_IsRace = false
-g_MapRepeats = 1
-
 -------------------
 -- Custom events --
 -------------------
 
-addEvent ("onPlayerFinish")
-addEvent ("onPlayerWinDD")
-addEvent ("onPlayerPickUpRacePickup")
-addEvent ("onClientSetNextMap", true)
-addEvent ("onClientMapList", true)
-addEvent ("onMapListReq", true)
-addEvent ("onChangeMapReq", true)
+addEvent("onPlayerFinish")
+addEvent("onPlayerWinDD")
+addEvent("onRoomMapStart")
+addEvent("onRoomMapStop")
+addEvent("onGamemodeMapStart")
+addEvent("onGamemodeMapStop")
+addEvent("onPlayerPickUpRacePickup")
+addEvent("onClientSetNextMap", true)
+addEvent("onClientMapList", true)
+addEvent("onMapListReq", true)
+addEvent("onChangeMapReq", true)
 
 ---------------
 -- Functions --
 ---------------
 
-local function init()
-	if(g_Initialized) then return end
-	g_Initialized = true
+function initRoomMaps(room)
+	if(room.mapsInit) then return end
+	room.mapsInit = true
 	
-	local mapManagerRes = getResourceFromName("mapmanager")
-	if(not mapManagerRes or getResourceState(mapManagerRes) ~= "running") then
-		return false
+	local map = false
+	
+	local mapMgrRes = getResourceFromName("mapmanager")
+	if(mapMgrRes and getResourceState(mapMgrRes) == "running") then
+		local mapRes = call(mapMgrRes, "getRunningGamemodeMap")
+		map = mapRes and Map.create(mapRes)
+	elseif(room.el ~= g_Root) then
+		local roomMgrRes = getResourceFromName("roommgr")
+		if(roomMgrRes and getResourceState(roomMgrRes) == "running") then
+			outputDebugString(tostring(room.el), 3)
+			local mapPath = call(roomMgrRes, "getRoomMap", room.el)
+			map = mapPath and Map.create(mapPath)
+		end
 	end
 	
-	local mapRes = call(mapManagerRes, "getRunningGamemodeMap")
-	g_CurrentMap = mapRes and Map.create(mapRes)
-	g_LastMap = g_CurrentMap
-	g_MapRepeats = 1
-	g_IsRace = g_CurrentMap and #(g_CurrentMap:getElements("checkpoint")) > 0
+	assert(not map or getmetatable(map) == Map.__mt)
+	room.currentMap = map
+	room.lastMap = map
+	room.mapRepeats = 1
+	room.isRace = map and #getCurrentMapElements(room, "checkpoint") > 0
 end
 
 function findMap (str, removed)
+	local mapMgrRes = getResourceFromName("mapmgr")
+	if(mapMgrRes and getResourceState(mapMgrRes) == "running") then
+		local maps = call(mapMgrRes, "findMaps", str)
+		for i, mapPath in ipairs(maps) do
+			local map = Map.create(mapPath)
+			if(removed ~= nil) then
+				local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map:getId())
+				local isRemoved = (rows[1].removed ~= "")
+				if(isRemoved == removed) then
+					return map
+				end
+			else
+				return map
+			end
+		end
+		
+		return false
+	end
+	
 	local maps = getMapsList()
 	
 	if(not str or not maps) then
@@ -117,36 +137,38 @@ local function getActivePlayers (ignore)
 	return active
 end
 
-function startRandomMap()
-	local map = MqPop()
+function startRandomMap(room)
+	assert(room)
+	local map = MqPop(room)
 	if(map) then
 		g_StartingQueuedMap = map
 	else
 		map = getRandomMap()
 	end
-	map:start()
+	map:start(room)
 end
 
-local function onGamemodeMapStart(map_res)
-	local map = Map.create(map_res)
+local function onMapStart(map, room)
+	assert(getmetatable(map) == Map.__mt)
+	
 	local map_id = map:getId()
 	local rows = DbQuery ("SELECT played, rates, rates_count, removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	local map_name = map:getName()
 	
-	if (g_LastMap == map) then
-		g_MapRepeats = g_MapRepeats + 1
+	if (room.lastMap == map) then
+		room.mapRepeats = room.mapRepeats + 1
 	else
-		g_LastMap = map
-		g_MapRepeats = 1
+		room.lastMap = map
+		room.mapRepeats = 1
 	end
-	g_CurrentMap = map
+	room.currentMap = map
 	
 	if (rows[1].removed ~= "") then
 		scriptMsg ("Map %s is removed! Changing to random map.", map_name)
 		--cancelEvent () -- map resource is still running
-		setMapTimer(startRandomMap, 500, 1)
+		setMapTimer(startRandomMap, 500, 1, room)
 	else
-		g_IsRace = #(map:getElements("checkpoint")) > 0
+		room.isRace = #(getCurrentMapElements(room, "checkpoint")) > 0
 		local map_type = map:getType()
 		
 		local now = getRealTime().timestamp
@@ -173,20 +195,22 @@ local function onGamemodeMapStart(map_res)
 		end
 		
 		-- show toptimes
-		BtSendMapInfo (true)
+		BtSendMapInfo(room, true)
 		
 		-- init some players data
 		for player, pdata in pairs (g_Players) do
-			pdata.cp_times = SmGetBool ("cp_recorder") and g_IsRace and {}
-			pdata.winner = false
+			if(pdata.room == room) then
+				pdata.cp_times = SmGetBool ("cp_recorder") and room.isRace and {}
+				pdata.winner = false
+			end
 		end
 		
 		-- start recording
 		local winning_veh = map_type and map_type.winning_veh
-		g_Recording = (g_IsRace or winning_veh) and SmGetBool ("recorder")
-		if (g_IsRace or winning_veh) then
-			if (g_Recording) then
-				RcStartRecording (map_id)
+		room.recording = (room.isRace or winning_veh) and SmGetBool ("recorder")
+		if (room.isRace or winning_veh) then
+			if (room.recording) then
+				RcStartRecording(room, map_id)
 			end
 		end
 		
@@ -199,22 +223,21 @@ local function onGamemodeMapStart(map_res)
 		-- check if ghostmode should be enabled
 		if (not map:getSetting("ghostmode")) then
 			local gm = map_type and map_type.gm
-			--outputDebugString("Map has no ghostmode specified. Changing to "..tostring(gm), 3)
-			setMapTimer (GmSet, 3000, 1, gm, true)
+			setMapTimer (GmSet, 3000, 1, room, gm, true)
 		end
 		
 		-- show best times
-		BtPrintTimes(map_id)
+		BtPrintTimes(room, map_id)
 		
 		-- allow bets
 		GbStartBets ()
 	end
 end
 
-local function onGamemodeMapStop (map)
-	if (g_Recording) then
-		g_Recording = false
-		RcStopRecording ()
+local function onMapStop(room)
+	if (room.recording) then
+		room.recording = false
+		RcStopRecording (room)
 	end
 	
 	GbFinishBets ()
@@ -224,11 +247,12 @@ local function onGamemodeMapStop (map)
 		g_OldVehicleWeapons = nil
 	end
 	
-	g_CurrentMap = false
+	room.currentMap = false
 end
 
 local function handlePlayerTime (player, ms)
-	local map = getCurrentMap()
+	local pdata = g_Players[player]
+	local map = getCurrentMap(pdata.room)
 	local default_speed = tonumber(map:getSetting("gamespeed")) or 1
 	local speed = getGameSpeed ()
 	if(math.abs(speed - default_speed) > 0.001) then
@@ -252,7 +276,7 @@ local function handlePlayerTime (player, ms)
 		end
 		
 		if (n <= 8) then
-			BtSendMapInfo (true)
+			BtSendMapInfo(pdata.room, true)
 		end
 	end
 	
@@ -260,18 +284,19 @@ local function handlePlayerTime (player, ms)
 end
 
 local function handlePlayerWin (player)
+	local room = g_Players[player].room
 	scriptMsg ("%s is the winner!", getPlayerName (player))
 	
 	GbFinishBets (player)
 	
-	if (g_WinningStreakPlayer == player) then
-		g_WinningStreakLen = g_WinningStreakLen + 1
+	if (room.winStreakPlayer == player) then
+		room.winStreakLen = room.winStreakLen + 1
 		if (g_PlayersCount > 1) then
-			scriptMsg ("%s is on a winning streak! It's his %u. victory.", getPlayerName (player), g_WinningStreakLen)
+			scriptMsg ("%s is on a winning streak! It's his %u. victory.", getPlayerName (player), room.winStreakLen)
 		end
 	else
-		g_WinningStreakPlayer = player
-		g_WinningStreakLen = 1
+		room.winStreakPlayer = player
+		room.winStreakLen = 1
 	end
 end
 
@@ -292,7 +317,8 @@ local function setPlayerFinalRank (player, rank)
 end
 
 local function onPlayerFinish (rank, ms)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	local map_id = map:getId()
 	
 	if (rank <= 3) then
@@ -331,14 +357,15 @@ local function onPlayerWinDD ()
 end
 
 local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	local mapType = map and map:getType()
 	
 	if (pickupType == "vehiclechange" and mapType and mapType.winning_veh and vehicleModel and mapType.winning_veh[vehicleModel] and not g_Players[source].winner) then
 		g_Players[source].winner = true
 		scriptMsg ("Warning! %s has been given to %s.", getVehicleNameFromModel (vehicleModel), getPlayerName (source))
-		if (GmIsEnabled ()) then
-			GmSet (false)
+		if (GmIsEnabled (room)) then
+			GmSet(room, false)
 		end
 		
 		local race_res = getResourceFromName ("race")
@@ -356,9 +383,9 @@ local function onMapListReq()
 	local maps = getMapsList()
 	
 	for i, map in maps:ipairs() do
-		local map_res_name = getResourceName (map.res)
+		local mapResName = (map.res and getResourceName(map.res)) or map.path
 		local map_name = map:getName()
-		map_list[map_res_name] = { map_name, 0, 0 }
+		map_list[mapResName] = { map_name, 0, 0 }
 	end
 	
 	local rows = DbQuery ("SELECT * FROM rafalh_maps", map)
@@ -374,44 +401,95 @@ local function onMapListReq()
 	triggerClientEvent (client, "onClientMapList", g_ResRoot, map_list)
 end
 
-local function onChangeMapReq(map_res_name)
+local function onChangeMapReq(mapResName)
 	if (not hasObjectPermissionTo (client, "command.setmap", false)) then return end
 	
-	local map_res = getResourceFromName (map_res_name)
-	if (map_res) then
+	local map = false
+	local mapRes = getResourceFromName(mapResName)
+	if(mapRes) then
+		map = Map.create(mapRes)
+	else
+		local mapMgrRes = getResourceFromName("mapmgr")
+		if(mapMgrRes and getResourceState(mapMgrRes) == "running" and call(mapMgrRes, "isMap", mapResName)) then
+			map = Map.create(mapResName)
+		end
+	end
+	
+	if (map) then
 		GbCancelBets ()
-		Map.create(map_res):start()
+		local room = g_Players[client].room
+		map:start(room)
 	else
 		outputDebugString ("getResourceFromName failed", 2)
 	end
 end
 
-function getCurrentMap()
-	if(not g_Initialized) then init() end
-	return g_CurrentMap
+function getCurrentMap(room)
+	assert(room ~= nil)
+	if(not room) then return false end
+	if(not room.mapsInit) then initRoomMaps(room) end
+	assert(not room.currentMap or getmetatable(room.currentMap) == Map.__mt)
+	return room.currentMap
 end
 
-function getLastMap()
-	if(not g_Initialized) then init() end
-	return g_LastMap
+function getLastMap(room)
+	assert(room ~= nil)
+	if(not room) then return false end
+	if(not room.mapsInit) then initRoomMaps(room) end
+	return room.lastMap
+end
+
+function getCurrentMapElements(room, type)
+	local map = room.currentMap
+	if(map.res) then
+		return getElementsByType(type, room.resRoot)
+	end
+	
+	local roomMgrRes = getResourceFromName("roommgr")
+	if(roomMgrRes and getResourceState(roomMgrRes) == "running") then
+		return call(roomMgrRes, "getRoomMapElements", room.el, type)
+	end
+	
+	return false
 end
 
 function getMapsList()
-	local mapManagerRes = getResourceFromName("mapmanager")
-	if(not mapManagerRes or getResourceState(mapManagerRes) ~= "running") then
-		return false
+	local mapMgrRes = getResourceFromName("mapmanager")
+	if(mapMgrRes and getResourceState(mapMgrRes) == "running") then
+		local gamemodeRes = call(mapMgrRes, "getRunningGamemode")
+		local mapResList = call(mapMgrRes, "getMapsCompatibleWithGamemode", gamemodeRes)
+		return MapList.create(mapResList)
 	end
 	
-	local gamemodeRes = call(mapManagerRes, "getRunningGamemode")
-	local mapResList = call(mapManagerRes, "getMapsCompatibleWithGamemode", gamemodeRes)
-	return MapList.create(mapResList)
+	local mapMgrRes = getResourceFromName("mapmgr")
+	if(mapMgrRes and getResourceState(mapMgrRes) == "running") then
+		local mapList = call(mapMgrRes, "getMapsList")
+		return MapList.create(mapList)
+	end
+	
+	return false
 end
 
-addEventHandler ("onGamemodeMapStart", g_Root, onGamemodeMapStart)
-addEventHandler ("onGamemodeMapStop", g_Root, onGamemodeMapStop)
+addEventHandler ("onRoomMapStart", g_Root, function(mapPath)
+	local map = Map.create(mapPath)
+	local room = Room.create(source)
+	onMapStart(map, room)
+end)
+addEventHandler ("onRoomMapStop", g_Root, function()
+	local room = Room.create(source)
+	onMapStop(room)
+end)
+addEventHandler ("onGamemodeMapStart", g_Root, function(mapRes)
+	local map = Map.create(mapRes)
+	local room = Room.create(g_Root)
+	onMapStart(map, g_Root)
+end)
+addEventHandler ("onGamemodeMapStop", g_Root, function()
+	local room = Room.create(g_Root)
+	onMapStop(g_Root)
+end)
 addEventHandler ("onPlayerFinish", g_Root, onPlayerFinish)
 addEventHandler ("onPlayerWinDD", g_Root, onPlayerWinDD)
 addEventHandler ("onPlayerPickUpRacePickup", g_Root, onPlayerPickUpRacePickup)
 addEventHandler ("onMapListReq", g_ResRoot, onMapListReq)
 addEventHandler ("onChangeMapReq", g_ResRoot, onChangeMapReq)
-addEventHandler ("onResourceStart", g_ResRoot, init)

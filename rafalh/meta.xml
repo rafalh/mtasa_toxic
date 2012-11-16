@@ -38,6 +38,7 @@
 	<script src="langs.lua" />
 	<script src="map.lua" />
 	<script src="maps.lua" />
+	<script src="room.lua" />
 	<script src="map_queue.lua" />
 	<script src="nickblocker.lua" />
 	<script src="nicklocker.lua" />
@@ -57,6 +58,7 @@
 	<script src="winevents.lua" />
 	<script src="win_anim_c.lua"  type="client" />
 	<script src="water_fix_c.lua" type="client" />
+	<script src="anim_c.lua" type="client" />
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />

@@ -474,7 +474,8 @@ local function CmdFixMapScripts (message, arg)
 			end, 100, 0)
 		end
 	else
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		if (map and FixMapScripts(map)) then
 			privMsg (source, "Fixed map scripts.")
 		else

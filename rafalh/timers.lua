@@ -19,16 +19,21 @@ function setPlayerTimer ( func, interval, timesToExecute, player, ... )
 	return timer
 end
 
-local function TmMapTimerProc ( timer_id, ... )
-	local func = g_MapTimers[timer_id].f
-	g_MapTimers[timer_id] = nil
-	func ( ... )
+local function TmMapTimerProc ( roomEl, timer_id, ... )
+	local room = Room.elMap[roomEl]
+	local func = room.mapTimers[timer_id].f
+	room.mapTimers[timer_id] = nil
+	func (room, ...)
 end
 
-function setMapTimer ( func, interval, timesToExecute, ... )
-	local timer_id = #g_MapTimers + 1
-	local timer = setTimer ( TmMapTimerProc, interval, timesToExecute, timer_id, ... )
-	g_MapTimers[timer_id] = { t = timer, f = func }
+function setMapTimer ( func, interval, timesToExecute, room, ... )
+	assert(room)
+	if(not room.mapTimers) then
+		room.mapTimers = {}
+	end
+	local timer_id = #room.mapTimers + 1
+	local timer = setTimer ( TmMapTimerProc, interval, timesToExecute, room.el, timer_id, ... )
+	room.mapTimers[timer_id] = { t = timer, f = func }
 end
 
 local function TmPlayerQuit ()

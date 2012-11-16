@@ -413,13 +413,14 @@ local function ShpBuyNextMap ( map_res_name )
 		return
 	end
 	
+	local room = g_Players[client].room
 	local mapName = map:getName()
-	if(MqGetMapPos(map)) then
+	if(MqGetMapPos(room, map)) then
 		privMsg ( client, "Map %s is already queued!", mapName )
 		return
 	end
 	
-	local forb_reason, arg = map:isForbidden()
+	local forb_reason, arg = map:isForbidden(room)
 	if ( forb_reason ) then
 		privMsg ( client, forb_reason, arg )
 		return
@@ -432,7 +433,7 @@ local function ShpBuyNextMap ( map_res_name )
 	local max_delay = 30*60
 	local dt = now - rows[1].played_timestamp
 	if(dt > max_delay) then
-		local pos = MqAdd ( map )
+		local pos = MqAdd(room, map)
 		customMsg ( 128, 255, 196, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName ( client ), pos )
 		
 		cash = cash - g_ShopItems.nextmap.cost

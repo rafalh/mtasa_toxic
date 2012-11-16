@@ -116,11 +116,13 @@ end
 -- Global function definitions --
 ---------------------------------
 
-function RcStartRecording ( map_id )
+function RcStartRecording(room, map_id)
 	--outputDebugString ( "recording started" )
 	
 	for player, pdata in pairs ( g_Players ) do
-		pdata.recording = true
+		if(pdata.room == room) then
+			pdata.recording = true
+		end
 	end
 	
 	local rows = DbQuery ( "SELECT player, time, rec FROM rafalh_besttimes WHERE map=? AND rec<>'' ORDER BY time LIMIT 1", map_id )
@@ -132,17 +134,19 @@ function RcStartRecording ( map_id )
 		rec_title = "Top "..( rows2[1].c + 1 )
 	end
 	
-	triggerClientInternalEvent ( g_Root, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id, rec, rec_title )
+	triggerClientInternalEvent ( room.el, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id, rec, rec_title )
 end
 
-function RcStopRecording ()
+function RcStopRecording(room)
 	--outputDebugString ( "recording stoped" )
 	
 	for player, pdata in pairs ( g_Players ) do
-		pdata.recording = nil
+		if(pdata.room == room) then
+			pdata.recording = nil
+		end
 	end
 	
-	triggerClientInternalEvent ( g_Root, $(EV_CLIENT_STOP_RECORDING_REQUEST), g_Root )
+	triggerClientInternalEvent ( room.el, $(EV_CLIENT_STOP_RECORDING_REQUEST), g_Root )
 end
 
 function RcFinishRecordingPlayer ( player, time, map_id, improved_besttime )
@@ -204,12 +208,6 @@ function RcFinishRecordingPlayer ( player, time, map_id, improved_besttime )
 		pdata.cp_times = false -- dont allow to use this cp list in next map
 	end
 end
-
---[[setTimer ( function ()
-	local map = getCurrentMap()
-	local map_id = map:getId()
-	RcStartRecording ( map_id )
-end, 2000, 1 )]]
 
 ------------
 -- Events --

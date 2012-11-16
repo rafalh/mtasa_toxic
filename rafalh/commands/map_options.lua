@@ -2,7 +2,8 @@ g_OldVehicleWeapons = nil
 
 local function CmdSetMapName(message, arg)
 	if(#arg >= 2) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			local newName = message:sub(arg[1]:len() + 2)
@@ -24,7 +25,8 @@ local function CmdSetMapType(message, arg)
 	local new_map_type = arg[2] and map_types[arg[2]:lower()]
 	
 	if(new_map_type) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			local name = map:getName()
@@ -44,7 +46,8 @@ CmdRegisterAlias("smt", "setmaptype")
 
 local function CmdSetMapCreator(message, arg)
 	if(#arg >= 2) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			local newAuthor = message:sub(arg[1]:len() + 2)
@@ -63,7 +66,8 @@ CmdRegisterAlias("sc", "setmapcreator")
 
 local function CmdSetMapRespawn(message, arg)
 	if(#arg >= 2) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			local t = touint(arg[2], 0)
@@ -96,7 +100,8 @@ CmdRegister("setrs", CmdSetMapRespawn, "resource.rafalh.setrs")
 
 local function CmdSetMapGhostmode(message, arg)
 	if(#arg >= 2) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			local val
@@ -145,7 +150,8 @@ CmdRegisterAlias("settimelimit", "setmaptimelimit")
 
 local function CmdSetMapVehicleWeapons(message, arg)
 	if(#arg >= 2) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			if(arg[2] == "true" or arg[2] == "yes") then
@@ -189,7 +195,8 @@ CmdRegisterAlias("vehwep", "vehicleweapons")
 
 local function CmdSetMapCompMode(message, arg)
 	if(#arg >= 2) then
-		local map = getCurrentMap()
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
 		
 		if(map) then
 			if(arg[2] == "true" or arg[2] == "yes") then
@@ -207,9 +214,10 @@ CmdRegister("setcompmode", CmdSetMapCompMode, "resource.rafalh.setcompmode")
 CmdRegisterAlias("setcmode", "setcompmode")
 
 local function CmdSetMapMaxSpeed(message, arg)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	local max_speed = touint(arg[2])
-	if(map and(max_speed or arg[2] == "false")) then
+	if(map and (max_speed or arg[2] == "false")) then
 		if(max_speed == 0) then
 			max_speed = nil
 		end
@@ -306,7 +314,8 @@ local function CmdFixMapResName(msg, arg)
 			end, 100, 0)
 		end
 	else
-		local map = arg[2] and findMap(msg:sub(arg[1]:len() + 2)) or getCurrentMap()
+		local room = g_Players[source].room
+		local map = arg[2] and findMap(msg:sub(arg[1]:len() + 2)) or getCurrentMap(room)
 		if(not map) then return end
 		
 		local ok, status = FixMapResName(map)
@@ -338,7 +347,7 @@ local function DetectMapType(map)
 	local node = xmlLoadFile(":"..map_res_name.."/"..src)
 	if(not node) then return false end
 	
-	map_type = "DD"
+	local map_type = "DD"
 	local children = xmlNodeGetChildren(node)
 	for i, subnode in ipairs(children) do
 		local tag = xmlNodeGetName(subnode)

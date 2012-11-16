@@ -43,8 +43,8 @@ function addPlayerTime ( player_id, map_id, time )
 	return pos
 end
 
-function BtSendMapInfo ( show, player )
-	local map = getCurrentMap()
+function BtSendMapInfo (room, show, player)
+	local map = getCurrentMap(room)
 	if ( not map ) then return end
 	
 	local map_id = map:getId()
@@ -91,11 +91,13 @@ function getTopTime ( map_res, cp_times )
 	return rows
 end
 
-function BtPrintTimes(map_id)
+function BtPrintTimes(room, map_id)
 	for player, pdata in pairs ( g_Players ) do
-		local rows = DbQuery ( "SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", pdata.id, map_id )
-		if ( rows and rows[1] ) then
-			privMsg ( player, "Your personal best time: %s", formatTimePeriod ( rows[1].time / 1000 ) )
+		if(pdata.room == room) then
+			local rows = DbQuery ( "SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", pdata.id, map_id )
+			if ( rows and rows[1] ) then
+				privMsg ( player, "Your personal best time: %s", formatTimePeriod ( rows[1].time / 1000 ) )
+			end
 		end
 	end
 end

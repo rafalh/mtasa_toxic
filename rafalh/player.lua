@@ -38,6 +38,12 @@ function Player:getIP()
 	end
 end
 
+function Player:onRoomChange(room)
+	self.room = room
+	
+	BtSendMapInfo(self.room, self.new, self.el)
+end
+
 function Player:destroy()
 	g_Players[self.el] = nil
 	g_IdToPlayer[self.id] = nil
@@ -65,6 +71,13 @@ function Player.create(el)
 	self.join_time = now
 	self.timers = {}
 	self.cp_times = false
+	
+	local roomEl = g_Root
+	local roomMgrRes = getResourceFromName("roommgr")
+	if(not self.is_console and roomMgrRes and getResourceState(roomMgrRes) == "running") then
+		roomEl = call(roomMgrRes, "getPlayerRoom", self.el)
+	end
+	self.room = roomEl and Room.create(roomEl)
 	
 	local serial = self:getSerial()
 	local ip = self:getIP()
@@ -107,3 +120,11 @@ function Player.create(el)
 	
 	return self
 end
+
+addEventHandler("onPlayerChangeRoom", g_Root, function(room)
+	local player = g_Players[source]
+	if(player) then
+		local room = Room.create(room)
+		player:onRoomChange(room)
+	end
+end)

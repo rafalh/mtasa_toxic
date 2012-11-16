@@ -12,5 +12,7 @@ function guiSetInputEnabled ( enabled )
 		if ( g_Counter <= 0 ) then
 			_guiSetInputEnabled ( false )
 		end
+		
+		assert(g_Counter >= 0)
 	end
 end

@@ -131,6 +131,28 @@ function customMsg ( r, g, b, fmt, ... )
 	end
 end
 
+function outputMsg(visibleTo, color, fmt, ...)
+	if(not color) then
+		color = "#ffc46e"
+	end
+	
+	local msg = fmt:format ( ... ):gsub ( "#%x%x%x%x%x%x", "" )
+	if(visibleTo == g_Root or getElementType(visibleTo) == "game-room") then
+		outputServerLog ( msg )
+		
+		local rafalh_webchat_res = getResourceFromName ( "rafalh_webchat" )
+		if ( rafalh_webchat_res and getResourceState ( rafalh_webchat_res ) == "running" ) then
+			call ( rafalh_webchat_res, "addChatStr", color..msg )
+		end
+	end
+	
+	local r, g, b = getColorFromString(color)
+	for i, player in ipairs(getElementsByType("player", visibleTo)) do
+		local msg = MuiGetMsg(fmt, player):format (...):gsub("#%x%x%x%x%x%x", "")
+		outputChatBox(msg, player, r, g, b, false)
+	end
+end
+
 function findPlayer ( str )
 	if ( not str ) then
 		return false
@@ -249,16 +271,13 @@ function addInternalEventHandler ( eventtype, handler )
 end
 
 function triggerClientInternalEvent ( player, eventtype, source, ... )
-	assert ( player and eventtype and source and ( player == g_Root or g_Players[player] ) )
-	if ( player ~= g_Root ) then
-		if(g_Players[player].sync) then
-			triggerClientEvent ( player, "onEvent_"..g_ThisResName, source, eventtype, ... )
-		end
-	else
-		for player, p in pairs ( g_Players ) do
-			if ( p.sync ) then
-				triggerClientEvent ( player, "onEvent_"..g_ThisResName, source, eventtype, ... )
-			end
+	assert (eventtype and isElement(source) and isElement(player))
+	
+	local players = getElementsByType("player", player)
+	for i, player in ipairs(players) do
+		local pdata = g_Players[player]
+		if(pdata.sync) then
+			triggerClientEvent(player, "onEvent_"..g_ThisResName, source, eventtype, ...)
 		end
 	end
 end

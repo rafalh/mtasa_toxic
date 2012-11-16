@@ -128,7 +128,7 @@ local function MlstOnElementDestroy ()
 end
 
 local function MlstOnMapStart ( map_info )
-	if ( not g_MapList ) then return end
+	if ( not g_MapList or type(map_info) ~= "table" ) then return end
 	
 	if ( not g_MapList[map_info.resname] ) then
 		g_MapList[map_info.resname] = { "", 0, 0 }

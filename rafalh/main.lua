@@ -173,7 +173,7 @@ local function onRafalhStart ()
 		red_damage_screen = SmGetBool ( "red_damage_screen" )
 	}, pdata.new )
 	
-	BtSendMapInfo ( pdata.new, client )
+	BtSendMapInfo(pdata.room, pdata.new, client)
 	pdata.new = false
 end
 

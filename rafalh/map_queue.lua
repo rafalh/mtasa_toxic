@@ -1,10 +1,12 @@
-g_NextMapQueue = {}
-
 addEvent ("onAddMapToQueueReq", true)
 
-function MqAdd(map, display_msg, player)
-	table.insert(g_NextMapQueue, map)
-	local pos = #g_NextMapQueue
+function MqAdd(room, map, display_msg, player)
+	if(not room.mapQueue) then
+		room.mapQueue = {}
+	end
+	
+	table.insert(room.mapQueue, map)
+	local pos = #room.mapQueue
 	
 	local mapName = map:getName()
 	local mapType = map:getType()
@@ -23,17 +25,20 @@ function MqAdd(map, display_msg, player)
 	
 	if (display_msg) then
 		if (player) then
-			customMsg (128, 255, 196, "%s has been added to next map queue (pos. %u.) by %s!", mapName, pos, getPlayerName (player))
+			outputMsg(room.el, "#80FFC0", "%s has been added to next map queue (pos. %u.) by %s!", mapName, pos, getPlayerName (player))
 		else
-			customMsg (128, 255, 196, "%s has been added to next map queue (pos. %u.)!", mapName, pos)
+			outputMsg(room.el, "#80FFC0", "%s has been added to next map queue (pos. %u.)!", mapName, pos)
 		end
 	end
 	
 	return pos
 end
 
-function MqRemove(pos)
-	local map = table.remove(g_NextMapQueue, pos)
+function MqRemove(room, pos)
+	if(not room.mapQueue) then return false end
+	
+	pos = pos or #room.mapQueue
+	local map = table.remove(room.mapQueue, pos)
 	if(not map) then return end
 	
 	local mapType = map:getType()
@@ -45,7 +50,7 @@ function MqRemove(pos)
 	end
 	
 	if(pos == 1) then
-		local nextMap = g_NextMapQueue[1]
+		local nextMap = room.mapQueue[1]
 		local nextMapName = nextMap and nextMap:getName()
 		triggerClientEvent (g_Root, "onClientSetNextMap", g_Root, nextMapName)
 	end
@@ -53,24 +58,23 @@ function MqRemove(pos)
 	return map
 end
 
-function MqClear ()
-	while(#g_NextMapQueue > 0) do
-		MqRemove(#g_NextMapQueue)
-	end
-end
-
-function MqPop ()
-	local map = table.remove (g_NextMapQueue, 1)
+function MqPop (room)
+	assert(room)
+	if(not room.mapQueue) then return false end
 	
-	local nextMap = g_NextMapQueue[1]
+	local map = table.remove (room.mapQueue, 1)
+	
+	local nextMap = room.mapQueue[1]
 	local nextMapName = nextMap and nextMap:getName()
 	triggerClientEvent (g_Root, "onClientSetNextMap", g_Root, nextMapName)
 	
 	return map
 end
 
-function MqGetMapPos(map)
-	for i, map2 in ipairs(g_NextMapQueue) do
+function MqGetMapPos(room, map)
+	if(not room.mapQueue) then return false end
+	
+	for i, map2 in ipairs(room.mapQueue) do
 		if (map2 == map) then
 			return i
 		end
@@ -78,13 +82,24 @@ function MqGetMapPos(map)
 	return false
 end
 
-local function MqOnAddReq (map_res_name)
+local function MqOnAddReq(mapResName)
 	if (not hasObjectPermissionTo (client, "resource.rafalh.nextmap", false)) then return end
 	
-	local map_res = getResourceFromName (map_res_name)
-	local map = map_res and Map.create(map_res)
+	local room = g_Players[client].room
+	local map = false
+	
+	local map_res = getResourceFromName (mapResName)
+	if(mapRes) then
+		map = Map.create(map_res)
+	else
+		local mapMgrRes = getResourceFromName("mapmgr")
+		if(mapMgrRes and getResourceState(mapMgrRes) == "running" and call(mapMgrRes, "isMap", mapResName)) then
+			map = Map.create(mapResName)
+		end
+	end
+	
 	if (map) then
-		MqAdd(map, true, client)
+		MqAdd(room, map, true, client)
 	else
 		outputDebugString ("getResourceFromName failed", 2)
 	end

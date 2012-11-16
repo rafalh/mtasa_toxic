@@ -52,13 +52,24 @@ function Map:getName()
 end
 
 function Map:getInfo(name)
-	return getResourceInfo(self.res, name)
+	if(self.res) then
+		return getResourceInfo(self.res, name)
+	end
+	
+	local mapMgrRes = getResourceFromName("mapmgr")
+	if(self.path and mapMgrRes and getResourceState(mapMgrRes) == "running") then
+		return call(mapMgrRes, "getMapInfo", self.path, name)
+	end
+	
+	return false
 end
 
 function Map:setInfo(attr, value)
+	if(not self.res) then return end
+	
 	if ( not setResourceInfo ( self.res, attr, value ) ) then return false end
 	
-	local node = xmlLoadFile ( ":"..getResourceName ( self.res ).."/meta.xml" )
+	local node = xmlLoadFile ( self:getPath().."/meta.xml" )
 	if ( not node ) then return false end
 	
 	local subnode = xmlFindChild ( node, "info", 0 )
@@ -72,12 +83,13 @@ function Map:setInfo(attr, value)
 end
 
 function Map:getSetting(name)
+	if(not self.res) then return end
 	return get(self.resName.."."..name)
 end
 
 function Map:setSetting(setting, value)
 	-- Note: this doesn't work for ZIP resources and I have no idea how to fix it...
-	local node = xmlLoadFile ( ":"..getResourceName ( self.res ).."/meta.xml" )
+	local node = xmlLoadFile ( self:getPath().."/meta.xml" )
 	if ( not node ) then
 		return false
 	end
@@ -92,24 +104,29 @@ function Map:setSetting(setting, value)
 	return success
 end
 
-function Map:start()
-	local mapManagerRes = getResourceFromName("mapmanager")
-	if(not mapManagerRes or getResourceState(mapManagerRes) ~= "running") then
-		return false
+function Map:start(room)
+	assert(room)
+	
+	local mapMgrRes = getResourceFromName("mapmanager")
+	if(mapMgrRes and getResourceState(mapMgrRes) == "running") then
+		return call(mapMgrRes, "changeGamemodeMap", self.res)
 	end
 	
-	return call(mapManagerRes, "changeGamemodeMap", self.res)
+	local roomMgrRes = getResourceFromName("roommgr")
+	if(roomMgrRes and getResourceState(roomMgrRes) == "running") then
+		return call(roomMgrRes, "startRoomMap", room.el, self.path)
+	end
+	
+	return false
 end
 
 function Map:getId()
-	assert ( self.res )
-	
-	local map_id = Map.idCache[self.res]
+	local map_id = Map.idCache[self.res or self.path]
 	if ( map_id ) then
 		return map_id
 	end
 	
-	local map = getResourceName ( self.res )
+	local map = (self.res and getResourceName ( self.res )) or self.path
 	local rows = DbQuery ( "SELECT map FROM rafalh_maps WHERE name=? LIMIT 1", map )
 	if ( not rows or not rows[1] ) then
 		DbQuery ( "INSERT INTO rafalh_maps (name) VALUES(?)", map )
@@ -117,7 +134,7 @@ function Map:getId()
 	end
 	
 	map_id = rows[1].map
-	Map.idCache[self.res] = map_id
+	Map.idCache[self.res or self.path] = map_id
 	return map_id
 end
 
@@ -134,9 +151,11 @@ function Map:getType()
 	return false
 end
 
-function Map:isForbidden()
+function Map:isForbidden(room)
+	assert(room)
+	
 	local max_map_rep = SmGetUInt ("max_map_rep", 0)
-	if (self == getLastMap() and max_map_rep > 0 and g_MapRepeats >= max_map_rep) then
+	if (self == getLastMap(room) and max_map_rep > 0 and g_MapRepeats >= max_map_rep) then
 		return "Map cannot be repeated!"
 	end
 	
@@ -163,7 +182,7 @@ function Map:isForbidden()
 end
 
 function Map:getElements(type)
-	assert(type)
+	assert(type and self.resRoot)
 	return getElementsByType(type, self.resRoot)
 end
 
@@ -180,9 +199,14 @@ function Map.create(res)
 	local self = setmetatable({}, Map.__mt)
 	
 	assert(res)
-	self.res = res
-	self.resRoot = getResourceRootElement(res)
-	self.resName = getResourceName(res)
+	if(type(res) == "userdata") then
+		self.res = res
+		self.resRoot = getResourceRootElement(res)
+		self.resName = getResourceName(res)
+	else
+		self.path = res
+		assert(type(self.path) == "string", type(self.path))
+	end
 	
 	return self
 end

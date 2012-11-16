@@ -2,7 +2,8 @@ local g_MinFps = 0
 
 local function AcmpCheckPlayer ( player )
 	local kill_afk = SmGetUInt ( "kill_afk", 0 )
-	local currentMap = getCurrentMap()
+	local room = g_Players[player].room
+	local currentMap = getCurrentMap(room)
 	if(kill_afk == 0 or currentMap and currentMap:getRespawn()) then
 		return false
 	end

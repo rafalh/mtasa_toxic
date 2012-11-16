@@ -5,10 +5,11 @@ end
 CmdRegister ("new", CmdNew, false, false, true)
 
 local function CmdVoteMap (message, arg)
+	local room = g_Players[source].room
 	local mapName = message:sub (arg[1]:len () + 2)
 	local map = findMap (mapName)
 	if (map) then
-		local forb_reason, arg = map:isForbidden()
+		local forb_reason, arg = map:isForbidden(room)
 		if (forb_reason) then
 			privMsg (source, forb_reason, arg)
 		else

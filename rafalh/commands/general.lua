@@ -11,7 +11,8 @@ end
 CmdRegister("info", CmdInfo, false)
 
 local function CmdRespawn(message, arg)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	if(#arg >= 2) then
 		map = findMap(message:sub(arg[1]:len() + 2))
 	end
@@ -37,7 +38,8 @@ local function CmdMapInfo(message, arg)
 	if(#arg >= 2) then
 		map = findMap(message:sub(arg[1]:len() + 2))
 	else
-		map = getCurrentMap()
+		local room = g_Players[source].room
+		map = getCurrentMap(room)
 	end
 	
 	if(map) then
@@ -104,7 +106,8 @@ end
 CmdRegister("admins", CmdAdmins, false, "Shows admins and moderators playing the game already")
 
 local function CmdRace(message, arg)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	
 	if(map) then
 		local map_name = map:getName()
@@ -180,7 +183,8 @@ end
 CmdRegister("mapstats", CmdMapStats, false, "Shows statistics for each map type")
 
 local function CmdPlayed(message, arg)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	
 	if(map) then
 		local map_id = map:getId()
@@ -193,7 +197,7 @@ end
 
 CmdRegister("played", CmdPlayed, false, "Shows how many times map was played")
 
-local function CmdCheckMap(message, arg)
+local function CmdCheck(message, arg)
 	local str = message:sub(arg[1]:len() + 2)
 	if(str:len() >= 3) then
 		local maps = getMapsList()
@@ -244,7 +248,8 @@ end
 CmdRegister("rate", CmdRate, false, "Rates current map")
 
 local function CmdRating(message, arg)
-	local map = getCurrentMap()
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
 	
 	if(map) then
 		local map_id = map:getId()
@@ -270,8 +275,9 @@ CmdRegister("time", CmdTime, false, "Shows current time")
 
 local function CmdNextMapQueue(message, arg)
 	local queue = ""
-	if(#g_NextMapQueue > 0) then
-		for i, map in ipairs(g_NextMapQueue) do
+	local room = g_Players[source].room
+	if(room.mapQueue and #room.mapQueue > 0) then
+		for i, map in ipairs(room.mapQueue) do
 			local mapName = map:getName()
 			queue = queue..", "..i..". "..mapName
 		end

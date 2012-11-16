@@ -4,10 +4,11 @@ addEvent("onRafalhVotenextResult")
 addEvent("onClientDisplayVotenextGuiReq", true)
 addEvent("onVotenextReq", true)
 
-local function onRafalhVotenextResult (map_res)
+local function onRafalhVotenextResult(roomEl, map_res)
 	if (map_res) then
+		local room = Room.create(roomEl)
 		local map = Map.create(map_res)
-		MqAdd(map, true)
+		MqAdd(room, map, true)
 	end
 end
 
@@ -29,18 +30,19 @@ local function VtnStart (pattern, player)
 		return
 	end
 	
+	local room = g_Players[player].room
 	local map = findMap (pattern)
 	if(not map) then
 		privMsg(player, "Cannot find map \"%s\"!", pattern)
 		return
 	end
 	
-	if(MqGetMapPos(map)) then
+	if(MqGetMapPos(room, map)) then
 		privMsg(player, "Next map is already set.")
 		return
 	end
 	
-	local forb_reason, arg = map:isForbidden()
+	local forb_reason, arg = map:isForbidden(room)
 	if(forb_reason) then
 		privMsg (player, forb_reason, arg)
 		return
@@ -59,8 +61,8 @@ local function VtnStart (pattern, player)
 		timeout = SmGetUInt ("votenext_timeout", 30),
 		allowchange = SmGetBool ("votenext_allowchange"),
 		visibleTo = g_Root,
-		[1] = { "Yes", "onRafalhVotenextResult", g_ResRoot, map.res },
-		[2] = { "No", "onRafalhVotenextResult", g_ResRoot, false;default=true },
+		[1] = { "Yes", "onRafalhVotenextResult", g_ResRoot, room.el, map.res },
+		[2] = { "No", "onRafalhVotenextResult", g_ResRoot, room.el, false; default=true },
 	})
 	
 	if (pollDidStart) then
