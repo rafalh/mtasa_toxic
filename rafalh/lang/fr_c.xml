@@ -1,0 +1,61 @@
+<strings>
+    <msg id="* %s has left the game.">* %s a quitte le jeu.</msg>
+    <msg id="* %s has been kicked from the game.">* %s a ete ejecte du jeu.</msg>
+    <msg id="* %s has been banned from the game.">* %s a ete bani du je.</msg>
+    <msg id="* %s has left the game [%s].">* %s a quitte le jeu [%s].</msg>
+	
+    <msg id="Usage: %s">Usage: %s</msg>
+    <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Appuie %s pour ouvrir le panneau utilisateur %s pour le paneau statistique.</msg>
+   
+    <msg id="Statistics">Statistiques</msg>
+    <msg id="Player:">Joueur:</msg>
+    <msg id="Cash:">Argent:</msg>
+    <msg id="Points:">Points:</msg>
+    <msg id="Rank:">Rang:</msg>
+    <msg id="DD/DM Played:">DD/DM joues:</msg>
+    <msg id="DD/DM Wins:">DD/DM gagnes:</msg>
+    <msg id="Race - 1st:">Course - 1er:</msg>
+    <msg id="Race - 2nd:">Course - 2nd:</msg>
+    <msg id="Race - 3rd:">Course - 3eme:</msg>
+    <msg id="Top Times held:">Records detenus:</msg>
+    <msg id="Bidlevel:">Bidlevel:</msg>
+    <msg id="Exploded:">Explose:</msg>
+    <msg id="Drowned:">Noye:</msg>
+    <msg id="Playtime:">Temps de jeu:</msg>
+	
+    <msg id="Profile">Profile</msg>
+	
+    <msg id="Tops">Tops</msg>
+    <msg id="Players online only">Joueurs connectes</msg>
+	
+    <msg id="Shop">Boutique</msg>
+    <msg id="Item">Article</msg>
+    <msg id="Cost">Prix</msg>
+	<msg id="Cost:">Prix:</msg>
+    <msg id="Buy">Achat</msg>
+    <msg id="Sell">Vente</msg>
+    <msg id="Use">Utiliser</msg>
+    <msg id="Count">Nombre</msg>
+    <msg id="Description:">Description:</msg>
+	
+    <msg id="Settings">Parametres</msg>
+    <msg id="Language:">Langue:</msg>
+    <msg id="Nick:">Nom:</msg>
+    <msg id="Suicide key:">Touche de suicide:</msg>
+    <msg id="User Panel key:">Touche du panneau de l&apos;utilisateur:</msg>
+    <msg id="Statistics Panel key:">Touche du panneau statistique:</msg>
+	
+    <msg id="Save">Sauvegarde</msg>
+    <msg id="Color">Couleur</msg>
+    <msg id="Close">Fermer</msg>
+    <msg id="Pos">Pos</msg>
+    <msg id="Time">Temps</msg>
+    <msg id="Empty">Vide</msg>
+	
+    <msg id="Private Chat - %s">Chat prive - %s</msg>
+    <msg id="Say:">Dit:</msg>
+    <msg id="Send">Envoie</msg>
+    <msg id="Send">En arriere plan</msg>
+	
+    <msg id="User Panel">Panneau de l&apos;utilisateur</msg>
+</strings>

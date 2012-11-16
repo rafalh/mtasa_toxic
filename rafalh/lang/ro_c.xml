@@ -1,0 +1,63 @@
+<strings>
+    <msg id="* %s has left the game.">* %s a parasit jocul.</msg>
+    <msg id="* %s has been kicked from the game.">* %s a fost dat afara din joc.</msg>
+    <msg id="* %s has been banned from the game.">* %s a primit ban.</msg>
+    <msg id="* %s has left the game [%s].">* %s a parasit jocul [%s].</msg>
+	
+    <msg id="Usage: %s">Folosire: %s</msg>
+    <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Apasa %s pentru a porni Controlul utilizatorului si %s pentru a porni Controlul statisticilor!</msg>
+	
+    <msg id="Statistics">Statistici</msg>
+    <msg id="Player:">Jucator:</msg>
+    <msg id="Cash:">Bani:</msg>
+    <msg id="Points:">Puncte:</msg>
+    <msg id="Rank:">Rang:</msg>
+    <msg id="DD/DM Played:">DD/DM Jucate:</msg>
+    <msg id="DD/DM Wins:">DD/DM Castigate:</msg>
+    <msg id="Race - 1st:">Race - Primul:</msg>
+    <msg id="Race - 2nd:">Race - Al doilea:</msg>
+    <msg id="Race - 3rd:">Race - Al treilea:</msg>
+    <msg id="Top Times held:">Cei mai buni timpi detinuti:</msg>
+    <msg id="Bidlevel:">Nivel:</msg>
+    <msg id="Exploded:">A explodat:</msg>
+    <msg id="Drowned:">S-a inecat:</msg>
+    <msg id="Playtime:">Gata de joc:</msg>
+	
+    <msg id="Profile">Profil</msg>
+	
+    <msg id="Tops">Topuri</msg>
+    <msg id="Players online only">Doar jucatori online</msg>
+	
+    <msg id="Shop">Magazin</msg>
+    <msg id="Item">Item</msg>
+    <msg id="Cost">Pret</msg>
+	<msg id="Cost:">Pret:</msg>
+    <msg id="Buy">Cumpara</msg>
+    <msg id="Sell">Vinde</msg>
+    <msg id="Use">Foloseste</msg>
+    <msg id="Count">Numaratoare</msg>
+    <msg id="Description:">Descriere:</msg>
+	
+    <msg id="Settings">Setari</msg>
+    <msg id="Language:">Limba:</msg>
+    <msg id="Nick:">Nume:</msg>
+    <msg id="Suicide key:">Tasta pentru sinucidere:</msg>
+    <msg id="User Panel key:">Tasta pentru Controlul Utilizatorului:</msg>
+    <msg id="Statistics Panel key:">Tasta pentru Controlul Statisiticilor:</msg>
+	
+    <msg id="Save">Salveaza</msg>
+    <msg id="Color">Culoare</msg>
+    <msg id="Close">Inchide</msg>
+    <msg id="Top Times">Cei mai buni timpi</msg>
+    <msg id="Pos">Pozitie</msg>
+    <msg id="Time">Timp</msg>
+    <msg id="Empty">GOL</msg>
+	
+    <msg id="Private Chat - %s">Chat privat - %s</msg>
+    <msg id="Say:">Spune:</msg>
+    <msg id="Send">Trimite</msg>
+    <msg id="In background">In fundal</msg>
+	
+    <msg id="User Panel">Controlul utilizatorului</msg>
+    <msg id="About">Despre</msg>
+</strings>

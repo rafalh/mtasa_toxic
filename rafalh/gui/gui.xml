@@ -1,0 +1,9 @@
+<gui>
+	<window id="pm" title="Private Chat" w="320" h="240">
+		<memo id="memo" x="10" y="25" x2="10" y2="45" readonly="true" />
+		<label x="10" y2="45" w="30" h="15" text="Say:" />
+		<edit id="input" x="45" y2="45" x2="60" h="25" maxlen="128" />
+		<button id="send" x2="50" y2="45" w="40" h="25" text="Send" />
+		<label id="playerleft" x="10" x2="10" y2="10" h="15" text="Player left" visible="false" color="#FF0000" />
+	</window>
+</gui>

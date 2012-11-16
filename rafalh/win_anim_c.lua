@@ -1,0 +1,83 @@
+local ANIM_TIME = 12000
+local FADE_TIME = 3000
+local ANIM_ALPHA = 196
+local STARS_COUNT = 24
+
+local g_WinnerAnim = false
+local g_WinnerAnimStart
+
+addEvent ( "onClientWinnerAnim", true )
+addEvent ( "onClientMapStopping" )
+
+local function renderWinnerAnim ()
+	local dt = getTickCount () - g_WinnerAnimStart
+	local a = ANIM_ALPHA
+	
+	if ( dt > ANIM_TIME or not isElement(g_WinnerAnim) ) then
+		removeEventHandler ( "onClientRender", g_Root, renderWinnerAnim )
+		g_WinnerAnim = false
+		return
+	elseif ( dt > ANIM_TIME - FADE_TIME ) then
+		a = ( ANIM_TIME - dt ) / ( ANIM_TIME - ( ANIM_TIME - FADE_TIME ) ) * ANIM_ALPHA
+	end
+	local color = tocolor ( 255, 255, 255, a )
+	
+	local veh = getPedOccupiedVehicle ( g_WinnerAnim )
+	if(not veh) then return end
+	
+	local cx, cy, cz = getCameraMatrix ()
+	local px, py, pz = getElementPosition ( veh or g_WinnerAnim )
+	local mat = getElementMatrix ( veh or g_WinnerAnim )
+	--local min_x, min_y, min_z, max_x, max_y, max_z = getElementBoundingBox ( veh or g_WinnerAnim )
+	local y = 1.5 -- fixme
+	local dt = getTickCount () / 1000
+	local stars = {}
+	
+	for i = 0, STARS_COUNT - 1, 1 do
+		local a = ( i / STARS_COUNT ) * ( 2 * math.pi ) + dt
+		local a2 = ( i % (STARS_COUNT/2) ) / (STARS_COUNT/2) * 2*math.pi + dt*0.8
+		local c, s = math.cos ( a ), math.sin ( a )
+		local c2, s2 = math.cos ( a2 ), math.sin ( a2 )
+		local sx, sy, sz = px, py, pz
+		local size = (math.cos(dt*0.9) + 2.5)*1.2
+		
+		--sx, sy, sz = sx + y * mat[3][1], sy + y * mat[3][2], sz + y * mat[3][3] -- add up vector
+		--sx, sy, sz = sx + c * mat[1][1], sy + c * mat[1][2], sz + c * mat[1][3] -- add cos * left vector
+		--sx, sy, sz = sx + s * mat[2][1], sy + s * mat[2][2], sz + s * mat[2][3] -- add sin * forward vector
+		sx, sy, sz = sx + c*c2*size, sy + s*c2*size, sz + s2*size
+		
+		if ( isLineOfSightClear ( cx, cy, cz, sx, sy, sz ) ) then
+			local star = {}
+			star.x, star.y = getScreenFromWorldPosition ( sx, sy, sz, 0.2 )
+			if ( star.x ) then
+				star.dist = getDistanceBetweenPoints3D ( cx, cy, cz, sx, sy, sz )
+				table.insert ( stars, star )
+			end
+		end
+	end
+	
+	table.sort ( stars, function ( star1, star2 ) return star1.dist > star2.dist end )
+	
+	for i, star in ipairs ( stars ) do
+		local size = 500 / star.dist
+		dxDrawImage ( star.x - size / 2, star.y - size / 2, size, size, "img/star.png", 0, 0, 0, color )
+	end
+end
+
+local function startWinnerAnim ()
+	g_WinnerAnimStart = getTickCount ()
+	if ( not g_WinnerAnim ) then
+		g_WinnerAnim = source
+		addEventHandler ( "onClientRender", g_Root, renderWinnerAnim )
+	end
+end
+
+local function stopWinnerAnim ()
+	if ( g_WinnerAnim ) then
+		removeEventHandler ( "onClientRender", g_Root, renderWinnerAnim )
+		g_WinnerAnim = false
+	end
+end
+
+addEventHandler ( "onClientWinnerAnim", g_Root, startWinnerAnim )
+addEventHandler ( "onClientMapStopping", g_Root, stopWinnerAnim )

@@ -1,0 +1,151 @@
+<strings>
+    <msg id="* %s has left the game.">* %s opuscił grę.</msg>
+    <msg id="* %s has been kicked from the game.">* %s został wykopany z serwera.</msg>
+    <msg id="* %s has been banned from the game.">* %s został zbanowany.</msg>
+    <msg id="* %s has left the game [%s].">* %s opuscił grę [%s].</msg>
+	
+    <msg id="Usage: %s">Użycie: %s</msg>
+    <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
+    
+	<msg id="Statistics">Statystyki</msg>
+    <msg id="Player:">Gracz:</msg>
+    <msg id="Cash:">Kasa:</msg>
+    <msg id="Points:">Punkty:</msg>
+    <msg id="Rank:">Ranga:</msg>
+    <msg id="DD/DM Played:">Zagrane DD/DM:</msg>
+    <msg id="DD/DM Wins:">Wygrane DD/DM:</msg>
+    <msg id="Race - 1st:">Wyścigi - 1.:</msg>
+    <msg id="Race - 2nd:">Wyścigi - 2.:</msg>
+    <msg id="Race - 3rd:">Wyścigi - 3.:</msg>
+    <msg id="Top Times held:">Liczba Top Time&apos;ów:</msg>
+    <msg id="Bidlevel:">Bidlevel:</msg>
+    <msg id="Exploded:">Eksplozje:</msg>
+    <msg id="Drowned:">Utonięcia:</msg>
+    <msg id="Playtime:">Czas gry:</msg>
+	<msg id="%s times">%s razy</msg>
+	
+    <msg id="Profile">Profil</msg>
+	<msg id="Firstname:">Imię:</msg>
+	<msg id="Age:">Wiek:</msg>
+	<msg id="City:">Miasto:</msg>
+	
+    <msg id="Tops">Topy</msg>
+	<msg id="Player">Gracz</msg>
+	<msg id="Top Cash">Top Kasy</msg>
+	<msg id="Top Points">Top Punktów</msg>
+    <msg id="Players online only">Tylko gracze online</msg>
+	<msg id="Cash">Kasa</msg>
+	<msg id="Points">Punkty</msg>
+	<msg id="DD/DM Played">Zagrane DD/DM</msg>
+    <msg id="DD/DM Wins">Wygrane DD/DM</msg>
+    <msg id="Race - 1st">Wyścigi - 1.</msg>
+    <msg id="Race - 2nd">Wyścigi - 2.</msg>
+    <msg id="Race - 3rd">Wyścigi - 3.</msg>
+	
+    <msg id="Shop">Sklep</msg>
+    <msg id="Item">Przedmiot</msg>
+    <msg id="Cost">Koszt</msg>
+	<msg id="Cost:">Koszt:</msg>
+    <msg id="Buy">Kup</msg>
+    <msg id="Sell">Sprzedaj</msg>
+    <msg id="Use">Użyj</msg>
+    <msg id="Count">Ilość</msg>
+    <msg id="Description:">Opis:</msg>
+	<msg id="%u%% price reduction for VIP">%u%% taniej dla VIPa</msg>
+	
+	<msg id="User Items">Przedmioty Użytkownika</msg>
+	<msg id="You don't have any item!">Nie masz żadnych przedmiotów!</msg>
+	
+	<msg id="Beer">Piwo</msg>
+	<msg id="Repair">Naprawa</msg>
+	<msg id="Smoke">Dym</msg>
+	<msg id="Mine">Mina</msg>
+	<msg id="Godmode">Tryb boga</msg>
+	<msg id="Oil">Olej</msg>
+	<msg id="Self-destruction">Samodestrukcja</msg>
+	<msg id="Flip">Odwrócenie</msg>
+	<msg id="VIP rank">Ranga VIP</msg>
+	<msg id="Thunder">Piorun</msg>
+	<msg id="Godmode (60 seconds)">Tryb boga (60 sekund)</msg>
+	<msg id="Invisibility">Niewidzialność</msg>
+	<msg id="Next map">Następna mapa</msg>
+	<msg id="VIP rank (1 week)">Ranga VIPa (1 tydzień)</msg>
+	
+	<msg id="Translator">Tłumacz</msg>
+	<msg id="From:">Z:</msg>
+	<msg id="To:">Na:</msg>
+	<msg id="Translate">Przetłumacz</msg>
+	<msg id="Say translated">Powiedz przetłum.</msg>
+	<msg id="Load chat message">Załaduj wiadomość z czatu</msg>
+	<msg id="Input:">Wejście:</msg>
+	<msg id="Output:">Wyjście:</msg>
+	<msg id="Please wait...">Proszę czekać...</msg>
+	<msg id="Translation by %s">Tłumaczone przez %s</msg>
+	<msg id="Auto-detect">Wykryj</msg>
+	
+	<msg id="Radio">Radio</msg>
+	<msg id="Enable radio">Włącz radio</msg>
+	<msg id="Volume: %u%%">Głośność: %u%%</msg>
+	<msg id="Channel">Stacja</msg>
+	<msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Wyłącz radio online przed użyciem radia wbudowanego w grę (możesz to zrobić w Panelu Użytkownika)</msg>
+	<msg id="Radio has been temporary disabled because other music source has been detected!">Radio zostało tymczasowo wyłączone ponieważ wykryto inne źródło muzyki!</msg>
+	
+    <msg id="Settings">Ustawienia</msg>
+    <msg id="Language:">Język:</msg>
+    <msg id="Nick:">Pseudonim:</msg>
+    <msg id="Suicide key:">Przycisk samobójstwa:</msg>
+    <msg id="User Panel key:">Przycisk Panelu Użytkownika:</msg>
+    <msg id="Statistics Panel key:">Przycisk Panelu Statystyk:</msg>
+	<msg id="Effects">Efekty</msg>
+	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
+	
+    <msg id="Save">Zapisz</msg>
+    <msg id="Color">Kolor</msg>
+    <msg id="Close">Zamknij</msg>
+	
+	<msg id="Map Info">Informacje o mapie</msg>
+	<msg id="Map: %s">Mapa: %s</msg>
+    <msg id="Author: %s">Autor: %s</msg>
+	<msg id="unknown">nieznany</msg>
+    <msg id="Played: %u times">Grana: %u razy</msg>
+    <msg id="Rating:">Ocena:</msg>
+	<msg id="(%u rates)">(%u ocen)</msg>
+    <msg id="Top Times:">Najlepsze Czasy:</msg>
+    <msg id="Pos">Lp</msg>
+    <msg id="Time">Czas</msg>
+    <msg id="Empty">Puste</msg>
+	
+	<msg id="Rate this map">Oceń tę mapę</msg>
+	<msg id="Press 0-9 to rate this map">Naciśnij 0-9 aby ocenić tę mapę</msg>
+	
+    <msg id="Private Chat - %s">Prywatny czat - %s</msg>
+    <msg id="Say:">Mów:</msg>
+    <msg id="Send">Wyślij</msg>
+    <msg id="In background">W tle</msg>
+	<msg id="Restore">Przywróć</msg>
+	
+	<msg id="Help">Pomoc</msg>
+	<msg id="Controls">Klawisze</msg>
+	<msg id="Press %s to show Statistics Panel.">Naciśnij %s aby pokazać Panel Statystyk.</msg>
+	<msg id="Press %s to show User Panel.">Naciśnij %s aby pokazać Panel Użytkownika.</msg>
+	<msg id="Press %s to show User Items.">Naciśnij %s aby pokazać Przedmioty Użytkownika.</msg>
+	<msg id="Press %s to show Top Times.">Naciśnij %s aby pokazać Najlepsze Czasy.</msg>
+	<msg id="Commands">Komendy</msg>
+	<msg id="Search:">Szukaj:</msg>
+	<msg id="Command">Komenda</msg>
+	<msg id="Description">Opis</msg>
+	
+    <msg id="User Panel">Panel Użytkownika</msg>
+	<msg id="Back">Wstecz</msg>
+	
+    <msg id="About">O serwerze</msg>
+	<msg id="About ToxiC Server">O serwerze ToxiC</msg>
+	
+	<msg id="Select next map">Wybierz następną mapę</msg>
+	<msg id="Add to queue">Dodaj do kolejki</msg>
+	<msg id="Buy map">Kup mapę</msg>
+	<msg id="Map name">Nazwa mapy</msg>
+	<msg id="Played">Grana</msg>
+	<msg id="Map rating">Ocena mapy</msg>
+	<msg id="Select your candidate for next map">Wybierz swoją propozycję następnej mapy</msg>
+</strings>

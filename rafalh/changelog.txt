@@ -1,0 +1,36 @@
+7-09-2011
+Added auto-teams for clans
+
+25-08-2011
+Converted to UTF-8
+Added special characters to Polish translation
+
+10-02-2011
+Added /changepassword (/chgpw) and /changelogin (/chglogin) commands
+
+28-01-2011
+Improve laggers detector - don't kick when ghostmode is enabled or player is dead
+
+16-01-2011
+Bugfixes
+Added option to get money for inviting people
+
+12-01-2011
+Improved About tab
+Improved debugging
+
+11-01-2011
+Bugfixes
+
+10-01-2011
+Added About tab in User panel
+Improved hiding passwords for messages with "login" or "register" at begining
+
+8-01-2011
+Added more translations
+Clicking flags in settings sets new language
+Fixed changing language
+
+7-01-2011
+Added translations for player quit event
+Added translations for GUI (not finished)
