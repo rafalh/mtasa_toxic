@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.35" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.36" description="Rafalh Scripts System"   />
 	
 	<script src="common.lua" />
 	<script src="common_c.lua" type="client" />

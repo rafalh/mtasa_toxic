@@ -19,39 +19,40 @@ local function AlCalcMinFps ()
 	end
 end
 
-local function AlCheckPlayer ( player )
+local function AlCheckPlayer(player)
 	local pdata = g_Players[player]
 	local bGhostmode = GmIsEnabled(pdata.room)
 	
 	-- max ping
-	local max_ping = SmGetUInt ( "max_ping", 0 )
+	local maxPing = SmGetUInt ("max_ping", 0)
+	local playerPing = getPlayerPing(player)
 	local lags = pdata.lags
 	
-	if ( max_ping > 0 and getPlayerPing ( player ) > max_ping ) then -- lagger
-		if ( not bGhostmode and not isPedDead ( player ) ) then -- player can collide
-			local max_ping_time = SmGetUInt ( "max_ping_time", 0 )
+	if(maxPing > 0 and playerPing > maxPing) then -- lagger
+		if(not bGhostmode and not isPedDead(player)) then -- player can collide
+			local maxPingTime = SmGetUInt ( "max_ping_time", 0 )
 			local ticks = getTickCount ()
 			
-			if ( not lags ) then
+			if (not lags) then
 				lags = { ticks, nil, 0 }
 			else
 				lags[3] = lags[3] + ticks - lags[1]
 				lags[1] = ticks
 			end
 			
-			if ( lags[3] > max_ping_time*1000 ) then
-				scriptMsg ( "Kicking %s for lagging. His ping: %u. Maximal ping: %u.", getPlayerName ( player ), getPlayerPing ( player ), max_ping )
+			if(lags[3] > maxPingTime*1000) then
+				scriptMsg("Kicking %s for lagging. His ping: %u. Maximal ping: %u.", getPlayerName(player), playerPing, maxPing)
 				return kickPlayer ( player, "Too high ping" )
-			elseif ( lags[3] > max_ping_time*1000/2 and not lags[2] ) then
-				lags[2] = addScreenMsg ( "Warning! Your ping is to high!", player )
+			elseif(lags[3] > maxPingTime*1000/2 and not lags[2]) then
+				lags[2] = addScreenMsg("Warning! Your ping is to high!", player)
 			end
-		elseif ( lags and lags[2] ) then -- remove screen message
-			removeScreenMsg ( lags[2], player )
+		elseif (lags and lags[2]) then -- remove screen message
+			removeScreenMsg(lags[2], player)
 			lags[2] = nil
 		end
-	elseif ( lags ) then -- ping is ok
-		if ( lags[2] ) then
-			removeScreenMsg ( lags[2], player )
+	elseif(lags) then -- ping is ok
+		if(lags[2]) then
+			removeScreenMsg(lags[2], player)
 		end
 		lags = nil
 	end

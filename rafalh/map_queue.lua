@@ -1,6 +1,8 @@
 addEvent ("onAddMapToQueueReq", true)
 
 function MqAdd(room, map, display_msg, player)
+	assert(type(room) == "table")
+	
 	if(not room.mapQueue) then
 		room.mapQueue = {}
 	end
@@ -88,9 +90,9 @@ local function MqOnAddReq(mapResName)
 	local room = g_Players[client].room
 	local map = false
 	
-	local map_res = getResourceFromName (mapResName)
+	local mapRes = getResourceFromName (mapResName)
 	if(mapRes) then
-		map = Map.create(map_res)
+		map = Map.create(mapRes)
 	else
 		local mapMgrRes = getResourceFromName("mapmgr")
 		if(mapMgrRes and getResourceState(mapMgrRes) == "running" and call(mapMgrRes, "isMap", mapResName)) then
@@ -101,7 +103,7 @@ local function MqOnAddReq(mapResName)
 	if (map) then
 		MqAdd(room, map, true, client)
 	else
-		outputDebugString ("getResourceFromName failed", 2)
+		outputDebugString ("getResourceFromName failed "..tostring(mapResName), 2)
 	end
 end
 

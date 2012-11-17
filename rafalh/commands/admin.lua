@@ -313,23 +313,24 @@ end
 
 CmdRegister ("map", CmdMap, "command.setmap", "Changes current map")
 
-local function AddMapToQueue (room, map)
+local function AddMapToQueue(room, map)
 	local map_id = map:getId()
 	local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	if (rows[1].removed ~= "") then
 		local map_name = map:getName()
 		privMsg (source, "%s has been removed!", map_name)
 	else
-		MqAdd (room, map, true, source)
+		MqAdd(room, map, true, source)
 	end
 end
 
 local function CmdNextMap (message, arg)
-	local room = g_Players[source].room
 	local mapName = message:sub (arg[1]:len () + 2)
 	if (mapName:len () > 1) then
-		local map
+		local room = g_Players[source].room
+		assert(type(room) == "table")
 		
+		local map
 		if (mapName:lower () == "random") then
 			map = getRandomMap()
 		elseif (mapName:lower () == "redo") then
