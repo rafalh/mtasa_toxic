@@ -355,10 +355,11 @@ CmdRegisterAlias ("next", "nextmap", true)
 
 -- For Admin Panel
 local function onSetNextMap (mapName)
-	if (hasObjectPermissionTo (client, "resource.rafalh.nextmap", false)) then
-		local map = findMap (mapName, false)
-		if (map) then
-			AddMapToQueue (room, map)
+	if (hasObjectPermissionTo(client, "resource.rafalh.nextmap", false)) then
+		local map = findMap(mapName, false)
+		if(map) then
+			local pdata = g_Players[client]
+			AddMapToQueue(pdata.room, map)
 		end
 	end
 end
