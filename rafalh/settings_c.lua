@@ -17,6 +17,7 @@ SmRegister ( "user_panel_key", "F2" )
 SmRegister ( "effects", {}, tobool )
 SmRegister ( "radio_channel", "" )
 SmRegister ( "radio_volume", 100, touint )
+SmRegister ( "carHide", false, tobool )
 
 g_SettingsInfo = {
 	suicide_key = { def = "k", f = tostring },

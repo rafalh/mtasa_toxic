@@ -1,7 +1,7 @@
 local function updateAlpha ()
-	local camera_pos = Vector.create(getCameraMatrix())
+	local cameraPos = Vector.create(getCameraMatrix())
 	local target = getCameraTarget()
-	local target_pos = target and Vector.create(getElementPosition(target))
+	local targetPos = target and Vector.create(getElementPosition(target))
 	
 	for i, player in ipairs ( getElementsByType ( "player" ) ) do
 		local veh = getPedOccupiedVehicle ( player )
@@ -9,9 +9,9 @@ local function updateAlpha ()
 		if ( a < 255 and a > 0 ) then
 			if(veh == target) then
 				a = 254
-			elseif(target_pos) then
+			elseif(targetPos) then
 				local pos = Vector.create(getElementPosition(veh or player))
-				local dist = pos:distFromSeg(camera_pos, target_pos)
+				local dist = pos:distFromSeg(cameraPos, targetPos)
 				a = math.min(1 + dist * 20, 112)
 			else
 				a = 112

@@ -1,8 +1,10 @@
 local g_Wnd = false
+local g_RadioImg
 local g_VolumeBar, g_VolumeLabel, g_List
 local g_CurrentRow = false
 local g_Sound, g_Volume = false, 100
 local g_LastWarning = 0
+local g_Channels = false
 
 local RadioPanel = {
 	name = "Radio",
@@ -20,7 +22,7 @@ local function loadChannels ()
 			
 			local ch = {}
 			ch.name = xmlNodeGetAttribute ( subnode, "name" )
-			ch.longname = xmlNodeGetAttribute ( subnode, "longname" )
+			ch.img = xmlNodeGetAttribute ( subnode, "img" )
 			ch.url = xmlNodeGetValue ( subnode )
 			assert ( ch.name and ch.url )
 			
@@ -48,13 +50,14 @@ end
 
 local function onDoubleClickChannel ()
 	local row, col = guiGridListGetSelectedItem ( g_List )
-	local url = row and guiGridListGetItemData ( g_List, row, 1 )
-	if ( url ) then
+	local i = row and guiGridListGetItemData ( g_List, row, 1 )
+	if ( i ) then
 		if ( g_Sound ) then
 			stopSound ( g_Sound )
 		end
 		
-		startRadio ( url )
+		local ch = g_Channels[i]
+		startRadio ( ch.url )
 		
 		if ( g_CurrentRow ) then
 			guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 255 )
@@ -62,6 +65,11 @@ local function onDoubleClickChannel ()
 		g_CurrentRow = row
 		guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 160 )
 		
+		if(ch.img) then
+			guiStaticImageLoadImage(g_RadioImg, "img/radio/"..ch.img)
+		else
+			guiStaticImageLoadImage(g_RadioImg, "img/empty.png")
+		end
 		guiCheckBoxSetSelected ( g_RadioCheckbox, true )
 	end
 end
@@ -91,10 +99,12 @@ local function createGui ( parent )
 	g_Wnd = parent
 	local w, h = guiGetSize ( g_Wnd, false )
 	
-	g_RadioCheckbox = guiCreateCheckBox ( 10, 10, w - 20, 15, "Enable radio", true, false, g_Wnd )
+	g_RadioCheckbox = guiCreateCheckBox ( 10, 10, 100, 15, "Enable radio", true, false, g_Wnd )
 	addEventHandler ( "onClientGUIClick", g_RadioCheckbox, onCheckboxClick, false )
 	
-	g_VolumeLabel = guiCreateLabel ( 10, 30, w - 20, 15, MuiGetMsg ( "Volume: %u%%" ):format ( g_Volume ), false, g_Wnd )
+	g_RadioImg = guiCreateStaticImage(120, 10, 40, 40, "img/empty.png", false, g_Wnd)
+	
+	g_VolumeLabel = guiCreateLabel ( 10, 30, 100, 15, MuiGetMsg ( "Volume: %u%%" ):format ( g_Volume ), false, g_Wnd )
 	guiCreateStaticImage ( 10, 48, 24, 24, "img/volume.png", false, g_Wnd )
 	g_VolumeBar = guiCreateScrollBar ( 35, 50, w - 45, 20, true, false, g_Wnd )
 	guiScrollBarSetScrollPosition ( g_VolumeBar, g_Volume )
@@ -103,12 +113,21 @@ local function createGui ( parent )
 	g_List = guiCreateGridList ( 10, 80, w - 20, h - 100, false, g_Wnd )
 	addEventHandler ( "onClientGUIDoubleClick", g_List, onDoubleClickChannel, false )
 	local col = guiGridListAddColumn( g_List, "Channel", 0.8 )
-	local channels = loadChannels ()
+	g_Channels = loadChannels ()
 	
-	for i, ch in ipairs ( channels ) do
+	for i, ch in ipairs ( g_Channels ) do
 		local row = guiGridListAddRow ( g_List )
-		guiGridListSetItemText ( g_List, row, col, ch.longname or ch.name, false, false )
-		guiGridListSetItemData ( g_List, row, col, ch.url )
+		guiGridListSetItemText ( g_List, row, col, ch.name, false, false )
+		guiGridListSetItemData ( g_List, row, col, i )
+		
+		if(ch.url == g_ClientSettings.radio_channel) then
+			g_CurrentRow = row
+			guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 160 )
+			
+			if(ch.img) then
+				guiStaticImageLoadImage(g_RadioImg, "img/radio/"..ch.img)
+			end
+		end
 	end
 end
 

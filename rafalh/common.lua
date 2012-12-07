@@ -276,7 +276,7 @@ function triggerClientInternalEvent ( player, eventtype, source, ... )
 	local players = getElementsByType("player", player)
 	for i, player in ipairs(players) do
 		local pdata = g_Players[player]
-		if(pdata.sync) then
+		if(pdata and pdata.sync) then
 			triggerClientEvent(player, "onEvent_"..g_ThisResName, source, eventtype, ...)
 		end
 	end

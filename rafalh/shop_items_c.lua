@@ -285,7 +285,7 @@ local function ShpSetPlayerAlpha ( value )
 	for i, el in ipairs ( getAttachedElements ( source ) ) do
 		setElementAlpha ( el, value )
 		if ( getElementType ( el ) =="blip" ) then
-			outputDebugString ( "blip", 2 )
+			--outputDebugString ( "blip", 3 )
 			setBlipColor ( el, 0, 0, 0, 0 )
 		end
 	end

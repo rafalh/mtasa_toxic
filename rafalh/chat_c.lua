@@ -42,13 +42,16 @@ end
 
 local function onRender ()
 	local cx, cy, cz = getCameraMatrix ()
+	local localDim = getElementDimension(localPlayer)
 	
-	for player, msgs in pairs ( g_ChatMsgs ) do
-		local x, y, z = getElementPosition ( player )
+	for player, msgs in pairs(g_ChatMsgs) do
+		local x, y, z = getElementPosition(player)
+		local dim = getElementDimension(player)
 		local screen_x, screen_y = getScreenFromWorldPosition ( x, y, z + 1 )
 		local dist = getDistanceBetweenPoints3D ( x, y, z, cx, cy, cz )
+		local dead = isPlayerDead(player)
 		
-		if ( screen_x and dist < 50 and not isPlayerDead ( player ) and isLineOfSightClear ( x, y, z, cx, cy, cz, true, false, true, true ) ) then
+		if(screen_x and dist < 50 and not dead and dim == localDim and isLineOfSightClear(x, y, z, cx, cy, cz, true, false, true, true)) then
 			local scale = 5 / math.max ( math.sqrt ( dist ), 0.1 )
 			local g_FontH = dxGetFontHeight ( scale )
 			screen_y = screen_y - #msgs * ( g_FontH + 5 )
@@ -64,8 +67,10 @@ local function onRender ()
 		local x, y, z = getElementPosition ( player )
 		local screen_x, screen_y = getScreenFromWorldPosition ( x, y, z + 1 )
 		local dist = getDistanceBetweenPoints3D ( x, y, z, cx, cy, cz )
+		local dim = getElementDimension(player)
+		local dead = isPlayerDead(player)
 		
-		if ( screen_x and dist < 50 and not isPlayerDead ( player ) and isLineOfSightClear ( x, y, z, cx, cy, cz, true, false, true, true ) ) then
+		if(screen_x and dist < 50 and not dead and dim == localDim and isLineOfSightClear(x, y, z, cx, cy, cz, true, false, true, true)) then
 			local size = 200 / math.max ( math.sqrt ( dist ), 0.1 )
 			
 			dxDrawImage ( screen_x - size / 2, screen_y - size / 2, size, size, "img/chat.png" )

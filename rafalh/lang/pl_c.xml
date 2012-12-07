@@ -96,6 +96,7 @@
     <msg id="Suicide key:">Przycisk samobójstwa:</msg>
     <msg id="User Panel key:">Przycisk Panelu Użytkownika:</msg>
     <msg id="Statistics Panel key:">Przycisk Panelu Statystyk:</msg>
+	<msg id="Hide other cars when GM is enabled">Chowaj inne samochody gdy GM jest włączony</msg>
 	<msg id="Effects">Efekty</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
 	

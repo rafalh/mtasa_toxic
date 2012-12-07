@@ -171,6 +171,51 @@ end
 CmdRegister("setmapvehwep", CmdSetMapVehicleWeapons, "resource.rafalh.setmapvehwep")
 CmdRegisterAlias("smvehwep", "setmapvehwep")
 
+local function CmdSetMapHunterMinigun(message, arg)
+	if(#arg >= 2) then
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
+		
+		if(map) then
+			if(arg[2] == "true" or arg[2] == "yes") then
+				map:setSetting("hunterminigun", "true")
+				scriptMsg("Hunter minigun will be enabled in the next round!")
+			elseif(arg[2] == "false" or arg[2] == "no") then
+				map:setSetting("hunterminigun", "false")
+				scriptMsg("Hunter minigun will be disabled in the next round!")
+			else
+				map:setSetting("hunterminigun", nil)
+				scriptMsg("Hunter minigun will be set to auto in the next round!")
+			end
+		end
+	else privMsg(source, "Usage: %s", arg[1].." <true/false/auto>") end
+end
+
+CmdRegister("setmaphuntermg", CmdSetMapHunterMinigun, "resource.rafalh.setmaphuntermg")
+CmdRegisterAlias("smhuntermg", "setmaphuntermg")
+CmdRegisterAlias("smhuntmg", "setmaphuntermg")
+
+local function CmdSetMapWaveHeight(message, arg)
+	if(#arg >= 2) then
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
+		
+		if(map) then
+			local h = tonumber(arg[2])
+			if(h) then
+				map:setSetting("waveheight", h)
+				scriptMsg("Wave height will be set to %.1f in the next round!", h)
+			else
+				map:setSetting("waveheight", nil)
+				scriptMsg("Wave height will set to auto in the next round!")
+			end
+		end
+	else privMsg(source, "Usage: %s", arg[1].." <num/auto>") end
+end
+
+CmdRegister("setmapwaveheight", CmdSetMapWaveHeight, "resource.rafalh.setmapwaveheight")
+CmdRegisterAlias("smwaveh", "setmapwaveheight")
+
 local function CmdVehicleWeapons(message, arg)
 	local res = getResourceFromName("race")
 	if(res) then

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.36" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.37" description="Rafalh Scripts System"   />
 	
 	<script src="common.lua" />
 	<script src="common_c.lua" type="client" />
@@ -26,6 +26,7 @@
 	<script src="alias.lua" />
 	<script src="avg_players.lua" />
 	<script src="besttimes.lua" />
+	<script src="carhide_c.lua" type="client" />
 	<script src="censor.lua" />
 	<script src="chat.lua" />
 	<script src="chat_c.lua" type="client" />
@@ -142,6 +143,7 @@
 	<file src="img/star_l.png" />
 	<file src="img/star_r.png" />
 	<file src="img/volume.png" />
+	<file src="img/empty.png" />
 	
 	<file src="img/userpanel/stats.png" />
 	<file src="img/userpanel/profile.png" />
@@ -172,6 +174,28 @@
 	<file src="img/flags/fr.png" />
 	<file src="img/flags/ro.png" />
 	<file src="img/flags/ru.png" />
+	
+	<file src="img/radio/rmffm.png" />
+	<file src="img/radio/rmf_maxxx.jpg" />
+	<file src="img/radio/eskarock.jpg" />
+	<file src="img/radio/wawa.jpg" />
+	<file src="img/radio/zloteprzeboje.jpg" />
+	<file src="img/radio/radiozet.jpg" />
+	<file src="img/radio/jedynka.jpg" />
+	<file src="img/radio/dwojka.jpg" />
+	<file src="img/radio/trojka.jpg" />
+	<file src="img/radio/czworka.jpg" />
+	<file src="img/radio/tokfm.jpg" />
+	<file src="img/radio/chilliz.png" />
+	<file src="img/radio/radioparty.png" />
+	<file src="img/radio/eska.jpg" />
+	<file src="img/radio/discopolo.jpg" />
+	<file src="img/radio/polskastacja.jpg" />
+	<file src="img/radio/przeboje80and90.png" />
+	<file src="img/radio/bassdrive.png" />
+	<file src="img/radio/dubstepfm.jpg" />
+	<file src="img/radio/discopolofm.jpg" />
+	<file src="img/radio/dubstep_openfm.jpg" />
 	
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />

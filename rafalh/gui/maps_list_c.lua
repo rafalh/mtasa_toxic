@@ -124,7 +124,11 @@ function MlstDisplay ( title, btn_name, callback )
 end
 
 local function MlstOnElementDestroy ()
-	g_GuiList[source] = nil
+	if(not source) then
+		outputDebugString("source == "..tostring(source).."...", 2)
+	else
+		g_GuiList[source] = nil
+	end
 end
 
 local function MlstOnMapStart ( map_info )

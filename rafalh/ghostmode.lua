@@ -50,9 +50,9 @@ function GmSet(room, enabled, quiet)
 				g_NoGMWarningTimeLeft = g_NoGMWarningTimeLeft - 1
 				if(g_NoGMWarningTimeLeft <= 0) then
 					if(GmIsEnabled(room)) then
-						GmSetEnabled(room, false)
 						customMsg(255, 0, 0, "Ghostmode disabled!")
 					end
+					GmSetEnabled(room, false)
 				else
 					for player, msg in pairs(g_NoGMWarningMsg) do
 						textItemSetText(msg, "Ghostmode will be disabled in "..g_NoGMWarningTimeLeft.." seconds!")
@@ -60,15 +60,15 @@ function GmSet(room, enabled, quiet)
 				end
 			end, 1000, g_NoGMWarningTimeLeft, room)
 		end, sec_before_warning * 1000, 1, room)
-	elseif(GmIsEnabled(room) ~= enabled) then
-		GmSetEnabled(room, enabled)
-		if(not quiet) then
+	else
+		if(not quiet and GmIsEnabled(room) ~= enabled) then
 			if(enabled) then
 				customMsg(0, 255, 0, "Ghostmode enabled!")
 			else
 				customMsg(255, 0, 0, "Ghostmode disabled!")
 			end
 		end
+		GmSetEnabled(room, enabled)
 	end
 end
 
@@ -81,8 +81,13 @@ function GmIsEnabled(room)
 	local map = getCurrentMap(room)
 	if(not map) then return false end
 	
-	local ghostModeStr = map:getSetting("ghostmode") or get("race.ghostmode")
+	local ghostModeStr = map:getSetting("ghostmode") or get("*race.ghostmode")
 	return (ghostModeStr == "true")
 end
 
 addEventHandler("onPlayerQuit", g_Root, GmOnPlayerQuit)
+
+CmdRegister("testgm", function()
+	local pdata = g_Players[source]
+	outputChatBox("TEST GM: "..tostring(GmIsEnabled(pdata.room)))
+end, true)
