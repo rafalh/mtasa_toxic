@@ -84,9 +84,9 @@
 	<msg id="Auto-detect">Wykryj</msg>
 	
 	<msg id="Radio">Radio</msg>
-	<msg id="Enable radio">Włącz radio</msg>
-	<msg id="Volume: %u%%">Głośność: %u%%</msg>
-	<msg id="Channel">Stacja</msg>
+	<msg id="Select radio channel">Wybierz stację radiową</msg>
+	<msg id="Turn off">Wyłącz</msg>
+	<msg id="Search...">Szukaj...</msg>
 	<msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Wyłącz radio online przed użyciem radia wbudowanego w grę (możesz to zrobić w Panelu Użytkownika)</msg>
 	<msg id="Radio has been temporary disabled because other music source has been detected!">Radio zostało tymczasowo wyłączone ponieważ wykryto inne źródło muzyki!</msg>
 	

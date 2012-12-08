@@ -103,6 +103,7 @@ else
 		
 		if ( g_BackupsInterval > 1000 and now - SmGetInt ( "backup_timestamp", 0 ) < g_BackupsInterval - 1000 ) then return end
 		
+		outputDebugString ( "Auto-backup...", 3 )
 		DbBackup ()
 		
 		SmSet ( "backup_timestamp", now )
@@ -117,7 +118,7 @@ else
 		g_Connection = dbConnect ( "sqlite", g_DbPath )
 		
 		g_BackupsInterval = touint ( get ( "db_backup_int" ), 0 ) * 3600 * 24
-		outputDebugString ( "Auto backup: "..g_BackupsInterval, 3 )
+		--outputDebugString ( "Auto backup: "..g_BackupsInterval, 3 )
 		if ( g_BackupsInterval > 0 ) then
 			setTimer ( DbAutoBackup, 5000, 1 ) -- make backup just after start
 			setTimer ( DbAutoBackup, g_BackupsInterval, 0 )

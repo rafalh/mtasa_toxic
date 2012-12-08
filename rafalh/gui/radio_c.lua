@@ -1,8 +1,10 @@
 local g_Wnd = false
-local g_RadioImg
-local g_VolumeBar, g_VolumeLabel, g_List
-local g_CurrentRow = false
-local g_Sound, g_Volume = false, 100
+local g_RadioImg, g_RadioName
+local g_VolumeImg, g_VolumeBar
+local g_List, g_TurnOffBtn
+local g_Sound, g_Url, g_Volume, g_AutoStart = false, false, 100, true
+local g_Muted, g_Filter = false, ""
+local g_IgnoreFilterChange = true
 local g_LastWarning = 0
 local g_Channels = false
 
@@ -40,93 +42,140 @@ end
 local function startRadio ( url )
 	setRadioChannel ( 0 )
 	
-	g_Sound = playSound ( url, true )
-	if ( g_Sound ) then
-		setSoundVolume ( g_Sound, g_Volume / 100 )
-		
+	g_Url = url
+	if(g_AutoStart) then
 		g_ClientSettings.radio_channel = url
 	end
-end
-
-local function onDoubleClickChannel ()
-	local row, col = guiGridListGetSelectedItem ( g_List )
-	local i = row and guiGridListGetItemData ( g_List, row, 1 )
-	if ( i ) then
+	
+	if(not g_Muted) then
+		g_Sound = playSound ( url, true )
 		if ( g_Sound ) then
-			stopSound ( g_Sound )
+			setSoundVolume ( g_Sound, g_Volume / 100 )
 		end
-		
-		local ch = g_Channels[i]
-		startRadio ( ch.url )
-		
-		if ( g_CurrentRow ) then
-			guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 255 )
-		end
-		g_CurrentRow = row
-		guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 160 )
-		
-		if(ch.img) then
-			guiStaticImageLoadImage(g_RadioImg, "img/radio/"..ch.img)
-		else
-			guiStaticImageLoadImage(g_RadioImg, "img/empty.png")
-		end
-		guiCheckBoxSetSelected ( g_RadioCheckbox, true )
 	end
 end
 
-local function onVolumeChange ()
+local function stopRadio()
+	if ( g_Sound ) then
+		stopSound ( g_Sound )
+		g_Sound = false
+	end
+end
+
+local function onChannelClick(i)
+	stopRadio()
+	
+	local ch = g_Channels[i]
+	startRadio ( ch.url )
+	
+	guiSetText(g_RadioName, ch.name)
+	if(ch.img) then
+		guiStaticImageLoadImage(g_RadioImg, "img/radio/"..ch.img)
+	else
+		guiStaticImageLoadImage(g_RadioImg, "img/no_img.png")
+	end
+	guiSetVisible(g_TurnOffBtn, true)
+	g_List:setActiveItem(i)
+end
+
+local function setMuted(muted)
+	if(g_Muted == muted) then return end
+	g_Muted = muted
+	
+	if(g_Muted) then
+		guiStaticImageLoadImage(g_VolumeImg, "img/muted.png")
+	else
+		guiStaticImageLoadImage(g_VolumeImg, "img/volume.png")
+	end
+	
+	if(g_Muted) then
+		stopRadio()
+	elseif(g_Url) then
+		startRadio(g_Url)
+	end
+end
+
+local function onVolumeChange()
 	g_Volume = guiScrollBarGetScrollPosition ( g_VolumeBar )
 	if ( g_Sound ) then
 		setSoundVolume ( g_Sound, g_Volume / 100 )
 		g_ClientSettings.radio_volume = g_Volume
 	end
-	guiSetText ( g_VolumeLabel, MuiGetMsg ( "Volume: %u%%" ):format ( g_Volume ) )
+	
+	setMuted(g_Volume == 0)
 end
 
-local function onCheckboxClick ()
-	if ( not guiCheckBoxGetSelected ( g_RadioCheckbox ) and g_Sound ) then
-		stopSound ( g_Sound )
-		g_Sound = false
-		if(g_CurrentRow) then
-			guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 255 )
-		end
-		
-		g_ClientSettings.radio_channel = ""
+local function onVolumeClick()
+	setMuted(not g_Muted)
+end
+
+local function onTurnOffClick()
+	guiSetVisible(g_TurnOffBtn, false)
+	g_ClientSettings.radio_channel = ""
+	
+	g_List:setActiveItem(false)
+	stopRadio()
+	guiSetText(g_RadioName, "Select radio channel")
+	guiStaticImageLoadImage(g_RadioImg, "img/empty.png")
+	
+end
+
+local function onFilterFocus()
+	if(g_Filter == "") then
+		guiSetText(g_SearchBox, "")
 	end
+	g_IgnoreFilterChange = false
+end
+
+local function onFilterBlur()
+	g_IgnoreFilterChange = true
+	if(g_Filter == "") then
+		guiSetText(g_SearchBox, MuiGetMsg("Search..."))
+	end
+end
+
+local function onFilterChange()
+	if(g_IgnoreFilterChange) then return end
+	g_Filter = guiGetText(source)
+	g_List:setFilter(g_Filter)
 end
 
 local function createGui ( parent )
 	g_Wnd = parent
 	local w, h = guiGetSize ( g_Wnd, false )
 	
-	g_RadioCheckbox = guiCreateCheckBox ( 10, 10, 100, 15, "Enable radio", true, false, g_Wnd )
-	addEventHandler ( "onClientGUIClick", g_RadioCheckbox, onCheckboxClick, false )
+	g_RadioImg = guiCreateStaticImage(10, 10, 48, 48, "img/empty.png", false, g_Wnd)
+	g_RadioName = guiCreateLabel(65, 10, w - 75, 15, "Select radio channel", false, g_Wnd)
+	guiSetFont(g_RadioName, "default-bold-small")
 	
-	g_RadioImg = guiCreateStaticImage(120, 10, 40, 40, "img/empty.png", false, g_Wnd)
-	
-	g_VolumeLabel = guiCreateLabel ( 10, 30, 100, 15, MuiGetMsg ( "Volume: %u%%" ):format ( g_Volume ), false, g_Wnd )
-	guiCreateStaticImage ( 10, 48, 24, 24, "img/volume.png", false, g_Wnd )
-	g_VolumeBar = guiCreateScrollBar ( 35, 50, w - 45, 20, true, false, g_Wnd )
+	g_VolumeImg = guiCreateStaticImage ( 65, 30, 24, 24, "img/volume.png", false, g_Wnd )
+	addEventHandler ( "onClientGUIClick", g_VolumeImg, onVolumeClick, false )
+	g_VolumeBar = guiCreateScrollBar ( 95, 32, w - 105, 20, true, false, g_Wnd )
 	guiScrollBarSetScrollPosition ( g_VolumeBar, g_Volume )
 	addEventHandler ( "onClientGUIScroll", g_VolumeBar, onVolumeChange )
 	
-	g_List = guiCreateGridList ( 10, 80, w - 20, h - 100, false, g_Wnd )
-	addEventHandler ( "onClientGUIDoubleClick", g_List, onDoubleClickChannel, false )
-	local col = guiGridListAddColumn( g_List, "Channel", 0.8 )
+	g_SearchBox = guiCreateEdit(10, 65, 150, 25, MuiGetMsg("Search..."), false, g_Wnd)
+	addEventHandler("onClientGUIFocus", g_SearchBox, onFilterFocus, false)
+	addEventHandler("onClientGUIBlur", g_SearchBox, onFilterBlur, false)
+	addEventHandler("onClientGUIChanged", g_SearchBox, onFilterChange, false)
+	
+	g_TurnOffBtn = guiCreateButton(w - 110, 65, 100, 25, "Turn off", false, g_Wnd)
+	guiSetVisible(g_TurnOffBtn, g_Sound and true)
+	addEventHandler ( "onClientGUIClick", g_TurnOffBtn, onTurnOffClick, false)
+	
 	g_Channels = loadChannels ()
 	
+	g_List = ListView.create({10, 100}, {w - 20, h - 110}, g_Wnd)
+	g_List.onClickHandler = onChannelClick
+	
 	for i, ch in ipairs ( g_Channels ) do
-		local row = guiGridListAddRow ( g_List )
-		guiGridListSetItemText ( g_List, row, col, ch.name, false, false )
-		guiGridListSetItemData ( g_List, row, col, i )
+		local imgPath = ch.img and "img/radio/"..ch.img or "img/no_img.png"
+		g_List:addItem(ch.name, imgPath, i)
 		
-		if(ch.url == g_ClientSettings.radio_channel) then
-			g_CurrentRow = row
-			guiGridListSetItemColor ( g_List, g_CurrentRow, 1, 255, 255, 160 )
-			
-			if(ch.img) then
-				guiStaticImageLoadImage(g_RadioImg, "img/radio/"..ch.img)
-			end
+		if(ch.url == g_Url) then
+			g_List:setActiveItem(i)
+			guiSetText(g_RadioName, ch.name)
+			guiStaticImageLoadImage(g_RadioImg, imgPath)
 		end
 	end
 end

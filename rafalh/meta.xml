@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.37" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.38" description="Rafalh Scripts System"   />
 	
 	<script src="common.lua" />
 	<script src="common_c.lua" type="client" />
@@ -46,6 +46,7 @@
 	<script src="profiles.lua" />
 	<script src="shop.lua" />
 	<script src="shop_items.lua" />
+	<script src="shop_items_c.lua" type="client" />
 	<script src="stats.lua" />
 	<script src="stunt.lua" />
 	<script src="sync.lua" />
@@ -98,13 +99,13 @@
 	<script src="gui/stats_c.lua" type="client" />
 	<script src="gui/edit_profile_c.lua" type="client" />
 	<script src="gui/tops_c.lua" type="client" />
-	<script src="shop_items_c.lua" type="client" />
 	<script src="gui/shop_c.lua" type="client" />
 	<script src="gui/translate_c.lua" type="client" />
 	<script src="gui/radio_c.lua" type="client" />
 	<script src="gui/settings_c.lua" type="client" />
 	<script src="gui/about_c.lua" type="client" />
 	<script src="gui/advert_c.lua" type="client" />
+	<script src="gui/listView_c.lua" type="client" />
 	
 	<script src="stop.lua" />
 	
@@ -143,7 +144,10 @@
 	<file src="img/star_l.png" />
 	<file src="img/star_r.png" />
 	<file src="img/volume.png" />
+	<file src="img/muted.png" />
 	<file src="img/empty.png" />
+	<file src="img/white.png" />
+	<file src="img/no_img.png" />
 	
 	<file src="img/userpanel/stats.png" />
 	<file src="img/userpanel/profile.png" />
