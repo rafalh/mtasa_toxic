@@ -43,13 +43,12 @@
     <msg id="Race - 3rd">Wyścigi - 3.</msg>
 	
     <msg id="Shop">Sklep</msg>
-    <msg id="Item">Przedmiot</msg>
-    <msg id="Cost">Koszt</msg>
+	<msg id="All items:">Wszystkie przedmioty:</msg>
+	<msg id="Your items:">Twoje przedmioty:</msg>
 	<msg id="Cost:">Koszt:</msg>
     <msg id="Buy">Kup</msg>
     <msg id="Sell">Sprzedaj</msg>
     <msg id="Use">Użyj</msg>
-    <msg id="Count">Ilość</msg>
     <msg id="Description:">Opis:</msg>
 	<msg id="%u%% price reduction for VIP">%u%% taniej dla VIPa</msg>
 	

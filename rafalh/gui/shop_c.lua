@@ -10,10 +10,9 @@
 
 local VIP_COST = 0.6
 local g_Cash = 0
+local g_SelectedItemId
 local g_ShopList, g_InventoryList
-local g_ShopItemCol, g_ShopCostCol
-local g_InventoryItemCol, g_InventoryCountCol
-local g_CashLabel, g_ItemIcon, g_ItemLabel, g_CostLabel, g_DescrMemo, g_DescrLabel
+local g_CashLabel, g_ItemIcon, g_ItemLabel, g_CostLabel, g_DescrMemo
 local g_BuyButton, g_SellButton, g_UseButton
 local g_Inventory = {}
 local g_IsVip = false
@@ -27,11 +26,11 @@ local ShopPanel = {
 -- Local function definitions --
 --------------------------------
 
-local function ShpUpdateButtons ( item_id )
-	local item = g_ShopItems[item_id]
-	local buy, sell, use = item.getAllowedAct ( g_Inventory[item_id] )
+local function ShpUpdateButtons ( itemId )
+	local item = g_ShopItems[itemId]
+	local buy, sell, use = item.getAllowedAct ( g_Inventory[itemId] )
 	local cost = item.cost
-	if ( g_IsVip ) then
+	if(g_IsVip) then
 		cost = cost * VIP_COST
 	end
 	
@@ -46,247 +45,235 @@ local function ShpDisableButtons ()
 	guiSetEnabled ( g_UseButton, false )
 end
 
-local function ShpUpdateItemInfo ( item_id, is_inventory )
-	local item = g_ShopItems[item_id]
+local function ShpUpdateCostLabel(itemId)
+	local costStr = MuiGetMsg("Cost:")
+	local item = g_ShopItems[itemId]
+	if(item) then
+		local cost = item.cost
+		if(g_IsVip) then
+			cost = cost * VIP_COST
+		end
+		costStr = costStr.." "..formatMoney(cost)
+		if(g_IsVip) then
+			costStr = costStr.." ("..MuiGetMsg("%u%% price reduction for VIP"):format(100 - VIP_COST*100)..")"
+		end
+	end
+	guiSetText(g_CostLabel, costStr)
+end
+
+local function ShpUpdateItemInfo(itemId, isInventory)
+	g_SelectedItemId = itemId
+	local item = g_ShopItems[itemId]
 	
-	if ( item.img ) then
+	if(item.img) then
 		guiStaticImageLoadImage ( g_ItemIcon, "img/shop/"..item.img )
-		guiSetVisible ( g_ItemIcon, true )
+		guiSetVisible(g_ItemIcon, true)
 	else
-		guiSetVisible ( g_ItemIcon, false )
+		guiSetVisible(g_ItemIcon, false)
 	end
 	
-	guiSetText ( g_ItemLabel, item.name )
+	guiSetText(g_ItemLabel, item.name)
+	ShpUpdateCostLabel(itemId)
+	guiSetText(g_DescrMemo, item.descr)
 	
-	local cost = item.cost
-	if ( g_IsVip ) then
-		cost = cost * VIP_COST
-	end
-	local cost_text = MuiGetMsg ( "Cost:" ).." "..formatMoney ( cost )
-	if ( g_IsVip ) then
-		cost_text = cost_text.." ("..MuiGetMsg ( "%u%% price reduction for VIP" ):format ( 40 )..")"
-	end
-	guiSetText ( g_CostLabel, cost_text )
+	guiSetVisible(g_BuyButton, not isInventory)
+	guiSetVisible(g_SellButton, isInventory)
+	guiSetVisible(g_UseButton, isInventory)
 	
-	guiSetText ( g_DescrMemo, item.descr )
-	
-	guiSetVisible ( g_BuyButton, not is_inventory )
-	guiSetVisible ( g_SellButton, is_inventory )
-	guiSetVisible ( g_UseButton, is_inventory )
-	
-	ShpUpdateButtons ( item_id )
+	ShpUpdateButtons(itemId)
 end
 
-local function ShpOnItemsListClick ()
-	local row = guiGridListGetSelectedItem ( g_ShopList )
-	
-	if ( row > -1 ) then -- item is selected
-		guiGridListSetSelectedItem ( g_InventoryList, 0, 0 )
-		
-		local item_id = guiGridListGetItemData ( g_ShopList, row, g_ShopItemCol )
-		ShpUpdateItemInfo ( item_id, false )
+local function ShpOnItemsListClick(itemId)
+	if(itemId) then -- item is selected
+		g_ShopList:setActiveItem(itemId)
+		g_InventoryList:setActiveItem(false)
+		ShpUpdateItemInfo(itemId, false)
 	else
-		ShpDisableButtons ()
+		ShpDisableButtons()
 	end
 end
 
-local function ShpOnInventoryListClick ()
-	local row = guiGridListGetSelectedItem ( g_InventoryList )
-	
-	if ( row > -1 ) then -- item is selected
-		guiGridListSetSelectedItem ( g_ShopList, 0, 0 )
-		
-		local item_id = guiGridListGetItemData ( g_InventoryList, row, g_InventoryItemCol )
-		ShpUpdateItemInfo ( item_id, true )
+local function ShpOnInventoryListClick(itemId)
+	if(itemId) then -- item is selected
+		g_ShopList:setActiveItem(false)
+		g_InventoryList:setActiveItem(itemId)
+		ShpUpdateItemInfo(itemId, true)
 	else
-		ShpDisableButtons ()
+		ShpDisableButtons()
 	end
 end
 
 local function ShpBuyClick ()
-	local row = guiGridListGetSelectedItem ( g_ShopList )
+	local itemId = g_ShopList:getActiveItem()
 	
-	if ( row > -1 ) then -- item is selected
-		local item_id = guiGridListGetItemData ( g_ShopList, row, g_ShopItemCol )
-		local item = g_ShopItems[item_id]
-		if ( item.onBuy ) then
-			item.onBuy ()
+	if(itemId) then -- item is selected
+		local item = g_ShopItems[itemId]
+		if(item.onBuy) then
+			item.onBuy()
 		else
-			triggerServerInternalEvent ( $(EV_BUY_SHOP_ITEM_REQUEST), g_Me, item_id )
+			triggerServerInternalEvent($(EV_BUY_SHOP_ITEM_REQUEST), g_Me, itemId)
 		end
 	end
 end
 
 local function ShpSellClick ()
-	local row = guiGridListGetSelectedItem ( g_InventoryList )
+	local itemId = g_InventoryList:getActiveItem()
 	
-	if ( row > -1 ) then -- item is selected
-		local item_id = guiGridListGetItemData ( g_InventoryList, row, g_InventoryItemCol )
-		triggerServerInternalEvent ( $(EV_SELL_SHOP_ITEM_REQUEST), g_Me, item_id )
+	if(itemId) then -- item is selected
+		triggerServerInternalEvent($(EV_SELL_SHOP_ITEM_REQUEST), g_Me, itemId)
 	end
 end
 
 local function ShpUseClick ()
-	local row = guiGridListGetSelectedItem ( g_InventoryList )
+	local itemId = g_InventoryList:getActiveItem()
 	
-	if ( row > -1 ) then -- item is selected
-		local item_id = guiGridListGetItemData ( g_InventoryList, row, g_InventoryItemCol )
-		local item = g_ShopItems[item_id]
+	if(itemId) then -- item is selected
+		local item = g_ShopItems[itemId]
 		
-		if ( item.onUse ) then
-			item.onUse ( g_Inventory[item_id] )
+		if(item.onUse) then
+			item.onUse(g_Inventory[itemId])
 		else
-			triggerServerInternalEvent ( $(EV_USE_SHOP_ITEM_REQUEST), g_Me, item_id )
+			triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
 		end
 	end
 end
 
-local function ShpCreateGui ( tab )
-	local w, h = guiGetSize ( tab, false )
+local function ShpUpdateShopList()
+	local oldItemId = g_ShopList:getActiveItem()
+	g_ShopList:clear()
 	
-	g_CashLabel = guiCreateLabel ( 10, 15, 160, 15, MuiGetMsg ( "Cash:" ).." "..formatMoney ( g_Cash ), false, tab )
-	
-	g_ShopList = guiCreateGridList ( 10, 40, 160, ( h - 60 ) / 2, false, tab )
-	
-	g_ShopItemCol = guiGridListAddColumn ( g_ShopList, "Item", 0.6 )
-	g_ShopCostCol = guiGridListAddColumn ( g_ShopList, "Cost", 0.3 )
-	
-	for item_id, item in pairs ( g_ShopItems ) do
-		local row = guiGridListAddRow ( g_ShopList )
+	for itemId, item in pairs(g_ShopItems) do
+		local title = MuiGetMsg(item.name).."\n"..formatMoney(item.cost)
+		local imgPath = item.img and "img/shop/"..item.img
+		g_ShopList:addItem(title, imgPath, itemId)
 		
-		guiGridListSetItemText ( g_ShopList, row, g_ShopItemCol, item.name, false, false )
-		guiGridListSetItemText ( g_ShopList, row, g_ShopCostCol, formatMoney ( item.cost ), false, false )
-		
-		guiGridListSetItemData ( g_ShopList, row, g_ShopItemCol, item_id )
+		if(itemId == oldItemId) then
+			g_ShopList:setActiveItem(itemId)
+		end
 	end
+end
+
+local function ShpCreateGui(tab)
+	local w, h = guiGetSize(tab, false)
 	
-	addEventHandler ( "onClientGUIClick", g_ShopList, ShpOnItemsListClick, false )
+	guiCreateStaticImage(10, 10, 32, 32, "img/shop/coins.png", false, tab)
+	g_CashLabel = guiCreateLabel(45, 15, 160, 15, formatMoney(g_Cash), false, tab)
 	
-	g_InventoryList = guiCreateGridList ( 10, 50 + ( h - 60 ) / 2, 160, ( h - 60 ) / 2, false, tab )
+	local label = guiCreateLabel(10, 45, 160, 15, "All items:", false, tab)
+	guiSetFont(label, "default-bold-small")
 	
-	g_InventoryItemCol = guiGridListAddColumn ( g_InventoryList, "Item", 0.6 )
-	g_InventoryCountCol = guiGridListAddColumn ( g_InventoryList, "Count", 0.3 )
+	g_ShopList = ListView.create({10, 60}, {w - 150, (h - 110) * 3/5}, tab, {90, 80})
+	g_ShopList.onClickHandler = ShpOnItemsListClick
+	ShpUpdateShopList()
 	
-	addEventHandler ( "onClientGUIClick", g_InventoryList, ShpOnInventoryListClick, false )
+	local label = guiCreateLabel(10, 75 + (h - 110) * 3/5, 160, 15, "Your items:", false, tab)
+	guiSetFont(label, "default-bold-small")
+	
+	g_InventoryList = ListView.create({10, 90 + (h - 110) * 3/5}, {w - 150, (h - 110) * 2/5}, tab, {90, 80})
+	g_InventoryList.onClickHandler = ShpOnInventoryListClick
 	
 	-- guiCreateStaticImage fails if invalid image is given
-	g_ItemIcon = guiCreateStaticImage ( 180, 10, 32, 32, "img/userpanel/shop.png", false, tab )
-	guiSetVisible ( g_ItemIcon, false )
-	assert ( g_ItemIcon )
+	g_ItemIcon = guiCreateStaticImage(w - 130, 10, 32, 32, "img/empty.png", false, tab)
+	guiSetVisible(g_ItemIcon, false)
 	
-	g_ItemLabel = guiCreateLabel ( 220, 10, w - 230, 15, "", false, tab )
+	g_ItemLabel = guiCreateLabel ( w - 130, 45, 120, 15, "", false, tab )
 	guiSetFont ( g_ItemLabel, "default-bold-small" )
 	
-	g_CostLabel = guiCreateLabel ( 220, 30, w - 230, 15, "Cost:", false, tab )
+	g_CostLabel = guiCreateLabel(w - 130, 60, 120, 50, "Cost:", false, tab)
+	guiLabelSetHorizontalAlign(g_CostLabel, "left", true)
 	
-	g_DescrLabel = guiCreateLabel ( 180, 50, 100, 15, "Description:", false, tab )
+	guiCreateLabel(w - 130, 100, 120, 15, "Description:", false, tab)
 	
-	g_DescrMemo = guiCreateMemo ( 180, 70, w - 190, h - 110, "", false, tab )
+	--g_DescrMemo = guiCreateMemo(w - 130, 70, 120, h - 110, "", false, tab)
+	g_DescrMemo = guiCreateLabel(w - 130, 115, 120, 100, "", false, tab)
+	guiLabelSetHorizontalAlign(g_DescrMemo, "left", true)
 	
-	g_BuyButton = guiCreateButton ( 180, h - 35, w - 190, 25, "Buy", false, tab )
-	addEventHandler ( "onClientGUIClick", g_BuyButton, ShpBuyClick )
+	g_BuyButton = guiCreateButton(w - 130, h - 35, 120, 25, "Buy", false, tab)
+	addEventHandler("onClientGUIClick", g_BuyButton, ShpBuyClick)
 	
-	g_SellButton = guiCreateButton ( 180, h - 35, ( w - 200 ) / 2, 25, "Sell", false, tab )
-	guiSetVisible ( g_SellButton, false )
-	addEventHandler ( "onClientGUIClick", g_SellButton, ShpSellClick, false )
+	g_SellButton = guiCreateButton(w - 130, h - 70, 120, 25, "Sell", false, tab)
+	guiSetVisible(g_SellButton, false)
+	addEventHandler("onClientGUIClick", g_SellButton, ShpSellClick, false)
 	
-	g_UseButton = guiCreateButton ( 190 + ( w - 200 ) / 2, h - 35, ( w - 200 ) / 2, 25, "Use", false, tab )
-	guiSetVisible ( g_UseButton, false )
-	addEventHandler ( "onClientGUIClick", g_UseButton, ShpUseClick, false )
+	g_UseButton = guiCreateButton(w - 130, h - 35, 120, 25, "Use", false, tab)
+	guiSetVisible(g_UseButton, false)
+	addEventHandler("onClientGUIClick", g_UseButton, ShpUseClick, false)
 end
 
-function ShopPanel.onShow ( tab )
-	if ( not g_ShopList ) then
-		ShpCreateGui ( tab )
-		ShpUpdateItemInfo ( "joinmsg", false )
-		triggerServerInternalEvent ( $(EV_GET_INVENTORY_REQUEST), g_Me )
+function ShopPanel.onShow(tab)
+	if(not g_ShopList) then
+		ShpCreateGui(tab)
+		g_ShopList:setActiveItem("nextmap")
+		ShpUpdateItemInfo("nextmap", false)
+		triggerServerInternalEvent($(EV_GET_INVENTORY_REQUEST), g_Me)
 	end
 	
-	triggerServerInternalEvent ( $(EV_START_SYNC_REQUEST), g_Me, { stats = g_MyId } )
+	triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, { stats = g_MyId })
 end
 
-function ShopPanel.onHide ( tab )
-	triggerServerInternalEvent ( $(EV_STOP_SYNC_REQUEST), g_Me, { stats = g_MyId } )
+function ShopPanel.onHide(tab)
+	triggerServerInternalEvent($(EV_STOP_SYNC_REQUEST), g_Me, { stats = g_MyId })
 end
 
-local function ShpOnSync ( sync_tbl, name, arg, data )
-	if ( sync_tbl.stats and sync_tbl.stats[2] and sync_tbl.stats[1] == g_MyId and sync_tbl.stats[2].cash ) then
+local function ShpOnSync(sync_tbl, name, arg, data)
+	if(sync_tbl.stats and sync_tbl.stats[2] and sync_tbl.stats[1] == g_MyId and sync_tbl.stats[2].cash) then
 		g_Cash = sync_tbl.stats[2].cash
-		if ( g_CashLabel ) then
-			guiSetText ( g_CashLabel, MuiGetMsg ( "Cash:" ).." "..formatMoney ( g_Cash ) )
+		if(g_CashLabel) then
+			guiSetText(g_CashLabel, formatMoney(g_Cash))
 		end
-		if ( g_ShopList ) then -- gui is already created
-			local row = guiGridListGetSelectedItem ( g_ShopList )
-			local row2 = guiGridListGetSelectedItem ( g_InventoryList )
-			local item_id
+		if(g_ShopList) then -- gui is already created
+			local itemId = g_ShopList:getActiveItem() or g_InventoryList:getActiveItem()
 			
-			if ( row > -1 ) then
-				item_id = guiGridListGetItemData ( g_ShopList, row, g_ShopItemCol )
-			elseif ( row2 > -1 ) then
-				item_id = guiGridListGetItemData ( g_InventoryList, row2, g_InventoryItemCol )
-			end
-			
-			if ( item_id ) then
-				ShpUpdateButtons ( item_id )
+			if(itemId) then
+				ShpUpdateButtons(itemId)
 			end
 		end
 	end
 end
 
 local function ShpUpdateInventoryList ()
-	if ( not g_ShopList or not g_InventoryList ) then return end
+	if (not g_ShopList or not g_InventoryList) then return end
 	
-	local row = guiGridListGetSelectedItem ( g_InventoryList )
-	local old_item = row > -1 and guiGridListGetItemData ( g_InventoryList, row, g_InventoryItemCol )
+	local oldItemId = g_InventoryList:getActiveItem()
 	
-	guiGridListClear ( g_InventoryList )
+	g_InventoryList:clear()
 	
-	for item_id, data in pairs ( g_Inventory ) do
-		local item = g_ShopItems[item_id]
-		if ( item.dataToCount ) then
-			local row = guiGridListAddRow ( g_InventoryList )
-			local c = item.dataToCount ( data )
+	for itemId, data in pairs(g_Inventory) do
+		local item = g_ShopItems[itemId]
+		if(item.dataToCount) then
+			local cnt = item.dataToCount(data)
 			
-			if ( c ) then
-				guiGridListSetItemText ( g_InventoryList, row, g_InventoryItemCol, item.name, false, false )
-				guiGridListSetItemText ( g_InventoryList, row, g_InventoryCountCol, tostring ( c ), false, false )
+			if(cnt) then
+				local title = MuiGetMsg(item.name).." ("..tostring(cnt)..")"
+				local imgPath = item.img and "img/shop/"..item.img
+				g_InventoryList:addItem(title, imgPath, itemId)
 				
-				guiGridListSetItemData ( g_InventoryList, row, g_InventoryItemCol, item_id )
-				
-				if ( old_item == item_id ) then
-					guiGridListSetSelectedItem ( g_InventoryList, row, g_InventoryItemCol )
-					ShpUpdateButtons ( item_id )
+				if(oldItemId == itemId) then
+					g_InventoryList:setActiveItem(itemId)
+					ShpUpdateButtons(itemId)
 				end
 			end
 		end
 	end
 	
-	local row2 = guiGridListGetSelectedItem ( g_ShopList )
-	if ( row2 > -1 ) then
-		local item_id = guiGridListGetItemData ( g_ShopList, row2, g_ShopItemCol )
-		ShpUpdateButtons ( item_id )
+	local itemId = g_ShopList:getActiveItem()
+	if(itemId) then
+		ShpUpdateButtons(itemId)
 	end
 end
 
-local function ShpOnChangeLang ()
-	if ( g_ShopList ) then
-		guiSetText ( g_CashLabel, MuiGetMsg ( "Cash:" ).." "..formatMoney ( g_Cash ) )
-		
-		-- guiSetText na kolumanch nie dziala, a usuwanie kolumny usuwa zawartosc :/
-		
-		--guiGridListRemoveColumn ( g_ShopList, g_ShopItemCol )
-		--guiGridListAddColumn ( g_ShopList, "Item", 0.6 )
-		--guiGridListRemoveColumn ( g_ShopList, g_ShopCostCol )
-		--guiGridListAddColumn ( g_ShopList, "Cost", 0.3 )
-		
-		--guiGridListRemoveColumn ( g_InventoryList, g_InventoryItemCol )
-		--guiGridListAddColumn ( g_InventoryList, "Item", 0.6 )
-		--guiGridListRemoveColumn ( g_InventoryList, g_InventoryCountCol )
-		--guiGridListAddColumn ( g_InventoryList, "Count", 0.3 )
-		
-		guiSetText ( g_CostLabel, MuiGetMsg ( "Cost:" ) )
+local function ShpOnChangeLang()
+	if(g_ShopList) then
+		ShpUpdateShopList()
+		ShpUpdateInventoryList()
+		local itemId = g_ShopList:getActiveItem() or g_InventoryList:getActiveItem()
+		ShpUpdateCostLabel(g_SelectedItemId)
 	end
 end
+
+--------------------------------------------------------------------------------
+-- Items window
+--------------------------------------------------------------------------------
 
 local FADE_DELAY = 200
 local PANEL_ALPHA = 0.6
@@ -347,7 +334,7 @@ local function ShpUpdateItemsWnd ()
 	guiSetAlpha ( g_ItemsWnd, a )
 end
 
-local function ShpCreateItemsGui ()
+local function ShpCreateItemsGui()
 	local w, h = 640, 100
 	local x, y = ( g_ScreenSize[1] - w ) / 2, g_ScreenSize[2] - h - 20
 	g_ItemsWnd = guiCreateWindow ( x, y, w, h, "User Items", false )
@@ -415,31 +402,36 @@ local function ShpShowItems ()
 end
 
 function ShpToggleItems ()
-	if ( not g_ItemsWnd or not guiGetVisible ( g_ItemsWnd ) ) then
-		ShpShowItems ()
+	if(not g_ItemsWnd or not guiGetVisible(g_ItemsWnd)) then
+		ShpShowItems()
 	else
-		ShpHideItems ()
+		ShpHideItems()
 	end
 end
 
-local function ShpInit ()
-	bindKey ( "F3", "up", ShpToggleItems )
+local function ShpInit()
+	bindKey("F3", "up", ShpToggleItems)
 end
 
-local function ShpOnInventory ( inventory, is_vip )
+local function ShpOnInventory(inventory, isVip)
+	local oldIsVip = g_IsVip
 	g_Inventory = inventory
-	g_IsVip = is_vip
+	g_IsVip = isVip
 	
-	ShpUpdateInventoryList ()
-	ShpUpdateItemsWnd ()
+	ShpUpdateInventoryList()
+	ShpUpdateItemsWnd()
+	
+	if(oldIsVip ~= isVip and g_ShopList) then
+		ShpUpdateCostLabel(g_SelectedItemId)
+	end
 end
 
-function ShpGetInventory ( item_id )
-	return g_Inventory[item_id]
+function ShpGetInventory(itemId)
+	return g_Inventory[itemId]
 end
 
-function ShpSetInventory ( item_id, value )
-	g_Inventory[item_id] = value
+function ShpSetInventory(itemId, value)
+	g_Inventory[itemId] = value
 end
 
 ------------

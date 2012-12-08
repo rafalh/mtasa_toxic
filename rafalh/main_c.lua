@@ -33,8 +33,6 @@ local function onClientThisResourceStart ( res )
 	end
 	
 	triggerServerInternalEvent ( $(EV_RAFALH_START), g_Me )
-	
-	GuiLoad ( "gui/gui.xml" )
 end
 
 local function onClientResourceStart ( res )

@@ -1,157 +1,173 @@
-local g_Templates = {}
-local g_Windows = {}
+GUI = {}
+GUI.__mt = {__index = GUI}
+GUI.templates = false
 
-local function GuiLoadNode ( node )
-	local tpl = xmlNodeGetAttributes ( node )
-	tpl.children = {}
-	tpl.type = xmlNodeGetName ( node )
-	
-	for i, subnode in ipairs ( xmlNodeGetChildren ( node ) ) do
-		table.insert ( tpl.children, GuiLoadNode ( subnode ) )
+function GUI.loadNode(node)
+	local ctrl = xmlNodeGetAttributes(node)
+	ctrl.type = xmlNodeGetName(node)
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local child = GUI.loadNode(subnode)
+		table.insert(ctrl, child)
+	end
+	return ctrl
+end
+
+function GUI.loadTemplates(path)
+	local node = xmlLoadFile(path)
+	if(not node) then
+		outputDebugString("xmlLoadFile "..path.." failed", 2)
+		return false
 	end
 	
+	GUI.templates = {}
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local ctrl = GUI.loadNode(subnode)
+		if(ctrl.id) then
+			GUI.templates[ctrl.id] = ctrl
+		end
+	end
+	
+	xmlUnloadFile(node)
+	return true
+end
+
+function GUI.getTemplate(tplID)
+	if(not GUI.templates) then
+		if(not GUI.loadTemplates("gui/gui.xml")) then
+			outputDebugString("Failed to load GUI", 1)
+			return false
+		end
+	end
+	
+	local tpl = GUI.templates[tplID]
 	return tpl
 end
 
-function GuiLoad ( path )
-	local node = xmlLoadFile ( path )
-	if ( node ) then
-		for i, subnode in ipairs ( xmlNodeGetChildren ( node ) ) do
-			local tpl = GuiLoadNode ( subnode )
-			if ( tpl.id ) then
-				g_Templates[tpl.id] = tpl
-			end
-		end
-		
-		xmlUnloadFile ( node )
+function GUI.computeCtrlPlacement(tpl, parent)
+	local pw, ph
+	if(parent) then
+		pw, ph = dxGetSize(parent)
 	else
-		outputDebugString ( "xmlLoadFile "..path.." failed", 2 )
-	end
-end
-
-local function GuiGetPlacement ( tpl, parent )
-	local parent_w, parent_h
-	if ( parent ) then
-		parent_w, parent_h = guiGetSize ( parent, false )
-	else
-		parent_w, parent_h = guiGetScreenSize ()
+		pw, ph = guiGetScreenSize()
 	end
 	
-	local x, y, w, h = tpl.x, tpl.y, tpl.w, tpl.h
-	if ( not w and x ) then
-		w = parent_w - x - tpl.x2
-	end
-	if ( not h and y ) then
-		h = parent_h - y - tpl.y2
-	end
-	if ( not x ) then
-		if ( tpl.x2 ) then
-			x = parent_w - w - tpl.x2
-		elseif ( w ) then
-			x = ( parent_w - w ) / 2
-		end
-	end
-	if ( not y ) then
-		if ( tpl.y2 ) then
-			y = parent_h - h - tpl.y2
-		elseif ( h ) then
-			y = ( parent_h - h ) / 2
-		end
-	end
+	local x, y = tpl.x or 0, tpl.y or 0
+	local w, h = tpl.w or 0, tpl.h or 0
+	x = x + (tpl.rx or 0) * pw / 100
+	y = y + (tpl.ry or 0) * ph / 100
+	w = w + (tpl.rw or 0) * pw / 100
+	h = h + (tpl.rh or 0) * ph / 100
 	
 	return x, y, w, h
 end
 
-local function GuiCreateWndInternal ( tpl, parent )
-	local x, y, w, h = GuiGetPlacement ( tpl, parent )
+function GUI:createControl(tpl, parent)
+	local x, y, w, h = GUI.computeCtrlPlacement(tpl, parent)
 	
-	local wnd
-	if ( tpl.type == "window" ) then
-		wnd = guiCreateWindow ( x, y, w, h, tpl.title or "", false )
-	elseif ( tpl.type == "button" ) then
-		wnd = guiCreateButton ( x, y, w, h, tpl.text or "", false, parent )
-	elseif ( tpl.type == "edit" ) then
-		wnd = guiCreateEdit ( x, y, w, h, tpl.text or "", false, parent )
-		if ( tpl.readonly == "true" ) then
-			guiEditSetReadOnly ( wnd, true )
+	local ctrl
+	if ( tpl.type == "window") then
+		ctrl = guiCreateWindow(x, y, w, h, tpl.title or "")
+		if(tpl.sizeable == "false") then
+			--guiWindowSetSizable(ctrl, false)
 		end
-		if ( tonumber ( tpl.maxlen ) ) then
-			guiEditSetMaxLength ( wnd, tonumber ( tpl.maxlen ) )
+	elseif(tpl.type == "button") then
+		ctrl = guiCreateButton(x, y, w, h, tpl.text or "", parent)
+	elseif(tpl.type == "checkbox") then
+		ctrl = guiCreateCheckBox(x, y, w, h, tpl.text or "", tpl.selected == "true", parent)
+	elseif(tpl.type == "edit") then
+		ctrl = guiCreateEdit(x, y, w, h, tpl.text or "", parent)
+		if (tpl.readonly == "true") then
+			guiEditSetReadOnly(ctrl, true)
 		end
-		if ( tpl.color ) then
-			-- TODO
+		if(tonumber(tpl.maxlen)) then
+			guiEditSetMaxLength(ctrl, tonumber(tpl.maxlen))
 		end
-	elseif ( tpl.type == "memo" ) then
-		wnd = guiCreateMemo ( x, y, w, h, tpl.text or "", false, parent )
-		if ( tpl.readonly == "true" ) then
-			guiMemoSetReadOnly ( wnd, true )
+		if(tpl.masked == "true") then
+			guiEditSetMasked(ctrl, true)
 		end
-	elseif ( tpl.type == "label" ) then
-		wnd = guiCreateLabel ( x, y, w, h, tpl.text or "", false, parent )
-	elseif ( tpl.type == "list" ) then
-		wnd = guiCreateGridList ( x, y, w, h, false, parent )
-	elseif ( tpl.type == "column" ) then
-		wnd = guiGridListAddColumn ( parent, tpl.text or "", tpl.w or 0.5 )
-	elseif ( tpl.type == "tpl" ) then
-		--local tpl2 = g_Templates[tpl.id]
-		--wnd = GuiCreateWndInternal ( tpl2, parent )
-		wnd = GuiCreateWnd ( tpl.id, parent )
-		guiSetPosition ( wnd, x, y, false )
-		guiSetSize ( wnd, w, h, false )
+	elseif(tpl.type == "memo") then
+		ctrl = guiCreateMemo(x, y, w, h, tpl.text or "", parent)
+		if(tpl.readonly == "true") then
+			guiMemoSetReadOnly(ctrl, true)
+		end
+	elseif(tpl.type == "label") then
+		ctrl = guiCreateLabel(x, y, w, h, tpl.text or "", parent)
+		if(tpl.align) then
+			guiSetLabelAlign(ctrl, tpl.align)
+		end
+		if(tpl.color) then
+			local r, g, b = getColorFromString(tpl.color)
+			guiLabelSetColor(ctrl, r or 255, g or 255, b or 255)
+		end
+	elseif(tpl.type == "image") then
+		ctrl = dxCreateImage(x, y, w, h, tpl.src or "", parent)
+	elseif(tpl.type == "list") then
+		ctrl = guiCreateGridList(x, y, w, h, false, parent)
+	elseif(tpl.type == "column") then
+		ctrl = guiGridListAddColumn(parent, tpl.text or "", tpl.w or 0.5)
 	else
-		assert ( false )
+		assert (false)
 	end
 	
-	if ( tpl.visible == "false" ) then
-		guiSetVisible ( wnd, false )
+	if(tpl.visible == "false") then
+		guiSetVisible(ctrl, false)
+	end
+	if(tpl.alpha) then
+		guiSetAlpha(ctrl, (tonumber(tpl.alpha) or 255)/255)
+	end
+	if(tpl.font) then
+		guiSetFont(ctrl, tpl.font)
+	end
+	if(tpl.enabled == "false") then
+		dxSetEnabled(ctrl, false)
 	end
 	
-	for i, subtpl in ipairs ( tpl.children ) do
-		GuiCreateWndInternal ( subtpl, wnd )
+	if(tpl.id) then
+		self[tpl.id] = ctrl
 	end
-	return wnd
-end
-
-local function GuiResizeWndChildren ( wnd, tpl )
-	local children = getElementChildren ( wnd )
-	for i, child in ipairs ( children ) do
-		local subtpl = tpl.children[i]
-		assert ( subtpl )
-		local x, y, w, h = GuiGetPlacement ( subtpl, wnd )
-		guiSetPosition ( child, x, y, false )
-		guiSetSize ( child, w, h, false )
-		GuiResizeWndChildren ( child, subtpl )
+	if(tpl.focus == "true") then
+		self.focus = ctrl
 	end
-end
-
-local function GuiOnWndResize ()
-	GuiResizeWndChildren ( source, g_Windows[source] )
-end
-
-function GuiCreateWnd ( id, parent )
-	assert ( g_Templates[id] )
-	local wnd = GuiCreateWndInternal ( g_Templates[id], parent )
-	g_Windows[wnd] = g_Templates[id]
-	addEventHandler ( "onClientGUISize", wnd, GuiOnWndResize )
-	return wnd
-end
-
-local function GuiGetCtrlInternal ( tpl, parent, id )
-	local children = getElementChildren ( parent )
+	if(tpl.defbtn) then
+		addEventHandler("onClientGUIAccepted", ctrl, function()
+			local btn = self[tpl.defbtn]
+			if(btn) then
+				triggerEvent("onClientGUIClick", btn, "left", "up")
+			end
+		end, false)
+	end
 	
-	for i, subtpl in ipairs ( tpl.children ) do
-		if ( subtpl.id == id ) then
-			return children[i]
-		end
-		if ( children[i] ) then
-			GuiGetCtrlInternal ( subtpl, children[i], id )
-		end
-	end
+	return ctrl
 end
 
-function GuiGetCtrl ( wnd, id )
-	if ( not g_Windows[wnd] ) then
+function GUI:createControls(tpl, parent)
+	local ctrl = self:createControl(tpl, parent)
+	for i, childTpl in ipairs(tpl) do
+		self:createControl(childTpl, ctrl)
+	end
+	return ctrl
+end
+
+function GUI:destroy()
+	destroyElement(self.wnd)
+end
+
+function GUI.create(id, parent)
+	local self = setmetatable({}, GUI.__mt)
+	self.parent = parent
+	
+	self.tpl = GUI.getTemplate(id)
+	if(not self.tpl) then
+		outputDebugString("Unknown template ID "..id, 1)
 		return false
 	end
-	return GuiGetCtrlInternal ( g_Windows[wnd], wnd, id )
+	
+	self.wnd = self:createControls(self.tpl, parent)
+	if(not self.focus) then
+		self.focus = self.wnd
+	end
+	guiBringToFront(self.focus)
+	
+	return self
 end

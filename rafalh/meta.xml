@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.38" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.39" description="Rafalh Scripts System"   />
 	
 	<script src="common.lua" />
 	<script src="common_c.lua" type="client" />
@@ -158,6 +158,7 @@
 	<file src="img/userpanel/options.png" />
 	<file src="img/userpanel/about.png" />
 	
+	<file src="img/shop/coins.png" />
 	<file src="img/shop/beer.png" />
 	<file src="img/shop/repair.png" />
 	<file src="img/shop/mine.png" />

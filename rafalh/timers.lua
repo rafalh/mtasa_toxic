@@ -47,10 +47,11 @@ local function TmPlayerQuit ()
 end
 
 local function TmMapStop ()
-	for id, data in pairs ( g_MapTimers ) do -- ipair is wrong here
-		killTimer ( data.t )
+	local room = g_RootRoom
+	for id, data in pairs(room.mapTimers or {}) do -- ipair is wrong here
+		killTimer(data.t)
 	end
-	g_MapTimers = {}
+	room.mapTimers = {}
 end
 
 addEventHandler ( "onGamemodeMapStop", g_Root, TmMapStop )
