@@ -292,6 +292,8 @@ local function RcStopSendRecordingReq ( map_id )
 	
 	if ( map_id == g_MapID ) then
 		triggerServerInternalEvent ( $(EV_RECORDING), g_Me, g_MapID, g_Recording )
+	else
+		outputDebugString("Wrong map ID: "..tostring(map_id).."<>"..tostring(g_MapID), 3)
 	end
 	
 	RcCleanupRecording ()

@@ -374,8 +374,7 @@ local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
 		local ms = race_res and call (race_res, "getTimePassed")
 		if (ms) then
 			local n = handlePlayerTime (source, ms)
-			
-			RcFinishRecordingPlayer (source, ms, map_id, n >= 1)
+			RcFinishRecordingPlayer (source, ms, map:getId(), n >= 1)
 		end
 	end
 end

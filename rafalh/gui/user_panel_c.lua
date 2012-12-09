@@ -8,12 +8,16 @@
 -- Local variables --
 ---------------------
 
-local ITEM_ALPHA = 0.6
 local PANEL_COLUMNS = 3
 local PANEL_ALPHA = 0.9
 local ITEM_W = 100
-local ITEM_H = 110
+local ITEM_H = 100
 local FADE_DELAY = 200
+
+local g_ListStyle = {}
+g_ListStyle.normal = {clr = {255, 255, 0}, a = 0.6, fnt = "default-bold-small"}
+g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = "default-bold-small"}
+g_ListStyle.active = g_ListStyle.hover
 
 local g_Items = {}
 local g_Wnd = false
@@ -21,16 +25,6 @@ local g_CurrentItem = false
 local g_Hiding = false
 
 -- Local functions
-
-local function getItemFromGuiElement ( element )
-	for i, item in ipairs ( g_Items ) do
-		if ( item.btn == source or item.label == source ) then
-			return item
-		end
-	end
-	
-	return false
-end
 
 local function onBackClick ()
 	GaFadeOut ( g_CurrentItem.wnd, FADE_DELAY )
@@ -41,9 +35,9 @@ local function onBackClick ()
 	GaFadeIn ( g_Wnd, FADE_DELAY, PANEL_ALPHA )
 end
 
-local function onItemClick ()
+local function onItemClick(i)
 	guiSetVisible ( g_Wnd, false )
-	g_CurrentItem = getItemFromGuiElement ( source )
+	g_CurrentItem = g_Items[i]
 	
 	if ( not g_CurrentItem.wnd ) then
 		local panel_w = g_CurrentItem.width or 450
@@ -67,20 +61,6 @@ local function onItemClick ()
 	GaFadeIn ( g_CurrentItem.wnd, FADE_DELAY, PANEL_ALPHA )
 end
 
-local function onItemMouseEnter ()
-	local item = getItemFromGuiElement ( source )
-	GaFadeIn ( item.btn, 200 )
-	GaResize ( item.btn, 200, ITEM_W - 20, ITEM_H - 30 )
-	guiLabelSetColor ( item.label, 0, 255, 0 )
-end
-
-local function onItemMouseLeave ()
-	local item = getItemFromGuiElement ( source )
-	GaFadeOut ( item.btn, 200, ITEM_ALPHA )
-	GaResize ( item.btn, 200, ITEM_W - 30, ITEM_H - 40 )
-	guiLabelSetColor ( item.label, 255, 255, 0 )
-end
-
 local function UpHide ()
 	GaFadeOut ( g_Wnd, FADE_DELAY )
 	
@@ -102,31 +82,17 @@ local function UpCreateGui ()
 	local x = ( g_ScreenSize[1] - w ) / 2
 	local y = ( g_ScreenSize[2] - h ) / 2
 	g_Wnd = guiCreateWindow ( x, y, w, h, "User Panel", false )
-	guiSetVisible ( g_Wnd, false )
-	guiWindowSetSizable ( g_Wnd, false )
+	guiSetVisible(g_Wnd, false)
+	guiWindowSetSizable(g_Wnd, false)
+	
+	local listSize = {w - 20, h - 60}
+	local itemSize = {listSize[1]/PANEL_COLUMNS, ITEM_H}
+	
+	g_List = ListView.create({10, 25}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
+	g_List.onClickHandler = onItemClick
 	
 	for i, item in ipairs ( g_Items ) do
-		local item_x = 10 + ( ( i - 1 ) % PANEL_COLUMNS ) * ITEM_W
-		local item_y = 30 + math.floor ( ( i - 1 ) / PANEL_COLUMNS ) * ITEM_H
-		
-		if ( item.img ) then
-			item.btn = guiCreateStaticImage ( item_x + 15, item_y, ITEM_W - 30, ITEM_H - 40, item.img, false, g_Wnd )
-			guiSetAlpha ( item.btn, ITEM_ALPHA )
-			addEventHandler ( "onClientGUIClick", item.btn, onItemClick, false )
-			addEventHandler ( "onClientMouseEnter", item.btn, onItemMouseEnter, false )
-			addEventHandler ( "onClientMouseLeave", item.btn, onItemMouseLeave, false )
-			item.label = guiCreateLabel ( item_x, item_y, ITEM_W, ITEM_H - 20, item.name, false, g_Wnd )
-			guiLabelSetHorizontalAlign ( item.label, "center" )
-			guiLabelSetVerticalAlign ( item.label, "bottom" )
-			guiSetFont ( item.label, "default-bold-small" )
-			guiLabelSetColor ( item.label, 255, 255, 0 )
-			addEventHandler ( "onClientGUIClick", item.label, onItemClick, false )
-			addEventHandler ( "onClientMouseEnter", item.label, onItemMouseEnter, false )
-			addEventHandler ( "onClientMouseLeave", item.label, onItemMouseLeave, false )
-		else
-			item.btn = guiCreateButton ( item_x + 5, item_y + 5, ITEM_W - 10, ITEM_H - 10, item.name, false, g_Wnd )
-			addEventHandler ( "onClientGUIClick", item.btn, onItemClick, false )
-		end
+		g_List:addItem(item.name, item.img, i)
 	end
 	
 	local btn = guiCreateButton ( w - 70, h - 35, 60, 25, "Close", false, g_Wnd )

@@ -89,6 +89,7 @@ local function RcOnRecording ( map_id, recording )
 	end
 	
 	--outputDebugString ( "RcOnRecording", 3 )
+	
 	if ( SmGetBool ( "recorder" ) ) then
 		local rows = DbQuery ( "SELECT player FROM rafalh_besttimes WHERE map=? AND (rec<>'' OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id )
 		
@@ -103,11 +104,14 @@ local function RcOnRecording ( map_id, recording )
 		
 		-- if player just get this besttime or there is fewer than 3 recordings
 		if ( found or #rows < $(MAX_RECORDINGS) ) then
+			outputDebugString ( "Saving ghost trace (stage 2)", 3 )
 			local encoded = RcEncodeTrace ( recording )
 			DbQuery ( "UPDATE rafalh_besttimes SET rec=? WHERE player=? AND map=?", encoded, pdata.id, map_id )
 			if ( rows[$(MAX_RECORDINGS+1)] ) then
 				DbQuery ( "UPDATE rafalh_besttimes SET rec='' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id )
 			end
+		else
+			outputDebugString ( "Invalid player", 2 )
 		end
 	end
 end
@@ -117,7 +121,7 @@ end
 ---------------------------------
 
 function RcStartRecording(room, map_id)
-	--outputDebugString ( "recording started" )
+	--outputDebugString ( "Recording started...", 3 )
 	
 	for player, pdata in pairs ( g_Players ) do
 		if(pdata.room == room) then
@@ -128,6 +132,7 @@ function RcStartRecording(room, map_id)
 	local rows = DbQuery ( "SELECT player, time, rec FROM rafalh_besttimes WHERE map=? AND rec<>'' ORDER BY time LIMIT 1", map_id )
 	local rec, rec_title = false, nil
 	if ( rows and rows[1] and SmGetBool ( "ghost" ) ) then
+		outputDebugString ( "Showing ghost", 3 )
 		rec = RcDecodeTrace ( rows[1].rec )
 		
 		local rows2 = DbQuery ( "SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<? LIMIT 1", map_id, rows[1].time )
@@ -138,7 +143,7 @@ function RcStartRecording(room, map_id)
 end
 
 function RcStopRecording(room)
-	--outputDebugString ( "recording stoped" )
+	--outputDebugString ( "recording stoped", 3 )
 	
 	for player, pdata in pairs ( g_Players ) do
 		if(pdata.room == room) then
@@ -151,6 +156,7 @@ end
 
 function RcFinishRecordingPlayer ( player, time, map_id, improved_besttime )
 	local pdata = g_Players[player]
+	assert(pdata and map_id)
 	
 	if ( not improved_besttime ) then
 		if ( pdata.recording ) then
@@ -171,7 +177,7 @@ function RcFinishRecordingPlayer ( player, time, map_id, improved_besttime )
 		end
 		
 		if ( found or #rows < 3 ) then -- if player just get this besttime or there is fewer than 3 recordings
-			outputDebugString ( "Saving ghost trace", 3 )
+			outputDebugString ( "Saving ghost trace (stage 1)", 3 )
 			triggerClientInternalEvent ( player, $(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), player, map_id )
 		else
 			--outputDebugString ( "Ghost trace won't be saved", 3 )

@@ -617,3 +617,34 @@ local function CmdResetStats (message, arg)
 end
 
 CmdRegister ("resetstats", CmdResetStats, "resource.rafalh.resetstats", "Resets player statistics")
+
+local function CmdSqlQuery (message, arg)
+	local query = #arg >= 2 and message:sub (arg[1]:len () + 2)
+	if (query) then
+		local rows = DbQuery(query)
+		if(rows) then
+			privMsg(source, "SQL query succeeded ("..#rows.." rows)")
+			for i, data in ipairs(rows) do
+				local tbl = {}
+				for k, v in pairs(data) do
+					table.insert(tbl, tostring(k).."="..tostring(v))
+				end
+				local buf = i..". "..table.concat(tbl, ", ")
+				privMsg(source, buf:sub(1, 100))
+				if(i > 10) then break end
+			end
+		else
+			privMsg(source, "SQL query failed")
+		end
+	else privMsg (source, "Usage: %s", arg[1].." <query>") end
+end
+
+CmdRegister ("sqlquery", CmdSqlQuery, true)
+
+local function CmdMapId (message, arg)
+	local room = g_Players[source].room
+	local map = getCurrentMap(room)
+	scriptMsg("Map ID: %u", map:getId())
+end
+
+CmdRegister ("mapid", CmdMapId, true)
