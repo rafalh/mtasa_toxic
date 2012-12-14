@@ -191,8 +191,6 @@ function GUI.onAccept()
 	local btn = self[tpl.defbtn]
 	if(btn and guiGetEnabled(btn)) then
 		triggerEvent("onClientGUIClick", btn, "left", "up")
-	else
-		outputChatBox("wtf "..tostring(btn).." "..tostring(guiGetEnabled(btn)))
 	end
 end
 
