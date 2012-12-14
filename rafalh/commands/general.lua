@@ -23,7 +23,7 @@ local function CmdRespawn(message, arg)
 		if(rs == "none") then
 			scriptMsg("Respawn is disabled.")
 		else
-			scriptMsg("Respawn is enabled(%u seconds).", rstime or 10)
+			scriptMsg("Respawn is enabled (%u seconds).", rstime or 10)
 		end
 	else
 		privMsg(source, "Cannot find map!")
