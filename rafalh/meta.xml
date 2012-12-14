@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.40" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.41" description="Rafalh Scripts System"   />
 	
 	<script src="common.lua" />
 	<script src="common_c.lua" type="client" />
@@ -139,6 +139,7 @@
 	<config src="gui/gui.xml" type="client" />
 	
 	<file src="img/chat.png" />
+	<file src="img/pm.png" />
 	<file src="img/broken_glass.png" />
 	<file src="img/star.png" />
 	<file src="img/star_l.png" />

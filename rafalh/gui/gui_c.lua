@@ -104,7 +104,7 @@ function GUI:createControl(tpl, parent)
 			guiLabelSetColor(ctrl, r or 255, g or 255, b or 255)
 		end
 	elseif(tpl.type == "image") then
-		ctrl = dxCreateImage(x, y, w, h, tpl.src or "", false, parent)
+		ctrl = guiCreateStaticImage(x, y, w, h, tpl.src or "", false, parent)
 	elseif(tpl.type == "list") then
 		ctrl = guiCreateGridList(x, y, w, h, false, parent)
 	elseif(tpl.type == "column") then
@@ -123,7 +123,7 @@ function GUI:createControl(tpl, parent)
 		guiSetFont(ctrl, tpl.font)
 	end
 	if(tpl.enabled == "false") then
-		dxSetEnabled(ctrl, false)
+		guiSetEnabled(ctrl, false)
 	end
 	
 	if(tpl.id) then
@@ -192,7 +192,7 @@ function GUI.onAccept()
 	if(btn and guiGetEnabled(btn)) then
 		triggerEvent("onClientGUIClick", btn, "left", "up")
 	else
-		outputChatBox("wtf "..tostring(guiGetEnabled(btn)))
+		outputChatBox("wtf "..tostring(btn).." "..tostring(guiGetEnabled(btn)))
 	end
 end
 
@@ -203,16 +203,18 @@ function GUI.onDestroy()
 	end
 end
 
-function GUI.create(id, parent)
-	local self = setmetatable({}, GUI.__mt)
-	self.parent = parent
-	
-	self.tpl = GUI.getTemplate(id)
-	if(not self.tpl) then
-		outputDebugString("Unknown template ID "..id, 1)
-		return false
+function GUI.create(tpl, parent)
+	if(type(tpl) ~= "table") then
+		tpl = GUI.getTemplate(tpl)
+		if(not tpl) then
+			outputDebugString("Unknown template ID "..tostring(tpl), 1)
+			return false
+		end
 	end
 	
+	local self = setmetatable({}, GUI.__mt)
+	self.parent = parent
+	self.tpl = tpl
 	self.ctrlList = {}
 	self.wnd = self:createControls(self.tpl, parent)
 	if(not self.focus) then

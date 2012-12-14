@@ -1,11 +1,13 @@
 <gui>
 	<window id="pm" title="Private Chat" rx="50" x="-160" ry="50" y="-120" w="320" h="240" minw="200" minh="150" alpha="196">
-		<memo id="chat" x="10" y="25" rw="100" w="-20" rh="100" h="-100" readonly="true" />
+		<image x="10" y="25" w="32" h="32" src="img/pm.png" />
+		<!--memo id="chat" x="10" y="25" rw="100" w="-20" rh="100" h="-100" readonly="true" /-->
+		<memo id="chat" x="50" y="25" rw="100" w="-60" rh="100" h="-100" readonly="true" />
 		<label x="10" ry="100" y="-65" w="45" h="15" text="Say:" />
-		<edit id="input" x="55" ry="100" y="-70" rw="100" w="-145" h="25" maxlen="128" focus="true" defbtn="send_btn" />
+		<edit id="input" x="55" ry="100" y="-70" rw="100" w="-140" h="25" maxlen="128" focus="true" defbtn="sendBtn" />
 		<button id="sendBtn" rx="100" x="-80" ry="100" y="-70" w="70" h="25" text="Send" />
 		<button id="closeBtn" rx="100" x="-70" ry="100" y="-35" w="60" h="25" text="Close" />
-		<button id="bgBtn" rx="100" x="-160" ry="100" y="-35" w="80" h="25" text="In background" />
+		<button id="bgBtn" rx="100" x="-155" ry="100" y="-35" w="80" h="25" text="In background" />
 		<label id="playerLeftLabel" x="10" ry="100" y="-35" rw="100" w="-170" h="15" text="Player has left the game." visible="false" color="#FF0000" />
 	</window>
 </gui>

@@ -16,8 +16,9 @@ local g_Chats = {}
 --------------------------------
 
 local function guiMemoAddLine(memo, str)
-	local buf = guiGetText(memo)
-	guiSetText(memo, buf..str) --CEGUI samo dodaje na koncu \n
+	local buf = guiGetText(memo) --CEGUI always adds \n at the end
+	if(buf == "\n") then buf = "" end
+	guiSetText(memo, buf..str)
 	guiMemoSetCaretIndex(memo, buf:len() + str:len())
 end
 
