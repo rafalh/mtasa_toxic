@@ -2,10 +2,14 @@
 <meta>
 	<info type="misc" name="rafalh" author="rafalh" version="2.41" description="Rafalh Scripts System"   />
 	
-	<script src="common.lua" />
-	<script src="common_c.lua" type="client" />
-	<script src="common_sc.lua" />
-	<script src="common_sc.lua" type="client" />
+	<script src="utils/common.lua" />
+	<script src="utils/common_c.lua" type="client" />
+	<script src="utils/common_sc.lua" />
+	<script src="utils/common_sc.lua" type="client" />
+	<script src="utils/vector_c.lua" type="client" />
+	<script src="utils/anim_c.lua" type="client" />
+	<script src="utils/timers.lua" />
+	
 	<script src="start.lua" />
 	<script src="settings.lua" />
 	<script src="settings_c.lua" type="client" />
@@ -14,7 +18,7 @@
 	<script src="main.lua" />
 	<script src="main_c.lua" type="client" />
 	<script src="player.lua" />
-	<script src="timers.lua" />
+	
 	<script src="commands/commands.lua" />
 	<script src="mui.lua" />
 	<script src="mui_c.lua" type="client" />
@@ -55,12 +59,11 @@
 	<script src="rate.lua" />
 	<script src="rec.lua" />
 	<script src="rec_c.lua" type="client" />
-	<script src="vector_c.lua" type="client" />
 	<script src="votes.lua" />
 	<script src="winevents.lua" />
 	<script src="win_anim_c.lua"  type="client" />
 	<script src="water_fix_c.lua" type="client" />
-	<script src="anim_c.lua" type="client" />
+	
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />
