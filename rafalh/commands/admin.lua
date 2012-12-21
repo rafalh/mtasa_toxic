@@ -500,63 +500,85 @@ end
 CmdRegister ("describeaccount", CmdDescribeAccount, "resource.rafalh.findaccounts")
 CmdRegisterAlias ("descra", "describeaccount")
 
-local function CmdMergeAccounts (message, arg)
-	local player = findPlayer (arg[2])
-	local id = touint (arg[3])
-	if (player and id) then
-		local rows = DbQuery ("SELECT * FROM rafalh_players WHERE player=?", id)
-		if (rows and rows[1]) then
-			local src_data = rows[1]
-			local rows = DbQuery ("SELECT name FROM rafalh_names WHERE player=?", id)
-			for i, data in ipairs (rows) do
-				local rows2 = DbQuery ("SELECT player FROM rafalh_names WHERE player=? AND name=?", g_Players[player].id, data.name)
-				if rows2 and rows2[1] then
-					DbQuery ("DELETE FROM rafalh_names WHERE player=? AND name=?", id, data.name)
-				end
-			end
-			DbQuery ("UPDATE rafalh_names SET player=? WHERE player=?", g_Players[player].id, id)
-			
-			local stats = {}
-			stats.cash = StGet (player, "cash") + src_data.cash
-			stats.points = StGet (player, "points") + src_data.points
-			stats.warnings = StGet (player, "warnings") + src_data.warnings
-			stats.dm = StGet (player, "dm") + src_data.dm
-			stats.dm_wins= StGet (player, "dm_wins") + src_data.dm_wins
-			stats.first = StGet (player, "first") + src_data.first
-			stats.second = StGet (player, "second") + src_data.second
-			stats.third = StGet (player, "third") + src_data.third
-			stats.bidlvl = math.max (src_data.bidlvl, StGet (player, "bidlvl"))
-			stats.time_here = StGet (player, "time_here") + src_data.time_here
-			StSet (player, stats)
-			
-			local rows = DbQuery ("SELECT joinmsg FROM rafalh_players WHERE player=?", g_Players[player].id)
-			if (rows[1].joinmsg == "" and src_data.joinmsg ~= "") then
-				DbQuery ("UPDATE rafalh_players SET joinmsg=? WHERE player=?", src_data.joinmsg, g_Players[player].id)
-			end
-			
-			local rows = DbQuery ("SELECT map FROM rafalh_rates WHERE player=?", id)
-			for i, data in ipairs (rows) do
-				local rows2 = DbQuery ("SELECT player FROM rafalh_rates WHERE player=? AND map=?", g_Players[player].id, data.map)
-				if (rows2 and rows2[1]) then
-					DbQuery ("DELETE FROM rafalh_rates WHERE player=? AND map=?", id, data.map)
-				end
-			end
-			DbQuery ("UPDATE rafalh_rates SET player=? WHERE player=?", g_Players[player].id, id)
-			
-			local rows = DbQuery ("SELECT map, time FROM rafalh_besttimes WHERE player=?", id)
-			for i, data in ipairs (rows) do
-				addPlayerTime (g_Players[player].id, data.map, data.time)
-			end
-			-- fixme: toptimes_count
-			DbQuery ("DELETE FROM rafalh_besttimes WHERE player=?", id)
-			
-			DbQuery ("DELETE FROM rafalh_profiles WHERE player=?", id)
-			
-			DbQuery ("DELETE FROM rafalh_players WHERE player=?", id)
-			
-			scriptMsg ("Accounts merged. Old account has been removed...")
-		else privMsg (source, "Cannot find account %u!", id) end
-	else privMsg (source, "Usage: %s", arg[1].." <player> <other account ID>") end
+local function CmdMergeAccounts(message, arg)
+	local player = findPlayer(arg[2])
+	local pdata = g_Players[player]
+	local id = touint(arg[3])
+	
+	if(player and id) then
+		if(pdata.id == id) then
+			privMsg(source, "Cannot merge account with the same account!", id)
+			return
+		end
+		
+		-- get statistics for id
+		local rows = DbQuery("SELECT * FROM rafalh_players WHERE player=?", id)
+		local src_data = rows and rows[1]
+		if(not src_data) then
+			privMsg(source, "Cannot find account %u!", id)
+			return
+		end
+		
+		-- remove duplicated names
+		local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", id)
+		local names = {}
+		local questionMarks = {}
+		for i, data in ipairs(rows) do
+			table.insert(names, data.name)
+			table.insert(questionMarks, "?")
+		end
+		local questionMarksStr = table.concat(questionMarks, ",")
+		DbQuery("DELETE FROM rafalh_names WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names))
+		
+		-- change all names owner
+		DbQuery("UPDATE rafalh_names SET player=? WHERE player=?", pdata.id, id)
+		
+		-- update stats
+		local stats = {}
+		stats.cash = StGet (player, "cash") + src_data.cash
+		stats.points = StGet (player, "points") + src_data.points
+		stats.warnings = StGet (player, "warnings") + src_data.warnings
+		stats.dm = StGet (player, "dm") + src_data.dm
+		stats.dm_wins= StGet (player, "dm_wins") + src_data.dm_wins
+		stats.first = StGet (player, "first") + src_data.first
+		stats.second = StGet (player, "second") + src_data.second
+		stats.third = StGet (player, "third") + src_data.third
+		stats.bidlvl = math.max (src_data.bidlvl, StGet (player, "bidlvl"))
+		stats.time_here = StGet (player, "time_here") + src_data.time_here
+		StSet (player, stats)
+		
+		local rows = DbQuery("SELECT joinmsg FROM rafalh_players WHERE player=?", pdata.id)
+		if(rows[1].joinmsg == "" and src_data.joinmsg ~= "") then
+			DbQuery("UPDATE rafalh_players SET joinmsg=? WHERE player=?", src_data.joinmsg, pdata.id)
+		end
+		
+		-- remove duplicated rates
+		local rows = DbQuery("SELECT map FROM rafalh_rates WHERE player=?", id)
+		local maps = {}
+		local questionMarks = {}
+		for i, data in ipairs(rows) do
+			table.insert(maps, data.map)
+			table.insert(questionMarks, "?")
+		end
+		local questionMarksStr = table.concat(questionMarks, ",")
+		DbQuery("DELETE FROM rafalh_rates WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(maps))
+		
+		-- set new rates owner
+		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", pdata.id, id)
+		
+		-- sync best times
+		local rows = DbQuery ("SELECT map, time FROM rafalh_besttimes WHERE player=?", id)
+		for i, data in ipairs (rows) do
+			addPlayerTime (pdata.id, data.map, data.time)
+		end
+		
+		-- remove player from system
+		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", id)
+		DbQuery("DELETE FROM rafalh_profiles WHERE player=?", id)
+		DbQuery("DELETE FROM rafalh_players WHERE player=?", id)
+		
+		scriptMsg("Accounts has been merged. Old account has been removed...")
+	else privMsg(source, "Usage: %s", arg[1].." <player> <other account ID>") end
 end
 
 CmdRegister ("mergeaccounts", CmdMergeAccounts, "resource.rafalh.mergeaccounts")
@@ -569,12 +591,12 @@ local function CmdRemTopTime (message, arg)
 		local map = getCurrentMap(room)
 		if (map) then
 			local map_id = map:getId()
-			local rows = DbQuery ("SELECT p.player, p.name, bt.time FROM rafalh_besttimes bt, rafalh_players p WHERE map=? AND bt.player=p.player ORDER BY time LIMIT "..(n + 3), map_id)
+			local rows = DbQuery("SELECT p.player, p.name, bt.time FROM rafalh_besttimes bt, rafalh_players p WHERE map=? AND bt.player=p.player ORDER BY time LIMIT "..(n + 3), map_id)
 			if (rows and rows[n]) then
-				DbQuery ("DELETE FROM rafalh_besttimes WHERE player=? AND map=?", rows[n].player, map_id)
-				StSet (rows[n].player, "toptimes_count", StGet (rows[n].player, "toptimes_count") - 1)
-				if (rows[4] and n <= 3) then
-					StSet (rows[4].player, "toptimes_count", StGet (rows[4].player, "toptimes_count") + 1)
+				DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map=?", rows[n].player, map_id)
+				StSet(rows[n].player, "toptimes_count", StGet (rows[n].player, "toptimes_count") - 1)
+				if(rows[4] and n <= 3) then
+					StSet(rows[4].player, "toptimes_count", StGet (rows[4].player, "toptimes_count") + 1)
 				end
 				BtDeleteCache ()
 				BtSendMapInfo (false)
@@ -604,21 +626,41 @@ end
 
 CmdRegister ("remtoptime", CmdRemTopTime, "resource.rafalh.remtoptime", "Removes specified toptime on current map")
 
-local function CmdResetStats (message, arg)
+local function CmdResetStats(message, arg)
 	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))
-	if (player) then
-		DbQuery ("DELETE FROM rafalh_besttimes WHERE player=?", g_Players[player].id)
+	if(player) then
+		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", g_Players[player].id)
 		local stats = {
 			cash = 0, bidlvl = 0, points = 0, warnings = 0, dm = 0, dm_wins = 0,
 			first = 0, second = 0, third = 0, toptimes_count = 0 }
 		StSet (player, stats)
-		scriptMsg ("Statistics has been reset for %s!", getPlayerName (player))
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
+		scriptMsg("Statistics has been reset for %s!", getPlayerName (player))
+	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("resetstats", CmdResetStats, "resource.rafalh.resetstats", "Resets player statistics")
+CmdRegister("resetstats", CmdResetStats, "resource.rafalh.resetstats", "Resets player statistics")
 
-local function CmdSqlQuery (message, arg)
+local function CmdResetStats(message, arg)
+	local playerId = touint(arg[2])
+	if(playerId) then
+		if(g_IdToPlayer[playerId]) then
+			scriptMsg("You cannot remove online players")
+			return
+		end
+		
+		DbQuery("DELETE FROM rafalh_names WHERE player=?", playerId)
+		DbQuery("DELETE FROM rafalh_rates WHERE player=?", playerId)
+		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", playerId)
+		DbQuery("DELETE FROM rafalh_profiles WHERE player=?", playerId)
+		DbQuery("DELETE FROM rafalh_players WHERE player=?", playerId)
+		
+		scriptMsg("Account %u has been deleted!", playerId)
+	else privMsg(source, "Usage: %s", arg[1].." <account ID>") end
+end
+
+CmdRegister("delacc", CmdResetStats, "resource.rafalh.resetstats", "Deletes player account")
+
+local function CmdSqlQuery(message, arg)
 	local query = #arg >= 2 and message:sub (arg[1]:len () + 2)
 	if (query) then
 		local rows = DbQuery(query)

@@ -1,0 +1,15 @@
+<meta>
+	<info type="script" name="Meter" version="1.0" author="Susosi &amp; Rafalh" />
+	
+	<script src="meter_c.lua" type="client" />
+	
+	<file src="bg.png" />
+	<file src="text.png" />
+	<file src="nos.png" />
+	<file src="hp.png" />
+	<file src="needle.png" />
+	
+	<include resource="rafalh_shared" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

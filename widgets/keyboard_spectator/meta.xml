@@ -1,0 +1,8 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Keyboard spectator" description="Keyboard spectator" type="script" />
+	
+	<script src="kbspect_c.lua" type="client" />
+	<script src="kbspect.lua" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

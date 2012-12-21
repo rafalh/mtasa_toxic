@@ -1,0 +1,13 @@
+<meta>
+	<info type="script" name="Health Bar" author="rafalh" version="1.0" description="Health Bar" />
+	
+	<script src="health_c.lua" type="client" />
+	
+	<file src="images/bg.png" />
+	<file src="images/bar_l.png" />
+	<file src="images/bar.png" />
+	
+	<include resource="rafalh_shared" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

@@ -1,0 +1,13 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Nitrometer" description="Nitrometer" type="script" />
+	
+	<script src="nitrometer_c.lua" type="client" />
+	
+	<file src="arrow.png" />
+	<file src="gauge.png" />
+	
+	<include resource="rafalh_nitro" />
+	<include resource="rafalh_shared" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

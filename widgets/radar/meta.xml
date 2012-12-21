@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<meta>
+	<info type="misc" description="Rafalh Radar" author="rafalh[PL]" name="rafalh_radar" />
+	
+	<script src="radar_c.lua" type="client" />
+	
+	<file src="radar.jpg" />
+</meta>

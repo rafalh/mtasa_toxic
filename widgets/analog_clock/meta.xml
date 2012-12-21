@@ -1,0 +1,9 @@
+<meta>
+	<info name="Analog clock" version="1.0" author="rafalh" type="misc" description="Analog clock" />
+	
+	<script src="analog_clock_c.lua" type="client" />
+	
+	<include resource="rafalh_shared" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

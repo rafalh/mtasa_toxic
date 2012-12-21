@@ -1,4 +1,4 @@
-addEvent ("onAddMapToQueueReq", true)
+addEvent("onAddMapToQueueReq", true)
 
 function MqAdd(room, map, display_msg, player)
 	assert(type(room) == "table")
@@ -21,8 +21,8 @@ function MqAdd(room, map, display_msg, player)
 		end
 	end
 	
-	if (pos == 1) then
-		triggerClientEvent (g_Root, "onClientSetNextMap", g_Root, mapName)
+	if(pos == 1) then
+		triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, mapName)
 	end
 	
 	if (display_msg) then
@@ -54,13 +54,13 @@ function MqRemove(room, pos)
 	if(pos == 1) then
 		local nextMap = room.mapQueue[1]
 		local nextMapName = nextMap and nextMap:getName()
-		triggerClientEvent (g_Root, "onClientSetNextMap", g_Root, nextMapName)
+		triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, nextMapName)
 	end
 	
 	return map
 end
 
-function MqPop (room)
+function MqPop(room)
 	assert(room)
 	if(not room.mapQueue) then return false end
 	
@@ -68,7 +68,7 @@ function MqPop (room)
 	
 	local nextMap = room.mapQueue[1]
 	local nextMapName = nextMap and nextMap:getName()
-	triggerClientEvent (g_Root, "onClientSetNextMap", g_Root, nextMapName)
+	triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, nextMapName)
 	
 	return map
 end
@@ -85,12 +85,12 @@ function MqGetMapPos(room, map)
 end
 
 local function MqOnAddReq(mapResName)
-	if (not hasObjectPermissionTo (client, "resource.rafalh.nextmap", false)) then return end
+	if (not hasObjectPermissionTo(client, "resource.rafalh.nextmap", false)) then return end
 	
 	local room = g_Players[client].room
 	local map = false
 	
-	local mapRes = getResourceFromName (mapResName)
+	local mapRes = getResourceFromName(mapResName)
 	if(mapRes) then
 		map = Map.create(mapRes)
 	else
@@ -100,10 +100,10 @@ local function MqOnAddReq(mapResName)
 		end
 	end
 	
-	if (map) then
+	if(map) then
 		MqAdd(room, map, true, client)
 	else
-		outputDebugString ("getResourceFromName failed "..tostring(mapResName), 2)
+		outputDebugString("getResourceFromName failed "..tostring(mapResName), 2)
 	end
 end
 

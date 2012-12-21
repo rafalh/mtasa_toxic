@@ -1,0 +1,13 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Speed Bar" description="Speed Bar" type="script" />
+
+	<script src="speed_c.lua" type="client" />
+
+	<file src="images/bg.png" />
+	<file src="images/bar_l.png" />
+	<file src="images/bar.png" />
+	
+	<include resource="rafalh_shared" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

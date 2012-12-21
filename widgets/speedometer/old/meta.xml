@@ -1,0 +1,9 @@
+<meta>
+	<info name="Graphical speedometer" author="rafalh" version="1.0" type="misc"/>
+	<script src="speedo_c.lua" type="client" />
+
+	<file src="disc.png" />
+	<file src="needle.png" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

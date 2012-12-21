@@ -48,7 +48,7 @@ local function CmdMapInfo(message, arg)
 		local rows = DbQuery("SELECT played, rates, rates_count, removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 		local rating = rows[1].rates_count > 0 and(("%.1f"):format(rows[1].rates/rows[1].rates_count)) or 0
 		
-		scriptMsg("Map name: %s - Played: %u - Rating: %.1f(rated by %u players)%s",
+		scriptMsg("Map name: %s - Played: %u - Rating: %.1f (rated by %u players)%s",
 			map_name, rows[1].played, rating, rows[1].rates_count, rows[1].removed ~= "" and " - Removed: "..rows[1].removed or "")
 	else
 		privMsg(source, "Cannot find map!")
@@ -260,7 +260,7 @@ local function CmdRating(message, arg)
 			rating = rows[1].rates / rows[1].rates_count
 		end
 		
-		scriptMsg("Map rating: %.2f(rated by %u players).", rating, rows[1].rates_count)
+		scriptMsg("Map rating: %.2f (rated by %u players).", rating, rows[1].rates_count)
 	end
 end
 
@@ -317,7 +317,7 @@ local function CmdVersion(message, arg)
 	local player =(#arg >= 2 and findPlayer(message:sub(arg[1]:len() + 2))) or source
 	local ver = getPlayerVersion(player)
 	
-	scriptMsg("%s's MTA version: %s(revision %s).", getPlayerName(player), ver:sub(1, 5), ver:sub(7))
+	scriptMsg("%s's MTA version: %s (revision %s).", getPlayerName(player), ver:sub(1, 5), ver:sub(7))
 end
 
 CmdRegister("version", CmdVersion, false, "Shows player MTA version")

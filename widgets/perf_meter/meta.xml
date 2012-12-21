@@ -1,0 +1,7 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Perfomance meter" type="script" />
+	
+	<script src="perf_c.lua" type="client" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>

@@ -83,14 +83,14 @@ function table.copy ( t )
 	return ret
 end
 
-function formatTimePeriod ( t, decimals )
-	assert ( t )
-	local dec = touint ( decimals, 2 )
-	local h = math.floor ( t / 3600 )
-	local m = math.floor ( ( t % 3600 ) / 60 )
+function formatTimePeriod(t, decimals)
+	assert(t)
+	local dec = touint(decimals, 2)
+	local h = math.floor(t / 3600)
+	local m = math.floor((t % 3600) / 60)
 	local s = t % 60
 	
-	return ( ( h > 0 and h..":" ) or "" )..( "%"..( ( h > 0 and "02" ) or "" ).."u:%0"..( 2 + ( ( dec > 0 and dec + 1 ) or 0 ) ).."."..dec.."f" ):format ( m, s )
+	return (( h > 0 and h..":" ) or "")..( "%"..( ( h > 0 and "02" ) or "" ).."u:%0"..( 2 + ( ( dec > 0 and dec + 1 ) or 0 ) ).."."..dec.."f"):format(m, s)
 end
 
 function formatNumber ( num, decimals )

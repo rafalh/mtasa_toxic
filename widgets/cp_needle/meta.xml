@@ -1,0 +1,11 @@
+<meta>
+	<info name="rafalh CP needle" version="1.1" author="rafalh" type="misc" description="Needle to the checkpoint" />
+	
+	<script src="cp_needle_c.lua" type="client" />
+	
+	<file src="needle.png" />
+	
+	<include resource="rafalh_shared" />
+	
+	<export function="widgetCtrl" type="client" />
+</meta>
