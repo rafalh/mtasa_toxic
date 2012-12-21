@@ -24,7 +24,9 @@ local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
 local g_Items = {}
 local g_Dir = "down"
-local g_ScrollStart = false
+local g_ItemsCount = 0
+local g_FirstTime = false
+local g_InsertTimeStamp, g_InsertRank = false, false
 
 addEvent("rb_addItem", true)
 addEvent("rb_clear", true)
@@ -47,71 +49,89 @@ function formatTimePeriod(t, decimals)
 end
 
 local function RbRender()
-	if(not g_Items) then return end
-	
-	local a = (g_Dir == "down" and 1 or #g_Items)
-	local b = (g_Dir == "down" and #g_Items or 1)
-	local c = (g_Dir == "down" and 1 or -1)
-	
 	local x, y = g_Pos[1], g_Pos[2]
-	if(g_ScrollStart) then
-		local ticks = getTickCount()
-		local progress = (ticks - g_ScrollStart)/500
-		if(progress >= 1 or g_Dir == "down") then
-			g_ScrollStart = false
-		else
-			a = a - 1
-			progress = getEasingValue(progress, "InOutQuad")
-			y = y + progress*FONT_HEIGHT
-		end
-	end
+	local first = true
+	local maxY = y + g_Size[2]
 	
-	for i = a, b, c do
-		local item = g_Items[i]
-		local pos = (g_Dir == "down" and i or (#g_Items+1-i))
-		local text = pos..")"
-		dxDrawText(text, x+1, y+1, x+POS_OFFSET+1, y+1, SHADOW_COLOR, SCALE, FONT, "right")
-		dxDrawText(text, x, y, x+POS_OFFSET, y, tocolor(255, 255, 255), SCALE, FONT, "right")
-		
-		local playerName = item[1]
-		local color = WHITE
-		if(type(item[1]) ~= "string") then
-			playerName = getPlayerName(item[1])
-			color = tocolor(getPlayerNametagColor(item[1]))
+	for rank, item in ipairs(g_Items) do
+		if(item) then
+			local itemY = y
+			local itemAlpha = 255
+			if(g_InsertRank == rank) then
+				local ticks = getTickCount()
+				local progress = (ticks - g_InsertTimeStamp)/500
+				if(progress < 1) then
+					if(first) then
+						-- scroll rest of items
+						y = y + progress*FONT_HEIGHT - FONT_HEIGHT
+					end
+					itemAlpha = progress*255
+				else
+					g_InsertRank = false
+				end
+			end
+			first = false
+			
+			local white = tocolor(255, 255, 255, itemAlpha)
+			local black = tocolor(0, 0, 0, itemAlpha)
+			
+			local text = rank..")"
+			dxDrawText(text, x+1, itemY+1, x+POS_OFFSET+1, itemY+1, black, SCALE, FONT, "right")
+			dxDrawText(text, x, itemY, x+POS_OFFSET, itemY, white, SCALE, FONT, "right")
+			
+			local playerName = item[1]
+			local color = white
+			if(type(item[1]) ~= "string") then
+				playerName = getPlayerName(item[1])
+				local r, g, b = getPlayerNametagColor(item[1])
+				color = tocolor(r, g, b, itemAlpha)
+			end
+			local text = playerName.."#FFFFFF: "..item[2]
+			dxDrawText(text:gsub("#%x%x%x%x%x%x", ""), x+POS_OFFSET+5+1, itemY+1, 0, 0, black, SCALE, FONT)
+			dxDrawText(text, x+5+POS_OFFSET, itemY, 0, 0, color, SCALE, FONT, "left", "top", false, false, false, true)
+			
+			y = y + FONT_HEIGHT
+			if(y + FONT_HEIGHT > maxY) then return end
 		end
-		local text = playerName.."#FFFFFF: "..item[2]
-		dxDrawText(text:gsub("#%x%x%x%x%x%x", ""), x+POS_OFFSET+5+1, y+1, 0, 0, SHADOW_COLOR, SCALE, FONT)
-		dxDrawText(text, x+5+POS_OFFSET, y, 0, 0, color, SCALE, FONT, "left", "top", false, false, false, true)
-		
-		y = y + FONT_HEIGHT
 	end
 end
 
 local function RbClear(dir)
 	g_Items = {}
 	g_Dir = dir
+	g_FirstTime = false
+	g_InsertTimeStamp = false
+	g_InsertRank = false
+	g_ItemsCount = 0
 end
 
-local function RbAddItem(player, time)
+local function RbAddItem(rank, player, time)
 	local timeStr
-	if(#g_Items > 0) then
-		local dt = time - g_Items[1][3]
+	if(g_FirstTime) then
+		local dt = time - g_FirstTime
 		assert(dt >= 0)
 		timeStr = "+"..formatTimePeriod(dt)
 	else
 		timeStr = formatTimePeriod(time)
+		g_FirstTime = time
 	end
 	
-	local item = {player, timeStr, time}
-	table.insert(g_Items, item)
-	if(#g_Items >= 2) then
-		g_ScrollStart = getTickCount()
+	-- make sure there is no holes in g_Items
+	while(#g_Items < rank) do
+		table.insert(g_Items, false)
 	end
+	
+	-- add item (table still doesnt have holes)
+	local item = {player, timeStr, time}
+	g_Items[rank] = item
+	g_InsertTimeStamp = getTickCount()
+	g_InsertRank = rank
+	g_ItemsCount = g_ItemsCount + 1
 end
 
 local function RbPlayerQuit()
-	for i, item in ipairs(g_Items) do
-		if(item[1] == source) then
+	for rank, item in ipairs(g_Items) do
+		if(item and item[1] == source) then
 			local playerName = getPlayerName(source)
 			local r, g, b = getPlayerNametagColor(source)
 			playerName = ("#%02X%02X%02X"):format(r, g, b)..playerName
@@ -151,9 +171,9 @@ g_WidgetCtrl[$(wg_getpos)] = function()
 end
 
 g_WidgetCtrl[$(wg_reset)] = function()
-	g_Size = { g_ScreenSizeSqrt[2]*3, 0.77*g_ScreenSize[2]-250 }
+	g_Size = { 200, 0.77*g_ScreenSize[2]-250 }
 	g_Pos = { 30, 250 }
-	g_WidgetCtrl[$(wg_show)](false)
+	g_WidgetCtrl[$(wg_show)](true)
 end
 
 ---------------------------------

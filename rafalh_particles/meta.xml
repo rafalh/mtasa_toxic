@@ -1,0 +1,39 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Particles" description="Particles script" type="script" />
+
+	<script src="particles.lua" />
+	<script src="particles_c.lua" type="client" />
+	<script src="effect_c.lua" type="client" />
+	
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+	
+	<file src="snow.png" />
+	
+	<settings>
+		<setting name="*radius" value="20"
+			friendlyname="Radius"
+			accept="0-100"
+			/>
+		<setting name="*density" value="50"
+			friendlyname="Density"
+			accept="0-100"
+			/>
+		<setting name="*speed" value="1.5"
+			friendlyname="Speed"
+			accept="0-10"
+			/>
+		<setting name="*size" value="1"
+			friendlyname="Size"
+			accept="0-10"
+			/>
+		<setting name="*wind_x" value="1"
+			friendlyname="Wind X"
+			accept="0-10"
+			/>
+		<setting name="*wind_y" value="1"
+			friendlyname="Wind Y"
+			accept="0-10"
+			/>
+	</settings>
+</meta>

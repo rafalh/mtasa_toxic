@@ -1,0 +1,84 @@
+# MAKEFILE HACK: http://devicesoftware.blogspot.com/2010/06/handling-path-with-white-spaces-in.html
+NULLSTR := # creating a null string
+SPACE   := $(NULLSTR) # end of the line
+OUTPUT2 := $(subst $(SPACE),\ ,$(OUTPUT))
+CURDIR2 := $(subst $(SPACE),\ ,$(CURDIR))
+
+D:/Lua/Projects/rafalh_particles/Makefile.auto: $(CURDIR2)\meta.xml $(META2MAKEFILE_PATH)
+	$(META2MAKEFILE) -o D:/Lua/Projects/rafalh_particles/Makefile.auto -t rafalh_particles_ -utf8 D:/Lua/Projects/rafalh_particles/meta.xml
+
+$(OUTPUT2)\particles.lua: particles.lua
+	$(eval FILE_DIR := )
+	$(eval FILE_PATH := $(FILE_DIR)particles.lua)
+	$(eval BUILD_DIR := )
+ifneq ($(PREPROCESS), 0)
+	$(Q)if not exist "build\$(FILE_DIR)" $(MKDIR) "build\$(FILE_DIR)"
+	$(LUAPP) -o "build\$(FILE_PATH)" "$(BUILD_DIR)$(FILE_PATH)"
+	$(eval BUILD_DIR := build\)
+endif
+ifneq ($(COMPILE), 0)
+	$(Q)if not exist "build\$(FILE_DIR)" $(MKDIR) "build\$(FILE_DIR)"
+	$(Q)cd $(BUILD_DIR) & $(LUAC) -o "$(subst build,..,$(BUILD_DIR))build\$(FILE_PATH)" "$(FILE_PATH)"
+	$(eval BUILD_DIR := build\)
+	$(ADDUTF8BOM) "$(BUILD_DIR)$(FILE_PATH)"
+endif
+	@if not exist "$(OUTPUT)\$(FILE_DIR)" $(MKDIR) "$(OUTPUT)\$(FILE_DIR)"
+	$(COPY) "$(BUILD_DIR)$(FILE_PATH)" "$(OUTPUT)\$(FILE_PATH)"
+
+$(OUTPUT2)\particles_c.lua: particles_c.lua
+	$(eval FILE_DIR := )
+	$(eval FILE_PATH := $(FILE_DIR)particles_c.lua)
+	$(eval BUILD_DIR := )
+ifneq ($(PREPROCESS), 0)
+	$(Q)if not exist "build\$(FILE_DIR)" $(MKDIR) "build\$(FILE_DIR)"
+	$(LUAPP) -o "build\$(FILE_PATH)" "$(BUILD_DIR)$(FILE_PATH)"
+	$(eval BUILD_DIR := build\)
+endif
+ifneq ($(COMPILE), 0)
+	$(Q)if not exist "build\$(FILE_DIR)" $(MKDIR) "build\$(FILE_DIR)"
+	$(Q)cd $(BUILD_DIR) & $(LUAC) -o "$(subst build,..,$(BUILD_DIR))build\$(FILE_PATH)" "$(FILE_PATH)"
+	$(eval BUILD_DIR := build\)
+	$(ADDUTF8BOM) "$(BUILD_DIR)$(FILE_PATH)"
+endif
+	@if not exist "$(OUTPUT)\$(FILE_DIR)" $(MKDIR) "$(OUTPUT)\$(FILE_DIR)"
+	$(COPY) "$(BUILD_DIR)$(FILE_PATH)" "$(OUTPUT)\$(FILE_PATH)"
+
+$(OUTPUT2)\effect_c.lua: effect_c.lua
+	$(eval FILE_DIR := )
+	$(eval FILE_PATH := $(FILE_DIR)effect_c.lua)
+	$(eval BUILD_DIR := )
+ifneq ($(PREPROCESS), 0)
+	$(Q)if not exist "build\$(FILE_DIR)" $(MKDIR) "build\$(FILE_DIR)"
+	$(LUAPP) -o "build\$(FILE_PATH)" "$(BUILD_DIR)$(FILE_PATH)"
+	$(eval BUILD_DIR := build\)
+endif
+ifneq ($(COMPILE), 0)
+	$(Q)if not exist "build\$(FILE_DIR)" $(MKDIR) "build\$(FILE_DIR)"
+	$(Q)cd $(BUILD_DIR) & $(LUAC) -o "$(subst build,..,$(BUILD_DIR))build\$(FILE_PATH)" "$(FILE_PATH)"
+	$(eval BUILD_DIR := build\)
+	$(ADDUTF8BOM) "$(BUILD_DIR)$(FILE_PATH)"
+endif
+	@if not exist "$(OUTPUT)\$(FILE_DIR)" $(MKDIR) "$(OUTPUT)\$(FILE_DIR)"
+	$(COPY) "$(BUILD_DIR)$(FILE_PATH)" "$(OUTPUT)\$(FILE_PATH)"
+
+$(OUTPUT2)\snow.png: snow.png
+	$(eval FILE_DIR := )
+	$(eval FILE_PATH := $(FILE_DIR)snow.png)
+	$(eval BUILD_DIR := )
+	@if not exist "$(OUTPUT)\$(FILE_DIR)" $(MKDIR) "$(OUTPUT)\$(FILE_DIR)"
+	$(COPY) "$(BUILD_DIR)$(FILE_PATH)" "$(OUTPUT)\$(FILE_PATH)"
+
+
+rafalh_particles_files: $(OUTPUT2)\meta.xml $(OUTPUT2)\effect_c.lua $(OUTPUT2)\particles.lua $(OUTPUT2)\particles_c.lua $(OUTPUT2)\snow.png
+
+rafalh_particles_clean:
+	$(RM) "$(OUTPUT)\effect_c.lua"
+	$(RM) "$(OUTPUT)\particles.lua"
+	$(RM) "$(OUTPUT)\particles_c.lua"
+	$(RM) "$(OUTPUT)\snow.png"
+	$(RM) "$(OUTPUT)\meta.xml"
+
+.PHONY: rafalh_particles_files rafalh_particles_clean
+$(OUTPUT2)\meta.xml: $(CURDIR2)\meta.xml
+	@if not exist "$(OUTPUT)" $(MKDIR) "$(OUTPUT)"
+	@copy "meta.xml" "$(OUTPUT)\meta.xml"
