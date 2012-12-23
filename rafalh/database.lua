@@ -115,8 +115,13 @@ else
 	end
 	
 	function DbInit ()
+		--fileCopy("backups/db1.sqlite", g_DbPath)
 		g_Connection = dbConnect ( "sqlite", g_DbPath )
+		if(not g_Connection) then
+			outputDebugString("Failed to connect to database!!!", 1)
+		end
 		
+		outputDebugString("Database initialized.", 3)
 		g_BackupsInterval = touint ( get ( "db_backup_int" ), 0 ) * 3600 * 24
 		--outputDebugString ( "Auto backup: "..g_BackupsInterval, 3 )
 		if ( g_BackupsInterval > 0 ) then
@@ -137,6 +142,7 @@ else
 		end
 		
 		outputDebugString ( "SQL query failed: "..errmsg, 2 )
+		outputDebugString ( "Query: "..query, 2 )
 		DbgTraceBack ()
 		return false
 	end

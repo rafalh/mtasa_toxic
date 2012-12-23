@@ -13,6 +13,8 @@ local g_Patterns = { -- -FoH-S#808080treetch
 	"^>([^<][^<]?[^<]?[^<]?[^<]?[^<]?)<",
 }
 
+addEvent("onPlayerChangeTeam")
+
 local function TmGetClanFromName ( name )
 	name = name:gsub ( "#%x%x%x%x%x%x", "" )
 	
@@ -70,10 +72,23 @@ local function TmUpdateTeams ()
 	end
 end
 
+local function TmDetectTeamChange()
+	for player, pdata in pairs(g_Players) do
+		local team = not pdata.is_console and getPlayerTeam(player)
+		if(team ~= pdata.team) then
+			pdata.team = team
+			triggerEvent("onPlayerChangeTeam", player, team)
+		end
+	end
+end
+
 local function TmInitDelayed ()
 	for player, pdata in pairs ( g_Players ) do
+		pdata.team = false
 		TmUpdatePlayerTeam ( player )
 	end
+	
+	setTimer(TmDetectTeamChange, 1000, 0)
 end
 
 local function TmInit ()

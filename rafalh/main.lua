@@ -46,30 +46,33 @@ local function onPlayerPrivateMessage ( msg, recipient )
 end
 
 local function onPlayerChangeNick ( oldNick, newNick )
-	if ( wasEventCancelled () or not g_Players[source] ) then
+	local pdata = g_Players[source]
+	if(wasEventCancelled () or not pdata) then
 		return
 	end
 	
-	oldNick = oldNick:gsub ( "#%x%x%x%x%x%x", "" )
-	newNick = newNick:gsub ( "#%x%x%x%x%x%x", "" )
+	local oldNickPlain = oldNick:gsub("#%x%x%x%x%x%x", "")
+	local newNickPlain = newNick:gsub("#%x%x%x%x%x%x", "")
 	
-	if ( newNick == "" ) then
-		privMsg ( source, "Empty nick is not allowed!" )
-		cancelEvent ()
+	if(newNickPlain == "") then
+		privMsg(source, "Empty nick is not allowed!")
+		cancelEvent()
 		return
 	end
 	
-	if ( oldNick ~= newNick ) then -- not only color changed
-		if ( NlCheckPlayer ( source, newNick ) ) then
+	if(oldNickPlain ~= newNickPlain) then -- not only color changed
+		if(NlCheckPlayer(source, newNickPlain)) then
 			cancelEvent ()
 			return
 		end
 		
-		if ( AsCanPlayerChangeNick ( source, oldNick, newNick ) ) then
-			DbQuery ( "UPDATE rafalh_players SET name=? WHERE player=?", newNick, g_Players[source].id )
-			customMsg ( 255, 96, 96, "* %s is now known as %s.", oldNick, newNick )
+		if(AsCanPlayerChangeNick(source, oldNickPlain, newNickPlain)) then
+			local fullNick = pdata:getName(true)
+			
+			DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullNick, pdata.id)
+			customMsg(255, 96, 96, "* %s is now known as %s.", oldNickPlain, newNickPlain)
 		else
-			cancelEvent ()
+			cancelEvent()
 		end
 	end
 end

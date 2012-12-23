@@ -8,142 +8,137 @@
 -- Local variables --
 ---------------------
 
-local g_Window, g_Panel = false, false
 local g_MapName = ""
 local g_Played, g_Rating, g_RatesCount = 0, 0, 0
 local g_Toptimes = {}
 local g_HideTimer = false
+local g_Visible, g_AnimStart, g_Hiding = false, false, false
+local g_Textures = {}
 
 --------------------------------
 -- Local function definitions --
 --------------------------------
 
-local function hideTopTimes ()
-	if ( g_HideTimer ) then
-		killTimer ( g_HideTimer )
+local function MiRender()
+	local x, y = g_ScreenSize[1] / 2 + 64, 5
+	local w, h = 300, 80 + #g_Toptimes * 14 + math.min ( #g_Toptimes, 1 ) * 35
+	
+	if(g_AnimStart) then
+		local dt = getTickCount() - g_AnimStart
+		local progress = dt / 500
+		if(progress < 1) then
+			if(g_Hiding) then
+				progress = getEasingValue(progress, "InQuad")
+				y = y - progress*(y + h)
+			else
+				progress = getEasingValue(progress, "InOutQuad")
+				y = -h + progress*(y + h)
+			end
+		else
+			g_AnimStart = false
+			
+			if(g_Hiding) then
+				g_Visible = false
+				removeEventHandler("onClientRender", g_Root, MiRender)
+				return
+			end
+		end
+	end
+	
+	local white = tocolor(255, 255, 255)
+	-- g_MapName, g_Author, g_Played, g_Rating, g_RatesCount, g_Toptimes
+	local author = g_Author or MuiGetMsg("unknown")
+	
+	dxDrawRectangle(x, y, w, h, tocolor(0, 0, 0, 64))
+	
+	-- General info
+	dxDrawText(MuiGetMsg("Map: %s"):format(g_MapName), x + 10, y + 10, x + w, y + 25, white, 1, "default-bold", "left", "top", true)
+	dxDrawText(MuiGetMsg("Author: %s"):format(author), x + 10, y + 25, x + w, y + 40, white, 1, "default", "left", "top", true)
+	dxDrawText(MuiGetMsg("Played: %u times"):format(g_Played), x + 10, y + 40, 0, 0, white, 1, "default")
+	
+	-- Rates
+	local disabledStarClr = tocolor(255, 255, 255, 64)
+	dxDrawText("Rating:", x + 10, y + 55, 0, 0, white, 1, "default")
+	for i = 0, 4, 1 do
+		if(i*2 < g_Rating and g_Rating <= i*2 + 1) then
+			-- half star
+			dxDrawImage(x + 60 + i*16, y + 55, 8, 16, g_Textures.star_l)
+			dxDrawImage(x + 60 + i*16 + 8, y + 55, 8, 16, g_Textures.star_r, 0, 0, 0, disabledStarClr)
+		else
+			-- full star
+			local clr = (g_Rating <= i*2) and disabledStarClr or white
+			dxDrawImage(x + 60 + i*16, y + 55, 16, 16, g_Textures.star, 0, 0, 0, clr)
+		end
+	end
+	dxDrawText(MuiGetMsg("(%u rates)"):format(g_RatesCount), x + 65 + 5*16, y + 55)
+	
+	-- Top times
+	if ( #g_Toptimes > 0 ) then
+		dxDrawText("Top Times:", x + 10, y + 75)
+		
+		dxDrawText("Pos", x + 10, y + 90)
+		dxDrawText("Time", x + 45, y + 90)
+		dxDrawText("Player", x + 120, y + 90)
+		
+		dxDrawLine(x + 10, y + 105, x + w - 10, y + 105)
+		
+		for i, data in ipairs ( g_Toptimes ) do
+			local itemY = y + 95 + i * 14
+			local clr = (data.player == g_MyId) and tocolor(180, 255, 255) or white
+			
+			dxDrawText(tostring(i), x + 10, itemY, x + 45, itemY + 15, clr, 1, "default-bold")
+			dxDrawText(data.time, x + 45, itemY, x + 120, itemY + 15, clr, 1, "default-bold")
+			dxDrawText(data.name, x + 120, itemY, x + w, itemY + 15, clr, 1, "default-bold", "left", "top", true, false, false, true)
+		end
+	end
+end
+
+local function hideTopTimes()
+	if(not g_Visible or g_Hiding) then return end
+	
+	if(g_HideTimer) then
+		killTimer(g_HideTimer)
 		g_HideTimer = false
 	end
 	
-	if ( not g_Window ) then
-		return
-	end
+	g_Hiding = true
+	g_AnimStart = getTickCount()
+end
+
+local function showTopTimes()
+	if(g_Visible) then return end
 	
-	GaFadeOut ( g_Window, 500 )
-	GaFadeOut ( g_Panel, 500 )
+	g_Visible = true
+	g_Hiding = false
+	g_AnimStart = getTickCount()
+	addEventHandler("onClientRender", g_Root, MiRender)
+	g_HideTimer = setTimer(hideTopTimes, 15000, 1)
 end
 
-local function showTopTimes ()
-	if ( not g_Window ) then
-		return
-	end
-	GaFadeIn ( g_Window, 500, 1/3 )
-	GaFadeIn ( g_Panel, 500, 1 )
-	g_HideTimer = setTimer ( hideTopTimes, 15000, 1 )
-end
-
-local function keyUpHandler ()
-	if ( guiGetVisible ( g_Window ) ) then
-		hideTopTimes ()
+local function keyUpHandler()
+	if(g_Visible) then
+		hideTopTimes()
 	else
-		showTopTimes ()
+		showTopTimes()
 	end
 end
 
-local function setupMapInfoPanel ( map_name, author, played, rating, rates_count, toptimes )
-	local a = 0
-	if ( g_Panel ) then
-		a = guiGetAlpha ( g_Panel )
-		destroyElement ( g_Panel )
-	end
+local function onClientInit()
+	bindKey("f5", "up", keyUpHandler)
 	
-	local x, y = g_ScreenSize[1] / 2 + 64, 5
-	local w, h = 300, 95 + #toptimes * 14 + math.min ( #toptimes, 1 ) * 35
-	guiSetSize ( g_Window, w, h, false )
-	g_Panel = guiCreateLabel ( x + 5, y + 15, w - 10, h - 20, "", false )
-	
-	local label = guiCreateLabel ( 5, 5, w - 20, 15, MuiGetMsg ( "Map: %s" ):format ( map_name ), false, g_Panel )
-	guiSetFont ( label, "default-bold-small" )
-	if ( not author ) then
-		author = MuiGetMsg ( "unknown" )
-	end
-	guiCreateLabel ( 5, 20, w - 20, 15, MuiGetMsg ( "Author: %s" ):format ( author ), false, g_Panel )
-	guiCreateLabel ( 5, 35, w - 20, 15, MuiGetMsg ( "Played: %u times" ):format ( played ), false, g_Panel )
-	
-	guiCreateLabel ( 5, 50, 50, 15, "Rating:", false, g_Panel )
-	for i = 0, 4, 1 do
-		if(i*2 < rating and rating <= i*2 + 1) then
-			-- half star
-			guiCreateStaticImage(55 + i*16, 50, 8, 16, "img/star_l.png", false, g_Panel)
-			local star_r = guiCreateStaticImage(55 + i*16 + 8, 50, 8, 16, "img/star_r.png", false, g_Panel)
-			guiSetAlpha(star_r, 0.3)
-		else
-			-- full star
-			local star = guiCreateStaticImage(55 + i*16, 50, 16, 16, "img/star.png", false, g_Panel)
-			if(rating <= i*2) then
-				guiSetAlpha(star, 0.3)
-			end
-		end
-	end
-	guiCreateLabel ( 60 + 5*16, 50, w - 60 - 5*16, 15, MuiGetMsg ( "(%u rates)" ):format ( rates_count ), false, g_Panel )
-	
-	if ( #toptimes > 0 ) then
-		guiCreateLabel ( 5, 70, w - 20, 15, "Top Times:", false, g_Panel )
-		
-		guiCreateLabel ( 5, 85, 35, 15, "Pos", false, g_Panel )
-		guiCreateLabel ( 40, 85, 75, 15, "Time", false, g_Panel )
-		guiCreateLabel ( 115, 85, w - 135, 15, "Player", false, g_Panel )
-		
-		guiCreateLabel ( 5, 90, w - 20, 15, "_____________________________________________", false, g_Panel )
-		
-		for i, data in ipairs ( toptimes ) do
-			local y = 90 + i * 14
-			
-			local pos = guiCreateLabel ( 5, y, 35, 15, tostring ( i ), false, g_Panel )
-			local tm = guiCreateLabel ( 40, y, 75, 15, data.time, false, g_Panel )
-			local name = guiCreateLabel ( 115, y, w - 135, 15, data.name, false, g_Panel )
-			
-			guiSetFont ( pos, "default-bold-small" )
-			guiSetFont ( tm, "default-bold-small" )
-			guiSetFont ( name, "default-bold-small" )
-			
-			if ( data.player == g_MyId ) then
-				guiLabelSetColor ( pos, 180, 255, 255 )
-				guiLabelSetColor ( tm, 180, 255, 255 )
-				guiLabelSetColor ( name, 180, 255, 255 )
-			end
-		end
-	end
-	
-	-- Set panel alpha here because of bug in guiCreateStaticImage
-	guiSetAlpha ( g_Panel, a )
+	g_Textures.star = dxCreateTexture("img/star.png")
+	g_Textures.star_l = dxCreateTexture("img/star_l.png")
+	g_Textures.star_r = dxCreateTexture("img/star_r.png")
 end
 
-local function onClientInit ()
-	g_Window = guiCreateWindow ( g_ScreenSize[1]/2+64, 5, 300, 165, "Map Info", false )
-	guiSetVisible ( g_Window, false )
-	guiWindowSetMovable ( g_Window, false )
-	guiWindowSetSizable ( g_Window, false )
-	
-	setupMapInfoPanel ( "", "", 0, 0, 0, {} )
-	guiSetVisible ( g_Panel, false )
-	guiSetAlpha ( g_Panel, 0 )
-	bindKey ( "f5", "up", keyUpHandler )
-end
-
-local function onClientMapInfo ( show, name, author, played, rating, rates_count, toptimes )
+local function onClientMapInfo(show, name, author, played, rating, rates_count, toptimes)
 	g_MapName, g_Author, g_Played, g_Rating, g_RatesCount, g_Toptimes = name, author, played, rating, rates_count, toptimes
-	setupMapInfoPanel ( name, author, played, rating, rates_count, toptimes )
-	if ( show ) then
-		showTopTimes ()
-		if ( g_HideTimer ) then
-			resetTimer ( g_HideTimer )
+	
+	if(show) then
+		showTopTimes()
+		if(g_HideTimer) then
+			resetTimer(g_HideTimer)
 		end
-	end
-end
-
-local function onClientChangeGuiLang ()
-	if ( g_Window ) then
-		setupMapInfoPanel ( g_MapName, g_Author, g_Played, g_Rating, g_RatesCount, g_Toptimes )
 	end
 end
 
@@ -151,6 +146,5 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler ( $(EV_CLIENT_INIT), onClientInit )
-addInternalEventHandler ( $(EV_CLIENT_MAP_INFO), onClientMapInfo )
-addEventHandler ( "onClientLangChanged", g_ResRoot, onClientChangeGuiLang )
+addInternalEventHandler($(EV_CLIENT_INIT), onClientInit)
+addInternalEventHandler($(EV_CLIENT_MAP_INFO), onClientMapInfo)

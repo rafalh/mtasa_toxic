@@ -1,6 +1,9 @@
 Player = {}
 Player.__mt = {__index = Player}
 
+addEvent("onPlayerChangeRoom")
+addEvent("onPlayerChangeTeam")
+
 function Player:getStat(name)
 	return StGet(self.id, name)
 end
@@ -38,10 +41,26 @@ function Player:getIP()
 	end
 end
 
+function Player:getName(teamColor)
+	local name = getPlayerName(self.el)
+	if(teamColor and not self.is_console) then
+		local r, g, b = getPlayerNametagColor(self.el)
+		if(r ~= 255 or g ~= 255 or b ~= 255) then
+			return ("#%02X%02X%02X"):format(r, g, b)..name
+		end
+	end
+	return name
+end
+
 function Player:onRoomChange(room)
 	self.room = room
 	
 	BtSendMapInfo(self.room, self.new, self.el)
+end
+
+function Player:onTeamChange(team)
+	local fullName = self:getName(true)
+	DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullName, self.id)
 end
 
 function Player:destroy()
@@ -103,11 +122,9 @@ function Player.create(el)
 		g_PlayersCount = g_PlayersCount + 1
 	end
 	
-	name = name:gsub ( "#%x%x%x%x%x%x", "" )
-	if ( NlCheckPlayer ( self.el, name, true ) ) then
-		name = getPlayerName ( self.el ):gsub ( "#%x%x%x%x%x%x", "" )
-	end
-	DbQuery ( "UPDATE rafalh_players SET name=? WHERE player=?", name, self.id )
+	NlCheckPlayer(self.el, name, true)
+	local fullName = self:getName(true)
+	DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullName, self.id)
 	
 	local admin_res = getResourceFromName ( "admin" )
 	local country = admin_res and getResourceState ( admin_res ) == "running" and call ( admin_res, "getPlayerCountry", self.el )
@@ -126,5 +143,12 @@ addEventHandler("onPlayerChangeRoom", g_Root, function(room)
 	if(player) then
 		local room = Room.create(room)
 		player:onRoomChange(room)
+	end
+end)
+
+addEventHandler("onPlayerChangeTeam", g_Root, function(team)
+	local player = g_Players[source]
+	if(player) then
+		player:onTeamChange(team)
 	end
 end)

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.41" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.42" description="Rafalh Scripts System"   />
 	
 	<script src="utils/common.lua" />
 	<script src="utils/common_c.lua" type="client" />
@@ -205,6 +205,8 @@
 	<file src="img/radio/dubstepfm.jpg" />
 	<file src="img/radio/discopolofm.jpg" />
 	<file src="img/radio/dubstep_openfm.jpg" />
+	<file src="img/radio/christmas88.png" />
+	<file src="img/radio/christmas89.png" />
 	
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />

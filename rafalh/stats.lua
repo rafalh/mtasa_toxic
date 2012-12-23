@@ -10,13 +10,15 @@ local function StPlayerStatsSyncCallback ( id )
 	id = touint ( id )
 	if ( id ) then
 		local rows = DbQuery ( "SELECT name, cash, points, first, second, third, dm, dm_wins, toptimes_count, bidlvl, time_here, exploded, drowned FROM rafalh_players WHERE player=?", id )
-		if ( rows and rows[1] ) then
-			rows[1]._rank = StRankFromPoints ( rows[1].points )
+		local data = rows and rows[1]
+		if ( data ) then
+			data._rank = StRankFromPoints ( data.points )
 			local player = g_IdToPlayer[id]
 			if ( player ) then
-				rows[1]._join_time = g_Players[player].join_time
+				data._join_time = g_Players[player].join_time
 			end
-			return rows[1]
+			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
+			return data
 		end
 	end
 	
@@ -34,7 +36,11 @@ local function StTopSyncCallback ( toptype )
 			query = query.." AND online=1"
 		end
 		query = query.." ORDER BY "..field.." DESC LIMIT 18"
-		return DbQuery ( query )
+		local rows = DbQuery ( query )
+		for i, data in ipairs(rows) do
+			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
+		end
+		return rows
 	end
 	
 	return false
