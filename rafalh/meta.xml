@@ -109,6 +109,8 @@
 	<script src="gui/about_c.lua" type="client" />
 	<script src="gui/advert_c.lua" type="client" />
 	<script src="gui/listView_c.lua" type="client" />
+	<script src="gui/login_c.lua" type="client" />
+	<script src="gui/register_c.lua" type="client" />
 	
 	<script src="stop.lua" />
 	
@@ -152,6 +154,8 @@
 	<file src="img/empty.png" />
 	<file src="img/white.png" />
 	<file src="img/no_img.png" />
+	<file src="img/login.png" />
+	<file src="img/register.png" />
 	
 	<file src="img/userpanel/stats.png" />
 	<file src="img/userpanel/profile.png" />
@@ -241,6 +245,7 @@
 		<setting name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag] or |tag|. Player with tags will have they own teams" group="General" friendlyname="Clan teams" />
 		<setting name="*win_events" accept="false,true" value="true" desc="If enabled random event will happen when player won DD match (for example gravity will be set to 0)" group="General" friendlyname="Win events" />
 		<setting name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." group="General" friendlyname="Censor" />
+		<setting name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" group="General" friendlyname="Login window" />
 	
 		<setting name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." group="Maps" friendlyname="Maximal map repeats count" />
 		<setting name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." group="Maps" friendlyname="Ghostmode OFF warning time" />

@@ -277,22 +277,6 @@ end
 			end
 		end
 	end
-end
-
-local function StOnTopReq ( top_type, online )
-	local top_fields = { "cash", "points", "first", "second", "third", "dm", "dm_wins", "bidlvl" }
-	local field = top_fields[top_type]
-	if ( field ) then
-		local query = "SELECT name, "..field.." FROM rafalh_players"
-		if ( online ) then
-			query = query.." WHERE online=1"
-		end
-		query = query.." ORDER BY "..field.." DESC LIMIT 8"
-		local rows = DbQuery ( query )
-		if ( rows and rows[1] ) then
-			triggerClientEvent ( client, "onClientTop", g_ResRoot, top_type, rows )
-		end
-	end
 end]]
 
 addEventHandler ( "onResourceStart", g_ResRoot, StInit )
@@ -302,4 +286,3 @@ addEventHandler ( "onPlayerQuit", g_Root, StOnPlayerQuit )
 addEventHandler ( "onPlayerWasted", g_Root, StOnPlayerWasted )
 addEventHandler ( "onVehicleExplode", g_Root, StOnVehicleExplode )
 --addEventHandler ( "onPlayerStatsReq", g_ResRoot, StOnPlayerStatsReq )
---addEventHandler ( "onTopReq", g_ResRoot, StOnTopReq )

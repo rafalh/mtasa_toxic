@@ -7,6 +7,16 @@
     <msg id="Usage: %s">Użycie: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
     
+	<msg id="Login">Zaloguj</msg>
+	<msg id="Please login to save your statistics">Zaloguj się, aby zachować swoje statystyki</msg>
+	<msg id="Username:">Użytkownik:</msg>
+	<msg id="Password:">Hasło:</msg>
+	<msg id="Remember me">Zapamiętaj mnie</msg>
+	<msg id="Register">Zarejestruj</msg>
+	<msg id="Play as guest">Graj jako gość</msg>
+	<msg id="Register new account">Zarejestruj nowe konto</msg>
+	<msg id="Retry password:">Powtórz hasło:</msg>
+	
 	<msg id="Statistics">Statystyki</msg>
     <msg id="Player:">Gracz:</msg>
     <msg id="Cash:">Kasa:</msg>

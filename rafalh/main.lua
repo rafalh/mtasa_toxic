@@ -170,13 +170,19 @@ local function onRafalhStart ()
 	
 	local rows = DbQuery ( "SELECT lang FROM rafalh_players WHERE player=? LIMIT 1", g_Players[client].id )
 	local welcWnd = ( rows[1].lang == "" )
-	triggerClientInternalEvent ( client, $(EV_CLIENT_INIT), g_Root, g_Players[client].id, welcWnd, {
-		lang = pdata.lang,
-		breakable_glass = SmGetBool ( "breakable_glass" ),
-		red_damage_screen = SmGetBool ( "red_damage_screen" )
-	}, pdata.new )
+	local clientSettings = {}
+	clientSettings.lang = pdata.lang
+	clientSettings.breakable_glass = SmGetBool("breakable_glass")
+	clientSettings.red_damage_screen = SmGetBool("red_damage_screen")
+	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, welcWnd, clientSettings, pdata.new)
 	
 	BtSendMapInfo(pdata.room, pdata.new, client)
+	
+	local account = getPlayerAccount(client)
+	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd") and not welcWnd) then
+		triggerClientEvent(client, "main_onLoginReq", g_ResRoot)
+	end
+	
 	pdata.new = false
 end
 

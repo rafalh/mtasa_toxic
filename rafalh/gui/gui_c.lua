@@ -77,7 +77,7 @@ function GUI:createControl(tpl, parent)
 	elseif(tpl.type == "button") then
 		ctrl = guiCreateButton(x, y, w, h, tpl.text or "", false, parent)
 	elseif(tpl.type == "checkbox") then
-		ctrl = guiCreateCheckBox(x, y, w, h, tpl.text or "", tpl.selected == "true", parent, false)
+		ctrl = guiCreateCheckBox(x, y, w, h, tpl.text or "", tpl.selected == "true", false, parent)
 	elseif(tpl.type == "edit") then
 		ctrl = guiCreateEdit(x, y, w, h, tpl.text or "", false, parent)
 		if (tpl.readonly == "true") then
@@ -97,7 +97,7 @@ function GUI:createControl(tpl, parent)
 	elseif(tpl.type == "label") then
 		ctrl = guiCreateLabel(x, y, w, h, tpl.text or "", false, parent)
 		if(tpl.align) then
-			guiSetLabelAlign(ctrl, tpl.align)
+			guiLabelSetHorizontalAlign(ctrl, tpl.align)
 		end
 		if(tpl.color) then
 			local r, g, b = getColorFromString(tpl.color)

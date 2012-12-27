@@ -205,6 +205,7 @@ end
 
 local function RcStartPlayback ()
 	if ( g_Playback ) then
+		outputDebugString("RcStartPlayback", 3)
 		g_PlaybackTime = getTickCount ()
 		g_PlaybackTimeOffset = 0
 		g_PlaybackFrame = 2

@@ -52,8 +52,8 @@ local function MiRender()
 	dxDrawRectangle(x, y, w, h, tocolor(0, 0, 0, 64))
 	
 	-- General info
-	dxDrawText(MuiGetMsg("Map: %s"):format(g_MapName), x + 10, y + 10, x + w, y + 25, white, 1, "default-bold", "left", "top", true)
-	dxDrawText(MuiGetMsg("Author: %s"):format(author), x + 10, y + 25, x + w, y + 40, white, 1, "default", "left", "top", true)
+	dxDrawText(MuiGetMsg("Map: %s"):format(g_MapName), x + 10, y + 10, x + w, y + 25, white, 1, "default-bold", "left", "top", true, false, false, true)
+	dxDrawText(MuiGetMsg("Author: %s"):format(author), x + 10, y + 25, x + w, y + 40, white, 1, "default", "left", "top", true, false, false, true)
 	dxDrawText(MuiGetMsg("Played: %u times"):format(g_Played), x + 10, y + 40, 0, 0, white, 1, "default")
 	
 	-- Rates

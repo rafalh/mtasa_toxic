@@ -503,3 +503,13 @@ function Animation.presets.guiProgressBarSetProgress(endProgress, time, startPro
 		guiProgressBarSetProgress(elem, progress)
 	end
 end
+
+function Animation.presets.guiSetVisible(visible, phase)
+	if type(visible) ~= 'userdata' then
+		return {fn = Animation.presets.guiSetVisible,
+				arg = visible}
+	else
+		local elem = visible
+		guiSetVisible(elem, phase.arg)
+	end
+end

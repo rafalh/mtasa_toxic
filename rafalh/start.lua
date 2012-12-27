@@ -11,6 +11,7 @@ local function setupDatabase ()
 			"CREATE TABLE IF NOT EXISTS rafalh_players ("..
 			"player INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"..
 			"serial VARCHAR(32) NOT NULL,"..
+			"account TEXT UNIQUE,"..
 			"cash INTEGER DEFAULT 0 NOT NULL,"..
 			"points INTEGER DEFAULT 0 NOT NULL,"..
 			"warnings INTEGER DEFAULT 0 NOT NULL,"..
@@ -49,6 +50,10 @@ local function setupDatabase ()
 			"efectiveness_dm REAL DEFAULT 0 NOT NULL,"..
 			"efectiveness_race REAL DEFAULT 0 NOT NULL)" ) ) then
 		err = "Cannot create rafalh_players table."
+	end
+	if ( not err and not DbQuery (
+			"CREATE INDEX IF NOT EXISTS rafalh_players_idx ON rafalh_players (account)" ) ) then
+		err = "Cannot create rafalh_players_idx index."
 	end
 	
 	if ( not err and not DbQuery (
@@ -118,7 +123,7 @@ local function setupDatabase ()
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local current_ver = 135
+	local current_ver = 136
 	local ver = SmGetUInt ( "version", current_ver )
 	if ( ver == 0 ) then
 		ver = touint ( get ( "version" ) ) or current_ver
@@ -128,18 +133,6 @@ local function setupDatabase ()
 	end
 	
 	if ( ver < current_ver ) then
-		if ( not err and ver < 131 ) then
-			SmSet ( "avg_players", get ( "avg_players" ) )
-			SmSet ( "arit_avg_players_m", get ( "arit_avg_players_m" ) )
-		end
-		if ( not err and ver < 133 ) then
-			if ( 	not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN efectiveness REAL DEFAULT 0 NOT NULL" ) or
-					not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN efectiveness_dd REAL DEFAULT 0 NOT NULL" ) or
-					not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN efectiveness_dm REAL DEFAULT 0 NOT NULL" ) or
-					not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN efectiveness_race REAL DEFAULT 0 NOT NULL" ) ) then
-				err = "Failed to add efectiveness column."
-			end
-		end
 		if ( not err and ver < 134 ) then
 			if ( not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN smoke INTEGER DEFAULT 0 NOT NULL" ) ) then
 				err = "Failed to add smoke column."
@@ -148,6 +141,11 @@ local function setupDatabase ()
 		if ( not err and ver < 135 ) then
 			if ( not DbQuery ( "ALTER TABLE rafalh_maps ADD COLUMN played_timestamp INTEGER DEFAULT 0 NOT NULL" ) ) then
 				err = "Failed to add played_timestamp column."
+			end
+		end
+		if ( not err and ver < 136 ) then
+			if ( not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN account TEXT" ) ) then
+				err = "Failed to add account column."
 			end
 		end
 		
