@@ -17,6 +17,8 @@ local g_ScreenSizeSqrt = { g_ScreenSize[1]^(1/2), g_ScreenSize[2]^(1/2) }
 local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_Checkpoints = false
 local g_WidgetCtrl = {}
+local g_WidgetName = {"CP needle", pl = "Wskaźnik CP"}
+local g_Textures = {}
 
 --------------------------------
 -- Local function definitions --
@@ -33,7 +35,7 @@ local function onClientRender()
 			local cx, cy = getElementPosition ( cp )
 			local x, y, _, lx, ly = getCameraMatrix ()
 			local a = math.deg ( math.atan2 ( cx-x, cy-y ) - math.atan2 ( lx-x, ly-y ) )
-			dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], "needle.png", a )
+			dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], g_Textures.needle, a )
 		end
 	end
 end
@@ -134,8 +136,10 @@ end
 #VERIFY_SERVER_BEGIN ( "F704779D928C126981211297264B9485" )
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
 	addEventHandler ( "onClientResourceStart", g_Root, onClientResourceStart ) -- map resource start
-	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "CP needle" )
-	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "CP needle" )
-	end )
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	end)
+	
+	g_Textures.needle = dxCreateTexture("needle.png")
 #VERIFY_SERVER_END ()

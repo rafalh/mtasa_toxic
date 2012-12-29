@@ -9,12 +9,14 @@
 -- Local variables --
 ---------------------
 
-local SCALE = 0.5
-local FONT = "bankgothic"
+local SCALE = 1
+local FONT = "default"
+local PLAYER_FONT = "default-bold"
 local FONT_HEIGHT = dxGetFontHeight(SCALE, FONT)
-local SHADOW_COLOR = tocolor(0, 0, 0)
 local WHITE = tocolor(255, 255, 255)
+local BLACK = tocolor(0, 0, 0)
 local POS_OFFSET = 30
+local g_WidgetName = {"Ranking board", pl = "Tablica wyników"}
 
 local g_Root = getRootElement ()
 local g_Me = getLocalPlayer ()
@@ -23,9 +25,8 @@ local g_ScreenSizeSqrt = { g_ScreenSize[1]^(1/2), g_ScreenSize[2]^(1/2) }
 local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
 local g_Items = {}
-local g_Dir = "down"
-local g_ItemsCount = 0
 local g_FirstTime = false
+local g_MaxNameW = 0
 local g_InsertTimeStamp, g_InsertRank = false, false
 
 addEvent("rb_addItem", true)
@@ -48,7 +49,14 @@ function formatTimePeriod(t, decimals)
 	end
 end
 
+--local cnt = 0
+--local dt = 0
+
 local function RbRender()
+
+--local start = getTickCount()
+--for i = 1, 10 do
+
 	local x, y = g_Pos[1], g_Pos[2]
 	local first = true
 	local maxY = y + g_Size[2]
@@ -57,6 +65,9 @@ local function RbRender()
 		if(item) then
 			local itemY = y
 			local itemAlpha = 255
+			local white = WHITE
+			local black = BLACK
+			
 			if(g_InsertRank == rank) then
 				local ticks = getTickCount()
 				local progress = (ticks - g_InsertTimeStamp)/500
@@ -66,29 +77,25 @@ local function RbRender()
 						y = y + progress*FONT_HEIGHT - FONT_HEIGHT
 					end
 					itemAlpha = progress*255
+					white = tocolor(255, 255, 255, itemAlpha)
+					black = tocolor(0, 0, 0, itemAlpha)
 				else
 					g_InsertRank = false
 				end
 			end
 			first = false
 			
-			local white = tocolor(255, 255, 255, itemAlpha)
-			local black = tocolor(0, 0, 0, itemAlpha)
-			
 			local text = rank..")"
-			dxDrawText(text, x+1, itemY+1, x+POS_OFFSET+1, itemY+1, black, SCALE, FONT, "right")
-			dxDrawText(text, x, itemY, x+POS_OFFSET, itemY, white, SCALE, FONT, "right")
+			dxDrawText(text, x+1, itemY+1, x+POS_OFFSET+1, itemY+1, black, SCALE, PLAYER_FONT, "right")
+			dxDrawText(text, x, itemY, x+POS_OFFSET, itemY, white, SCALE, PLAYER_FONT, "right")
 			
-			local playerName = item[1]
-			local color = white
-			if(type(item[1]) ~= "string") then
-				playerName = getPlayerName(item[1])
-				local r, g, b = getPlayerNametagColor(item[1])
-				color = tocolor(r, g, b, itemAlpha)
-			end
-			local text = playerName.."#FFFFFF: "..item[2]
-			dxDrawText(text:gsub("#%x%x%x%x%x%x", ""), x+POS_OFFSET+5+1, itemY+1, 0, 0, black, SCALE, FONT)
-			dxDrawText(text, x+5+POS_OFFSET, itemY, 0, 0, color, SCALE, FONT, "left", "top", false, false, false, true)
+			local r, g, b = unpack(item.clr)
+			local color = tocolor(r, g, b, itemAlpha)
+			dxDrawText(item.name2..":", x+5+POS_OFFSET+1, itemY+1, 0, 0, black, SCALE, PLAYER_FONT)
+			dxDrawText(item.name..":", x+5+POS_OFFSET, itemY, 0, 0, color, SCALE, PLAYER_FONT, "left", "top", false, false, false, true)
+			
+			dxDrawText(item[2], x+5+POS_OFFSET+g_MaxNameW+5+1, itemY+1, 0, 0, black, SCALE, FONT)
+			dxDrawText(item[2], x+5+POS_OFFSET+g_MaxNameW+5, itemY, 0, 0, white, SCALE, FONT)
 			
 			y = y + FONT_HEIGHT
 			if(y + FONT_HEIGHT > maxY) then return end
@@ -96,23 +103,32 @@ local function RbRender()
 	end
 end
 
-local function RbClear(dir)
+--[[
+cnt = cnt + 1
+dt = dt + (getTickCount() - start)
+if(cnt >= 100) then
+	outputDebugString("time "..dt, 3)
+	cnt = 0
+	dt = 0
+end
+end]]
+
+local function RbClear()
 	g_Items = {}
-	g_Dir = dir
 	g_FirstTime = false
 	g_InsertTimeStamp = false
 	g_InsertRank = false
-	g_ItemsCount = 0
+	g_MaxNameW = 0
 end
 
-local function RbAddItem(rank, player, time)
+local function RbAddItem(player, rank, time)
 	local timeStr
 	if(g_FirstTime) then
 		local dt = time - g_FirstTime
 		assert(dt >= 0)
 		timeStr = "+"..formatTimePeriod(dt)
 	else
-		timeStr = formatTimePeriod(time)
+		timeStr = " "..formatTimePeriod(time)
 		g_FirstTime = time
 	end
 	
@@ -123,10 +139,17 @@ local function RbAddItem(rank, player, time)
 	
 	-- add item (table still doesnt have holes)
 	local item = {player, timeStr, time}
+	item.name = type(player)=="userdata" and getPlayerName(player) or player
+	item.name2 = item.name:gsub("#%x%x%x%x%x%x", "")
+	item.clr = {getPlayerNametagColor(item[1])}
+	item.nameW = dxGetTextWidth(item.name2..":", SCALE, PLAYER_FONT)
+	if(item.nameW > g_MaxNameW) then
+		g_MaxNameW = item.nameW + 10
+	end
+	
 	g_Items[rank] = item
 	g_InsertTimeStamp = getTickCount()
 	g_InsertRank = rank
-	g_ItemsCount = g_ItemsCount + 1
 end
 
 local function RbPlayerQuit()
@@ -136,6 +159,20 @@ local function RbPlayerQuit()
 			local r, g, b = getPlayerNametagColor(source)
 			playerName = ("#%02X%02X%02X"):format(r, g, b)..playerName
 			item[1] = playerName
+		end
+	end
+end
+
+local function RbPlayerChangeNick()
+	for rank, item in ipairs(g_Items) do
+		if(item and item[1] == source) then
+			item.name = getPlayerName(source)
+			item.name2 = item.name:gsub("#%x%x%x%x%x%x", "")
+			item.clr = {getPlayerNametagColor(item[1])}
+			item.nameW = dxGetTextWidth(item.name2..":", SCALE, PLAYER_FONT)
+			if(item.nameW > g_MaxNameW) then
+				g_MaxNameW = item.nameW + 10
+			end
 		end
 	end
 end
@@ -192,14 +229,15 @@ end
 
 #VERIFY_SERVER_BEGIN("C1D8B0E1B3B359CF45DFADB93EC56B62")
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), "Ranking board")
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	addEventHandler("onRafalhGetWidgets", g_Root, function()
-		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), "Ranking board")
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	end)
 	
 	addEventHandler("rb_clear", resourceRoot, RbClear)
 	addEventHandler("rb_addItem", resourceRoot, RbAddItem)
 	addEventHandler("onClientPlayerQuit", root, RbPlayerQuit)
+	addEventHandler("onClientPlayerChangeNick", root, RbPlayerChangeNick)
 	
 	triggerServerEvent("rb_onPlayerReady", resourceRoot)
 #VERIFY_SERVER_END()

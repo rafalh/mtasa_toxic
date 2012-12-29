@@ -15,6 +15,7 @@ local g_ScreenSize = { guiGetScreenSize () }
 local g_ScreenSizeSqrt = { g_ScreenSize[1]^(1/2), g_ScreenSize[2]^(1/2) }
 local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
+local g_WidgetName = {"Perfomance meter", pl = "Miernik wydajności"}
 
 local g_BgColor = tocolor ( 0, 0, 128, 96 )
 local g_TextColor = tocolor ( 255, 255, 255 )
@@ -118,8 +119,8 @@ end
 
 #VERIFY_SERVER_BEGIN ( "15CF846833407136403D841B1B76E36F" )
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Perfomance meter" )
-	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Perfomance meter" )
-	end )
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	end)
 #VERIFY_SERVER_END ()

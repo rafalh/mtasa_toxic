@@ -3,6 +3,8 @@
 	
 	<script src="digital_clock_c.lua" type="client" />
 	
+	<min_mta_version client="1.3.0-9.04431" />
+	
 	<include resource="rafalh_shared" />
 	
 	<export function="widgetCtrl" type="client" />

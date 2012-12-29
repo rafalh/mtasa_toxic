@@ -24,6 +24,8 @@
 -- Local variables --
 ---------------------
 
+local TITLE_COLOR = tocolor(196, 196, 196, 96)
+
 local g_Verified = false
 
 local g_Timer = nil
@@ -110,13 +112,13 @@ local function RcRecordingTimer ()
 end
 
 local function RcRenderPlaybackTitle ()
-	local cx, cy, cz = getCameraMatrix ()
-	local x, y, z = getElementPosition ( g_PlaybackVeh )
-	local scale = 18/getDistanceBetweenPoints3D ( cx, cy, cz, x, y, z )
-	local scr_x, scr_y = getScreenFromWorldPosition ( x, y, z + 1 )
-	if ( scr_x and scale > 0.3 ) then
-		dxDrawText ( g_PlaybackTitle, scr_x, scr_y, scr_x, scr_y, tocolor ( 196, 196, 196, 96 ), scale, "default", "center" )
-	end
+	local cx, cy, cz = getCameraMatrix()
+	local x, y, z = getElementPosition(g_PlaybackVeh)
+	local scale = 18/getDistanceBetweenPoints3D(cx, cy, cz, x, y, z)
+	if(scale < 0.3) then return end
+	local scr_x, scr_y = getScreenFromWorldPosition(x, y, z + 1)
+	if(not scr_x) then return end
+	dxDrawText(g_PlaybackTitle, scr_x, scr_y, scr_x, scr_y, TITLE_COLOR, scale, "default", "center")
 end
 
 local function RcCleanupPlayback ()
@@ -127,8 +129,8 @@ local function RcCleanupPlayback ()
 		g_RcPlaybackTimer = false
 	end
 	
-	removeEventHandler ( "onClientRender", g_Root, RcRenderPlaybackTitle )
-	destroyElement ( g_PlaybackVeh )
+	removeEventHandler("onClientRender", g_Root, RcRenderPlaybackTitle)
+	destroyElement(g_PlaybackVeh)
 	
 	g_Playback = false
 end
@@ -217,14 +219,14 @@ local function RcPreRender () -- checks for countdown end
 	assert ( g_WaitingForCountdown )
 	
 	local veh = getPedOccupiedVehicle ( g_Me )
-	if ( veh and not isVehicleFrozen ( veh ) ) then -- countdown has ended
-		--outputDebugString ( "Countdown has finished", 3 )
-		g_WaitingForCountdown = false
-		removeEventHandler ( "onClientPreRender", g_Root, RcPreRender )
-		
-		RcStartRecording ()
-		RcStartPlayback ()
-	end
+	if(not veh or isVehicleFrozen(veh)) then return end
+	
+	--outputDebugString ( "Countdown has finished", 3 )
+	g_WaitingForCountdown = false
+	removeEventHandler ( "onClientPreRender", g_Root, RcPreRender )
+	
+	RcStartRecording ()
+	RcStartPlayback ()
 end
 
 local function RcCleanupRecording ()

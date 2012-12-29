@@ -15,6 +15,7 @@ local g_ScreenSize = { guiGetScreenSize () }
 local g_ScreenSizeSqrt = { g_ScreenSize[1]^(1/2), g_ScreenSize[2]^(1/2) }
 local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
+local g_WidgetName = {"Analog clock", pl = "Analogowy zegar"}
 
 ---------------------------------
 -- Local function declarations --
@@ -107,8 +108,8 @@ end
 
 #VERIFY_SERVER_BEGIN ( "C6398EDBEA4F27B3795620AB09939CE2" )
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Analog clock" )
-	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Analog clock" )
-	end )
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	end)
 #VERIFY_SERVER_END ()

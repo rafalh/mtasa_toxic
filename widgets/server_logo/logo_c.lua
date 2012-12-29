@@ -25,6 +25,7 @@ local g_FrontTex, g_BackTex = false
 local g_TexSize = false
 local g_Start = getTickCount ()
 local g_WidgetCtrl = {}
+local g_WidgetName = {"Server logo", pl = "Logo serwera"}
 
 ---------------------------------
 -- Local function declarations --
@@ -116,9 +117,9 @@ end
 	if ( g_Shader ) then
 		g_WidgetCtrl[$(wg_reset)] () -- set pos, size and image
 		
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Server logo" )
-		addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-			triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Server logo" )
-		end )
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+		addEventHandler("onRafalhGetWidgets", g_Root, function()
+			triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+		end)
 	end
 #VERIFY_SERVER_END ()

@@ -1,8 +1,21 @@
-function DbgTraceBack ()
-	local trace = debug.traceback ()
-	for line in string.gmatch ( trace, "\n\t[^\n]+" ) do
-		outputDebugString ( line:sub ( 3 ), 1 )
+function DbgTraceBack(lvl, len, offset, ret)
+	local trace = debug.traceback()
+	trace = trace:gsub("\r", "")
+	local lines = split(trace, "\n")
+	local start = 3 + (offset or 0)
+	local stop = #lines
+	if(len) then
+		stop = math.min(stop, start+len-1)
 	end
+	local tbl = {}
+	for i = start, stop do
+		table.insert(tbl, lines[i])
+		if(lvl ~= -1) then
+			outputDebugString(lines[i], lvl or 2)
+		end
+	end
+	
+	return tbl
 end
 
 local _assert = assert

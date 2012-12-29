@@ -17,6 +17,7 @@ local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
 local g_Controls = { w = false, s = false, a = false, d = false, space = false, up = false, down = false }
 
+local g_WidgetName = {"Keyboard spectator", pl = "Obserwator klawiatury"}
 local g_BgColor = tocolor ( 0, 0, 128, 96 )
 local g_ActiveBgColor = tocolor ( 255, 196, 0, 96 )
 local g_BorderColor = tocolor ( 0, 0, 0 )
@@ -135,10 +136,10 @@ end
 ----------
 
 #VERIFY_SERVER_BEGIN ( "27089FB4854792A93A52CFB143022E86" )
-	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	addEventHandler ( "onClientPlayerControls", g_Root, KbspOnPlayerControls )
-	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Keyboard spectator" )
-	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Keyboard spectator" )
-	end )
+	g_WidgetCtrl[$(wg_reset)]() -- reset pos, size, visiblity
+	addEventHandler("onClientPlayerControls", g_Root, KbspOnPlayerControls)
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	end)
 #VERIFY_SERVER_END ()

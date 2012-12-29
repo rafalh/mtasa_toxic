@@ -8,7 +8,9 @@ local g_ScreenSize = {guiGetScreenSize()}
 local g_ScreenSizeSqrt = {g_ScreenSize[1]^(1/2), g_ScreenSize[2]^(1/2)}
 local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
+local g_WidgetName = {"Sound visualiser", pl = "Wizualizer dźwięku"}
 local g_Particles
+local g_Textures = {}
 
 local BANDS = 40
 local MIN_SOUND_LEN = 30
@@ -21,27 +23,6 @@ local function reset()
 	for k = 1, BANDS do
 		g_Particles[k] = {}
 	end
-end
-
-local function findMusic(ignored)
-	if(not g_Show) then
-		g_Sound = false
-		return false
-	end
-	
-	local sounds = getElementsByType("sound")
-	for i, sound in ipairs(sounds) do
-		local len = getSoundLength(sound)
-		local vol = getSoundVolume(sound)
-		local paused = isSoundPaused(sound)
-		if((len > MIN_SOUND_LEN or len == 0) and vol > 0 and not paused and sound ~= ignored) then
-			g_Sound = sound
-			return true
-		end
-	end
-	
-	g_Sound = false
-	return false
 end
 
 local function render()
@@ -87,7 +68,7 @@ local function render()
 	end
 	
 	-- render background
-	dxDrawImage(g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], "bg.png", 0, 0, 0, tocolor(r, g, b, 128))
+	dxDrawImage(g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], g_Textures.bg, 0, 0, 0, tocolor(r, g, b, 128))
 	
 	local moveSpeed = (1 * (bpm / 180)) + 1
 	local peakWPad = g_Size[1] / (BANDS + 2)
@@ -144,7 +125,7 @@ local function render()
 			val.a = 128
 			
 			table.insert(particles, val)
-			particles.ticks = getTickCount()
+			particles.ticks = ticks
 		end
 		
 		-- save peak value for future use
@@ -181,6 +162,35 @@ local function render()
 	--dxDrawText("BPM: "..math.floor(bpm), g_Pos[1] + g_Size[1] - 90, g_Pos[2] + 30, 0, 0, tocolor(255, 255, 255, 255 ), 1.5, "arial")
 end
 
+local function findMusic(ignored)
+	if(not g_Show) then
+		g_Sound = false
+		return false
+	end
+	
+	local found = false
+	local sounds = getElementsByType("sound")
+	for i, sound in ipairs(sounds) do
+		local len = getSoundLength(sound)
+		local vol = getSoundVolume(sound)
+		local paused = isSoundPaused(sound)
+		if((len > MIN_SOUND_LEN or len == 0) and vol > 0 and not paused and sound ~= ignored) then
+			found = sound
+			break
+		end
+	end
+	
+	if(not g_Sound and found) then
+		addEventHandler("onClientRender", g_Root, render)
+	elseif(g_Sound and not found) then
+		removeEventHandler("onClientRender", g_Root, render)
+	end
+	
+	g_Sound = found
+	
+	return found and true
+end
+
 local function onSoundStream(success, length, name)
 	if(not g_Show) then return end
 	
@@ -198,12 +208,14 @@ end
 g_WidgetCtrl[$(wg_show)] = function ( b )
 	if ( ( g_Show and b ) or ( not g_Show and not b ) ) then return end
 	g_Show = b
-	if ( b ) then
+	if(b) then
 		reset()
 		findMusic()
-		addEventHandler("onClientRender", g_Root, render)
 	else
-		removeEventHandler("onClientRender", g_Root, render)
+		if(g_Sound) then
+			removeEventHandler("onClientRender", g_Root, render)
+			g_Sound = false
+		end
 		reset()
 	end
 end
@@ -246,13 +258,15 @@ end
 
 local function init()
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Sound visualiser" )
-	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Sound visualiser" )
-	end )
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	end)
 	
 	-- Set a random seed
 	math.randomseed(getTickCount())
+	
+	g_Textures.bg = dxCreateTexture("bg.png")
 	
 	-- Add event handlers
 	addEventHandler("onClientSoundStream", g_Root, onSoundStream)

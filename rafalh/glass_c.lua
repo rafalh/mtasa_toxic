@@ -74,6 +74,6 @@ end
 #VERIFY_SERVER_BEGIN("593C2070A55147B063D423AFAC7003D6")
 	g_Texture = dxCreateTexture("img/broken_glass.png")
 	if(g_Texture) then
-		addEventHandler("onClientRender", g_Root, renderGlass)
+		--addEventHandler("onClientRender", g_Root, renderGlass)
 	end
 #VERIFY_SERVER_END()

@@ -9,13 +9,16 @@
 -- Local variables --
 ---------------------
 
+local IMAGE_SIZE = { 320, 320 }
+
 local g_Me = getLocalPlayer ()
 local g_Root = getRootElement ()
 local g_ScreenSize = { guiGetScreenSize () }
 local g_ScreenSizeSqrt = { g_ScreenSize[1]^0.5, g_ScreenSize[2]^0.5 }
 local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
-local IMAGE_SIZE = { 320, 320 }
+local g_WidgetName = {"Speedometer", pl = "Prędkościomierz"}
+local g_Textures = {}
 
 --------------------------------
 -- Local function definitions --
@@ -42,18 +45,18 @@ local function renderSpeed ( veh )
 	end
 	
 	-- 15 degress per 10km/h
-	dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], "needle.png", 32 + 1.5 * kmph )
+	dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], g_Textures.needle, 32 + 1.5 * kmph )
 end
 
 local function renderHealth ( health )
 	local x, y = g_Pos[1], g_Pos[2]
 	local w, h = g_Size[1], g_Size[2]
 	if ( health > 0 ) then
-		dxDrawImageSection ( x, y, w, (1 - health) * h, 0, 0, IMAGE_SIZE[1], (1 - health) * IMAGE_SIZE[2], "hp.png", 0, 0, 0, tocolor ( 96, 96, 96, 255 ) )
-		dxDrawImageSection ( x, y + (1 - health) * h, w, health * h, 0, (1 - health) * IMAGE_SIZE[2], IMAGE_SIZE[1], health * IMAGE_SIZE[2], "hp.png", 0, 0, 0, tocolor ( 255, 255, 255, 255 ) )
+		dxDrawImageSection ( x, y, w, (1 - health) * h, 0, 0, IMAGE_SIZE[1], (1 - health) * IMAGE_SIZE[2], g_Textures.hp, 0, 0, 0, tocolor ( 96, 96, 96, 255 ) )
+		dxDrawImageSection ( x, y + (1 - health) * h, w, health * h, 0, (1 - health) * IMAGE_SIZE[2], IMAGE_SIZE[1], health * IMAGE_SIZE[2], g_Textures.hp, 0, 0, 0, tocolor ( 255, 255, 255, 255 ) )
 	else
 		local a = 96 + ( math.sin ( getTickCount () / 180 ) + 1 ) * 0.5 * ( 255 - 96 )
-		dxDrawImage ( x, y, w, h, "hp.png", 0, 0, 0, tocolor ( a, a, a, 255 ) )
+		dxDrawImage ( x, y, w, h, g_Textures.hp, 0, 0, 0, tocolor ( a, a, a, 255 ) )
 	end
 end
 
@@ -67,8 +70,8 @@ local function renderNos ( veh )
 	
 	local x, y = g_Pos[1], g_Pos[2]
 	local w, h = g_Size[1], g_Size[2]
-	dxDrawImageSection ( x, y, w, (1 - nos) * h, 0, 0, IMAGE_SIZE[1], (1 - nos) * IMAGE_SIZE[2], "nos.png", 0, 0, 0, tocolor ( 96, 96, 96, 255 ) )
-	dxDrawImageSection ( x, y + (1 - nos) * h, w, nos * h, 0, (1 - nos) * IMAGE_SIZE[2], IMAGE_SIZE[1], nos * IMAGE_SIZE[2], "nos.png", 0, 0, 0, tocolor ( 255, 255, 255, 255 ) )
+	dxDrawImageSection ( x, y, w, (1 - nos) * h, 0, 0, IMAGE_SIZE[1], (1 - nos) * IMAGE_SIZE[2], g_Textures.nos, 0, 0, 0, tocolor ( 96, 96, 96, 255 ) )
+	dxDrawImageSection ( x, y + (1 - nos) * h, w, nos * h, 0, (1 - nos) * IMAGE_SIZE[2], IMAGE_SIZE[1], nos * IMAGE_SIZE[2], g_Textures.nos, 0, 0, 0, tocolor ( 255, 255, 255, 255 ) )
 end
 
 local function renderMeter ()
@@ -88,8 +91,8 @@ local function renderMeter ()
 	renderNos ( veh )
 	
 	local r, g, b = 64 + ( 1 - health ) * 128, 196, 64
-	dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], "bg.png", 0, 0, 0, tocolor ( r, g, b ) )
-	dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], "text.png" )
+	dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], g_Textures.bg, 0, 0, 0, tocolor ( r, g, b ) )
+	dxDrawImage ( g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], g_Textures.text )
 	
 	renderSpeed ( veh )
 end
@@ -150,8 +153,14 @@ end
 
 #VERIFY_SERVER_BEGIN ( "90ADEDFA3DFF54588E90255F17E9FEB0" )
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Meter" )
-	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
-		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Meter" )
-	end )
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
+		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	end)
+	
+	g_Textures.hp = dxCreateTexture("hp.png")
+	g_Textures.bg = dxCreateTexture("bg.png")
+	g_Textures.nos = dxCreateTexture("nos.png")
+	g_Textures.needle = dxCreateTexture("needle.png")
+	g_Textures.text = dxCreateTexture("text.png")
 #VERIFY_SERVER_END ()
