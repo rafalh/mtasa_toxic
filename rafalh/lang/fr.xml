@@ -39,7 +39,7 @@
     <msg id="Warning! %s has been given to %s.">Attention! Un %s a ete donne a %s.</msg>
     <msg id="Usage: %s">Utilisation: %s</msg>
     <msg id='Cannot find player &quot;%s&quot;!'>Impossible de trouver le joueur &quot;%s&quot;!</msg>
-    <msg id="You do not have enaught cash!">Vous n&apos;avez pas assez d&apos;argent!</msg>
+    <msg id="You do not have enough cash!">Vous n&apos;avez pas assez d&apos;argent!</msg>
     <msg id="none">aucun</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Impossible de trouver la carte &quot;%s&quot;!</msg>
     <msg id="%s has been muted by %s!">%s a ete mute by %s!</msg>
@@ -65,7 +65,7 @@
     <msg id="Place Your Bets!">Placez vos paris!</msg>
     <msg id="No More Bets.">Les paris sont clos.</msg>
     <msg id="You have won %s in your bet!">Vous avez gagne %s avec votre paris!</msg>
-    <msg id="Not enaught players to bet - %u are needed.">Pas assez de joueurs pour parie - %u requis.</msg>
+    <msg id="Not enough players to bet - %u are needed.">Pas assez de joueurs pour parie - %u requis.</msg>
     <msg id="Your maximal bet is %s!">Your maximal bet is %s!</msg>
     <msg id="You already bet %s on %s!">Vous avez deja parie %s sur %s!</msg>
     <msg id="You bet %s on %s!">Vous pariez %s sur %s!</msg>

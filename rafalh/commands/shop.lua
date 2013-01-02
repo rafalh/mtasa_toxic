@@ -17,7 +17,7 @@ local function CmdBuy (message, arg)
 		elseif (item == "bidlevel") then
 			local price = stats.bidlvl * SmGetUInt ("bidlvl_price", 1000)
 			if (stats.cash < price) then
-				privMsg (source, "You do not have enaught cash! Bidlevel costs %s.", formatMoney (price))
+				privMsg (source, "You do not have enough cash! Bidlevel costs %s.", formatMoney (price))
 			else
 				StSet (source, { cash = stats.cash - price, bidlvl = stats.bidlvl + 1 })
 				local th = ({ "nd", "rd" })[stats.bidlvl] or "th" -- old value
@@ -31,7 +31,7 @@ local function CmdBuy (message, arg)
 						StSet (source, "cash", stats.cash - n)
 						scriptMsg ("%s bought %u lottery tickets!", getPlayerName (source), n)
 					end
-				else privMsg (source, "You do not have enaught cash! You need %s.", formatMoney (n)) end
+				else privMsg (source, "You do not have enough cash! You need %s.", formatMoney (n)) end
 			else privMsg (source, "Usage: %s", arg[1].." lottery <tickets count>") end
 		else privMsg (source, "There is no item \"%s\"! Use /itemlist to get list of items.", item) end
 	else privMsg (source, "Usage: %s", arg[1].." <item>") end

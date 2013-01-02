@@ -11,13 +11,14 @@ function SmRegister ( name, default, func )
 	g_ClientSettings[name] = default
 end
 
-SmRegister ( "suicide_key", "k" )
-SmRegister ( "stats_panel_key", "F1" )
-SmRegister ( "user_panel_key", "F2" )
-SmRegister ( "effects", {}, tobool )
-SmRegister ( "radio_channel", "" )
-SmRegister ( "radio_volume", 100, touint )
-SmRegister ( "carHide", false, tobool )
+SmRegister("suicide_key", "k")
+SmRegister("stats_panel_key", "F1")
+SmRegister("user_panel_key", "F2")
+SmRegister("effects", {}, tobool)
+SmRegister("radio_channel", "")
+SmRegister("radio_volume", 100, touint)
+SmRegister("carHide", false, tobool)
+SmRegister("winAnim", true, tobool)
 
 g_SettingsInfo = {
 	suicide_key = { def = "k", f = tostring },
@@ -26,23 +27,23 @@ g_SettingsInfo = {
 
 function loadSettings ()
 	local node = xmlLoadFile ( "settings.xml" )
-	if ( not node ) then return end
+	if(not node) then return end
 	
-	for i, subnode in ipairs ( xmlNodeGetChildren ( node ) ) do
-		local name = xmlNodeGetName ( subnode )
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local name = xmlNodeGetName(subnode)
 		local setting = g_ClientSettings[name]
 		local func = g_SettingFunctions[name]
 		
-		if ( setting ) then
-			local val = xmlNodeGetValue ( subnode )
-			local attr = xmlNodeGetAttributes ( subnode )
+		if(setting ~= nil) then
+			local val = xmlNodeGetValue(subnode)
+			local attr = xmlNodeGetAttributes(subnode)
 			
-			if ( func ) then
-				val = func ( val )
+			if(func) then
+				val = func(val)
 			end
 			
-			if ( type ( setting ) == "table" ) then
-				if ( attr.name ) then
+			if(type(setting) == "table") then
+				if(attr.name) then
 					setting[attr.name] = val
 				end
 			else
@@ -51,7 +52,7 @@ function loadSettings ()
 		end
 	end
 	
-	xmlUnloadFile ( node )
+	xmlUnloadFile(node)
 end
 
 function saveSettings ()

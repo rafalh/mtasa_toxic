@@ -40,7 +40,7 @@
     <msg id="Warning! %s has been given to %s.">Осторожно! %s на поле и его взял %s.</msg>
     <msg id="Usage: %s">Предметы: %s</msg>
     <msg id='Cannot find player &quot;%s&quot;!'>&quot;%s&quot; нет на сервере!</msg>
-    <msg id="You do not have enaught cash!">У тебя недостаточно денег!</msg>
+    <msg id="You do not have enough cash!">У тебя недостаточно денег!</msg>
     <msg id="none">пусто</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Карты &quot;%s&quot; нет на сервере!</msg>
     <msg id="Supported types: %s.">Поддерживаемые варианты: %s.</msg>
@@ -68,7 +68,7 @@
     <msg id="Place Your Bets!">Делайте ставки!</msg>
     <msg id="No More Bets.">Время ставок истекло.</msg>
     <msg id="You have won %s in your bet!">Выиграл %s своей ставкой!</msg>
-    <msg id="Not enaught players to bet - %u are needed.">Недостаточно игроков для ставок - %u нужное количество.</msg>
+    <msg id="Not enough players to bet - %u are needed.">Недостаточно игроков для ставок - %u нужное количество.</msg>
     <msg id="Your maximal bet is %s!">Твоя максимальная ставка %s!</msg>
     <msg id="You already bet %s on %s!">Ты уже поставил %s на %s!</msg>
     <msg id="You bet %s on %s!">Принята ставка %s на %s!</msg>

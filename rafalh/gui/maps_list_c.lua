@@ -1,45 +1,48 @@
-addEvent ( "onClientMapList", true )
-addEvent ( "onMapListReq", true )
-addEvent ( "onClientDisplayVotenextGuiReq", true )
-addEvent ( "onVotenextReq", true )
-addEvent ( "onClientDisplayNextMapGuiReq", true )
-addEvent ( "onAddMapToQueueReq", true )
-addEvent ( "onClientDisplayChangeMapGuiReq", true )
-addEvent ( "onChangeMapReq", true )
+addEvent("onClientMapList", true )
+addEvent("onMapListReq", true )
+addEvent("onClientDisplayVotenextGuiReq", true )
+addEvent("onVotenextReq", true )
+addEvent("onClientDisplayNextMapGuiReq", true )
+addEvent("onAddMapToQueueReq", true )
+addEvent("onClientDisplayChangeMapGuiReq", true )
+addEvent("onChangeMapReq", true )
 
 local g_GuiList = {}
 local g_MapList = false
 
-local function MlstUpdateList ( gui )
-	guiGridListClear ( gui.list )
+local function MlstUpdateList(gui)
+	guiGridListClear(gui.list)
 	
-	local pattern = guiGetText ( gui.search_edit ):lower ()
+	local pattern = guiGetText(gui.search_edit):lower ()
 	
-	for res_name, data in pairs ( g_MapList ) do
-		if ( data[1]:lower ():find ( pattern, 1, true ) ) then
-			local row = guiGridListAddRow ( gui.list )
-			guiGridListSetItemText ( gui.list, row, 1, data[1], false, false )
-			guiGridListSetItemText ( gui.list, row, 2, data[2], false, true )
-			guiGridListSetItemText ( gui.list, row, 3, data[3], false, true )
-			guiGridListSetItemData ( gui.list, row, 1, res_name )
+	for resName, data in pairs ( g_MapList ) do
+		local mapName = data[1]
+		if(mapName:lower():find(pattern, 1, true)) then
+			local row = guiGridListAddRow(gui.list)
+			local played = data[2]
+			local rating = ("%.1f"):format(data[3])
+			guiGridListSetItemText ( gui.list, row, 1, mapName, false, false )
+			guiGridListSetItemText ( gui.list, row, 2, played, false, true )
+			guiGridListSetItemText ( gui.list, row, 3, rating, false, true )
+			guiGridListSetItemData ( gui.list, row, 1, resName )
 		end
 	end
 end
 
-local function MlstOnMapList ( map_list )
-	g_MapList = map_list
+local function MlstOnMapList(mapList)
+	g_MapList = mapList
 	
-	for wnd, gui in pairs ( g_GuiList ) do
-		MlstUpdateList ( gui )
+	for wnd, gui in pairs(g_GuiList) do
+		MlstUpdateList(gui)
 	end
 end
 
-local function MlstOnPatternChange ()
-	local wnd = getElementParent ( source )
+local function MlstOnPatternChange()
+	local wnd = getElementParent(source)
 	local gui = g_GuiList[wnd]
-	assert ( gui )
+	assert(gui)
 	
-	MlstUpdateList ( gui )
+	MlstUpdateList(gui)
 end
 
 local function MlstClose ()
@@ -123,7 +126,7 @@ function MlstDisplay ( title, btn_name, callback )
 	return gui.wnd
 end
 
-local function MlstOnElementDestroy ()
+local function MlstOnElementDestroy()
 	if(not source) then
 		outputDebugString("source == "..tostring(source).."...", 2)
 	else

@@ -10,14 +10,14 @@ local function CmdBet (message, arg)
 	if (cash and player) then
 		local bet_min_players = SmGetUInt ("bet_min_players", 0)
 		if (g_PlayersCount < bet_min_players) then
-			privMsg (source, "Not enaught players to bet - %u are needed.", bet_min_players)
+			privMsg (source, "Not enough players to bet - %u are needed.", bet_min_players)
 		elseif (GbAreBetsPlaced ()) then
 			privMsg (source, "Bets are placed!")
 		elseif (cash) then
 			local rows = DbQuery ("SELECT cash, bidlvl FROM rafalh_players WHERE player=? LIMIT 1", g_Players[source].id)
 			local max_bet = SmGetUInt ("max_bet", 0) * rows[1].bidlvl
 			if (rows[1].cash < cash) then
-				privMsg (source, "You do not have enaught cash!")
+				privMsg (source, "You do not have enough cash!")
 			elseif (cash > max_bet) then
 				privMsg (source, "Your maximal bet is %s!", formatNumber (max_bet))
 			elseif (g_Players[source].bet) then

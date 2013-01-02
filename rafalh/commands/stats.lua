@@ -134,7 +134,7 @@ local function CmdGiveMoney (message, arg)
 			
 			privMsg (source, "%s gave %s %s.", getPlayerName (source), getPlayerName (player), formatMoney (c))
 			privMsg (player, "You received %s from %s.", formatMoney (c), getPlayerName (source))
-		else privMsg (source, "You do not have enaught cash!") end
+		else privMsg (source, "You do not have enough cash!") end
 	else privMsg (source, "Usage: %s", arg[1].." <player> <cash>") end
 end
 

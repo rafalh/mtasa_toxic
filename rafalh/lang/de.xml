@@ -38,7 +38,7 @@
     <msg id="Warning! %s has been given to %s.">Warnung! %s hat es gegen zu %s.</msg>
     <msg id="Usage: %s">Nutzen: %s</msg>
     <msg id='Cannot find player &quot;%s&quot;!'>Kann &quot;%s&quot; nicht finden!</msg>
-    <msg id="You do not have enaught cash!">Du hast nicht genug Geld!</msg>
+    <msg id="You do not have enough cash!">Du hast nicht genug Geld!</msg>
     <msg id="none">Keiner</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Die Map &quot;%s&quot; wurde nicht gefunden!</msg>
     <msg id="%s has been muted by %s!">%s wurde von %s stumm geschaltet!</msg>
@@ -64,7 +64,7 @@
     <msg id="Place Your Bets!">Setzen Sie ihre Wetten!</msg>
     <msg id="No More Bets.">Keine Wetten mehr.</msg>
     <msg id="You have won %s in your bet!">Du hast %s fuers Wetten gewonnen!</msg>
-    <msg id="Not enaught players to bet - %u are needed.">Nicht genug Spieler fuers Wetten - %u werden gebraucht!</msg>
+    <msg id="Not enough players to bet - %u are needed.">Nicht genug Spieler fuers Wetten - %u werden gebraucht!</msg>
     <msg id="Your maximal bet is %s!">Du kannst maximal %s Wetten!</msg>
     <msg id="You already bet %s on %s!">Du hast bereits %s auf %s gewettet!</msg>
     <msg id="You bet %s on %s!">Du hast %s auf %s gewettet!</msg>

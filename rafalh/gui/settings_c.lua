@@ -10,14 +10,15 @@
 
 local g_LangButtons = {}
 local g_EffectCheckBoxes = {}
-local g_NickEdit, g_SuicideKeyEdit, g_StatsPanelKeyEdit, g_UserPanelKeyEdit, g_CarHideCb
+local g_NickEdit, g_SuicideKeyEdit, g_StatsPanelKeyEdit, g_UserPanelKeyEdit
+local g_CarHideCb, g_WinnerAnimCb
 local g_NickColorWnd = nil
 local g_Tab = nil
 
 local SettingsPanel = {
 	name = "Settings",
 	img = "img/userpanel/options.png",
-	height = 450,
+	height = 480,
 }
 
 --------------------------------
@@ -63,6 +64,8 @@ local function onSaveClick ()
 	
 	g_ClientSettings.carHide = guiCheckBoxGetSelected(g_CarHideCb)
 	ChSetEnabled(g_ClientSettings.carHide)
+	
+	g_ClientSettings.winAnim = guiCheckBoxGetSelected(g_WinnerAnimCb)
 	
 	for res, cb in pairs ( g_EffectCheckBoxes ) do
 		local enabled = guiCheckBoxGetSelected ( cb )
@@ -145,7 +148,9 @@ local function createGui ( tab )
 	
 	g_CarHideCb = guiCreateCheckBox ( 10, y + 85, 300, 20, "Hide other cars when GM is enabled", g_ClientSettings.carHide, false, tab )
 	
-	y = y + 105
+	g_WinnerAnimCb = guiCreateCheckBox(10, y + 105, 300, 20, "Show stars animation above winner car", g_ClientSettings.winAnim, false, tab)
+	
+	y = y + 125
 	guiCreateLabel ( 10, y, 160, 20, "Effects", false, tab )
 	local effects_h = math.min(h - y - 60, g_EffectsCount * 20)
 	local effects_pane = guiCreateScrollPane ( 10, y + 20, w - 20, effects_h, false, tab )

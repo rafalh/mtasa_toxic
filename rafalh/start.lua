@@ -35,6 +35,8 @@ local function setupDatabase ()
 			"drowned INTEGER DEFAULT 0 NOT NULL,"..
 			"locked_nick BOOL DEFAULT 0 NOT NULL,"..
 			"invitedby INTEGER DEFAULT 0 NOT NULL,"..
+			
+			-- Shop
 			"health100 INTEGER DEFAULT 0 NOT NULL,"..
 			"selfdestr INTEGER DEFAULT 0 NOT NULL,"..
 			"mines INTEGER DEFAULT 0 NOT NULL,"..
@@ -45,6 +47,8 @@ local function setupDatabase ()
 			"flips INTEGER DEFAULT 0 NOT NULL,"..
 			"thunders INTEGER DEFAULT 0 NOT NULL,"..
 			"smoke INTEGER DEFAULT 0 NOT NULL,"..
+			
+			-- Effectiveness
 			"efectiveness REAL DEFAULT 0 NOT NULL,"..
 			"efectiveness_dd REAL DEFAULT 0 NOT NULL,"..
 			"efectiveness_dm REAL DEFAULT 0 NOT NULL,"..

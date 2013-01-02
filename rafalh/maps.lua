@@ -389,7 +389,7 @@ local function onMapListReq()
 		map_list[mapResName] = { map_name, 0, 0 }
 	end
 	
-	local rows = DbQuery ("SELECT * FROM rafalh_maps", map)
+	local rows = DbQuery("SELECT * FROM rafalh_maps", map)
 	for i, data in ipairs (rows) do
 		if (map_list[data.name]) then
 			map_list[data.name][2] = data.played

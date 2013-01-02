@@ -39,7 +39,7 @@
     <msg id="Warning! %s has been given to %s.">Atentie! %s i-a fost dat lui %s.</msg>
     <msg id="Usage: %s">Folosit: %s</msg>
     <msg id='Cannot find player &quot;%s&quot;!'>Nu pot gasi jucatorul &quot;%s&quot;!</msg>
-    <msg id="You do not have enaught cash!">Nu ai bani destui!</msg>
+    <msg id="You do not have enough cash!">Nu ai bani destui!</msg>
     <msg id="none">nimic</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Nu pot gasi harta &quot;%s&quot;!</msg>
     <msg id="Supported types: %s.">Moduri suportate: %s.</msg>
@@ -67,7 +67,7 @@
     <msg id="Place Your Bets!">Pariati acum!</msg>
     <msg id="No More Bets.">Nu mai puteti paria.</msg>
     <msg id="You have won %s in your bet!">Ai castigat %s pentru pariul tau!</msg>
-    <msg id="Not enaught players to bet - %u are needed.">Nu sunt destui jucatori pentru pariere - %u trebuiesc.</msg>
+    <msg id="Not enough players to bet - %u are needed.">Nu sunt destui jucatori pentru pariere - %u trebuiesc.</msg>
     <msg id="Your maximal bet is %s!">Pariul maxim este %s!</msg>
     <msg id="You already bet %s on %s!">Ai pariat deja %s pe %s!</msg>
     <msg id="You bet %s on %s!">Pariezi %s pe %s!</msg>

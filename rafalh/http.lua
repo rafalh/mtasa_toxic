@@ -109,6 +109,7 @@ function getMaps ( map, order, desc, limit, start )
 		local map_res = getResourceFromName ( data.name )
 		local map = map_res and Map.create(map_res)
 		data.name = map and map:getName()
+		data.author = map:getInfo("author")
 	end
 	
 	return rows, maps_count

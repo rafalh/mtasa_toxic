@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.42" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.43" description="Rafalh Scripts System"   />
 	
 	<!--script src="debug.lua" type="client" /-->
 	
@@ -65,7 +65,6 @@
 	<script src="winevents.lua" />
 	<script src="win_anim_c.lua"  type="client" />
 	<script src="water_fix_c.lua" type="client" />
-	
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />
@@ -225,66 +224,69 @@
 	<min_mta_version client="1.3.0-9.04431" />
 	
 	<settings>
-		<setting name="*spam_interval" accept="0-2000" value="500" desc="The minimal number of miliseconds between messages, which are not a spam." group="Antispam" friendlyname="Spam interval" />
-		<setting name="*spammer_kick" accept="false,true" value="false" desc="Set to true if script should kick spammers. If it is false, script mutes them for 60 seconds." group="Antispam" friendlyname="Kicking for spam" />
+		<setting group="Antispam" name="*spam_interval" accept="0-2000" value="500" desc="The minimal number of miliseconds between messages, which are not a spam." friendlyname="Spam interval" />
+		<setting group="Antispam" name="*spammer_kick" accept="false,true" value="false" desc="Set to true if script should kick spammers. If it is false, script mutes them for 60 seconds." friendlyname="Kicking for spam" />
 		
-		<setting name="*allow_rate_change" accept="false,true" value="true" desc="Allow changing rate for map by player." group="Ratings" friendlyname="Allow rate change" />
-		<setting name="*max_ping" accept="0-10000" value="500" desc="If not equal 0, script kick laggers with ping bigger than this value." group="General" friendlyname="Maximal ping" />
-		<setting name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." group="General" friendlyname="Maximal ping time" />
-		<setting name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." group="General" friendlyname="Minimal FPS divisor" />
-		<setting name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." group="General" friendlyname="Minimal FPS" />
-		<setting name="*time_zone" accept="-12-12" value="0" desc="Timezone for the server" group="General" friendlyname="Time zone" />
-		<setting name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." group="General" friendlyname="Kill AFK players" />
-		<setting name="*upload_addr" accept="*" value="&quot;" desc="Address showed by !upload command." group="General" friendlyname="Maps upload address" />
-		<setting name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after !mute command. If it equals 0, mute stop working when player quit." group="General" friendlyname="Mute time" />
-		<setting name="*auto_clean_db_interval" accept="0-100000" value="60" desc="Number of minutes between following database cleanings. Set to 0 to disable database autocleaning. To apply this setting you have to restart the script." group="General" friendlyname="Autoclean database interval" />
-		<setting name="*disable_fps_limit" accept="false,true" value="false" desc="If set to true script automatically disables FPS limit on maps without checkpoints." group="General" friendlyname="Disable FPS limit for not race maps" />
-		<setting name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." group="General" friendlyname="Chat messages above players" />
-		<setting name="*breakable_glass" accept="false,true" value="true" desc="If set to true, script will show glass hole when your vehicle get big demage." group="General" friendlyname="Breakable glass" />
-		<setting name="*red_damage_screen" accept="false,true" value="true" desc="If set to true, script will change screen color to red for a moment when your vehicle get big demage." group="General" friendlyname="Red damage screen" />
-		<setting name="*announc_interval" accept="1-1000000000" value="300" desc="Interval of printing announcements in seconds." group="General" friendlyname="Announcements interval" />
-		<setting name="*max_warns" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." group="General" friendlyname="Maximum warnings" />
-		<setting name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." group="General" friendlyname="Minimum nick change delay" />
-		<setting name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." group="General" friendlyname="Stunt bonus" />
-		<setting name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag] or |tag|. Player with tags will have they own teams" group="General" friendlyname="Clan teams" />
-		<setting name="*win_events" accept="false,true" value="true" desc="If enabled random event will happen when player won DD match (for example gravity will be set to 0)" group="General" friendlyname="Win events" />
-		<setting name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." group="General" friendlyname="Censor" />
-		<setting name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" group="General" friendlyname="Login window" />
+		<setting group="Ratings" name="*allow_rate_change" accept="false,true" value="true" desc="Allow changing rate for map by player." friendlyname="Allow rate change" />
+		
+		<setting group="General" name="*max_ping" accept="0-10000" value="500" desc="If not equal 0, script kick laggers with ping bigger than this value." friendlyname="Maximal ping" />
+		<setting group="General" name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." friendlyname="Maximal ping time" />
+		<setting group="General" name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS divisor" />
+		<setting group="General" name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS" />
+		<setting group="General" name="*time_zone" accept="-12-12" value="0" desc="Timezone for the server" friendlyname="Time zone" />
+		<setting group="General" name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." friendlyname="Kill AFK players" />
+		<setting group="General" name="*upload_addr" accept="*" value="&quot;" desc="Address showed by !upload command." friendlyname="Maps upload address" />
+		<setting group="General" name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after !mute command. If it equals 0, mute stop working when player quit." friendlyname="Mute time" />
+		<setting group="General" name="*auto_clean_db_interval" accept="0-100000" value="60" desc="Number of minutes between following database cleanings. Set to 0 to disable database autocleaning. To apply this setting you have to restart the script." friendlyname="Autoclean database interval" />
+		<setting group="General" name="*disable_fps_limit" accept="false,true" value="false" desc="If set to true script automatically disables FPS limit on maps without checkpoints." friendlyname="Disable FPS limit for not race maps" />
+		<setting group="General" name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." friendlyname="Chat messages above players" />
+		<setting group="General" name="*breakable_glass" accept="false,true" value="true" desc="If set to true, script will show glass hole when your vehicle get big demage." friendlyname="Breakable glass" />
+		<setting group="General" name="*red_damage_screen" accept="false,true" value="true" desc="If set to true, script will change screen color to red for a moment when your vehicle get big demage." friendlyname="Red damage screen" />
+		<setting group="General" name="*announc_interval" accept="1-1000000000" value="300" desc="Interval of printing announcements in seconds." friendlyname="Announcements interval" />
+		<setting group="General" name="*max_warns" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." friendlyname="Maximum warnings" />
+		<setting group="General" name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." friendlyname="Minimum nick change delay" />
+		<setting group="General" name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." friendlyname="Stunt bonus" />
+		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag] or |tag|. Player with tags will have they own teams" friendlyname="Clan teams" />
+		<setting group="General" name="*win_events" accept="false,true" value="true" desc="If enabled random event will happen when player won DD match (for example gravity will be set to 0)" friendlyname="Win events" />
+		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />
+		<setting group="General" name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" friendlyname="Login window" />
 	
-		<setting name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." group="Maps" friendlyname="Maximal map repeats count" />
-		<setting name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." group="Maps" friendlyname="Ghostmode OFF warning time" />
+		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
+		<setting group="Maps" name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." friendlyname="Ghostmode OFF warning time" />
 		
-		<setting name="*bidlvl_price" accept="0-1000000" value="25000" desc="Price of 1 bidlevel. Next bidlevels will cost this price * level. For example level 2 will cost this number * 2." group="Prices" friendlyname="Bidlevel price" />
+		<setting group="Shop" name="*bidlvl_price" accept="0-1000000" value="25000" desc="Price of 1 bidlevel. Next bidlevels will cost this price * level. For example level 2 will cost this number * 2." friendlyname="Bidlevel price" />
+		<setting group="Shop" name="*minBuyMapPlayerDelay" accept="0-1000000" value="600" desc="Minimal delay for player to buy a map after buying another one" friendlyname="Minimal buy map delay for player" />
+		<setting group="Shop" name="*minBuyMapDelay" accept="0-1000000" value="1800" desc="Minimal delay for map to be bought again after being placed in queue" friendlyname="Minimal buy map delay per map" />
 		
-		<setting name="*bet_time" accept="0-3600" value="60" desc="Number of seconds after map start, in which player can bet. Value of 0 disables betting." group="Betting" friendlyname="Betting time" />
-		<setting name="*max_bet" accept="0-1000000" value="1000" desc="Maximal bet for 1st bidlevel. For next bidlevels it will be this value multiplied by level." group="Betting" friendlyname="Maxbet for 1st bidlevel" />
-		<setting name="*bet_min_players" accept="0-128" value="2" desc="Minimal number of players needed to enable betting." group="Betting" friendlyname="Players for betting" />
+		<setting group="Betting" name="*bet_time" accept="0-3600" value="60" desc="Number of seconds after map start, in which player can bet. Value of 0 disables betting." friendlyname="Betting time" />
+		<setting group="Betting" name="*max_bet" accept="0-1000000" value="1000" desc="Maximal bet for 1st bidlevel. For next bidlevels it will be this value multiplied by level." friendlyname="Maxbet for 1st bidlevel" />
+		<setting group="Betting" name="*bet_min_players" accept="0-128" value="2" desc="Minimal number of players needed to enable betting." friendlyname="Players for betting" />
 	
-		<setting name="*max_viel" accept="0-10000" value="300" desc="Max speed of players in horizontal plane. If 0 detecting of speed cheaters will be disabled." group="Anticheat" friendlyname="Max vielocity" />
-		<setting name="*max_viel_kick" accept="false,true" value="false" desc="If true players with too big speed will be kicked. Otherwise only chat message will be generated." group="Anticheat" friendlyname="Kicking speed cheaters" />
-		<setting name="*fps_anticheat" accept="false,true" value="true" desc="Kick player if he has got FPS above the limit." group="Anticheat" friendlyname="FPS Anticheat" />
-		<setting name="*show_ac_msgs" accept="false,true" value="true" desc="If set to true and no online player has access to AC messages, they are sent to everybody." group="Anticheat" friendlyname="Show AC messages" />
+		<setting group="Anticheat" name="*max_viel" accept="0-10000" value="300" desc="Max speed of players in horizontal plane. If 0 detecting of speed cheaters will be disabled." friendlyname="Max vielocity" />
+		<setting group="Anticheat" name="*max_viel_kick" accept="false,true" value="false" desc="If true players with too big speed will be kicked. Otherwise only chat message will be generated." friendlyname="Kicking speed cheaters" />
+		<setting group="Anticheat" name="*fps_anticheat" accept="false,true" value="true" desc="Kick player if he has got FPS above the limit." friendlyname="FPS Anticheat" />
+		<setting group="Anticheat" name="*show_ac_msgs" accept="false,true" value="true" desc="If set to true and no online player has access to AC messages, they are sent to everybody." friendlyname="Show AC messages" />
 		
-		<setting name="*lotto_limit" accept="1-1000000" value="50000" desc="Amount of cash in fund, needed to finish the lottery." group="Lottery" friendlyname="Lottery limit" />
-		<setting name="*max_tickets" accept="1-1000000" value="1000" desc="Maximal number of lottery tickets, which player can buy." group="Lottery" friendlyname="Max tickets per player" />
-		<setting name="*fund_inc_interval" accept="0-1000000" value="60" desc="Number of seconds after which script increase lottery fund. Set to 0 to disable automatical fund increase" group="Lottery" friendlyname="Fund increase interval" />
-		<setting name="*max_fund_inc" accept="1-1000000" value="20000" desc="Maximal amount of cash, which can be added automatically to lottery fund." group="Lottery" friendlyname="Maximal fund increase" />
+		<setting group="Lottery" name="*lotto_limit" accept="1-1000000" value="50000" desc="Amount of cash in fund, needed to finish the lottery." friendlyname="Lottery limit" />
+		<setting group="Lottery" name="*max_tickets" accept="1-1000000" value="1000" desc="Maximal number of lottery tickets, which player can buy." friendlyname="Max tickets per player" />
+		<setting group="Lottery" name="*fund_inc_interval" accept="0-1000000" value="60" desc="Number of seconds after which script increase lottery fund. Set to 0 to disable automatical fund increase" friendlyname="Fund increase interval" />
+		<setting group="Lottery" name="*max_fund_inc" accept="1-1000000" value="20000" desc="Maximal amount of cash, which can be added automatically to lottery fund." friendlyname="Maximal fund increase" />
 		
-		<setting name="*votenext_enabled" accept="false,true" value="true" desc="Enables or disables vote for next map. If vote is accepted next map is set and opened after current map end." group="Votes" friendlyname="Votenext" />
-		<setting name="*votenext_allowchange" accept="false,true" value="true" group="Votes" friendlyname="Votenext allow change" />
-		<setting name="*votenext_percentage" accept="1-100" value="67" group="Votes" friendlyname="Votenext percentage" />
-		<setting name="*votenext_timeout" accept="0-60" value="10" group="Votes" friendlyname="Votenext timeout" />
-		<setting name="*votenext_locktime" accept="0-3600" value="180" group="Votes" friendlyname="Votenext locktime" />
-		<setting name="*auto_votekick" accept="false,true" value="false" desc="If set to true votekick is enabled only, when noone can use !kick command, otherwise votekick is disabled." group="Votes" friendlyname="Auto-enable votekick" />
-		<setting name="*auto_votemap" accept="false,true" value="false" desc="If set to true votemap is enabled only if noone can use !map command, otherwise votemap is disabled." group="Votes" friendlyname="Auto-enable votemap" />
-		<setting name="*vote_between_maps" accept="0-3" value="0" desc="If set to 1, map ratings are shown. If set to 2, in vote are only two options: Random and Play again. If set to 3, in vote are options: DD, DM, Race, Other and Play again. If set to 0, vote is not modified." group="Votes" friendlyname="Vote between maps" />
+		<setting group="Votes" name="*votenext_enabled" accept="false,true" value="true" desc="Enables or disables vote for next map. If vote is accepted next map is set and opened after current map end." friendlyname="Votenext" />
+		<setting group="Votes" name="*votenext_allowchange" accept="false,true" value="true" friendlyname="Votenext allow change" />
+		<setting group="Votes" name="*votenext_percentage" accept="1-100" value="67" friendlyname="Votenext percentage" />
+		<setting group="Votes" name="*votenext_timeout" accept="0-60" value="10" friendlyname="Votenext timeout" />
+		<setting group="Votes" name="*votenext_locktime" accept="0-3600" value="180" friendlyname="Votenext locktime" />
+		<setting group="Votes" name="*auto_votekick" accept="false,true" value="false" desc="If set to true votekick is enabled only, when noone can use !kick command, otherwise votekick is disabled." friendlyname="Auto-enable votekick" />
+		<setting group="Votes" name="*auto_votemap" accept="false,true" value="false" desc="If set to true votemap is enabled only if noone can use !map command, otherwise votemap is disabled." friendlyname="Auto-enable votemap" />
+		<setting group="Votes" name="*vote_between_maps" accept="0-3" value="0" desc="If set to 1, map ratings are shown. If set to 2, in vote are only two options: Random and Play again. If set to 3, in vote are options: DD, DM, Race, Other and Play again. If set to 0, vote is not modified." friendlyname="Vote between maps" />
 		
-		<setting name="*recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps." group="Recording" friendlyname="Record top times" />
-		<setting name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." group="Recording" friendlyname="Record top times CPs" />
-		<setting name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." group="Recording" friendlyname="Show ghost" />
+		<setting group="Recording" name="*recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps." friendlyname="Record top times" />
+		<setting group="Recording" name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." friendlyname="Record top times CPs" />
+		<setting group="Recording" name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." friendlyname="Show ghost" />
 		
-		<setting name="*private_db" accept="false,true" value="false" desc="If enabled data is saved in db.sqlite private db instead of server registry" group="Database" friendlyname="Private database" />
-		<setting name="*db_backup_int" accept="0-1000000" value="3" desc="Number of days when database backup is made. If set to 0 backups will not be generated. Only supported for private database." group="Database" friendlyname="Database backup interval" />
-		<setting name="*max_db_backups" accept="0-1000" value="10" desc="Maximal number of backups saved. Only supported for private database." group="Database" friendlyname="Maximal database backups count" />
+		<setting group="Database" name="*private_db" accept="false,true" value="false" desc="If enabled data is saved in db.sqlite private db instead of server registry" friendlyname="Private database" />
+		<setting group="Database" name="*db_backup_int" accept="0-1000000" value="3" desc="Number of days when database backup is made. If set to 0 backups will not be generated. Only supported for private database." friendlyname="Database backup interval" />
+		<setting group="Database" name="*max_db_backups" accept="0-1000" value="10" desc="Maximal number of backups saved. Only supported for private database." friendlyname="Maximal database backups count" />
 	</settings>
 </meta>

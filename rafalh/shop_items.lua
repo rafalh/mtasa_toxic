@@ -369,7 +369,7 @@ ShpRegisterItem(NextMapItem)
 
 local VipItem = {
 	id = "vip1w",
-	cost = 2000000,
+	cost = 2200000,
 	onBuy = function ( player )
 		local res = getResourceFromName ( "rafalh_vip" )
 		local success = res and call ( res, "giveVip", player, 7 )
@@ -400,23 +400,26 @@ local function ShpMapStop ()
 end
 
 local function ShpBuyNextMap ( map_res_name )
+	local pdata = g_Players[client]
+	local now = getRealTime().timestamp
+	
 	local cash = StGet ( client, "cash" )
 	if ( cash < g_ShopItems.nextmap.cost ) then
-		privMsg ( client, "Not enaugh cash!" )
+		privMsg ( client, "Not enough cash!" )
 		return
 	end
 	
-	local map_res = getResourceFromName ( map_res_name )
+	local map_res = getResourceFromName(map_res_name)
 	local map = map_res and Map.create(map_res)
 	if ( not map ) then
-		outputDebugString ( "getResourceFromName failed", 2 )
+		outputDebugString("getResourceFromName failed", 2)
 		return
 	end
 	
-	local room = g_Players[client].room
+	local room = pdata.room
 	local mapName = map:getName()
 	if(MqGetMapPos(room, map)) then
-		privMsg ( client, "Map %s is already queued!", mapName )
+		privMsg(client, "Map %s is already queued!", mapName)
 		return
 	end
 	
@@ -426,21 +429,28 @@ local function ShpBuyNextMap ( map_res_name )
 		return
 	end
 	
-	local map_id = map:getId()
-	local rows = DbQuery ( "SELECT played_timestamp FROM rafalh_maps WHERE map=? LIMIT 1", map_id )
-	local now = getRealTime().timestamp
+	local minDelayForPlayer = SmGetUInt("minBuyMapPlayerDelay", 600)
+	if(pdata.buyMapTimeStamp and now - pdata.buyMapTimeStamp < minDelayForPlayer) then
+		local delay = pdata.buyMapTimeStamp + minDelayForPlayer - now
+		privMsg(client, "You cannot buy maps so often. Please wait %s...", formatTimePeriod(delay, 0))
+		return
+	end
 	
-	local max_delay = 30*60
+	local map_id = map:getId()
+	local rows = DbQuery("SELECT played_timestamp FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	
+	local minDelayForMap = SmGetUInt("minBuyMapDelay", 600)
 	local dt = now - rows[1].played_timestamp
-	if(dt > max_delay) then
+	if(dt > minDelayForMap) then
 		local pos = MqAdd(room, map)
-		customMsg ( 128, 255, 196, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName ( client ), pos )
+		customMsg(128, 255, 196, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName(client), pos)
 		
 		cash = cash - g_ShopItems.nextmap.cost
-		StSet ( client, "cash", cash )
+		StSet(client, "cash", cash)
+		pdata.buyMapTimeStamp = now
 	else
 		local delay = max_delay - dt
-		privMsg ( source, "Map %s have been recently played. Please wait %s...", map_res_name, formatTimePeriod ( delay, 0 ) )
+		privMsg(client, "Map %s have been recently played. Please wait %s...", mapName, formatTimePeriod(delay, 0))
 	end
 end
 

@@ -1,8 +1,8 @@
 <strings>
-    <msg id="* %s has left the game.">* %s opuscił grę.</msg>
+    <msg id="* %s has left the game.">* %s opuścił grę.</msg>
     <msg id="* %s has been kicked from the game.">* %s został wykopany z serwera.</msg>
     <msg id="* %s has been banned from the game.">* %s został zbanowany.</msg>
-    <msg id="* %s has left the game [%s].">* %s opuscił grę [%s].</msg>
+    <msg id="* %s has left the game [%s].">* %s opuścił grę [%s].</msg>
 	
     <msg id="Usage: %s">Użycie: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
@@ -71,7 +71,7 @@
 	<msg id="Mine">Mina</msg>
 	<msg id="Godmode">Tryb boga</msg>
 	<msg id="Oil">Olej</msg>
-	<msg id="Self-destruction">Samodestrukcja</msg>
+	<msg id="Self-destruction">Samo-destrukcja</msg>
 	<msg id="Flip">Odwrócenie</msg>
 	<msg id="VIP rank">Ranga VIP</msg>
 	<msg id="Thunder">Piorun</msg>
@@ -106,6 +106,7 @@
     <msg id="User Panel key:">Przycisk Panelu Użytkownika:</msg>
     <msg id="Statistics Panel key:">Przycisk Panelu Statystyk:</msg>
 	<msg id="Hide other cars when GM is enabled">Chowaj inne samochody gdy GM jest włączony</msg>
+	<msg id="Show stars animation above winner car">Pokaż animację gwiazdek nad samochodem zwycięzcy</msg>
 	<msg id="Effects">Efekty</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
 	
@@ -158,4 +159,5 @@
 	<msg id="Played">Grana</msg>
 	<msg id="Map rating">Ocena mapy</msg>
 	<msg id="Select your candidate for next map">Wybierz swoją propozycję następnej mapy</msg>
+	<msg id="Choose the next map to buy">Wybierz mapę, którą chcesz kupić</msg>
 </strings>
