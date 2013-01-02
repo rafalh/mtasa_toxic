@@ -139,9 +139,14 @@ local function RbAddItem(player, rank, time)
 	
 	-- add item (table still doesnt have holes)
 	local item = {player, timeStr, time}
-	item.name = type(player)=="userdata" and getPlayerName(player) or player
+	if(type(player)=="userdata") then
+		item.name = getPlayerName(player)
+		item.clr = {getPlayerNametagColor(player)}
+	else
+		item.name = player
+		item.clr = {255, 255, 255}
+	end
 	item.name2 = item.name:gsub("#%x%x%x%x%x%x", "")
-	item.clr = {getPlayerNametagColor(item[1])}
 	item.nameW = dxGetTextWidth(item.name2..":", SCALE, PLAYER_FONT)
 	if(item.nameW > g_MaxNameW) then
 		g_MaxNameW = item.nameW + 10
