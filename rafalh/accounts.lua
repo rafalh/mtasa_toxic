@@ -27,7 +27,14 @@ local function onLoginReq(name, passwd)
 	local self = g_Players[client]
 	if(name) then
 		local account = getAccount(name, passwd)
-		local success = account and logIn(self.el, account, passwd)
+		local success = false
+		if(account) then
+			success = logIn(self.el, account, passwd)
+			if(not success) then
+				success = (getPlayerAccount(self.el) == account)
+			end
+		end
+		
 		if(not success) then -- if we succeeded onLogin do the rest
 			triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, false)
 		end

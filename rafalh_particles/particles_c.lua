@@ -156,8 +156,11 @@ function enableParticles()
 	addEventHandler("onClientRender", g_Root, renderParticles)
 	
 	for i, path in ipairs(IMAGE_PATHES) do
-		local tex = dxCreateTexture(path)
-		g_Images[i] = tex
+		g_Images[i] = dxCreateTexture(path)
+	end
+	
+	for i, particle in ipairs(g_Particles) do
+		resetParticle(particle, 0, 0, 0)
 	end
 end
 
