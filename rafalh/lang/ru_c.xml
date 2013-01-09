@@ -108,7 +108,7 @@
     <msg id="Empty">Отсутствует</msg>
 	
 	<msg id="Rate this map">Оцени каоту</msg>
-	<msg id="Press 0-9 to rate this map">Нажми 0-9 чтобы оценить</msg>
+	<msg id="Press 1-5 to rate this map">Нажми 1-5 чтобы оценить</msg>
 	
     <msg id="Private Chat - %s">Личные сообщения - %s</msg>
     <msg id="Say:">Сказать:</msg>

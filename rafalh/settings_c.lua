@@ -2,11 +2,11 @@ g_Settings = {}
 g_ClientSettings = {}
 local g_SettingFunctions = {}
 
-function tobool ( val )
+function tobool(val)
 	return ( val == true or val == "true" or val == 1 )
 end
 
-function SmRegister ( name, default, func )
+function SmRegister(name, default, func)
 	g_SettingFunctions[name] = func
 	g_ClientSettings[name] = default
 end
@@ -19,6 +19,7 @@ SmRegister("radio_channel", "")
 SmRegister("radio_volume", 100, touint)
 SmRegister("carHide", false, tobool)
 SmRegister("winAnim", true, tobool)
+SmRegister("hideNearbyCars", true, tobool)
 
 g_SettingsInfo = {
 	suicide_key = { def = "k", f = tostring },

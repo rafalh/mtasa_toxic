@@ -2,6 +2,53 @@
 -- Local function definitions --
 --------------------------------
 
+g_UpdateInProgress = false
+
+local function compressGhosts()
+	g_UpdateInProgress = true
+	local start = getTickCount()
+	local bytesOld, bytesZlib, bytesNew = 0, 0, 0
+	
+	local rows = DbQuery("SELECT * FROM rafalh_besttimes WHERE rec<>'' OR cp_times <> ''")
+	for i, data in ipairs(rows) do
+		local dt = getTickCount() - start
+		if (dt > 1000) then
+			outputDebugString("Compressing ghosts: "..i.."/"..#rows, 3)
+			outputDebugString("bytesOld "..bytesOld.." bytesZlib "..bytesZlib.." bytesNew "..bytesNew, 3)
+			coroutine.yield()
+			start = getTickCount()
+		end
+		
+		local newRec, newCpTimes = "", ""
+		
+		if(data.rec ~= "") then
+			--newRec = zlibCompress(data.rec)
+			
+			bytesOld = bytesOld + data.rec:len()
+			--bytesZlib = bytesZlib + newRec:len()
+			
+			local recTbl = RcDecodeTraceOld(data.rec)
+			local newRecStr = RcEncodeTrace(recTbl)
+			--assert(#RcDecodeTrace(newRecStr) == #recTbl) -- test with asserts
+			local newRec2 = zlibCompress(newRecStr)
+			newRec = newRec2
+			bytesNew = bytesNew + newRec2:len()
+		end
+		
+		if(data.cp_times ~= "") then
+			newCpTimes = zlibCompress(data.cp_times)
+		end
+		
+		DbQuery("UPDATE rafalh_besttimes SET "..
+			"rec="..DbBlob(newRec)..", "..
+			"cp_times="..DbBlob(newCpTimes).." "..
+			"WHERE map=? AND player=?", data.map, data.player)
+	end
+	
+	outputDebugString("Compressing ghosts finished", 3)
+	g_UpdateInProgress = false
+end
+
 local function setupDatabase ()
 	--g_Db = Database:create ()
 	DbInit ()
@@ -88,8 +135,8 @@ local function setupDatabase ()
 			"player INTEGER NOT NULL,"..
 			"map INTEGER NOT NULL,"..
 			"time INTEGER NOT NULL,"..
-			"rec TEXT DEFAULT '' NOT NULL,"..
-			"cp_times TEXT DEFAULT '' NOT NULL,"..
+			"rec BLOB DEFAULT x'' NOT NULL,"..
+			"cp_times BLOB DEFAULT x'' NOT NULL,"..
 			"timestamp INTEGER)" ) ) then
 		err = "Cannot create rafalh_besttimes table."
 	end
@@ -127,7 +174,7 @@ local function setupDatabase ()
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local current_ver = 136
+	local current_ver = 138
 	local ver = SmGetUInt ( "version", current_ver )
 	if ( ver == 0 ) then
 		ver = touint ( get ( "version" ) ) or current_ver
@@ -137,11 +184,6 @@ local function setupDatabase ()
 	end
 	
 	if ( ver < current_ver ) then
-		if ( not err and ver < 134 ) then
-			if ( not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN smoke INTEGER DEFAULT 0 NOT NULL" ) ) then
-				err = "Failed to add smoke column."
-			end
-		end
 		if ( not err and ver < 135 ) then
 			if ( not DbQuery ( "ALTER TABLE rafalh_maps ADD COLUMN played_timestamp INTEGER DEFAULT 0 NOT NULL" ) ) then
 				err = "Failed to add played_timestamp column."
@@ -150,6 +192,34 @@ local function setupDatabase ()
 		if ( not err and ver < 136 ) then
 			if ( not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN account TEXT" ) ) then
 				err = "Failed to add account column."
+			end
+		end
+		if ( not err and ver < 137 ) then
+			if ( not DbRedefineTable ( "rafalh_besttimes",
+					"player INTEGER NOT NULL,"..
+					"map INTEGER NOT NULL,"..
+					"time INTEGER NOT NULL,"..
+					"rec BLOB DEFAULT x'' NOT NULL,"..
+					"cp_times BLOB DEFAULT x'' NOT NULL,"..
+					"timestamp INTEGER" ) ) then
+				err = "Failed to modify rafalh_besttimes."
+			end
+		end
+		if ( not err and ver < 138 ) then
+			if(not zlibCompress or not zlibUncompress) then
+				err = "Toxic module has not been loaded"
+			else
+				local co = coroutine.create(compressGhosts)
+				coroutine.resume(co)
+				if(coroutine.status(co) ~= "dead") then
+					g_CompressionTimer = setTimer(function()
+						coroutine.resume(co)
+						if(coroutine.status(co) == "dead") then
+							killTimer(g_CompressionTimer)
+							g_CompressionTimer = false
+						end
+					end, 100, 0)
+				end
 			end
 		end
 		
@@ -276,46 +346,46 @@ local function LoadMapTypes ()
 	end
 end
 
-local function onResourceStart ( resource )
-	math.randomseed ( getTickCount () )
-	createElement ( "TXC413b9d90", "TXC413b9d90" )
+local function onResourceStart(resource)
+	math.randomseed(getTickCount())
+	createElement("TXC413b9d90", "TXC413b9d90")
 	
-	if ( not setupDatabase () or not setupACL () ) then
-		cancelEvent ()
+	if(not setupDatabase() or not setupACL()) then
+		cancelEvent()
 		return
 	end
 	
-	if ( not SmGetBool ( "cleanup_done" ) ) then
-		outputDebugString ( "Cleaning database!", 2 )
-		DbQuery ( "UPDATE rafalh_players SET online=0" )
+	if(not SmGetBool("cleanup_done")) then
+		outputDebugString("Cleaning database!", 2)
+		DbQuery("UPDATE rafalh_players SET online=0")
 	end
-	SmSet ( "cleanup_done", false )
+	SmSet("cleanup_done", false)
 	
-	LngInit ()
-	LoadCountries ()
-	LoadLanguages ()
-	LoadMapTypes ()
+	LngInit()
+	LoadCountries()
+	LoadLanguages()
+	LoadMapTypes()
 	
-	local scoreboard_res = getResourceFromName ( "scoreboard" )
-	if ( scoreboard_res and getResourceState ( scoreboard_res ) == "running" ) then
-		call ( scoreboard_res, "addScoreboardColumn", "country", g_Root, false, 50, "country_img" )
+	local scoreboard_res = getResourceFromName("scoreboard")
+	if(scoreboard_res and getResourceState(scoreboard_res) == "running") then
+		call(scoreboard_res, "addScoreboardColumn", "country", g_Root, false, 50, "country_img")
 	end
 	
-	for i, playerEl in ipairs ( getElementsByType ( "player" ) ) do
+	for i, playerEl in ipairs (getElementsByType("player")) do
 		Player.create(playerEl)
 	end
 	
-	local consoles = getElementsByType ( "console" )
-	assert ( #consoles == 1 )
+	local consoles = getElementsByType("console")
+	assert(#consoles == 1)
 	Player.create(consoles[1])
 	
-	local auto_clean_db_interval = SmGetUInt ( "auto_clean_db_interval", 0 )
-	if ( auto_clean_db_interval > 0 ) then
-		DbQuery ( "VACUUM" )
-		setTimer ( DbQuery, auto_clean_db_interval * 1000 * 60, 0, "VACUUM" )
+	local auto_clean_db_interval = SmGetUInt("auto_clean_db_interval", 0)
+	if(auto_clean_db_interval > 0) then
+		DbQuery("VACUUM")
+		setTimer(DbQuery, auto_clean_db_interval * 1000 * 60, 0, "VACUUM")
 	end
 	
-	outputDebugString ( "rafalh script has started!", 3 )
+	outputDebugString("rafalh script has started!", 3)
 end
 
 ------------

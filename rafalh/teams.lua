@@ -149,3 +149,15 @@ addEventHandler ( "onPlayerLogin", g_Root, TmOnPlayerJoinLogin )
 addEventHandler ( "onPlayerLogout", g_Root, TmOnPlayerLogout )
 addEventHandler ( "onPlayerChangeNick", g_Root, TmOnPlayerChangeNick )
 addEventHandler ( "onPlayerQuit", g_Root, TmOnPlayerQuit )
+local function test2()
+	_G.outputDebugString("test2 g_Global "..tostring(g_Global), 3)
+end
+local function test()
+	--g_Global = "123"
+	_G.outputDebugString("test g_Global ".._G.tostring(g_Global), 3)
+	test2()
+end
+g_Global = "lol"
+setfenv(1, {_G = _G})
+test()
+_G.outputDebugString("g_Global ".._G.tostring(g_Global), 3)

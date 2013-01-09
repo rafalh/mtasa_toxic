@@ -35,6 +35,7 @@ function getPlayersStats ( player, order, desc, limit, start )
 	if ( rows ) then
 		for i, data in ipairs ( rows ) do
 			data.rank = StRankFromPoints ( data.points )
+			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
 		end
 	end
 	
@@ -92,7 +93,7 @@ function getMaps ( map, order, desc, limit, start )
 	local rows = DbQuery ( "SELECT COUNT(*) AS c FROM rafalh_maps"..where )
 	local maps_count = rows[1].c
 	
-	local query = "SELECT name, played, rates, rates_count FROM rafalh_maps"..where
+	local query = "SELECT map, name, played, rates, rates_count FROM rafalh_maps"..where
 	if ( order ) then
 		query = query.." ORDER BY "..tostring ( order )..( ( desc and " DESC" ) or "" )
 	end
@@ -113,4 +114,30 @@ function getMaps ( map, order, desc, limit, start )
 	end
 	
 	return rows, maps_count
+end
+
+function getMapInfo(mapId)
+	outputDebugString("getMapInfo "..tostring(mapId), 3)
+	mapId = tonumber(mapId)
+	if(not mapId) then return false end
+	
+	local rows = DbQuery("SELECT * FROM rafalh_maps WHERE map=?", mapId)
+	local data = rows and rows[1]
+	if(not data) then return false end
+	
+	local mapRes = getResourceFromName(data.name)
+	if(mapRes) then
+		data.name = getResourceInfo(mapRes, "name")
+		data.author = getResourceInfo(mapRes, "author")
+	end
+	
+	local rows = DbQuery("SELECT bt.player, bt.time, p.name FROM rafalh_besttimes bt, rafalh_players p WHERE bt.map=? AND p.player=bt.player ORDER BY bt.time LIMIT 8", mapId)
+	if(rows) then
+		for i, data in ipairs(rows) do
+			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
+		end
+		data.toptimes = rows
+	end
+	
+	return data
 end

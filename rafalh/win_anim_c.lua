@@ -91,6 +91,12 @@ local function stopWinnerAnim()
 	end
 end
 
+local function onPlayerQuit()
+	if(g_WinnerAnim == source) then
+		stopWinnerAnim()
+	end
+end
+
 local function init()
 	g_StarTexture = dxCreateTexture("img/star.png")
 	if(DEBUG) then
@@ -101,4 +107,5 @@ end
 
 addEventHandler("onClientWinnerAnim", g_Root, startWinnerAnim)
 addEventHandler("onClientMapStopping", g_Root, stopWinnerAnim)
+addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 addEventHandler("onClientResourceStart", g_ResRoot, init)

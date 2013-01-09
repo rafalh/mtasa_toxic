@@ -216,6 +216,7 @@
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />
 	<export function="getMaps" http="true" />
+	<export function="getMapInfo" http="true" />
 	<export function="parseCommand" />
 	<export function="getTopTime" />
 	

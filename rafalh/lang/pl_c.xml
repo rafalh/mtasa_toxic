@@ -127,7 +127,7 @@
     <msg id="Empty">Puste</msg>
 	
 	<msg id="Rate this map">Oceń tę mapę</msg>
-	<msg id="Press 0-9 to rate this map">Naciśnij 0-9 aby ocenić tę mapę</msg>
+	<msg id="Press 1-5 to rate this map">Naciśnij 1-5 aby ocenić tę mapę</msg>
 	
     <msg id="Private Chat - %s">Prywatny czat - %s</msg>
     <msg id="Say:">Mów:</msg>

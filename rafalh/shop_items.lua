@@ -449,7 +449,7 @@ local function ShpBuyNextMap ( map_res_name )
 		StSet(client, "cash", cash)
 		pdata.buyMapTimeStamp = now
 	else
-		local delay = max_delay - dt
+		local delay = minDelayForMap - dt
 		privMsg(client, "Map %s have been recently played. Please wait %s...", mapName, formatTimePeriod(delay, 0))
 	end
 end

@@ -5,6 +5,15 @@ function DbStr ( str )
 	return "'"..tostring ( str ):gsub ( "'", "''" ).."'"
 end
 
+function DbBlob(data)
+	local tbl = {}
+	for i = 1, data:len() do
+		local code = data:byte(i)
+		table.insert(tbl, ("%02x"):format(code))
+	end
+	return "X'"..table.concat(tbl).."'"
+end
+
 function DbRedefineTable ( table_name, definition )
 	local fields = definition:gsub ( "([%w_]+)%s*[^,]+,", "%1," ):gsub ( ",[%s]*([%w_]+)%s+[^,]+", ",%1" )
 	if ( definition == fields ) then -- there is no ","
