@@ -1,69 +1,72 @@
 local g_Poll = false
 
-addEvent ( "onPollStarting" )
-addEvent ( "onPlayerRate", true )
-addEvent ( "onClientSetRateGuiVisibleReq", true )
+addEvent("onPollStarting")
+addEvent("onPlayerRate", true)
+addEvent("onClientSetRateGuiVisibleReq", true)
 
-function RtPlayerRate ( rate )
-	local room = g_Players[source].room
+function RtPlayerRate(rate)
+	local pdata = g_Players[source]
+	local room = pdata.room
 	local map = getCurrentMap(room)
-	rate = touint ( rate, 0 )
-	if ( rate < 1 or rate > 10 or not map ) then
-		return false
-	end
+	
+	rate = touint(rate, 0)
+	if(rate < 1 or rate > 10 or not map) then return end
 	
 	local map_id = map:getId()
-	local map_rows = DbQuery ( "SELECT rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id )
+	local rows = DbQuery("SELECT rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local mapData = rows and rows[1]
 	
-	local rows = DbQuery ( "SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", g_Players[source].id, map_id )
-	if ( not rows or not rows[1] or SmGetBool ( "allow_rate_change" ) ) then
-		if ( rows and rows[1] and map_rows[1].rates_count > 0 ) then
-			map_rows[1].rates = map_rows[1].rates - rows[1].rate
+	local rows = DbQuery("SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
+	local oldRate = rows and rows[1] and rows[1].rate
+	if(not oldRate or SmGetBool("allow_rate_change")) then
+		if(oldRate) then
+			assert(mapData.rates_count > 0 and mapData.rates > 0)
+			mapData.rates = mapData.rates - oldRate + rate
+			DbQuery("UPDATE rafalh_rates SET rate=? WHERE player=? AND map=?", rate, pdata.id, map_id)
 		else
-			map_rows[1].rates_count = map_rows[1].rates_count + 1
+			mapData.rates_count = mapData.rates_count + 1
+			mapData.rates = mapData.rates + rate
+			DbQuery("INSERT INTO rafalh_rates (player, map, rate) VALUES(?, ?, ?)", pdata.id, map_id, rate)
+			StSet(pdata.el, "mapsRated", StGet(pdata.el, "mapsRated") + 1)
 		end
-		map_rows[1].rates = map_rows[1].rates + rate
 		
-		DbQuery ( "DELETE FROM rafalh_rates WHERE player=? AND map=?", g_Players[source].id, map_id )
-		DbQuery ( "INSERT INTO rafalh_rates (player, map, rate) VALUES(?, ?, ?)", g_Players[source].id, map_id, rate )
-		DbQuery ( "UPDATE rafalh_maps SET rates=?, rates_count=? WHERE map=?", map_rows[1].rates, map_rows[1].rates_count, map_id )
+		DbQuery("UPDATE rafalh_maps SET rates=?, rates_count=? WHERE map=?", mapData.rates, mapData.rates_count, map_id)
+		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates / mapData.rates_count)
 		
-		privMsg ( source, "Rate added! Current average rating: %.2f", map_rows[1].rates / map_rows[1].rates_count )
-		
-		BtSendMapInfo ( false )
+		BtSendMapInfo(false)
 	else
-		privMsg ( source, "You rated this map before: %u!", rows[1].rate )
+		privMsg(source, "You rated this map before: %u!", oldRate)
 	end
 end
 
-local function RtShowGuiForPlayer ( player, map_id )
-	local rows = DbQuery ( "SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", g_Players[player].id, map_id )
-	if ( not rows or not rows[1] ) then
-		triggerClientEvent ( player, "onClientSetRateGuiVisibleReq", g_Root, true )
+local function RtShowGuiForPlayer(player, map_id)
+	local rows = DbQuery("SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", g_Players[player].id, map_id)
+	if(not rows or not rows[1]) then
+		triggerClientEvent(player, "onClientSetRateGuiVisibleReq", g_Root, true)
 	end
 end
 
-local function RtTimerProc (room)
+local function RtTimerProc(room)
 	local map = getCurrentMap(room)
-	if ( map and not g_Poll ) then
+	if(map and not g_Poll) then
 		local map_id = map:getId()
-		for player, pdata in pairs ( g_Players ) do
-			RtShowGuiForPlayer ( player, map_id )
+		for player, pdata in pairs(g_Players) do
+			RtShowGuiForPlayer(player, map_id)
 		end
 	end
 end
 
-local function RtMapStart ()
+local function RtMapStart()
 	setMapTimer(RtTimerProc, 60 * 1000, 1, g_RootRoom) -- FIXME
 	g_Poll = false
 end
 
-local function RtPoolStarting ()
-	--outputDebugString ( "RtPoolStarting", 3 )
-	triggerClientEvent ( g_Root, "onClientSetRateGuiVisibleReq", g_Root, false )
+local function RtPoolStarting()
+	--outputDebugString("RtPoolStarting", 3)
+	triggerClientEvent(g_Root, "onClientSetRateGuiVisibleReq", g_Root, false)
 	g_Poll = true
 end
 
-addEventHandler ( "onGamemodeMapStart", g_Root, RtMapStart ) -- FIXME
-addEventHandler ( "onPlayerRate", g_Root, RtPlayerRate )
-addEventHandler( "onPollStarting", g_Root, RtPoolStarting )
+addEventHandler("onGamemodeMapStart", g_Root, RtMapStart) -- FIXME
+addEventHandler("onPlayerRate", g_Root, RtPlayerRate)
+addEventHandler("onPollStarting", g_Root, RtPoolStarting)

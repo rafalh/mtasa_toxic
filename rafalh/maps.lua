@@ -113,15 +113,15 @@ function getRandomMap()
 	local map
 	while(maps:getCount() > 0) do
 		map = maps:get(i)
-		local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map:getId())
-		if (rows[1].removed == "") then
+		local rows = DbQuery("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map:getId())
+		if(rows[1].removed == "") then
 			break
 		end
 		maps:remove(i)
 		local i = math.random (1, maps:getCount())
 	end
 	
-	if (maps:getCount() == 0) then
+	if(maps:getCount() == 0) then
 		outputDebugString("Failed to get random map!", 1)
 		return false
 	end
@@ -129,11 +129,11 @@ function getRandomMap()
 	return map
 end
 
-local function getActivePlayers (ignore)
+local function getActivePlayers(ignore)
 	local active = {}
-	for i, player in ipairs (getAlivePlayers ()) do
-		if (not isPedDead (player) and player ~= ignore) then
-			table.insert (active, player)
+	for i, player in ipairs(getAlivePlayers()) do
+		if(not isPedDead(player) and player ~= ignore) then
+			table.insert(active, player)
 		end
 	end
 	return active
@@ -154,7 +154,7 @@ local function onMapStart(map, room)
 	assert(getmetatable(map) == Map.__mt)
 	
 	local map_id = map:getId()
-	local rows = DbQuery ("SELECT played, rates, rates_count, removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local rows = DbQuery("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	local map_name = map:getName()
 	
 	if (room.lastMap == map) then
@@ -165,8 +165,8 @@ local function onMapStart(map, room)
 	end
 	room.currentMap = map
 	
-	if (rows[1].removed ~= "") then
-		scriptMsg ("Map %s is removed! Changing to random map.", map_name)
+	if(rows[1].removed ~= "") then
+		scriptMsg("Map %s is removed! Changing to random map.", map_name)
 		--cancelEvent () -- map resource is still running
 		setMapTimer(startRandomMap, 500, 1, room)
 	else
@@ -174,13 +174,29 @@ local function onMapStart(map, room)
 		local map_type = map:getType()
 		
 		local now = getRealTime().timestamp
-		DbQuery ("UPDATE rafalh_maps SET played=played+1, played_timestamp=? WHERE map=?", now, map_id)
+		DbQuery("UPDATE rafalh_maps SET played=played+1, played_timestamp=? WHERE map=?", now, map_id)
+		
+		local mapTypeCounter = false
+		if(room.isRace) then
+			mapTypeCounter = "racesPlayed"
+		elseif(map_type.name == "DD") then
+			mapTypeCounter = "ddPlayed"
+		elseif(map_type.name == "DM") then
+			mapTypeCounter = "dmPlayed"
+		end
+		
+		for player, pdata in pairs(g_Players) do
+			StSet(player, "mapsPlayed", StGet(player, "mapsPlayed") + 1)
+			if(mapTypeCounter) then
+				StSet(player, mapTypeCounter, StGet(player, mapTypeCounter) + 1)
+			end
+		end
 		
 		local was_queued = (g_StartingQueuedMap == map)
 		g_StartingQueuedMap = false
 		
 		-- output map name to console so players can easly copy the name to clipboard
-		outputConsole ("Map "..map_name.." started"..(was_queued and " (queued)" or "")..".")
+		outputConsole("Map "..map_name.." started"..(was_queued and " (queued)" or "")..".")
 		
 		-- update others_in_row for map types
 		if(not was_queued) then -- queue updates others_in_row when new map is added
@@ -193,7 +209,7 @@ local function onMapStart(map, room)
 					map_type2.others_in_row = 0
 				end
 			end
-			outputDebugString (dbg_buf, 3)
+			outputDebugString(dbg_buf, 3)
 		end
 		
 		-- show toptimes
@@ -202,7 +218,7 @@ local function onMapStart(map, room)
 		-- init some players data
 		for player, pdata in pairs (g_Players) do
 			if(pdata.room == room) then
-				pdata.cp_times = SmGetBool ("cp_recorder") and room.isRace and {}
+				pdata.cp_times = SmGetBool("cp_recorder") and room.isRace and {}
 				pdata.winner = false
 			end
 		end
@@ -223,16 +239,16 @@ local function onMapStart(map, room)
 		end
 		
 		-- check if ghostmode should be enabled
-		if (not map:getSetting("ghostmode")) then
+		if(not map:getSetting("ghostmode")) then
 			local gm = map_type and map_type.gm
-			setMapTimer (GmSet, 3000, 1, room, gm, true)
+			setMapTimer(GmSet, 3000, 1, room, gm, true)
 		end
 		
 		-- show best times
 		BtPrintTimes(room, map_id)
 		
 		-- allow bets
-		GbStartBets ()
+		GbStartBets()
 	end
 end
 
@@ -252,7 +268,7 @@ local function onMapStop(room)
 	room.currentMap = false
 end
 
-local function handlePlayerTime (player, ms)
+local function handlePlayerTime(player, ms)
 	local pdata = g_Players[player]
 	local map = getCurrentMap(pdata.room)
 	local default_speed = tonumber(map:getSetting("gamespeed")) or 1
@@ -285,40 +301,61 @@ local function handlePlayerTime (player, ms)
 	return n
 end
 
-local function handlePlayerWin (player)
+local function handlePlayerWin(player)
 	local room = g_Players[player].room
-	scriptMsg ("%s is the winner!", getPlayerName (player))
+	scriptMsg("%s is the winner!", getPlayerName(player))
 	
-	GbFinishBets (player)
+	GbFinishBets(player)
 	
-	if (room.winStreakPlayer == player) then
+	local map = getCurrentMap(room)
+	local mapType = map and map:getType()
+	local winCounter = false
+	if(not mapType) then
+		outputDebugString("unknown map type", 2)
+	elseif(room.isRace) then
+		winCounter = "raceVictories"
+	elseif(mapType.name == "DM") then
+		winCounter = "dmVictories"
+	elseif(mapType.name == "DD") then
+		winCounter = "ddVictories"
+	end
+	
+	if(winCounter) then
+		StSet(source, winCounter, StGet(source, winCounter) + 1)
+	end
+	
+	if(room.winStreakPlayer == player) then
 		room.winStreakLen = room.winStreakLen + 1
-		if (g_PlayersCount > 1) then
-			scriptMsg ("%s is on a winning streak! It's his %u. victory.", getPlayerName (player), room.winStreakLen)
+		if(g_PlayersCount > 1) then
+			scriptMsg("%s is on a winning streak! It's his %u. victory.", getPlayerName(player), room.winStreakLen)
 		end
 	else
 		room.winStreakPlayer = player
 		room.winStreakLen = 1
 	end
+	local maxStreak = StGet(player, "maxWinStreak")
+	if(room.winStreakLen > maxStreak) then
+		StSet(player, "maxWinStreak", room.winStreakLen)
+	end
 end
 
-local function setPlayerFinalRank (player, rank)
+local function setPlayerFinalRank(player, rank)
 	local cashadd = math.floor (1000 * g_PlayersCount / rank)
 	local pointsadd = math.floor (g_PlayersCount / rank)
 	
-	local stats = StGet (player, { "cash", "points" })
+	local stats = StGet(player, { "cash", "points" })
 	stats.cash = stats.cash + cashadd
 	stats.points = stats.points + pointsadd
 	StSet (player, stats)
 	privMsg (player, "%s added to your cash! Total: %s.", formatMoney (cashadd), formatMoney (stats.cash))
 	privMsg (player, "You earned %s points. Total: %s.", formatNumber (pointsadd), formatNumber (stats.points))
 	
-	if (rank == 1) then
-		handlePlayerWin (player)
+	if(rank == 1) then
+		handlePlayerWin(player)
 	end
 end
 
-local function onPlayerFinish (rank, ms)
+local function onPlayerFinish(rank, ms)
 	local room = g_Players[source].room
 	local map = getCurrentMap(room)
 	local map_id = map:getId()
@@ -326,7 +363,7 @@ local function onPlayerFinish (rank, ms)
 	if (rank <= 3) then
 		local rank_str = ({ "first", "second", "third" })[rank]
 		local val = StGet (source, rank_str) + 1
-		StSet (source, rank_str, val)
+		StSet(source, rank_str, val)
 	end
 	
 	--local rows = DbQuery ("SELECT time FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 1", map_id)
@@ -339,7 +376,7 @@ local function onPlayerFinish (rank, ms)
 	setPlayerFinalRank (source, rank)
 end
 
-local function onPlayerWinDD ()
+local function onPlayerWinDD()
 	local dm_wins = StGet (source, "dm_wins") + 1
 	StSet (source, "dm_wins", dm_wins)
 	
@@ -359,22 +396,27 @@ local function onPlayerWinDD ()
 end
 
 local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
-	local room = g_Players[source].room
+	local pdata = g_Players[source]
+	local room = pdata.room
 	local map = getCurrentMap(room)
 	local mapType = map and map:getType()
 	
-	if (pickupType == "vehiclechange" and mapType and mapType.winning_veh and vehicleModel and mapType.winning_veh[vehicleModel] and not g_Players[source].winner) then
-		g_Players[source].winner = true
-		scriptMsg ("Warning! %s has been given to %s.", getVehicleNameFromModel (vehicleModel), getPlayerName (source))
-		if (GmIsEnabled (room)) then
+	if(pickupType == "vehiclechange" and mapType and mapType.winning_veh and vehicleModel and mapType.winning_veh[vehicleModel] and not pdata.winner) then
+		pdata.winner = true
+		scriptMsg("Warning! %s has been given to %s.", getVehicleNameFromModel (vehicleModel), getPlayerName (source))
+		if(GmIsEnabled(room)) then
 			GmSet(room, false)
 		end
 		
-		local race_res = getResourceFromName ("race")
-		local ms = race_res and call (race_res, "getTimePassed")
-		if (ms) then
-			local n = handlePlayerTime (source, ms)
-			RcFinishRecordingPlayer (source, ms, map:getId(), n >= 1)
+		if(mapType.name == "DM") then
+			StSet(pdata.el, "huntersTaken", StGet(pdata.el, "huntersTaken") + 1)
+		end
+		
+		local race_res = getResourceFromName("race")
+		local ms = race_res and call(race_res, "getTimePassed")
+		if(ms) then
+			local n = handlePlayerTime(source, ms)
+			RcFinishRecordingPlayer(source, ms, map:getId(), n >= 1)
 		end
 	end
 end
@@ -421,7 +463,7 @@ local function onChangeMapReq(mapResName)
 		local room = g_Players[client].room
 		map:start(room)
 	else
-		outputDebugString ("getResourceFromName failed", 2)
+		outputDebugString("getResourceFromName failed", 2)
 	end
 end
 

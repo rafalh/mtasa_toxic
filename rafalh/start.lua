@@ -83,6 +83,19 @@ local function setupDatabase ()
 			"locked_nick BOOL DEFAULT 0 NOT NULL,"..
 			"invitedby INTEGER DEFAULT 0 NOT NULL,"..
 			
+			-- New stats
+			"maxWinStreak INTEGER DEFAULT 0 NOT NULL,"..
+			"mapsPlayed INTEGER DEFAULT 0 NOT NULL,"..
+			"mapsBought INTEGER DEFAULT 0 NOT NULL,"..
+			"mapsRated INTEGER DEFAULT 0 NOT NULL,"..
+			"huntersTaken INTEGER DEFAULT 0 NOT NULL,"..
+			"dmVictories INTEGER DEFAULT 0 NOT NULL,"..
+			"ddVictories INTEGER DEFAULT 0 NOT NULL,"..
+			"raceVictories INTEGER DEFAULT 0 NOT NULL,"..
+			"dmPlayed INTEGER DEFAULT 0 NOT NULL,"..
+			"ddPlayed INTEGER DEFAULT 0 NOT NULL,"..
+			"racesPlayed INTEGER DEFAULT 0 NOT NULL,"..
+			
 			-- Shop
 			"health100 INTEGER DEFAULT 0 NOT NULL,"..
 			"selfdestr INTEGER DEFAULT 0 NOT NULL,"..
@@ -174,7 +187,7 @@ local function setupDatabase ()
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local current_ver = 138
+	local current_ver = 141
 	local ver = SmGetUInt ( "version", current_ver )
 	if ( ver == 0 ) then
 		ver = touint ( get ( "version" ) ) or current_ver
@@ -183,29 +196,19 @@ local function setupDatabase ()
 		outputDebugString ( "Version: "..ver, 2 )
 	end
 	
-	if ( ver < current_ver ) then
-		if ( not err and ver < 135 ) then
-			if ( not DbQuery ( "ALTER TABLE rafalh_maps ADD COLUMN played_timestamp INTEGER DEFAULT 0 NOT NULL" ) ) then
-				err = "Failed to add played_timestamp column."
-			end
-		end
-		if ( not err and ver < 136 ) then
-			if ( not DbQuery ( "ALTER TABLE rafalh_players ADD COLUMN account TEXT" ) ) then
-				err = "Failed to add account column."
-			end
-		end
-		if ( not err and ver < 137 ) then
-			if ( not DbRedefineTable ( "rafalh_besttimes",
+	if(ver < current_ver) then
+		if(not err and ver < 137) then
+			if (not DbRedefineTable("rafalh_besttimes",
 					"player INTEGER NOT NULL,"..
 					"map INTEGER NOT NULL,"..
 					"time INTEGER NOT NULL,"..
 					"rec BLOB DEFAULT x'' NOT NULL,"..
 					"cp_times BLOB DEFAULT x'' NOT NULL,"..
-					"timestamp INTEGER" ) ) then
+					"timestamp INTEGER")) then
 				err = "Failed to modify rafalh_besttimes."
 			end
 		end
-		if ( not err and ver < 138 ) then
+		if(not err and ver < 138) then
 			if(not zlibCompress or not zlibUncompress) then
 				err = "Toxic module has not been loaded"
 			else
@@ -222,50 +225,75 @@ local function setupDatabase ()
 				end
 			end
 		end
+		if(not err and ver < 139) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapsPlayed INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapsBought INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapsRated INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN maxWinStreak INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN huntersTaken INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN ddVictories INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN raceVictories INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN dmPlayed INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN ddPlayed INTEGER DEFAULT 0 NOT NULL") or
+			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN racesPlayed INTEGER DEFAULT 0 NOT NULL")) then
+				err = "Failed to add columns."
+			end
+		end
+		if(not err and ver < 140) then
+			local rows = DbQuery("SELECT player, COUNT(rate) AS c FROM rafalh_rates GROUP BY player")
+			for i, data in ipairs(rows) do
+				DbQuery("UPDATE rafalh_players SET mapsRated=? WHERE player=?", data.c, data.player)
+			end
+		end
+		if(not err and ver < 141) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN dmVictories INTEGER DEFAULT 0 NOT NULL")) then
+				err = "Failed to add dmVictories column."
+			end
+		end
 		
-		if ( not err ) then
-			SmSet ( "version", current_ver )
-			outputDebugString ( "Database update ("..ver.." -> "..current_ver..") succeeded", 2 )
+		if(not err) then
+			SmSet("version", current_ver)
+			outputDebugString("Database update ("..ver.." -> "..current_ver..") succeeded", 2)
 		end
 	end
 	
-	if ( err ) then
-		outputDebugString ( "Database update ("..ver.." -> "..current_ver..") failed: "..tostring ( err ), 1 )
+	if(err) then
+		outputDebugString("Database update ("..ver.." -> "..current_ver..") failed: "..tostring(err), 1)
 		return false
 	end
 	
 	return true
 end
 
-local function setupACL ()
-	local acl = aclGet ( "Admin" )
-	if ( acl ) then
-		local save = false
-		
-		for i, right in ipairs ( CmdGetAclRights () ) do
-			if ( not aclGetRight ( acl, right ) ) then
-				aclSetRight ( acl, right, true )
-				save = true
-			end
-		end
-		
-		for i, right in ipairs ( g_CustomRights ) do
-			local right2 = "resource.rafalh."..right
-			if ( not aclGetRight ( acl, right2 ) ) then
-				aclSetRight ( acl, right2, true )
-				save = true
-			end
-		end
-		
-		if ( save ) then
-			aclSave ()
-		end
-		
-		return true
-	else
-		outputDebugString ( "Cannot find Admin ACL!", 1 )
+local function setupACL()
+	local acl = aclGet("Admin")
+	if(not acl) then
+		outputDebugString("Cannot find Admin ACL!", 1)
 		return false
 	end
+	
+	local save = false
+	
+	for i, right in ipairs(CmdGetAclRights()) do
+		if(not aclGetRight(acl, right)) then
+			aclSetRight(acl, right, true)
+			save = true
+		end
+	end
+	
+	for i, right in ipairs(g_CustomRights) do
+		local right2 = "resource.rafalh."..right
+		if(not aclGetRight(acl, right2)) then
+			aclSetRight(acl, right2, true)
+			save = true
+		end
+	end
+	
+	if(save) then
+		aclSave()
+	end
+	
+	return true
 end
 
 local function LoadCountries ()

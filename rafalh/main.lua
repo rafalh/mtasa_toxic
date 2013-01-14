@@ -67,7 +67,12 @@ local function onPlayerChangeNick ( oldNick, newNick )
 		end
 		
 		if(AsCanPlayerChangeNick(source, oldNickPlain, newNickPlain)) then
-			local fullNick = pdata:getName(true)
+			-- Note: getPlayerName returns old nick
+			local fullNick = newNick
+			local r, g, b = getPlayerNametagColor(pdata.el)
+			if(r ~= 255 or g ~= 255 or b ~= 255) then
+				fullNick = ("#%02X%02X%02X"):format(r, g, b)..fullNick
+			end
 			
 			DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullNick, pdata.id)
 			customMsg(255, 96, 96, "* %s is now known as %s.", oldNickPlain, newNickPlain)

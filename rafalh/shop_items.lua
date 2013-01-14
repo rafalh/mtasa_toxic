@@ -447,6 +447,7 @@ local function ShpBuyNextMap ( map_res_name )
 		
 		cash = cash - g_ShopItems.nextmap.cost
 		StSet(client, "cash", cash)
+		StSet(client, "mapsBought", StGet(client, "mapsBought") + 1)
 		pdata.buyMapTimeStamp = now
 	else
 		local delay = minDelayForMap - dt

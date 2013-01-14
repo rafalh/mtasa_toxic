@@ -53,8 +53,6 @@ function BtSendMapInfo(room, show, player)
 	
 	local map_id = map:getId()
 	local map_name = map:getName()
-	local rows = DbQuery("SELECT played, rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
-	local data = rows and rows[1]
 	
 	if(not g_TopTimes) then
 		-- this takes long...
@@ -64,6 +62,8 @@ function BtSendMapInfo(room, show, player)
 		end
 	end
 	
+	local rows = DbQuery("SELECT played, rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local data = rows and rows[1]
 	local rating = (data.rates_count > 0 and data.rates/data.rates_count) or 0
 	local author = map:getInfo("author")
 	triggerClientInternalEvent(player or g_Root, $(EV_CLIENT_MAP_INFO), g_Root, show, map_name, author, data.played, rating, data.rates_count, g_TopTimes)
