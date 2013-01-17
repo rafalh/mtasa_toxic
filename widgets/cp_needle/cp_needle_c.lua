@@ -72,23 +72,25 @@ local function loadCheckpoints()
 end
 
 local function onClientResourceStart()
-	if ( g_Show ) then
-		loadCheckpoints ()
+	if(g_Show) then
+		loadCheckpoints()
 	else
 		g_Checkpoints = false
 	end
 end
 
 g_WidgetCtrl[$(wg_show)] = function ( b )
-	if ( ( g_Show and b ) or ( not g_Show and not b ) ) then return end
+	if ((g_Show and b) or (not g_Show and not b)) then return end
 	g_Show = b
-	if ( b ) then
-		if ( not g_Checkpoints ) then
-			loadCheckpoints ()
+	if(b) then
+		if(not g_Checkpoints) then
+			loadCheckpoints()
 		end
-		addEventHandler ( "onClientRender", g_Root, onClientRender )
+		g_Textures.needle = dxCreateTexture("needle.png")
+		addEventHandler("onClientRender", g_Root, onClientRender)
 	else
-		removeEventHandler( "onClientRender", g_Root, onClientRender )
+		removeEventHandler("onClientRender", g_Root, onClientRender)
+		destroyElement(g_Textures.needle)
 	end
 end
 
@@ -134,12 +136,10 @@ end
 ----------
 
 #VERIFY_SERVER_BEGIN ( "F704779D928C126981211297264B9485" )
-	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	addEventHandler ( "onClientResourceStart", g_Root, onClientResourceStart ) -- map resource start
+	g_WidgetCtrl[$(wg_reset)]() -- reset pos, size, visiblity
+	addEventHandler("onClientResourceStart", g_Root, onClientResourceStart) -- map resource start
 	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	addEventHandler("onRafalhGetWidgets", g_Root, function()
 		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	end)
-	
-	g_Textures.needle = dxCreateTexture("needle.png")
 #VERIFY_SERVER_END ()

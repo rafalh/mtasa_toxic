@@ -1,0 +1,83 @@
+<meta>
+	<info name="Vehicle Lights" author="[SKC]MCvarial ft. [SKC]CsenaHUN modified by RafalH" version="1.1.0" type="misc" />
+
+	<file src="images/Blue Doom.jpg" />
+	<file src="images/Blue Estrellas.jpg" />
+	<file src="images/Blue Flecha.jpg" />
+	<file src="images/Blue Neon HQ.jpg" />
+	<file src="images/Blue Oblique.jpg" />
+	<file src="images/Blue X.jpg" />
+	<file src="images/Colored.jpg" />
+	<file src="images/Green FFS.jpg" />
+	<file src="images/Green Mustang.jpg" />
+	<file src="images/Green Onda.jpg" />
+	<file src="images/Green Paradise.jpg" />
+	<file src="images/Grey Audi I.jpg" />
+	<file src="images/High Quality.jpg" />
+	<file src="images/MEME Derp HQ.jpg" />
+	<file src="images/MEME Me Gusta HQ.jpg" />
+	<file src="images/MEME Troll HQ.jpg" />
+	<file src="images/Orange Cupido.jpg" />
+	<file src="images/Orange Led.jpg" />
+	<file src="images/Orange Lines.jpg" />
+	<file src="images/Pink Dots.jpg" />
+	<file src="images/Purple I.jpg" />
+	<file src="images/Purple II.jpg" />
+	<file src="images/Red Alfa Romeo.jpg" />
+	<file src="images/Red Alien.jpg" />
+	<file src="images/Red Angry Mouth.jpg" />
+	<file src="images/Red Angry Shape.jpg" />
+	<file src="images/Red Audi I.jpg" />
+	<file src="images/Red Audi II.jpg" />
+	<file src="images/Red Audi III.jpg" />
+	<file src="images/Red BMW I.jpg" />
+	<file src="images/Red BMW II.jpg" />
+	<file src="images/Red BMW M5.jpg" />
+	<file src="images/Red Canibus.jpg" />
+	<file src="images/Red Chevrolet Malibu.jpg" />
+	<file src="images/Red Citroen Survolt.jpg" />
+	<file src="images/Red Cupido.jpg" />
+	<file src="images/Red Curve.jpg" />
+	<file src="images/Red Curves HQ.jpg" />
+	<file src="images/Red Dino.jpg" />
+	<file src="images/Red Double Oval.jpg" />
+	<file src="images/Red Double Ring.jpg" />
+	<file src="images/Red Double Ring Led.jpg" />
+	<file src="images/Red Double Rounded Restangles HQ.jpg" />
+	<file src="images/Red Double Stripes.jpg" />
+	<file src="images/Red Fast Line.jpg" />
+	<file src="images/Red FFS.jpg" />
+	<file src="images/Red Infiniti Electric.jpg" />
+	<file src="images/Red KIA.jpg" />
+	<file src="images/Red Lamborghini.jpg" />
+	<file src="images/Red Lexus.jpg" />
+	<file src="images/Red Lines.jpg" />
+	<file src="images/Red Metropolis.jpg" />
+	<file src="images/Red Mustang.jpg" />
+	<file src="images/Red Passat.jpg" />
+	<file src="images/Red Peugeot.jpg" />
+	<file src="images/Red Rhombus.jpg" />
+	<file src="images/Red Ring.jpg" />
+	<file src="images/Red Sexy.jpg" />
+	<file src="images/Red Slanted Stripes.jpg" />
+	<file src="images/Red Spray.jpg" />
+	<file src="images/Red Subaru.jpg" />
+	<file src="images/Red The N.jpg" />
+	<file src="images/Red The X.jpg" />
+	<file src="images/Red The Y.jpg" />
+	<file src="images/Red Triangles.jpg" />
+	<file src="images/Red Triple Stripes.jpg" />
+	<file src="images/Red Volkswagen.jpg" />
+	<file src="images/Violet Lilac.jpg" />
+	<file src="images/White Slanted Stripes.jpg" />
+	<file src="images/White Snake.jpg" />
+
+	<script src="lights_c.lua" type="client" />
+	<script src="cookie_c.lua" type="client" />
+	<script src="effect_c.lua" type="client" />
+
+	<file src="lights.fx" />
+	
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+</meta>

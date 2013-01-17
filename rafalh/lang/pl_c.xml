@@ -35,9 +35,12 @@
 	<msg id="%s times">%s razy</msg>
 	
     <msg id="Profile">Profil</msg>
+	<msg id="General">Ogólne</msg>
 	<msg id="Firstname:">Imię:</msg>
 	<msg id="Age:">Wiek:</msg>
 	<msg id="City:">Miasto:</msg>
+	<msg id="Interests:">Zainteresowania:</msg>
+	<msg id="Contact">Kontakt</msg>
 	
     <msg id="Tops">Topy</msg>
 	<msg id="Player">Gracz</msg>

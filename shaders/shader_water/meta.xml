@@ -1,0 +1,13 @@
+<meta>
+	<info description="Shader - Water" version="0.0.6" type="script" />
+	<script src="c_water.lua" type="client" />
+	<file src="water.fx" type="client" />
+	<file src="mta-helper.fx" type="client" />
+	<file src="images/smallnoise3d.dds" type="client" />
+	<file src="images/cube_env256.dds" type="client" />
+	
+	<script src="c_effect.lua" type="client" />
+	
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+</meta>

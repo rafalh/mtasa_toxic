@@ -1,0 +1,12 @@
+<meta>
+	<info description="Shader - Car Paint" version="0.1.0" type="script" />
+	<script src="c_car_paint.lua" type="client" />
+	<file src="car_paint.fx" type="client" />
+	<file src="mta-helper.fx" type="client" />
+	<file src="images/smallnoise3d.dds" type="client" />
+	<file src="images/cube_env256.dds" type="client" />
+	
+	<script src="c_effect.lua" type="client" />
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+</meta>

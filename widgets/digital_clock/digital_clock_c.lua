@@ -21,6 +21,7 @@ local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
 local g_WidgetName = {"Digital clock", pl = "Cyfrowy zegar"}
 local g_Buffer = false
+local g_UpdateTimer = false
 
 local g_Digits = {
 	[0] = { true,  true,  true,  false, true,  true,  true  },
@@ -90,12 +91,12 @@ local function renderClock(x, y, w, h)
 end
 
 local function updateBuffer()
-	if(g_Buffer) then
-		destroyElement(g_Buffer)
+	local w, h = g_Size[1], g_Size[2]
+	
+	if(not g_Buffer) then
+		g_Buffer = dxCreateRenderTarget(w, h, true)
 	end
 	
-	local w, h = g_Size[1], g_Size[2]
-	g_Buffer = dxCreateRenderTarget(w, h, true)
 	dxSetRenderTarget(g_Buffer, true)
 	dxSetBlendMode("modulate_add")
 	renderClock(0, 0, w, h)
@@ -120,8 +121,20 @@ g_WidgetCtrl[$(wg_show)] = function(b)
 	g_Show = b
 	if(b) then
 		addEventHandler("onClientRender", g_Root, render)
+		if(USE_RENDER_TARGET) then
+			g_UpdateTimer = setTimer(updateBuffer, 1000, 0)
+			updateBuffer()
+		end
 	else
 		removeEventHandler("onClientRender", g_Root, render)
+		if(g_UpdateTimer) then
+			killTimer(g_UpdateTimer)
+			g_UpdateTimer = false
+		end
+		if(g_Buffer) then
+			destroyElement(g_Buffer)
+			g_Buffer = false
+		end
 	end
 end
 
@@ -135,6 +148,11 @@ end
 
 g_WidgetCtrl[$(wg_resize)] = function(w, h)
 	g_Size = { w, h }
+	
+	if(g_Buffer) then
+		destroyElement(g_Buffer)
+		g_Buffer = false
+	end
 end
 
 g_WidgetCtrl[$(wg_getsize)] = function()
@@ -172,9 +190,4 @@ end
 	addEventHandler("onRafalhGetWidgets", g_Root, function()
 		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	end)
-	
-	if(USE_RENDER_TARGET) then
-		setTimer(updateBuffer, 1000, 0)
-		updateBuffer()
-	end
 #VERIFY_SERVER_END()

@@ -181,6 +181,9 @@ local function onConfig(radius, density, speed, size, wind_x, wind_y)
 	g_WindX = (wind_x and tonumber(wind_x)) or 0
 	g_WindY = (wind_y and tonumber(wind_y)) or 0
 	
+	-- Break if particles are disabled
+	if(#g_Images == 0) then return end
+	
 	g_Particles = {}
 	for i = 1, g_Density do
 		g_Particles[i] = { 0, 0, 0, 0, 0, 0, false,

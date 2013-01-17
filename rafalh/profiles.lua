@@ -2,6 +2,7 @@
 #include "include/internal_events.lua"
 
 g_ProfileFields = {}
+local g_ProfileCats = {}
 
 local function PfSyncCallback(id)
 	id = touint(id)
@@ -20,24 +21,42 @@ local function PfSyncCallback(id)
 end
 
 local function PfFieldsSyncCallback()
-	return g_ProfileFields
+	return g_ProfileCats
 end
 
-local function PfInit ()
-	local node, i = xmlLoadFile("conf/profile_fields.xml"), 0
-	if(node) then
-		while (true) do
+local function PfLoadCat(node, cat)
+	local i = 0
+	while (true) do
 			local subnode = xmlFindChild(node, "field", i)
 			if(not subnode) then break end
 			i = i + 1
 			
-			local name = xmlNodeGetAttribute(subnode, "name")
 			local data = {}
-			data.longname = xmlNodeGetAttribute(subnode, "longname") or name
+			data.name = xmlNodeGetAttribute(subnode, "name")
+			assert(data.name)
+			data.longname = xmlNodeGetAttribute(subnode, "longname") or data.name
 			data.type = xmlNodeGetAttribute(subnode, "type") or "str"
-			data.i = i
-			assert(name)
-			g_ProfileFields[name] = data
+			data.w = tonumber(xmlNodeGetAttribute(subnode, "w"))
+			
+			g_ProfileFields[data.name] = data
+			table.insert(cat, data)
+	end
+end
+
+local function PfInit()
+	local node, i = xmlLoadFile("conf/profile_fields.xml"), 0
+	if(node) then
+		while (true) do
+			local subnode = xmlFindChild(node, "cat", i)
+			if(not subnode) then break end
+			i = i + 1
+			
+			local cat = {}
+			cat.name = xmlNodeGetAttribute(subnode, "name")
+			if(cat.name) then
+				PfLoadCat(subnode, cat)
+				table.insert(g_ProfileCats, cat)
+			end
 		end
 		xmlUnloadFile(node)
 	end

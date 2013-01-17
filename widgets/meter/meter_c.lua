@@ -98,14 +98,23 @@ local function renderMeter ()
 end
 
 g_WidgetCtrl[$(wg_show)] = function ( b )
-	if ( b == g_Show ) then
+	if (b == g_Show) then
 		return
 	end
 	g_Show = b
-	if ( b ) then
-		addEventHandler ( "onClientRender", g_Root, renderMeter )
+	if(b) then
+		addEventHandler("onClientRender", g_Root, renderMeter)
+		
+		g_Textures.hp = dxCreateTexture("hp.png")
+		g_Textures.bg = dxCreateTexture("bg.png")
+		g_Textures.nos = dxCreateTexture("nos.png")
+		g_Textures.needle = dxCreateTexture("needle.png")
+		g_Textures.text = dxCreateTexture("text.png")
 	else
-		removeEventHandler ( "onClientRender", g_Root, renderMeter )
+		removeEventHandler("onClientRender", g_Root, renderMeter)
+		for id, tex in pairs(g_Textures) do
+			destroyElement(tex)
+		end
 	end
 end
 
@@ -157,10 +166,4 @@ end
 	addEventHandler("onRafalhGetWidgets", g_Root, function()
 		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	end)
-	
-	g_Textures.hp = dxCreateTexture("hp.png")
-	g_Textures.bg = dxCreateTexture("bg.png")
-	g_Textures.nos = dxCreateTexture("nos.png")
-	g_Textures.needle = dxCreateTexture("needle.png")
-	g_Textures.text = dxCreateTexture("text.png")
 #VERIFY_SERVER_END ()

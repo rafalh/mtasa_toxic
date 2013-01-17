@@ -11,6 +11,7 @@ local g_WidgetCtrl = {}
 local g_WidgetName = {"Sound visualiser", pl = "Wizualizer dźwięku"}
 local g_Particles
 local g_Textures = {}
+local g_FindMusicTimer = false
 
 local BANDS = 40
 local MIN_SOUND_LEN = 30
@@ -210,6 +211,15 @@ g_WidgetCtrl[$(wg_show)] = function ( b )
 	g_Show = b
 	if(b) then
 		reset()
+		
+		g_Textures.bg = dxCreateTexture("bg.png")
+		
+		-- Add event handlers
+		addEventHandler("onClientSoundStream", g_Root, onSoundStream)
+		addEventHandler("onClientElementDestroy", g_Root, onElDestroy)
+		
+		-- Find music element
+		g_FindMusicTimer = setTimer(findMusic, 1000, 0)
 		findMusic()
 	else
 		if(g_Sound) then
@@ -217,6 +227,13 @@ g_WidgetCtrl[$(wg_show)] = function ( b )
 			g_Sound = false
 		end
 		reset()
+		
+		for id, tex in pairs(g_Textures) do
+			destroyElement(tex)
+		end
+		removeEventHandler("onClientSoundStream", g_Root, onSoundStream)
+		removeEventHandler("onClientElementDestroy", g_Root, onElDestroy)
+		killTimer(g_FindMusicTimer)
 	end
 end
 
@@ -265,16 +282,6 @@ local function init()
 	
 	-- Set a random seed
 	math.randomseed(getTickCount())
-	
-	g_Textures.bg = dxCreateTexture("bg.png")
-	
-	-- Add event handlers
-	addEventHandler("onClientSoundStream", g_Root, onSoundStream)
-	addEventHandler("onClientElementDestroy", g_Root, onElDestroy)
-	
-	-- Find music element
-	setTimer(findMusic, 1000, 0)
-	findMusic()
 end
 
 addEventHandler("onClientResourceStart", g_ResRoot, init)

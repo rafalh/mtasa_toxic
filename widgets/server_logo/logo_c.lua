@@ -21,7 +21,7 @@ local g_ScreenSize = { guiGetScreenSize () }
 local g_ScreenSizeSqrt = { g_ScreenSize[1]^(1/2), g_ScreenSize[2]^(1/2) }
 local g_Size, g_Pos = false, false -- set in WG_RESET
 local g_Visible = false
-local g_FrontTex, g_BackTex = false
+local g_Textures = {}
 local g_TexSize = false
 local g_Start = getTickCount ()
 local g_WidgetCtrl = {}
@@ -32,6 +32,8 @@ local g_WidgetName = {"Server logo", pl = "Logo serwera"}
 ---------------------------------
 
 local function render ()
+	if(not g_Shader) then return end
+	
 	local a = math.fmod ( ( getTickCount () - g_Start ) / 2000, 2 * math.pi )
 	
 	local w, h = g_Size[1], g_Size[2]
@@ -41,10 +43,10 @@ local function render ()
 	dxSetShaderValue ( g_Shader, "g_ScrSize", g_ScreenSize[1], g_ScreenSize[2] )
 	
 	if ( a < math.pi ) then
-		dxSetShaderValue ( g_Shader, "g_Texture", g_FrontTex )
+		dxSetShaderValue ( g_Shader, "g_Texture", g_Textures.front )
 		dxSetShaderValue ( g_Shader, "g_fAngle", math.pi/2 - a )
 	else
-		dxSetShaderValue ( g_Shader, "g_Texture", g_BackTex )
+		dxSetShaderValue ( g_Shader, "g_Texture", g_Textures.back )
 		dxSetShaderValue ( g_Shader, "g_fAngle", math.pi/2 - a + math.pi )
 	end
 	
@@ -58,8 +60,15 @@ g_WidgetCtrl[$(wg_show)] = function ( visible )
 	
 	if ( g_Visible ) then
 		addEventHandler ( "onClientRender", g_Root, render )
+		
+		g_Textures.back = dxCreateTexture("back.jpg")
+		g_Shader = dxCreateShader("logo.fx")
+		
 	elseif ( not visible ) then
 		removeEventHandler ( "onClientRender", g_Root, render )
+		
+		destroyElement(g_Textures.back)
+		destroyElement(g_Shader)
 	end
 end
 
@@ -108,18 +117,13 @@ end
 ----------
 
 #VERIFY_SERVER_BEGIN ( "01D16B92486D3BBE949B49D5A481BAEE" )
-	g_FrontTex = dxCreateTexture ( "logo.jpg" )
-	g_BackTex = dxCreateTexture ( "back.jpg" )
-	g_Shader = dxCreateShader ( "logo.fx" )
+	g_Textures.front = dxCreateTexture ( "logo.jpg" )
+	g_TexSize = {dxGetMaterialSize(g_Textures.front)}
 	
-	g_TexSize = {dxGetMaterialSize(g_FrontTex)}
+	g_WidgetCtrl[$(wg_reset)] () -- set pos, size and image
 	
-	if ( g_Shader ) then
-		g_WidgetCtrl[$(wg_reset)] () -- set pos, size and image
-		
+	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+	addEventHandler("onRafalhGetWidgets", g_Root, function()
 		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
-		addEventHandler("onRafalhGetWidgets", g_Root, function()
-			triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
-		end)
-	end
+	end)
 #VERIFY_SERVER_END ()

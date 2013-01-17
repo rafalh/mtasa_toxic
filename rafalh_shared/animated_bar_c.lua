@@ -25,6 +25,7 @@ local g_Root = getRootElement ()
 local g_Bars = {} -- g_Windows[window] = {  }
 local g_BarsCount = 0
 local g_Verified = false
+local DEBUG = false
 
 ---------------------------------
 -- Local function declarations --
@@ -43,7 +44,9 @@ onClientPreRender = function ()
 		if ( data[$(B_RESIZE_START)] ) then
 			local progress = getAnimatedProgressBarDinamicProgress ( bar )
 			guiSetSize ( data[$(B_IMG)], progress/100, 1, true )
-			guiSetText ( data[$(B_LABEL)], math.floor ( progress ).."%" )
+			if(data[$(B_LABEL)]) then
+				guiSetText ( data[$(B_LABEL)], math.floor ( progress ).."%" )
+			end
 		end
 	end
 end
@@ -79,10 +82,12 @@ function createAnimatedProgressBar ( x, y, w, h, fg_color, bg_color, relative, p
 		bar = guiCreateStaticImage ( x, y, w, h, bg_color or "img/bar_bg.png", relative, parent )
 		g_Bars[bar] = {}
 		g_Bars[bar][$(B_IMG)] = guiCreateStaticImage ( 0, 0, 0, 1, fg_color or "img/bar_fg.png", true, bar )
-		g_Bars[bar][$(B_LABEL)] = guiCreateLabel ( 0, 0, 1, 1, "0%", true, bar )
-		guiLabelSetHorizontalAlign ( g_Bars[bar][$(B_LABEL)], "center" )
-		guiLabelSetVerticalAlign ( g_Bars[bar][$(B_LABEL)], "center" )
-		--guiLabelSetColor ( g_Bars[bar][$(B_LABEL)], 255, 255, 255 )
+		if(h > 10) then
+			g_Bars[bar][$(B_LABEL)] = guiCreateLabel ( 0, 0, 1, 1, "0%", true, bar )
+			guiLabelSetHorizontalAlign ( g_Bars[bar][$(B_LABEL)], "center" )
+			guiLabelSetVerticalAlign ( g_Bars[bar][$(B_LABEL)], "center" )
+			--guiLabelSetColor ( g_Bars[bar][$(B_LABEL)], 255, 255, 255 )
+		end
 	end
 	
 	g_Bars[bar][$(B_PROGRESS)] = 0
@@ -120,7 +125,9 @@ function setAnimatedProgressBarProgress ( bar, progress, time )
 		g_Bars[bar][$(B_RESIZE_END)] = now + time
 	else
 		guiSetSize ( g_Bars[bar][$(B_IMG)], progress/100, 1, true )
-		guiSetText ( g_Bars[bar][$(B_LABEL)], math.floor ( progress ).."%" )
+		if(g_Bars[bar][$(B_LABEL)]) then
+			guiSetText ( g_Bars[bar][$(B_LABEL)], math.floor ( progress ).."%" )
+		end
 	end
 	g_Bars[bar][$(B_PROGRESS)] = progress
 end
@@ -136,4 +143,8 @@ end
 
 #VERIFY_SERVER_BEGIN ( "62443A6D1AA2D8A266064C951C92E266" )
 	g_Verified = true
+	if(DEBUG) then
+		local bar = createAnimatedProgressBar(100, 100, 200, 10, false, false, false)
+		setAnimatedProgressBarProgress(bar, 34)
+	end
 #VERIFY_SERVER_END ()

@@ -1,17 +1,17 @@
 local g_Root = getRootElement ()
 local g_ReadyPlayers = {}
 local g_Items = {} -- in chronology order
---local TEST = false
+local TEST = false
 
 addEvent("rb_onPlayerReady", true)
 
 local function RbAddItem(player, rank, time)
 	-- don't add the same player twice
-	--if(not TEST) then
+	if(not TEST) then
 		for i, item in ipairs(g_Items) do
 			if(item[1] == player) then return end
 		end
-	--end
+	end
 	
 	-- add new item
 	local item = {player, rank, time}
@@ -72,7 +72,7 @@ addEventHandler("onGamemodeMapStart", root, RbMapStart)
 addEventHandler("onGamemodeMapStop", root, RbMapStop)
 addEventHandler("rb_onPlayerReady", resourceRoot, RbPlayerReady)
 
---[[if(TEST) then
+if(TEST) then
 	addCommandHandler("testrb", function(player, cmd, arg)
 		local n = tonumber(arg) or 1
 		for i = 1, n do
@@ -81,4 +81,4 @@ addEventHandler("rb_onPlayerReady", resourceRoot, RbPlayerReady)
 			RbAddItem(player, #g_Items + 1, t)
 		end
 	end)
-end]]
+end

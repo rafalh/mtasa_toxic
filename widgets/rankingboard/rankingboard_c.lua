@@ -16,6 +16,7 @@ local FONT_HEIGHT = dxGetFontHeight(SCALE, FONT)
 local WHITE = tocolor(255, 255, 255)
 local BLACK = tocolor(0, 0, 0)
 local POS_OFFSET = 30
+local USE_RENDER_TARGET = true
 local g_WidgetName = {"Ranking board", pl = "Tablica wyników"}
 
 local g_Root = getRootElement ()
@@ -28,6 +29,7 @@ local g_Items = {}
 local g_FirstTime = false
 local g_MaxNameW = 0
 local g_InsertTimeStamp, g_InsertRank = false, false
+local g_Buffer = false
 
 addEvent("rb_addItem", true)
 addEvent("rb_clear", true)
@@ -52,14 +54,9 @@ end
 --local cnt = 0
 --local dt = 0
 
-local function RbRender()
-
---local start = getTickCount()
---for i = 1, 10 do
-
-	local x, y = g_Pos[1], g_Pos[2]
+local function RbRenderBoard(x, y, w, h, anim)
 	local first = true
-	local maxY = y + g_Size[2]
+	local maxY = y + h
 	
 	for rank, item in ipairs(g_Items) do
 		if(item) then
@@ -68,7 +65,7 @@ local function RbRender()
 			local white = WHITE
 			local black = BLACK
 			
-			if(g_InsertRank == rank) then
+			if(g_InsertRank == rank and anim) then
 				local ticks = getTickCount()
 				local progress = (ticks - g_InsertTimeStamp)/500
 				if(progress < 1) then
@@ -103,22 +100,72 @@ local function RbRender()
 	end
 end
 
---[[
-cnt = cnt + 1
-dt = dt + (getTickCount() - start)
-if(cnt >= 100) then
-	outputDebugString("time "..dt, 3)
-	cnt = 0
-	dt = 0
+local function RbRenderBuffered()
+	local x, y = g_Pos[1], g_Pos[2]
+	local w, h = g_Size[1], g_Size[2]
+	
+	local ticks = getTickCount()
+	local progress = 1
+	if(g_InsertTimeStamp) then
+		progress = (ticks - g_InsertTimeStamp)/500
+	end
+	
+	--dxSetBlendMode("add")
+	if(progress < 1) then
+		local offset = 0
+		
+		-- draw lines before
+		if(g_InsertRank > 1) then
+			local beforeH = (g_InsertRank - 1)*FONT_HEIGHT
+			dxDrawImageSection(x, y, w, beforeH, 0, 0, w, beforeH, g_Buffer)
+			offset = beforeH
+		end
+		
+		local clr = tocolor(255, 255, 255, progress*255)
+		dxDrawImageSection(x, y + offset, w, FONT_HEIGHT, 0, offset, w, FONT_HEIGHT, g_Buffer, 0, 0, 0, clr)
+		offset = offset + progress*FONT_HEIGHT
+		
+		-- draw rest
+		if(g_InsertRank < #g_Items) then
+			dxDrawImageSection(x, y + offset, w, h - offset, 0, offset, w, h - offset, g_Buffer)
+		end
+	else
+		dxDrawImage(x, y, w, h, g_Buffer)
+	end
+		
+	--dxSetBlendMode("blend")
 end
-end]]
+
+local function RbRender()
+	if(g_Buffer) then
+		RbRenderBuffered()
+	else
+		RbRenderBoard(g_Pos[1], g_Pos[2], g_Size[1], g_Size[2], true)
+	end
+end
+
+local function RbUpdateBuffer()
+	if(not g_Buffer) then
+		g_Buffer = dxCreateRenderTarget(g_Size[1], g_Size[2], true)
+	end
+	dxSetRenderTarget(g_Buffer, true)
+	dxSetBlendMode("modulate_add")
+	RbRenderBoard(0, 0, g_Size[1], g_Size[2], false)
+	dxSetBlendMode("blend")
+	dxSetRenderTarget()
+end
 
 local function RbClear()
+	--outputDebugString("RbClear", 3)
 	g_Items = {}
 	g_FirstTime = false
 	g_InsertTimeStamp = false
 	g_InsertRank = false
 	g_MaxNameW = 0
+	
+	if(USE_RENDER_TARGET) then
+		RbUpdateBuffer()
+	end
 end
 
 local function RbAddItem(player, rank, time)
@@ -155,6 +202,10 @@ local function RbAddItem(player, rank, time)
 	g_Items[rank] = item
 	g_InsertTimeStamp = getTickCount()
 	g_InsertRank = rank
+	
+	if(USE_RENDER_TARGET) then
+		RbUpdateBuffer()
+	end
 end
 
 local function RbPlayerQuit()
@@ -178,8 +229,16 @@ local function RbPlayerChangeNick()
 			if(item.nameW > g_MaxNameW) then
 				g_MaxNameW = item.nameW + 10
 			end
+			
+			if(USE_RENDER_TARGET) then
+				RbUpdateBuffer()
+			end
 		end
 	end
+end
+
+local function RbRestore()
+	
 end
 
 g_WidgetCtrl[$(wg_show)] = function(b)
@@ -202,6 +261,11 @@ end
 
 g_WidgetCtrl[$(wg_resize)] = function(w, h)
 	g_Size = { w, h }
+	
+	if(g_Buffer) then
+		destroyElement(g_Buffer)
+		g_Buffer = false
+	end
 end
 
 g_WidgetCtrl[$(wg_getsize)] = function()
@@ -213,7 +277,7 @@ g_WidgetCtrl[$(wg_getpos)] = function()
 end
 
 g_WidgetCtrl[$(wg_reset)] = function()
-	g_Size = { 200, 0.77*g_ScreenSize[2]-250 }
+	g_Size = { 320, 0.77*g_ScreenSize[2]-250 }
 	g_Pos = { 30, 250 }
 	g_WidgetCtrl[$(wg_show)](true)
 end
@@ -243,6 +307,9 @@ end
 	addEventHandler("rb_addItem", resourceRoot, RbAddItem)
 	addEventHandler("onClientPlayerQuit", root, RbPlayerQuit)
 	addEventHandler("onClientPlayerChangeNick", root, RbPlayerChangeNick)
+	if(USE_RENDER_TARGET) then
+		addEventHandler("onClientRestore", root, RbUpdateBuffer)
+	end
 	
 	triggerServerEvent("rb_onPlayerReady", resourceRoot)
 #VERIFY_SERVER_END()
