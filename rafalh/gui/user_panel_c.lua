@@ -78,25 +78,29 @@ end
 
 local function UpCreateGui ()
 	local w = ITEM_W * PANEL_COLUMNS + 20
-	local h = 60 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
+	local h = 80 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
 	local x = ( g_ScreenSize[1] - w ) / 2
 	local y = ( g_ScreenSize[2] - h ) / 2
-	g_Wnd = guiCreateWindow ( x, y, w, h, "User Panel", false )
+	g_Wnd = guiCreateWindow(x, y, w, h, "User Panel", false)
 	guiSetVisible(g_Wnd, false)
 	guiWindowSetSizable(g_Wnd, false)
 	
-	local listSize = {w - 20, h - 60}
+	local userMsg = g_UserName and MuiGetMsg("You are logged in as %s"):format(g_UserName) or MuiGetMsg("You are not logged in")
+	local userLabel = guiCreateLabel(10, 20, w - 20, 20, userMsg, false, g_Wnd)
+	guiSetFont(userLabel, "default-bold-small")
+	
+	local listSize = {w - 20, h - 80}
 	local itemSize = {listSize[1]/PANEL_COLUMNS, ITEM_H}
 	
-	g_List = ListView.create({10, 25}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
+	g_List = ListView.create({10, 40}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
 	g_List.onClickHandler = onItemClick
 	
 	for i, item in ipairs ( g_Items ) do
 		g_List:addItem(item.name, item.img, i)
 	end
 	
-	local btn = guiCreateButton ( w - 70, h - 35, 60, 25, "Close", false, g_Wnd )
-	addEventHandler ( "onClientGUIClick", btn, UpHide, false )
+	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, g_Wnd)
+	addEventHandler("onClientGUIClick", btn, UpHide, false)
 end
 
 local function UpShow ()

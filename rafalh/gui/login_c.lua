@@ -1,4 +1,5 @@
 local g_GUI
+g_UserName = false
 
 addEvent("main_onLoginReq", true)
 addEvent("main_onLoginStatus", true)
@@ -70,7 +71,7 @@ local function onPlayAsGuestClick(btn,state)
 	closeLoginWnd()
 end
 
-local function onLoginStatus(success)
+local function onLoginStatus(success, username)
 	if(not success) then
 		if(not g_GUI) then
 			openLoginWnd()
@@ -88,6 +89,8 @@ local function onLoginStatus(success)
 		
 		closeLoginWnd()
 	end
+	
+	g_UserName = username
 end
 
 function closeLoginWnd()

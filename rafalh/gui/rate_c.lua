@@ -107,7 +107,7 @@ local function RtHideGui()
 	RtSetBinds(false)
 	
 	if(g_Rating) then
-		triggerServerEvent("onPlayerRate", g_Me, g_Rating*2)
+		triggerServerEvent("onPlayerRate", g_Me, g_Rating)
 		g_Rating = false
 	end
 end

@@ -61,7 +61,7 @@ local function onPlayerChangeNick ( oldNick, newNick )
 	end
 	
 	if(oldNickPlain ~= newNickPlain) then -- not only color changed
-		if(NlCheckPlayer(source, newNickPlain)) then
+		if(NlCheckPlayer and NlCheckPlayer(source, newNickPlain)) then
 			cancelEvent ()
 			return
 		end
@@ -186,6 +186,9 @@ local function onRafalhStart ()
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd") and not welcWnd) then
 		triggerClientEvent(client, "main_onLoginReq", g_ResRoot)
+	elseif(not isGuestAccount(account)) then
+		local accountName = getAccountName(account)
+		triggerClientEvent(pdata.el, "main_onLoginStatus", g_ResRoot, true, accountName)
 	end
 	
 	pdata.new = false

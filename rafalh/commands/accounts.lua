@@ -2,25 +2,6 @@
 -- Globals --
 -------------
 
-local function CmdAutoLogin (message, arg)
-	local account = getPlayerAccount (source)
-	if (isGuestAccount (account)) then
-		privMsg (source, "You have to be logged in to use this command.")
-		return
-	end
-	
-	local is_disabled = getAccountData (account, "autologin_disabled")
-	is_disabled = not is_disabled
-	setAccountData (account, "autologin_disabled", is_disabled)
-	if (is_disabled) then
-		privMsg (source, "Auto-login is disabled for your account.")
-	else
-		privMsg (source, "Auto-login is enabled for your account.")
-	end
-end
-
-CmdRegister ("autologin", CmdAutoLogin, false, "Enables or disables auto-login for current account")
-
 local function CmdChangePassword (message, arg)
 	local account = getPlayerAccount (source)
 	if (isGuestAccount (account)) then
@@ -44,10 +25,10 @@ end
 CmdRegister ("changepassword", CmdChangePassword, false)
 CmdRegisterAlias ("chgpw", "changepassword")
 
-local function CmdChangeLogin (message, arg)
+--[[local function CmdChangeLogin(message, arg)
 	local account = getPlayerAccount (source)
 	if (isGuestAccount (account)) then
-		privMsg (source, "You have to be logged in to use this command.")
+		privMsg(source, "You have to be logged in to use this command.")
 		return
 	end
 	
@@ -65,12 +46,12 @@ local function CmdChangeLogin (message, arg)
 			logIn (source, new_account, arg[3])
 			removeAccount (account)
 			
-			privMsg (source"Login has been changed successfully!")
+			privMsg(source, "Login has been changed successfully!")
 		else
-			privMsg (source"Unknown error! Failed to change login.")
+			privMsg(source, "Unknown error! Failed to change login.")
 		end
-	else privMsg (source, "Usage: %s", arg[1].." <new login> <password>") end
+	else privMsg(source, "Usage: %s", arg[1].." <new login> <password>") end
 end
 
 CmdRegister ("changelogin", CmdChangeLogin, false)
-CmdRegisterAlias ("chglogin", "changelogin")
+CmdRegisterAlias ("chglogin", "changelogin")]]

@@ -152,7 +152,10 @@ function Player.create(el, account)
 		g_PlayersCount = g_PlayersCount + 1
 	end
 	
-	NlCheckPlayer(self.el, name, true)
+	if(NlCheckPlayer) then
+		NlCheckPlayer(self.el, name, true)
+	end
+	
 	local fullName = self:getName(true)
 	DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullName, self.id)
 	

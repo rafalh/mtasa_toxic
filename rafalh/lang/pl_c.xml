@@ -42,18 +42,17 @@
 	<msg id="Interests:">Zainteresowania:</msg>
 	<msg id="Contact">Kontakt</msg>
 	
-    <msg id="Tops">Topy</msg>
-	<msg id="Player">Gracz</msg>
-	<msg id="Top Cash">Top Kasy</msg>
-	<msg id="Top Points">Top Punktów</msg>
+    <msg id="Players list">Lista graczy</msg>
+	<msg id="Player name">Nazwa gracza</msg>
+	<msg id="Sort:">Sortuj:</msg>
+	<msg id="descending">malejąco</msg>
     <msg id="Players online only">Tylko gracze online</msg>
 	<msg id="Cash">Kasa</msg>
 	<msg id="Points">Punkty</msg>
-	<msg id="DD/DM Played">Zagrane DD/DM</msg>
-    <msg id="DD/DM Wins">Wygrane DD/DM</msg>
-    <msg id="Race - 1st">Wyścigi - 1.</msg>
-    <msg id="Race - 2nd">Wyścigi - 2.</msg>
-    <msg id="Race - 3rd">Wyścigi - 3.</msg>
+	<msg id="Playtime">Czas gry</msg>
+	<msg id="Top times">Top Time'y</msg>
+    <msg id="Race Vict">Wygr Wyścigi</msg>
+    <msg id="DD/DM Vict">Wygr DD/DM</msg>
 	
     <msg id="Shop">Sklep</msg>
 	<msg id="All items:">Wszystkie przedmioty:</msg>
@@ -109,6 +108,7 @@
     <msg id="User Panel key:">Przycisk Panelu Użytkownika:</msg>
     <msg id="Statistics Panel key:">Przycisk Panelu Statystyk:</msg>
 	<msg id="Hide other cars when GM is enabled">Chowaj inne samochody gdy GM jest włączony</msg>
+	<msg id="Hide nearby cars">Chowaj bliskie samochody</msg>
 	<msg id="Show stars animation above winner car">Pokaż animację gwiazdek nad samochodem zwycięzcy</msg>
 	<msg id="Effects">Efekty</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
@@ -151,6 +151,8 @@
 	
     <msg id="User Panel">Panel Użytkownika</msg>
 	<msg id="Back">Wstecz</msg>
+	<msg id="You are logged in as %s">Jesteś zalogowany jako %s</msg>
+	<msg id="You are not logged in">Nie jesteś zalogowany</msg>
 	
     <msg id="About">O serwerze</msg>
 	<msg id="About ToxiC Server">O serwerze ToxiC</msg>
@@ -163,4 +165,7 @@
 	<msg id="Map rating">Ocena mapy</msg>
 	<msg id="Select your candidate for next map">Wybierz swoją propozycję następnej mapy</msg>
 	<msg id="Choose the next map to buy">Wybierz mapę, którą chcesz kupić</msg>
+	
+	<msg id="Player profile">Profil gracza</msg>
+	<msg id="Information">Informacje</msg>
 </strings>

@@ -9,7 +9,6 @@
 ---------------------
 
 local g_StatFields = {
-	{ "name", "Player" },
 	{ "cash", "Cash", formatMoney },
 	{ "points", "Points", formatNumber },
 	{ "_rank", "Rank" },
@@ -39,8 +38,8 @@ local StatsPanel = {
 -- Local function definitions --
 --------------------------------
 
-local function StUpdatePlaytime ()
-	local now = getRealTime ().timestamp
+local function StUpdatePlaytime()
+	local now = getRealTime().timestamp
 	for parent, gui in pairs ( g_Gui ) do
 		local play_time = g_Stats[gui.id] and g_Stats[gui.id].time_here
 		if ( play_time ) then
@@ -53,7 +52,7 @@ local function StUpdatePlaytime ()
 	end
 end
 
-local function StUpdateGui ( id )
+local function StUpdateGui(id)
 	-- update playtime
 	StUpdatePlaytime ()
 	
@@ -76,7 +75,11 @@ local function StUpdateGui ( id )
 	end
 end
 
-function StCreateGui ( id, parent, x, y, w, h )
+function StGetHeight()
+	return #g_StatFields * 15
+end
+
+function StCreateGui(id, parent, x, y, w, h)
 	if ( not g_Gui[parent] ) then
 		g_Gui[parent] = { id = id }
 		local gui = g_Gui[parent]
@@ -86,11 +89,6 @@ function StCreateGui ( id, parent, x, y, w, h )
 			gui[field[1]] = guiCreateLabel ( x + 120, y, w - 120, 15, "-", false, parent )
 			y = y + 15
 		end
-		
-		if ( id == g_MyId ) then
-			local player_name = getPlayerName ( g_Me ):gsub ( "#%x%x%x%x%x%x", "" )
-			guiSetText ( gui.name, player_name )
-		end
 	end
 	
 	StUpdateGui ( id )
@@ -99,7 +97,7 @@ function StCreateGui ( id, parent, x, y, w, h )
 	end
 end
 
-function StDestroyGui ( parent )
+function StDestroyGui(parent)
 	if ( not g_Gui[parent] ) then return end
 	
 	StHideGui ( parent )
@@ -112,7 +110,7 @@ function StDestroyGui ( parent )
 	g_Gui[parent] = nil
 end
 
-function StShowGui ( parent )
+function StShowGui(parent)
 	if ( not g_Gui[parent] ) then return end
 	
 	local id = g_Gui[parent].id
@@ -129,7 +127,7 @@ function StShowGui ( parent )
 	g_Stats[id].refs = g_Stats[id].refs + 1
 end
 
-function StHideGui ( parent )
+function StHideGui(parent)
 	if ( not g_Gui[parent] ) then return end
 	
 	local id = g_Gui[parent].id
@@ -140,28 +138,17 @@ function StHideGui ( parent )
 	end
 end
 
-function StatsPanel.onShow ( tab )
-	local w, h = guiGetSize ( tab, false )
-	StCreateGui ( g_MyId, tab, 10, 10, w - 20, h - 20 )
-	StShowGui ( tab )
+function StatsPanel.onShow(panel)
+	local w, h = guiGetSize(panel, false)
+	StCreateGui(g_MyId, panel, 10, 10, w - 20, h - 20)
+	StShowGui(panel)
 end
 
-function StatsPanel.onHide ( tab )
-	StHideGui ( tab )
+function StatsPanel.onHide(panel)
+	StHideGui(panel)
 end
 
-local function onClientPlayerChangeNick ( oldNick, newNick )
-	if ( source == g_Me and g_Gui and not wasEventCancelled () ) then
-		local player_name = newNick:gsub ( "#%x%x%x%x%x%x", "" )
-		for tab, gui in pairs ( g_Gui ) do
-			if ( gui.id == g_MyId ) then
-				guiSetText ( gui.name, player_name )
-			end
-		end
-	end
-end
-
-local function onClientSync ( sync_tbl )
+local function onSync ( sync_tbl )
 	-- is it stats sync?
 	if ( not sync_tbl.stats ) then return end
 	
@@ -182,45 +169,15 @@ local function onClientSync ( sync_tbl )
 	StUpdateGui ( id )
 end
 
-local function StClosePlayerInfo ()
-	-- source = btn
-	guiSetEnabled ( source, false )
-	local wnd = getElementParent ( source )
-	GaFadeOut ( wnd, 200 )
-	setTimer ( destroyElement, 200, 1, wnd )
-end
-
-local function StDestroyPlayerInfo ()
-	StDestroyGui ( source )
-end
-
-function StCreatePlayerInfoWnd ( id )
-	local w, h = 300, 80 + #g_StatFields * 15
-	local x, y = ( g_ScreenSize[1] - w ) / 2, ( g_ScreenSize[2] - h ) / 2
-	local wnd = guiCreateWindow ( x, y, w, h, "Player Info", false )
-	guiSetVisible ( wnd, false )
-	addEventHandler ( "onClientElementDestroy", wnd, StDestroyPlayerInfo, false )
-	
-	StCreateGui ( id, wnd, 10, 25, 280, h - 45 )
-	
-	local btn = guiCreateButton ( w - 60, h - 35, 50, 25, "Close", false, wnd )
-	addEventHandler ( "onClientGUIClick", btn, StClosePlayerInfo, false )
-	
-	StShowGui ( wnd )
-	GaFadeIn ( wnd, 200 )
-	return wnd
-end
-
 ----------------------
 -- Global variables --
 ----------------------
 
-table.insert ( g_StatsPanelTabs, { "Statistics", StatsPanel.onShow, StatsPanel.onHide } )
-UpRegister ( StatsPanel )
+table.insert(g_StatsPanelTabs, {"Statistics", StatsPanel.onShow, StatsPanel.onHide})
+UpRegister(StatsPanel)
 
 ------------
 -- Events --
 ------------
 
-addEventHandler ( "onClientPlayerChangeNick", g_Root, onClientPlayerChangeNick )
-addInternalEventHandler ( $(EV_SYNC), onClientSync )
+addInternalEventHandler($(EV_SYNC), onSync)

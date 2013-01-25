@@ -10,8 +10,8 @@ function RtPlayerRate(rate)
 	local map = getCurrentMap(room)
 	
 	rate = touint(rate, 0)
-	if(rate < 1 or rate > 10 or not map) then return end
-	
+	if(rate < 1 or rate > 5 or not map) then return end
+	rate = rate * 2
 	local map_id = map:getId()
 	local rows = DbQuery("SELECT rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	local mapData = rows and rows[1]

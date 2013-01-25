@@ -48,7 +48,6 @@
 	<script src="maps.lua" />
 	<script src="map_queue.lua" />
 	<script src="nickblocker.lua" />
-	<script src="nicklocker.lua" />
 	<script src="profiles.lua" />
 	<script src="shop.lua" />
 	<script src="shop_items.lua" />
@@ -102,7 +101,8 @@
 	<script src="gui/user_panel_c.lua" type="client" />
 	<script src="gui/stats_c.lua" type="client" />
 	<script src="gui/edit_profile_c.lua" type="client" />
-	<script src="gui/tops_c.lua" type="client" />
+	<script src="gui/playersList_c.lua" type="client" />
+	<script src="gui/playerProfile_c.lua" type="client" />
 	<script src="gui/shop_c.lua" type="client" />
 	<script src="gui/translate_c.lua" type="client" />
 	<script src="gui/radio_c.lua" type="client" />
@@ -160,7 +160,7 @@
 	
 	<file src="img/userpanel/stats.png" />
 	<file src="img/userpanel/profile.png" />
-	<file src="img/userpanel/leader_board.png" />
+	<file src="img/userpanel/users.png" />
 	<file src="img/userpanel/shop.png" />
 	<file src="img/userpanel/translator.png" />
 	<file src="img/userpanel/music.png" />

@@ -73,33 +73,43 @@ CmdRegister("alive", CmdAlive, false, "Shows alive players")
 CmdRegisterAlias("a", "alive")
 
 local function CmdAdmins(message, arg)
-	local admins = ""
+	local admins, superMods, mods = {}, {}, {}
+	
+	local adminGroup = aclGetGroup("Admin")
+	local smodGroup = aclGetGroup("SuperModerator")
+	local modGroup = aclGetGroup("Moderator")
+	local premModGroup = aclGetGroup("PremiumModerator")
+	
 	for i, player in ipairs(getElementsByType("player")) do
-		if(isObjectInACLGroup("user."..getAccountName(getPlayerAccount(player)), aclGetGroup("Admin"))) then
-			admins = admins..((admins ~= "" and ", ") or "")..getPlayerName(player)
+		local accountName = getAccountName(getPlayerAccount(player))
+		
+		if(isObjectInACLGroup("user."..accountName, adminGroup)) then
+			table.insert(admins, getPlayerName(player))
+		end
+		
+		if(isObjectInACLGroup("user."..accountName, smodGroup)) then
+			table.insert(superMods, getPlayerName(player))
+		end
+		
+		if(isObjectInACLGroup("user."..accountName, modGroup) or
+		   isObjectInACLGroup("user."..accountName, premModGroup)) then
+			table.insert(mods, getPlayerName(player))
 		end
 	end
-	local super_mods = ""
-	for i, player in ipairs(getElementsByType("player")) do
-		if(isObjectInACLGroup("user."..getAccountName(getPlayerAccount(player)), aclGetGroup("SuperModerator"))) then
-			super_mods = super_mods..((super_mods ~= "" and ", ") or "")..getPlayerName(player)
-		end
-	end
-	local moderators = ""
-	for i, player in ipairs(getElementsByType("player")) do
-		if(isObjectInACLGroup("user."..getAccountName(getPlayerAccount(player)), aclGetGroup("Moderator"))) then
-			moderators = moderators..((moderators ~= "" and ", ") or "")..getPlayerName(player)
-		end
-	end
+	
+	admins = table.concat(admins, ", ")
+	superMods = table.concat(superMods, ", ")
+	mods = table.concat(mods, ", ")
+	
 	if(admins == "") then
 		admins = "none"
 	end
 	scriptMsg("Current admins: %s.", admins)
-	if(super_mods ~= "") then
-		scriptMsg("Current super-moderators: %s.", super_mods)
+	if(superMods ~= "") then
+		scriptMsg("Current super-moderators: %s.", superMods)
 	end
-	if(moderators ~= "") then
-		scriptMsg("Current moderators: %s.", moderators)
+	if(mods ~= "") then
+		scriptMsg("Current moderators: %s.", mods)
 	end
 end
 
@@ -241,7 +251,7 @@ local function CmdRate(message, arg)
 	if(rate >= 1 and rate <= 10) then
 		RtPlayerRate(rate)
 	else
-		privMsg(source, "Usage: %s", arg[1].." <1-10>")
+		privMsg(source, "Usage: %s", arg[1].." <1-5>")
 	end
 end
 

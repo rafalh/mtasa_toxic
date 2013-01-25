@@ -9,6 +9,7 @@
 ----------------------
 
 local g_MsgCommands = {}
+local MODIFY_MSG_CMD = false
 
 --------------------------
 -- Function definitions --
@@ -58,6 +59,11 @@ local function McHandleCommand (message, arg)
 end
 
 local function CmdAddCom (message, arg)
+	if(not MODIFY_MSG_CMD) then
+		privMsg (source, "Command is disabled!")
+		return
+	end
+	
 	if (#arg >= 3) then
 		arg[2] = arg[2]:lower ()
 		if (not g_MsgCommands[arg[2]]) then
@@ -82,6 +88,11 @@ end
 CmdRegister ("addcom", CmdAddCom, "resource.rafalh.addcom", "Adds a custom command")
 
 local function CmdRemCom (message, arg)
+	if(not MODIFY_MSG_CMD) then
+		privMsg (source, "Command is disabled!")
+		return
+	end
+	
 	if (#arg >= 2) then
 		arg[2] = arg[2]:lower ()
 		local node = xmlLoadFile ("conf\\msg_cmd.xml")
@@ -109,6 +120,11 @@ end
 CmdRegister ("remcom", CmdRemCom, "resource.rafalh.remcom", "Removes a custom command")
 
 local function CmdEditCom (message, arg)
+	if(not MODIFY_MSG_CMD) then
+		privMsg (source, "Command is disabled!")
+		return
+	end
+	
 	if (#arg >= 3) then
 		arg[2] = arg[2]:lower ()
 		local msg = message:sub ((arg[1]..arg[2]):len () + 3)

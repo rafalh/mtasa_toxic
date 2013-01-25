@@ -1,4 +1,4 @@
-function getPlayersStats ( player, order, desc, limit, start )
+function getPlayersStats(player, order, desc, limit, start, online)
 	-- Validate parameters
 	limit = math.min ( touint ( limit, 20 ), 20 )
 	start = touint ( start )
@@ -7,14 +7,20 @@ function getPlayersStats ( player, order, desc, limit, start )
 	end
 	
 	-- Build query
+	local cond = {"serial<>'0'"}
+	local player_id = touint(player)
+	if(player_id) then
+		table.insert(cond, "player="..player_id)
+	elseif(player) then
+		table.insert(cond, "name LIKE "..DbStr("%"..tostring(player).."%"))
+	end
+	if(online) then
+		table.insert(cond, "online=1")
+	end
+	
 	local where = ""
-	if ( player ) then
-		local player_id = touint ( player )
-		if ( player_id ) then
-			where = " WHERE player="..player_id
-		else
-			where = " WHERE name LIKE "..DbStr ( "%"..tostring ( player ).."%" )
-		end
+	if(#cond > 0) then
+		where = " WHERE "..table.concat(cond, " AND ")
 	end
 	
 	local rows = DbQuery ( "SELECT COUNT(*) AS c FROM rafalh_players"..where )
@@ -117,7 +123,6 @@ function getMaps ( map, order, desc, limit, start )
 end
 
 function getMapInfo(mapId)
-	outputDebugString("getMapInfo "..tostring(mapId), 3)
 	mapId = tonumber(mapId)
 	if(not mapId) then return false end
 	
@@ -141,3 +146,15 @@ function getMapInfo(mapId)
 	
 	return data
 end
+
+addEvent("main_onPlayersListReq", true)
+addEventHandler("main_onPlayersListReq", g_ResRoot, function(...)
+	local rows, cnt = getPlayersStats(...)
+	triggerClientEvent(client, "main_onPlayersList", g_ResRoot, rows, cnt)
+end)
+
+addEvent("main_onPlayerProfileReq", true)
+addEventHandler("main_onPlayerProfileReq", g_ResRoot, function(id)
+	local data = getPlayerProfile(id)
+	triggerClientEvent(client, "main_onPlayerProfile", g_ResRoot, id, data)
+end)

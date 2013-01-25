@@ -8,11 +8,6 @@ local g_RegTimeStamp = 0
 --------------------------------
 
 local function onPlayerLogin(prevAccount, account, autoLogin)
-	if(autoLogin and getAccountData(account, "autologin_disabled")) then
-		cancelEvent()
-		return
-	end
-	
 	local self = g_Players[source]
 	local accountName = not isGuestAccount(account) and getAccountName(account)
 	if(self and accountName) then
@@ -20,7 +15,7 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 		DbQuery("UPDATE rafalh_players SET account=? WHERE player=?", accountName, self.id)
 	end
 	
-	triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, true)
+	triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, true, accountName)
 end
 
 local function onLoginReq(name, passwd)
@@ -39,7 +34,7 @@ local function onLoginReq(name, passwd)
 			triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, false)
 		end
 	else -- play as guest
-		triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, true)
+		triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, true, false)
 	end
 end
 
