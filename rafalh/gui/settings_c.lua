@@ -18,7 +18,7 @@ local g_Tab = nil
 local SettingsPanel = {
 	name = "Settings",
 	img = "img/userpanel/options.png",
-	height = 480,
+	height = 420,
 }
 
 --------------------------------

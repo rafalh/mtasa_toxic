@@ -121,4 +121,3 @@ function BtPrintTimes(room, map_id)
 end
 
 addEventHandler("onGamemodeMapStop", g_Root, BtGamemodeMapStop)
-

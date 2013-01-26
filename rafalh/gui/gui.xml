@@ -10,22 +10,24 @@
 		<label id="playerLeftLabel" x="10" ry="100" y="-35" rw="100" w="-170" h="15" text="Player has left the game." visible="false" color="#FF0000" />
 	</window>
 	
-	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-133" w="300" h="265" sizeable="false">
+	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-133" w="300" h="290" sizeable="false">
 		<image rx="50" x="-32" y="30" w="64" h="64" src="img/login.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Please login to save your statistics" align="center" />
 		
-		<label x="30" y="125" w="80" h="15" text="Username:" />
-		<edit id="name" x="120" y="120" w="140" h="25" maxlen="128" focus="true" defbtn="logBtn" />
+		<label id="flags" x="10" y="115" rw="100" w="-20" h="20" text="" />
 		
-		<label x="30" y="155" w="80" h="15" text="Password:" />
-		<edit id="pw" x="120" y="150" w="140" h="25" maxlen="128" masked="true" defbtn="logBtn" />
+		<label x="30" y="150" w="80" h="15" text="Username:" />
+		<edit id="name" x="120" y="145" w="140" h="25" maxlen="128" focus="true" defbtn="logBtn" />
 		
-		<checkbox id="remember" x="30" y="180" w="160" h="25" text="Remember me" />
+		<label x="30" y="180" w="80" h="15" text="Password:" />
+		<edit id="pw" x="120" y="175" w="140" h="25" maxlen="128" masked="true" defbtn="logBtn" />
 		
-		<button id="logBtn" rx="50" x="-175" y="220" w="80" h="30" text="Login" />
-		<button id="regBtn" rx="50" x="-45" y="220" w="80" h="30" text="Register" />
-		<button id="guestBtn" rx="50" x="50" y="220" w="100" h="30" text="Play as guest" />
+		<checkbox id="remember" x="30" y="205" w="160" h="25" text="Remember me" />
+		
+		<button id="logBtn" rx="50" x="-175" y="235" w="80" h="30" text="Login" />
+		<button id="regBtn" rx="50" x="-45" y="235" w="80" h="30" text="Register" />
+		<button id="guestBtn" rx="50" x="50" y="235" w="100" h="30" text="Play as guest" />
 	</window>
 	
 	<window id="registerWnd" title="Register" rx="50" x="-175" ry="50" y="-130" w="350" h="260" sizeable="false">

@@ -1,10 +1,6 @@
----------------------
--- Local variables --
----------------------
-
-g_CreatedObjects = {} -- fixme: used by shop.lua
-
--- Custom events
+-------------------
+-- Custom events --
+-------------------
 
 addEvent("onClientWinnerAnim", true)
 

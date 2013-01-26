@@ -148,7 +148,7 @@ PSInput VertexShaderFunction(VSInput VS)
 	if ((gCameraDirection.z > sRefFlan) && sRefFl==1) {eyeVector=mul(VS.Position, gWorldViewProjection);
 	projectedY =(((-eyeVector.y) /eyeVector.z*sProjectedYvecMul)*sProjectedYsize+0.5)-sProjectedYoffset;}
     // Calc and send reflection lookup coords to pixel shader
-    float3 Nn = pow(normalize(VS.Normal),sNorFac);
+	float3 Nn = VS.Normal/(length(VS.Normal)*sNorFac);
     float3 Vn = float3(projectedX,projectedY,0);
     float2 vReflection = reflect(Vn.xy,Nn.xy);
     PS.TexCoord = vReflection.xy;

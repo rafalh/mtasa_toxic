@@ -11,6 +11,8 @@ of realtime reflection. Effect is similar to what is seen in ENB.
 It is applied to vehicle paint and windshields.
 The effect requires (just as the carpaint shader) PS Model 2.0 GFX.
 So it will run on almost anything.
+Updare 1.1:
+-New reflection quality
 
 Updare 1.08:
 -Changed the windshield techniqued.

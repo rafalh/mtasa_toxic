@@ -169,22 +169,21 @@ local function onPlayerChat ( message, messageType )
 	--end
 end
 
-local function onRafalhStart ()
+local function onRafalhStart()
 	local pdata = g_Players[client]
 	pdata.sync = true
 	
-	local rows = DbQuery ( "SELECT lang FROM rafalh_players WHERE player=? LIMIT 1", g_Players[client].id )
-	local welcWnd = ( rows[1].lang == "" )
+	local rows = DbQuery("SELECT lang FROM rafalh_players WHERE player=? LIMIT 1", pdata.id)
 	local clientSettings = {}
 	clientSettings.lang = pdata.lang
 	clientSettings.breakable_glass = SmGetBool("breakable_glass")
 	clientSettings.red_damage_screen = SmGetBool("red_damage_screen")
-	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, welcWnd, clientSettings, pdata.new)
+	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new)
 	
 	BtSendMapInfo(pdata.room, pdata.new, client)
 	
 	local account = getPlayerAccount(client)
-	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd") and not welcWnd) then
+	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd")) then
 		triggerClientEvent(client, "main_onLoginReq", g_ResRoot)
 	elseif(not isGuestAccount(account)) then
 		local accountName = getAccountName(account)
@@ -194,19 +193,22 @@ local function onRafalhStart ()
 	pdata.new = false
 end
 
-local function onSetNameRequest ( name )
-	name = tostring ( name )
+local function onSetNameRequest(name)
+	name = tostring(name)
+	local pdata = g_Players[client]
 	
 	-- HACK: Cancelling event after setPlayerName doesn't work
-	if ( name:gsub ( "#%x%x%x%x%x%x", "" ) ~= "" and not ( g_Players[client].last_nick_change and ( getTickCount () - g_Players[client].last_nick_change ) < 10000 ) and not getPlayerFromName ( name ) ) then
-		if ( getPlayerName ( client ):gsub ( "#%x%x%x%x%x%x", "" ) ~= name:gsub ( "#%x%x%x%x%x%x", "" ) ) then
-			local rows = DbQuery ( "SELECT locked_nick FROM rafalh_players WHERE player=? LIMIT 1", g_Players[source].id )
-			if ( rows[1].locked_nick == 1 ) then
+	local plainName = name:gsub("#%x%x%x%x%x%x", "")
+	if(plainName ~= "" and not (pdata.last_nick_change and (getTickCount() - pdata.last_nick_change) < 10000) and not getPlayerFromName(name)) then
+		local oldPlainName = getPlayerName(client):gsub("#%x%x%x%x%x%x", "")
+		if(oldPlainName ~= plainName) then
+			local rows = DbQuery("SELECT locked_nick FROM rafalh_players WHERE player=? LIMIT 1", pdata.id)
+			if(rows[1].locked_nick == 1) then
 				return
 			end
 		end
 		
-		setPlayerName ( client, name )
+		setPlayerName(client, name)
 	end
 end
 
@@ -214,10 +216,10 @@ end
 -- Events --
 ------------
 
-addEventHandler ( "onPlayerJoin", g_Root, onPlayerJoin )
-addEventHandler ( "onPlayerPrivateMessage", g_Root, onPlayerPrivateMessage )
-addEventHandler ( "onPlayerChangeNick", g_Root, onPlayerChangeNick )
-addEventHandler ( "onPlayerChat", g_Root, onPlayerChat )
-addInternalEventHandler ( $(EV_RAFALH_START), onRafalhStart )
-addInternalEventHandler ( $(EV_PLAYER_PM_REQUEST), onPlayerPMRequest )
-addInternalEventHandler ( $(EV_SET_NAME_REQUEST), onSetNameRequest )
+addEventHandler("onPlayerJoin", g_Root, onPlayerJoin)
+addEventHandler("onPlayerPrivateMessage", g_Root, onPlayerPrivateMessage)
+addEventHandler("onPlayerChangeNick", g_Root, onPlayerChangeNick)
+addEventHandler("onPlayerChat", g_Root, onPlayerChat)
+addInternalEventHandler($(EV_RAFALH_START), onRafalhStart)
+addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
+addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)

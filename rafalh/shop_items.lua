@@ -132,7 +132,8 @@ local MineItem = {
 		local v = math.max ( speed, 0.012 )
 		setTimer ( function ( x, y, z, marker )
 			destroyElement ( marker )
-			table.insert ( g_CreatedObjects, createObject ( 1225, x, y, z ) )
+			local room = g_RootRoom
+			table.insert ( room.tempElements, createObject ( 1225, x, y, z ) )
 		end, math.max ( 60/v, 50 ), 1, x, y, z, createMarker ( x, y, z, "cylinder", 1, 255, 0, 0, 128 ) )
 		DbQuery ( "UPDATE rafalh_players SET mines=mines-1 WHERE player=?", g_Players[player].id )
 		return true
@@ -171,14 +172,15 @@ local OilItem = {
 		local x, y, z = getElementPosition ( el )
 		local vx, vy, vz = getElementVelocity ( el )
 		local v = math.max ( ( vx^2 + vy^2 )^( 1/2 ), 0.001 )
-		local marker = createMarker ( x, y, z - 0.4, "cylinder", 8, 255, 255, 0, 32 )
-		table.insert ( g_CreatedObjects, marker )
-		setTimer ( function ( marker )
-			if ( isElement ( marker ) ) then
-				addEventHandler ( "onMarkerHit", marker, ShpOnOilHit, false )
+		local marker = createMarker(x, y, z - 0.4, "cylinder", 8, 255, 255, 0, 32)
+		local room = g_RootRoom
+		table.insert(room.tempElements, marker)
+		setTimer ( function(marker)
+			if(isElement(marker)) then
+				addEventHandler("onMarkerHit", marker, ShpOnOilHit, false)
 			end
-		end, math.max ( 60/v, 50 ), 1, marker )
-		DbQuery ( "UPDATE rafalh_players SET oil=oil-1 WHERE player=?", g_Players[player].id )
+		end, math.max ( 60/v, 50 ), 1, marker)
+		DbQuery("UPDATE rafalh_players SET oil=oil-1 WHERE player=?", g_Players[player].id)
 		return true
 	end,
 	onSell = function ( player, val )

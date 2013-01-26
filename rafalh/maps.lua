@@ -266,6 +266,11 @@ local function onMapStop(room)
 	end
 	
 	room.currentMap = false
+	
+	for i, el in ipairs(room.tempElements or {}) do
+		destroyElement(el)
+	end
+	room.tempElements = {}
 end
 
 local function handlePlayerTime(player, ms)

@@ -1,3 +1,9 @@
+--------------
+-- Includes --
+--------------
+
+#include "include/internal_events.lua"
+
 local g_GUI
 g_UserName = false
 
@@ -16,6 +22,26 @@ local function rot13(pw)
 		buf = buf..string.char(code)
 	end
 	return buf
+end
+
+local function loadLangList()
+	local langs = {en = {"English", "img/en.png"}}
+	local langs_count = 0
+	local node = xmlLoadFile("conf/languages.xml")
+	if(node) then
+		local subnode = xmlNodeGetChildren(node, 0)
+		while(subnode) do
+			local lang = xmlNodeGetValue(subnode)
+			local name = xmlNodeGetAttribute(subnode, "name") or lang
+			local img = xmlNodeGetAttribute(subnode, "img")
+			langs[lang] = {name, img}
+			langs_count = langs_count + 1
+			subnode = xmlNodeGetChildren(node, langs_count)
+		end
+		xmlUnloadFile(node)
+	end
+	
+	return langs, langs_count
 end
 
 local function saveAutoLogin()
@@ -93,6 +119,16 @@ local function onLoginStatus(success, username)
 	g_UserName = username
 end
 
+local function onFlagClick()
+	local lang = g_GUI.flagTbl[source]
+	triggerServerInternalEvent($(EV_SET_LANG_REQUEST), g_Me, lang)
+	
+	for img, lang in pairs(g_GUI.flagTbl) do
+		local a = (img == source and 1 or 0.6)
+		guiSetAlpha(img, a)
+	end
+end
+
 function closeLoginWnd()
 	if(not g_GUI) then return end
 	
@@ -106,6 +142,23 @@ function openLoginWnd(loginFailed)
 	closeLoginWnd()
 	
 	g_GUI = GUI.create("loginWnd")
+	local langs, langsCount = loadLangList()
+	local curLang = g_Settings.lang
+	
+	g_GUI.flagTbl = {}
+	local flagsW, flagsH = guiGetSize(g_GUI.flags, false)
+	local imgW, imgH = math.floor(flagsH*80/53), flagsH
+	local spaceW = math.floor(0.2*imgW)
+	local x = (flagsW - imgW*langsCount - spaceW*(langsCount-1))/2
+	for lang, data in pairs(langs) do
+		local img = guiCreateStaticImage(x, 0, imgW, imgH, data[2], false, g_GUI.flags)
+		if(lang ~= curLang) then
+			guiSetAlpha(img, 0.6)
+		end
+		addEventHandler("onClientGUIClick", img, onFlagClick, false)
+		g_GUI.flagTbl[img] = lang
+		x = x + imgW + spaceW
+	end
 	
 	guiSetInputEnabled(true)
 	showCursor(true)

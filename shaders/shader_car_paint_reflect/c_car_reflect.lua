@@ -1,4 +1,4 @@
---
+
 -- c_car_reflect.lua
 --
 local Variables = {}
@@ -7,7 +7,7 @@ Variables.brightnessFactorPaint= 0.081
 Variables.brightnessFactorWShield= 0.49
 Variables.bumpSize =0.02 -- for car paint
 Variables.bumpSizeWnd =0 -- for windshields
-Variables.normal = 1.5 -- the lower , the more normalised 0-2
+Variables.normal = 1.5 -- the higher , the less normalised 0-2
 Variables.brightnessAdd =0.5 -- before bright pass
 Variables.brightnessMul = 1.5 -- multiply after brightpass
 Variables.brightpassCutoff = 0.16 -- 0-1
@@ -49,7 +49,7 @@ end
 
 function enableCarReflect()
 		-- Version check
-		if getVersion ().sortable < "1.1.0" then
+		if getVersion ().sortable < "1.3.0" then
 			--outputChatBox( "Resource is not compatible with this client." )
 			return false
 		end
@@ -68,7 +68,7 @@ function enableCarReflect()
 			--outputChatBox( "Started: Shader Car paint reflect.")
 						
 			addEventHandler ( "onClientHUDRender", getRootElement (), updateScreen )
-			
+	
 			--Set variables
 			dxSetShaderValue ( grunShader, "sCutoff",Variables.brightpassCutoff)
 			dxSetShaderValue ( grunShader, "sPower", Variables.brightpassPower)			
@@ -134,7 +134,7 @@ function enableCarReflect()
 			
 			dxSetShaderValue ( shatShader, "gShatt", 1 );
             dxSetShaderValue ( shatShader, "sRandomTexture", textureVol );
-			dxSetShaderValue ( shatShader, "sReflectionTexture", myScreenSource );	
+			dxSetShaderValue ( shatShader, "sReflectionTexture", myScreenSource );			
 			
 			for shaderName, textures in pairs(g_Shaders) do
 				local shader = _G[shaderName]

@@ -1,5 +1,5 @@
 <meta>
-	<info description="Shader - Car Paint reflect" version="0.1.8" type="script" />
+	<info description="Shader - Car Paint reflect" version="0.2.0" type="script" />
 	<script src="c_car_reflect.lua" type="client" />
 	<file src="car_refgrun.fx" type="client" />
 	<file src="car_refgene.fx" type="client" />

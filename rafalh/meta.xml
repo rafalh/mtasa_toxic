@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.43" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.44" description="Rafalh Scripts System"   />
 	
 	<!--script src="debug.lua" type="client" /-->
 	
@@ -96,7 +96,6 @@
 	<script src="gui/rate_c.lua" type="client" />
 	<script src="gui/pm_c.lua" type="client" />
 	<script src="gui/help_c.lua" type="client" />
-	<script src="gui/welcome_c.lua" type="client" />
 	<script src="gui/stats_panel_c.lua" type="client" />
 	<script src="gui/user_panel_c.lua" type="client" />
 	<script src="gui/stats_c.lua" type="client" />

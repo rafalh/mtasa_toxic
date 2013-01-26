@@ -22,9 +22,8 @@ local g_TextColor = tocolor ( 255, 255, 255 )
 local g_Font = "bankgothic"
 local g_Scale = 0.7
 local g_FontHeight = dxGetFontHeight(g_Scale, g_Font)
-
-addEvent ( "onClientPlayerControls", true )
-addEvent ( "onSyncControlsReq", true )
+local g_Fps = 0
+local g_Frames, g_FramesTicks = 0, getTickCount()
 
 --------------------------------
 -- Local function definitions --
@@ -34,10 +33,19 @@ local function PerfRender ()
 	local x, y = g_Pos[1], g_Pos[2]
 	local w, h = g_Size[1], g_Size[2]
 	
+	g_Frames = g_Frames + 1
+	local ticks = getTickCount()
+	local dt = ticks - g_FramesTicks
+	if(ticks - g_FramesTicks >= 1000) then
+		g_Fps = math.floor(g_Frames * 1000 / dt)
+		g_Frames = 0
+		g_FramesTicks = ticks
+	end
+	
 	dxDrawText("FPS: ", x, y, x, y + h, tocolor(255, 255, 255), g_Scale, g_Font)
 	local offset = dxGetTextWidth("FPS: ", g_Scale, g_Font)
 	
-	local fps = tonumber(getElementData(g_Me, "fps"))
+	local fps = g_Fps --tonumber(getElementData(g_Me, "fps"))
 	local clr
 	if(not fps or fps < 20) then
 		clr = tocolor(255, 0, 0)
@@ -70,10 +78,8 @@ g_WidgetCtrl[$(wg_show)] = function ( bVisible )
 	g_Show = bVisible
 	if ( bVisible ) then
 		addEventHandler ( "onClientRender", g_Root, PerfRender )
-		triggerServerEvent ( "onSyncControlsReq", g_Root, true )
 	else
 		removeEventHandler ( "onClientRender", g_Root, PerfRender )
-		triggerServerEvent ( "onSyncControlsReq", g_Root, false )
 	end
 end
 

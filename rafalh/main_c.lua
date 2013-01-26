@@ -66,7 +66,7 @@ local function onClientPlayerQuit(reason)
 	else customMsg(255, 96, 96, "* %s has left the game [%s].", nick, reason) end
 end
 
-local function onClientInit(accountId, welcomeWnd, settings, isNew)
+local function onClientInit(accountId, settings, isNew)
 	g_MyId = accountId
 	g_Settings = settings
 	
