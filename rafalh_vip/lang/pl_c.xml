@@ -1,0 +1,34 @@
+﻿<strings>
+	<msg id="Cancel">Anuluj</msg>
+	<msg id="VIP Panel">Panel VIPa</msg>
+	
+	<msg id="Vehicle">Pojazd</msg>
+	<msg id="Choose">Wybierz</msg>
+	<msg id="Neon under the car">Neon pod samochodem</msg>
+	<msg id="Car's color">Kolor samochodu</msg>
+	<msg id="Random car's color timer">Timer losowego koloru samochodu</msg>
+	<msg id="Car's lights color">Kolor świateł samochodu</msg>
+	<msg id="Force car's lights on">Światła samochodu zawsze włączone</msg>
+	<msg id="Driver">Kierowca</msg>
+	<msg id="Add">Dodaj</msg>
+	<msg id="Delete">Usuń</msg>
+	<msg id="Color:">Kolor:</msg>
+	<msg id="Color 1:">Kolor 1:</msg>
+	<msg id="Color 2:">Kolor 2:</msg>
+	<msg id="Interval (sec.):">Interwał (sek.):</msg>
+	
+	<msg id="Ignore">Ignoruj</msg>
+	<msg id="Ignored players">Ignorowani gracze</msg>
+	<msg id="Players online">Gracze online</msg>
+	
+	<msg id="Widgets">Widgety</msg>
+	<msg id="Reset">Resetuj</msg>
+	
+	<msg id="Other">Inne</msg>
+	<msg id="Show clouds">Pokaż chmury</msg>
+	<msg id="Show my nametag">Pokaż mój nametag</msg>
+	<msg id="Avatar URL address:">Adres URL awatara:</msg>
+	
+	<msg id="You are a VIP! Press &quot;g&quot; to access VIP settings.">Jesteś VIPem! Naciśnij &quot;g&quot; aby otworzyć ustawienia VIPów.</msg>
+	<msg pattern="Your VIP rank will be valid untill (%d+%.%d+%.%d+ %d+:%d+ GMT). %((%d+) days left%)">Ranga VIP będzie ważna do %1 (pozostało %2 dni)</msg>
+</strings>

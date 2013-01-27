@@ -3,5 +3,6 @@
 	<script src="respawn_c.lua" type="client" />
 	<script src="respawn_s.lua" type="server" />
 	<script src="visibility_c.lua" type="client" />
-	<script src="utils_c.lua" type="client" />
+	
+	<min_mta_version client="1.3.0-9.03986.0" />
 </meta>

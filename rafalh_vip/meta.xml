@@ -1,0 +1,22 @@
+<meta>
+	<info name="Modifications for VIPs" author="rafalh" version="1.0" type="script" description="Modifications for VIPs" />
+
+	<script src="vip.lua" />
+	<script src="vip_c.lua" type="client" />
+	<script src="mui_c.lua" type="client" />
+	<!--script src="autopilot_c.lua" type="client" /-->
+	
+	<config src="lang/pl_c.xml" type="client" />
+	
+	<file src="img/vip.png" />
+	
+	<script src="promo_c.lua" type="client" />
+	<include resource="rafalh_shared" />
+	
+	<export function="isVip" />
+	<export function="giveVip" />
+	
+	<settings>
+		<setting name="*promo_end" value="0" desc="" group="Promotion" friendlyname="Promotion end timestamp" />
+	</settings>
+</meta>

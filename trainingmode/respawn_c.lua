@@ -1,19 +1,21 @@
+-- Some useful variables
+local g_Me = getLocalPlayer ()
+local g_Root = getRootElement ()
+local g_ResRoot = getResourceRootElement ()
+local g_ScrW, g_ScrH = guiGetScreenSize ()
+
 -- Settings
 local g_RespawnKey = "space"
 local g_HelpMsg = {
 	"#FF5500Press #FFFFFF"..g_RespawnKey.." #FF5500to respawn",
 	pl = "#FF5500Wcisnij #FFFFFF"..(g_RespawnKey == "space" and "spacje" or g_RespawnKey).." #FF5500aby dokonac respawnu" }
 	
-local g_HelpMsgScale = 1.5
+local g_HelpMsgScale = (g_ScrH + g_ScrW) / 1800 -- 1.5 for 1680x1050
 local g_HelpMsgFont = "bankgothic"
-local g_HelpMsgColor = tocolor ( 255, 128, 0, 255 )
+local g_HelpMsgColor = tocolor(255, 128, 0, 255)
 local g_SaveInterval = 20000
 
 -- Internal variables
-local g_Me = getLocalPlayer ()
-local g_Root = getRootElement ()
-local g_ResRoot = getResourceRootElement ()
-local g_ScrW, g_ScrH = guiGetScreenSize ()
 local g_Running = false
 local g_VehData = {}
 local g_SaveTimer = false
@@ -32,7 +34,9 @@ local TmRespawn -- TmEnableRespawn and TmDisableRespawn needs it
 local function TmRenderHelpMsg ()
 	local lang = getElementData(g_Me, "lang")
 	local msg = g_HelpMsg[lang] or g_HelpMsg[1]
-	dxDrawColoredText ( msg, 0, g_ScrH * 0.75, g_ScrW, g_ScrH, g_HelpMsgColor, g_HelpMsgScale, g_HelpMsgFont, "center" )
+	dxDrawText(msg, 0, g_ScrH * 0.75, g_ScrW, g_ScrH,
+		g_HelpMsgColor, g_HelpMsgScale, g_HelpMsgFont, "center", "top",
+		false, false, false, true)
 end
 
 local function TmEnableRespawn ( wait )
