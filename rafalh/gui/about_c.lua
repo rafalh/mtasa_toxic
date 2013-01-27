@@ -13,16 +13,16 @@ local AboutPanel = {
 -- Local function definitions --
 --------------------------------
 
-local function createGui ( tab )
-	local w, h = guiGetSize ( tab, false )
+local function createGui(panel)
+	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage ( 10, 10, 100, 75, ":race/img/title.jpg", false, tab )
+	guiCreateStaticImage(10, 10, 100, 75, ":race/img/title.jpg", false, panel)
 	
-	local label = guiCreateLabel ( 120, 10, 160, 15, "About ToxiC Server", false, tab )
-	guiLabelSetColor ( label, 0, 255, 0 )
-	guiSetFont ( label, "default-bold-small" )
+	local label = guiCreateLabel(120, 10, 160, 15, "About ToxiC Server", false, panel)
+	guiLabelSetColor(label, 0, 255, 0)
+	guiSetFont(label, "default-bold-small")
 	
-	local pane = guiCreateScrollPane ( 120, 30, w - 130, h - 60, false, tab )
+	local pane = guiCreateScrollPane(120, 30, w - 130, h - 70, false, panel)
 	
 	local node = xmlLoadFile ( "conf/about.xml" )
 	local i = 0
@@ -64,12 +64,15 @@ local function createGui ( tab )
 		xmlUnloadFile ( node )
 	end
 	
-	guiCreateLabel ( 10, h - 20, w - 20, 15, "Copyright (c) 2009-2012 by rafalh", false, tab )
+	guiCreateLabel(10, h - 25, w - 100, 15, "Copyright (c) 2009-2013 by rafalh", false, panel)
+	
+	local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
-function AboutPanel.onShow ( tab )
+function AboutPanel.onShow ( panel )
 	if ( not g_Tab ) then
-		g_Tab = tab
+		g_Tab = panel
 		createGui ( g_Tab )
 	end
 end

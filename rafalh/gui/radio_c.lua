@@ -116,7 +116,7 @@ local function onTurnOffClick()
 	g_List:setActiveItem(false)
 	stopRadio()
 	guiSetText(g_RadioName, "Select radio channel")
-	guiStaticImageLoadImage(g_RadioImg, "img/empty.png")
+	guiStaticImageLoadImage(g_RadioImg, "img/no_img.png")
 	
 end
 
@@ -144,7 +144,7 @@ local function createGui ( parent )
 	g_Wnd = parent
 	local w, h = guiGetSize ( g_Wnd, false )
 	
-	g_RadioImg = guiCreateStaticImage(10, 10, 48, 48, "img/empty.png", false, g_Wnd)
+	g_RadioImg = guiCreateStaticImage(10, 10, 48, 48, "img/no_img.png", false, g_Wnd)
 	g_RadioName = guiCreateLabel(65, 10, w - 75, 15, "Select radio channel", false, g_Wnd)
 	guiSetFont(g_RadioName, "default-bold-small")
 	
@@ -165,7 +165,7 @@ local function createGui ( parent )
 	
 	g_Channels = loadChannels ()
 	
-	g_List = ListView.create({10, 100}, {w - 20, h - 110}, g_Wnd)
+	g_List = ListView.create({10, 100}, {w - 20, h - 140}, g_Wnd)
 	g_List.onClickHandler = onChannelClick
 	
 	for i, ch in ipairs ( g_Channels ) do
@@ -178,6 +178,9 @@ local function createGui ( parent )
 			guiStaticImageLoadImage(g_RadioImg, imgPath)
 		end
 	end
+	
+	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, g_Wnd)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
 function RadioPanel.onShow ( tab )

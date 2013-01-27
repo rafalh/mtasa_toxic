@@ -88,7 +88,7 @@ end
 local function initGui(panel)
 	g_Gui = {}
 	
-	local w, h = guiGetSize ( panel, false )
+	local w, h = guiGetSize(panel, false)
 	
 	guiCreateStaticImage(10, 10, 32, 32, "img/userpanel/users.png", false, panel)
 	
@@ -111,6 +111,9 @@ local function initGui(panel)
 	
 	g_Gui.desc = guiCreateCheckBox(390, 10, 100, 15, "descending", false, false, panel)
 	addEventHandler("onClientGUIClick", g_Gui.desc, invalidateData, false)
+	
+	local btn = guiCreateButton(w - 80, 10, 70, 25, "Back", false, panel)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 	
 	g_Gui.list = guiCreateGridList(10, 60, w - 20, h - 65, false, panel)
 	-- disable sorting because it breaks adding rows (MTA 1.3)

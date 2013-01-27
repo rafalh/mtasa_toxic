@@ -27,6 +27,7 @@ addEvent ( "onClientTranslateLangList", true )
 local TranslatorPanel = {
 	name = "Translator",
 	img = "img/userpanel/translator.png",
+	height = 370,
 }
 
 --------------------------------
@@ -117,52 +118,55 @@ local function updateLangComboBoxes ()
 	guiComboBoxSetSelected ( g_ToLang, default )
 end
 
-local function createGui ( tab )
-	local w, h = guiGetSize ( tab, false )
+local function createGui(panel)
+	local w, h = guiGetSize(panel, false)
 	
 	LoadLanguages ()
-	triggerServerEvent ( "onTranslateLangListReq", g_Root )
+	triggerServerEvent("onTranslateLangListReq", g_Root)
 	
-	guiCreateLabel ( 10, 10, 50, 15, "From:", false, tab )
-	g_FromLang = guiCreateComboBox ( 50, 10, 130, 300, "", false, tab )
+	guiCreateLabel(10, 10, 50, 15, "From:", false, panel)
+	g_FromLang = guiCreateComboBox ( 50, 10, 130, 300, "", false, panel )
 	
-	local btn = guiCreateButton ( 200, 10, 40, 25, "<->", false, tab )
+	local btn = guiCreateButton ( 200, 10, 40, 25, "<->", false, panel )
 	addEventHandler ( "onClientGUIClick", btn, onSwitchLangsClick, false )
 	
-	guiCreateLabel ( 260, 10, 50, 15, "To:", false, tab )
-	g_ToLang = guiCreateComboBox ( 310, 10, 130, 300, "", false, tab )
+	guiCreateLabel ( 260, 10, 50, 15, "To:", false, panel )
+	g_ToLang = guiCreateComboBox ( 310, 10, 130, 300, "", false, panel )
 	
 	updateLangComboBoxes ()
 	
-	g_TranslateBtn = guiCreateButton ( 10, 40, 80, 25, "Translate", false, tab )
+	g_TranslateBtn = guiCreateButton ( 10, 40, 80, 25, "Translate", false, panel )
 	addEventHandler ( "onClientGUIClick", g_TranslateBtn, onTranslateClick, false )
 	
-	g_SayBtn = guiCreateButton ( 100, 40, 120, 25, "Say translated", false, tab )
+	g_SayBtn = guiCreateButton ( 100, 40, 120, 25, "Say translated", false, panel )
 	addEventHandler ( "onClientGUIClick", g_SayBtn, onTranslateClick, false )
 	
-	g_ChatMsgCb = guiCreateComboBox ( 230, 40, 210, 210, MuiGetMsg ( "Load chat message" ), false, tab )
+	g_ChatMsgCb = guiCreateComboBox ( 230, 40, 210, 210, MuiGetMsg ( "Load chat message" ), false, panel )
 	addEventHandler ( "onClientGUIComboBoxAccepted", g_ChatMsgCb, loadChatMsg, false )
 	for i, msg in ipairs ( g_ChatMsg ) do
 		guiComboBoxAddItem ( g_ChatMsgCb, msg )
 	end
 	g_ChatMsg = false
 	
-	guiCreateLabel ( 10, 70, 50, 15, "Input:", false, tab )
-	g_Input = guiCreateMemo ( 10, 90, w - 20, 90, "", false, tab )
+	guiCreateLabel ( 10, 70, 50, 15, "Input:", false, panel )
+	g_Input = guiCreateMemo ( 10, 90, w - 20, 90, "", false, panel )
 	
-	guiCreateLabel ( 10, 190, 50, 15, "Output:", false, tab )
-	g_Output = guiCreateMemo ( 10, 210, w - 20, 90, "", false, tab )
-	guiMemoSetReadOnly ( g_Output, true )
+	guiCreateLabel(10, 190, 50, 15, "Output:", false, panel)
+	g_Output = guiCreateMemo(10, 210, w - 20, 90, "", false, panel)
+	guiMemoSetReadOnly(g_Output, true)
 	
-	local label = guiCreateLabel ( 10, 310, w - 20, 15, MuiGetMsg ( "Translation by %s" ):format ( "Microsoft Bing (tm)" ), false, tab )
-	guiSetFont ( label, "default-small" )
-	guiLabelSetHorizontalAlign ( label, "right" )
+	local label = guiCreateLabel(10, 310, w - 20, 15, MuiGetMsg("Translation by %s"):format("Microsoft Bing (tm)"), false, panel)
+	guiSetFont(label, "default-small")
+	guiLabelSetHorizontalAlign(label, "right")
+	
+	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
-function TranslatorPanel.onShow ( tab )
-	if ( not g_Tab ) then
-		g_Tab = tab
-		createGui ( g_Tab )
+function TranslatorPanel.onShow ( panel )
+	if(not g_Tab) then
+		g_Tab = panel
+		createGui(g_Tab)
 	end
 end
 

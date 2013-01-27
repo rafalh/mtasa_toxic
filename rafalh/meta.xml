@@ -211,6 +211,7 @@
 	<file src="img/radio/dubstep_openfm.jpg" />
 	<file src="img/radio/christmas88.png" />
 	<file src="img/radio/christmas89.png" />
+	<file src="img/radio/ClubMusic24.png" />
 	
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />

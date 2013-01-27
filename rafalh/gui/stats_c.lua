@@ -140,8 +140,12 @@ end
 
 function StatsPanel.onShow(panel)
 	local w, h = guiGetSize(panel, false)
+	
 	StCreateGui(g_MyId, panel, 10, 10, w - 20, h - 20)
 	StShowGui(panel)
+	
+	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
 function StatsPanel.onHide(panel)
@@ -169,11 +173,6 @@ local function onSync ( sync_tbl )
 	StUpdateGui ( id )
 end
 
-----------------------
--- Global variables --
-----------------------
-
-table.insert(g_StatsPanelTabs, {"Statistics", StatsPanel.onShow, StatsPanel.onHide})
 UpRegister(StatsPanel)
 
 ------------

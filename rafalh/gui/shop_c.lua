@@ -153,56 +153,59 @@ local function ShpUpdateShopList()
 	end
 end
 
-local function ShpCreateGui(tab)
-	local w, h = guiGetSize(tab, false)
+local function ShpCreateGui(panel)
+	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 32, 32, "img/shop/coins.png", false, tab)
-	g_CashLabel = guiCreateLabel(45, 15, 160, 15, formatMoney(g_Cash), false, tab)
+	guiCreateStaticImage(10, 10, 32, 32, "img/shop/coins.png", false, panel)
+	g_CashLabel = guiCreateLabel(45, 15, 160, 15, formatMoney(g_Cash), false, panel)
 	
-	local label = guiCreateLabel(10, 45, 160, 15, "All items:", false, tab)
+	local label = guiCreateLabel(10, 45, 160, 15, "All items:", false, panel)
 	guiSetFont(label, "default-bold-small")
 	
-	g_ShopList = ListView.create({10, 60}, {w - 150, (h - 110) * 3/5}, tab, {90, 80})
+	g_ShopList = ListView.create({10, 60}, {w - 150, (h - 110) * 3/5}, panel, {90, 80})
 	g_ShopList.onClickHandler = ShpOnItemsListClick
 	ShpUpdateShopList()
 	
-	local label = guiCreateLabel(10, 75 + (h - 110) * 3/5, 160, 15, "Your items:", false, tab)
+	local label = guiCreateLabel(10, 75 + (h - 110) * 3/5, 160, 15, "Your items:", false, panel)
 	guiSetFont(label, "default-bold-small")
 	
-	g_InventoryList = ListView.create({10, 90 + (h - 110) * 3/5}, {w - 150, (h - 110) * 2/5}, tab, {90, 80})
+	g_InventoryList = ListView.create({10, 90 + (h - 110) * 3/5}, {w - 150, (h - 110) * 2/5}, panel, {90, 80})
 	g_InventoryList.onClickHandler = ShpOnInventoryListClick
 	
 	-- guiCreateStaticImage fails if invalid image is given
-	g_ItemIcon = guiCreateStaticImage(w - 130, 10, 32, 32, "img/empty.png", false, tab)
+	g_ItemIcon = guiCreateStaticImage(w - 130, 10, 32, 32, "img/empty.png", false, panel)
 	guiSetVisible(g_ItemIcon, false)
 	
-	g_ItemLabel = guiCreateLabel ( w - 130, 45, 120, 15, "", false, tab )
-	guiSetFont ( g_ItemLabel, "default-bold-small" )
+	g_ItemLabel = guiCreateLabel(w - 130, 45, 120, 15, "", false, panel)
+	guiSetFont(g_ItemLabel, "default-bold-small")
 	
-	g_CostLabel = guiCreateLabel(w - 130, 60, 120, 50, "Cost:", false, tab)
+	g_CostLabel = guiCreateLabel(w - 130, 60, 120, 50, "Cost:", false, panel)
 	guiLabelSetHorizontalAlign(g_CostLabel, "left", true)
 	
-	guiCreateLabel(w - 130, 100, 120, 15, "Description:", false, tab)
+	guiCreateLabel(w - 130, 100, 120, 15, "Description:", false, panel)
 	
-	--g_DescrMemo = guiCreateMemo(w - 130, 70, 120, h - 110, "", false, tab)
-	g_DescrMemo = guiCreateLabel(w - 130, 115, 120, 100, "", false, tab)
+	--g_DescrMemo = guiCreateMemo(w - 130, 70, 120, h - 110, "", false, panel)
+	g_DescrMemo = guiCreateLabel(w - 130, 115, 120, 100, "", false, panel)
 	guiLabelSetHorizontalAlign(g_DescrMemo, "left", true)
 	
-	g_BuyButton = guiCreateButton(w - 130, h - 35, 120, 25, "Buy", false, tab)
+	g_BuyButton = guiCreateButton(w - 130, h - 70, 120, 25, "Buy", false, panel)
 	addEventHandler("onClientGUIClick", g_BuyButton, ShpBuyClick)
 	
-	g_SellButton = guiCreateButton(w - 130, h - 70, 120, 25, "Sell", false, tab)
+	g_SellButton = guiCreateButton(w - 130, h - 105, 120, 25, "Sell", false, panel)
 	guiSetVisible(g_SellButton, false)
 	addEventHandler("onClientGUIClick", g_SellButton, ShpSellClick, false)
 	
-	g_UseButton = guiCreateButton(w - 130, h - 35, 120, 25, "Use", false, tab)
+	g_UseButton = guiCreateButton(w - 130, h - 70, 120, 25, "Use", false, panel)
 	guiSetVisible(g_UseButton, false)
 	addEventHandler("onClientGUIClick", g_UseButton, ShpUseClick, false)
+	
+	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
-function ShopPanel.onShow(tab)
+function ShopPanel.onShow(panel)
 	if(not g_ShopList) then
-		ShpCreateGui(tab)
+		ShpCreateGui(panel)
 		g_ShopList:setActiveItem("nextmap")
 		ShpUpdateItemInfo("nextmap", false)
 		triggerServerInternalEvent($(EV_GET_INVENTORY_REQUEST), g_Me)
@@ -211,7 +214,7 @@ function ShopPanel.onShow(tab)
 	triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, { stats = g_MyId })
 end
 
-function ShopPanel.onHide(tab)
+function ShopPanel.onHide(panel)
 	triggerServerInternalEvent($(EV_STOP_SYNC_REQUEST), g_Me, { stats = g_MyId })
 end
 

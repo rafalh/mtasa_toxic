@@ -82,15 +82,15 @@ local function onSaveClick ()
 	--setLang ( new_lang )
 end
 
-local function createGui ( tab )
-	local w, h = guiGetSize ( tab, false )
+local function createGui(panel)
+	local w, h = guiGetSize(panel, false)
 	
-	guiCreateLabel ( 10, 10, 100, 15, "Language:", false, tab  )
+	guiCreateLabel(10, 10, 100, 15, "Language:", false, panel)
 	
 	local langs = { en = { "English", "img/en.png" } }
-	local node = xmlLoadFile ( "conf/languages.xml" )
+	local node = xmlLoadFile("conf/languages.xml")
 	local country_i = 0
-	if ( node ) then
+	if(node) then
 		local subnode = xmlNodeGetChildren ( node, 0 )
 		while ( subnode ) do
 			local lang = xmlNodeGetValue ( subnode )
@@ -105,8 +105,8 @@ local function createGui ( tab )
 	local flag_w = ( w - 10 ) / country_i
 	local i = 0
 	for lang, data in pairs ( langs ) do
-		g_LangButtons[lang] = guiCreateRadioButton ( 10 + i*flag_w, 30, flag_w, 15, data[1], false, tab )
-		local img = guiCreateStaticImage ( 10 + i*flag_w, 46, flag_w - 10, flag_w * 2 / 3, data[2], false, tab )
+		g_LangButtons[lang] = guiCreateRadioButton ( 10 + i*flag_w, 30, flag_w, 15, data[1], false, panel )
+		local img = guiCreateStaticImage ( 10 + i*flag_w, 46, flag_w - 10, flag_w * 2 / 3, data[2], false, panel )
 		addEventHandler ( "onClientGUIClick", img, function ()
 			guiRadioButtonSetSelected ( g_LangButtons[lang], true )
 		end, false )
@@ -119,46 +119,46 @@ local function createGui ( tab )
 	
 	local y = 55 + flag_w * 2 / 3
 	
-	guiCreateLabel ( 10, y, 160, 20, "Nick:", false, tab )
-	g_NickEdit = guiCreateEdit ( 180, y, w - 180 - 60 - 10, 20, getPlayerName ( g_Me ), false, tab )
+	guiCreateLabel ( 10, y, 160, 20, "Nick:", false, panel )
+	g_NickEdit = guiCreateEdit ( 180, y, w - 180 - 60 - 10, 20, getPlayerName ( g_Me ), false, panel )
 	guiSetProperty ( g_NickEdit, "MaxTextLength", "22" )
-	local btn = guiCreateButton ( w - 60, y, 50, 25, "Color", false, tab )
+	local btn = guiCreateButton ( w - 60, y, 50, 25, "Color", false, panel )
 	addEventHandler ( "onClientGUIClick", btn, function ()
-		if ( g_NickColorWnd ) then
-			guiBringToFront ( g_NickColorWnd )
+		if(g_NickColorWnd) then
+			guiBringToFront(g_NickColorWnd)
 		else
-			local r, g, b = getColorFromString ( guiGetText ( g_NickEdit ):sub ( 1, 7 ) )
-			g_NickColorWnd = call ( getResourceFromName ( "rafalh_shared" ), "createColorDlg", "onRafalhColorDlg", r, g, b )
-			addEventHandler ( "onRafalhColorDlg", g_NickColorWnd, function ( r, g, b )
+			local r, g, b = getColorFromString(guiGetText(g_NickEdit):sub(1, 7))
+			g_NickColorWnd = call(getResourceFromName("rafalh_shared"), "createColorDlg", "onRafalhColorDlg", r, g, b)
+			addEventHandler("onRafalhColorDlg", g_NickColorWnd, function ( r, g, b )
 				if ( r ) then
-					guiSetText ( g_NickEdit, ( "#%02x%02x%02x" ):format ( r, g, b )..guiGetText ( g_NickEdit ):gsub ( "^#%x%x%x%x%x%x", "" ) )
+					guiSetText(g_NickEdit, ( "#%02x%02x%02x" ):format ( r, g, b )..guiGetText ( g_NickEdit ):gsub ( "^#%x%x%x%x%x%x", "" ) )
 				end
 				g_NickColorWnd = nil
 			end, false )
 		end
 	end, false )
 	
-	guiCreateLabel ( 10, y + 25, 170, 20, "Suicide key:", false, tab )
-	g_SuicideKeyEdit = guiCreateEdit ( 180, y+25, 40, 20, g_ClientSettings.suicide_key, false, tab )
+	guiCreateLabel ( 10, y + 25, 170, 20, "Suicide key:", false, panel )
+	g_SuicideKeyEdit = guiCreateEdit ( 180, y+25, 40, 20, g_ClientSettings.suicide_key, false, panel )
 	
-	guiCreateLabel ( 10, y + 45, 170, 20, "Statistics Panel key:", false, tab )
-	g_StatsPanelKeyEdit = guiCreateEdit ( 180, y+45, 40, 20, g_ClientSettings.stats_panel_key, false, tab )
+	guiCreateLabel ( 10, y + 45, 170, 20, "Statistics Panel key:", false, panel )
+	g_StatsPanelKeyEdit = guiCreateEdit ( 180, y+45, 40, 20, g_ClientSettings.stats_panel_key, false, panel )
 	
-	guiCreateLabel ( 10, y + 65, 170, 20, "User Panel key:", false, tab )
-	g_UserPanelKeyEdit = guiCreateEdit ( 180, y + 65, 40, 20, g_ClientSettings.user_panel_key, false, tab )
+	guiCreateLabel ( 10, y + 65, 170, 20, "User Panel key:", false, panel )
+	g_UserPanelKeyEdit = guiCreateEdit ( 180, y + 65, 40, 20, g_ClientSettings.user_panel_key, false, panel )
 	
-	g_CarHideCb = guiCreateCheckBox ( 10, y + 85, 300, 20, "Hide other cars when GM is enabled", g_ClientSettings.carHide, false, tab )
+	g_CarHideCb = guiCreateCheckBox ( 10, y + 85, 300, 20, "Hide other cars when GM is enabled", g_ClientSettings.carHide, false, panel )
 	
-	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y + 105, 300, 20, "Hide nearby cars", g_ClientSettings.hideNearbyCars, false, tab )
+	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y + 105, 300, 20, "Hide nearby cars", g_ClientSettings.hideNearbyCars, false, panel )
 	
-	g_WinnerAnimCb = guiCreateCheckBox(10, y + 125, 300, 20, "Show stars animation above winner car", g_ClientSettings.winAnim, false, tab)
+	g_WinnerAnimCb = guiCreateCheckBox(10, y + 125, 300, 20, "Show stars animation above winner car", g_ClientSettings.winAnim, false, panel)
 	
 	y = y + 145
-	guiCreateLabel ( 10, y, 160, 20, "Effects", false, tab )
+	guiCreateLabel(10, y, 160, 20, "Effects", false, panel)
 	local effects_h = math.min(h - y - 60, g_EffectsCount * 20)
-	local effects_pane = guiCreateScrollPane ( 10, y + 20, w - 20, effects_h, false, tab )
+	local effects_pane = guiCreateScrollPane(10, y + 20, w - 20, effects_h, false, panel)
 	local effect_y = 5
-	for res, name in pairs ( g_Effects ) do
+	for res, name in pairs(g_Effects) do
 		local enabled = call ( res, "isEffectEnabled" )
 		if ( type ( name ) == "table" ) then
 			name = name[g_Settings.lang] or name[1]
@@ -171,8 +171,12 @@ local function createGui ( tab )
 	end
 	
 	y = y + 20 + effects_h
-	local btn = guiCreateButton ( ( w - 80 ) / 2, y + 10, 80, 25, "Save", false, tab )
-	addEventHandler ( "onClientGUIClick", btn, onSaveClick, false )
+	--local btn = guiCreateButton((w - 80) / 2, y + 10, 80, 25, "Save", false, panel)
+	local btn = guiCreateButton(w - 90 - 90, h - 35, 80, 25, "Save", false, panel)
+	addEventHandler("onClientGUIClick", btn, onSaveClick, false)
+	
+	local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
+	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
 function invalidateSettingsGui ()
