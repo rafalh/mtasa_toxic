@@ -13,8 +13,10 @@
 	<script src="promo_c.lua" type="client" />
 	<include resource="rafalh_shared" />
 	
-	<export function="isVip" />
-	<export function="giveVip" />
+	<export function="isVip" type="server" />
+	<export function="isVip" type="client" />
+	<export function="giveVip" type="server" />
+	<export function="openVipPanel" type="client" />
 	
 	<settings>
 		<setting name="*promo_end" value="0" desc="" group="Promotion" friendlyname="Promotion end timestamp" />

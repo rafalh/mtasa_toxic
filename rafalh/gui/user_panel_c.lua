@@ -20,7 +20,7 @@ g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = "default-bold-small"}
 g_ListStyle.active = g_ListStyle.hover
 
 local g_Items = {}
-local g_Wnd = false
+local g_Wnd, g_List, g_UserLabel
 local g_CurrentItem = false
 local g_Hiding = false
 
@@ -35,10 +35,34 @@ function UpBack()
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
 end
 
-local function onItemClick(i)
-	guiSetVisible(g_Wnd, false)
-	g_CurrentItem = g_Items[i]
+local function UpHide()
+	GaFadeOut(g_Wnd, FADE_DELAY)
 	
+	if(g_CurrentItem) then
+		GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
+		if(g_CurrentItem.onHide) then
+			g_CurrentItem.onHide(g_CurrentItem.wnd2)
+		end
+		g_CurrentItem = false
+	end
+	
+	guiSetInputEnabled(false)
+	g_Hiding = true
+end
+
+local function onItemClick(i)
+	local item = g_Items[i]
+	
+	if(item.noWnd) then
+		local res = item.onShow()
+		if(res) then
+			UpHide()
+		end
+		return
+	end
+	
+	g_CurrentItem = item
+	guiSetVisible(g_Wnd, false)
 	if(not g_CurrentItem.wnd) then
 		local panel_w = g_CurrentItem.width or 450
 		local panel_h = g_CurrentItem.height or 380
@@ -58,19 +82,11 @@ local function onItemClick(i)
 	GaFadeIn(g_CurrentItem.wnd, FADE_DELAY, PANEL_ALPHA)
 end
 
-local function UpHide()
-	GaFadeOut(g_Wnd, FADE_DELAY)
+local function UpSetAccount(accountName)
+	if(not g_UserLabel) then return end
 	
-	if(g_CurrentItem) then
-		GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
-		if(g_CurrentItem.onHide) then
-			g_CurrentItem.onHide(g_CurrentItem.wnd2)
-		end
-		g_CurrentItem = false
-	end
-	
-	guiSetInputEnabled(false)
-	g_Hiding = true
+	local userMsg = accountName and MuiGetMsg("You are logged in as %s"):format(accountName) or MuiGetMsg("You are not logged in")
+	guiSetText(g_UserLabel, userMsg)
 end
 
 local function UpCreateGui()
@@ -82,9 +98,9 @@ local function UpCreateGui()
 	guiSetVisible(g_Wnd, false)
 	guiWindowSetSizable(g_Wnd, false)
 	
-	local userMsg = g_UserName and MuiGetMsg("You are logged in as %s"):format(g_UserName) or MuiGetMsg("You are not logged in")
-	local userLabel = guiCreateLabel(10, 20, w - 20, 20, userMsg, false, g_Wnd)
-	guiSetFont(userLabel, "default-bold-small")
+	g_UserLabel = guiCreateLabel(10, 20, w - 20, 20, "", false, g_Wnd)
+	guiSetFont(g_UserLabel, "default-bold-small")
+	UpSetAccount(g_UserName)
 	
 	local listSize = {w - 20, h - 80}
 	local itemSize = {listSize[1]/PANEL_COLUMNS, ITEM_H}
@@ -92,7 +108,7 @@ local function UpCreateGui()
 	g_List = ListView.create({10, 40}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
 	g_List.onClickHandler = onItemClick
 	
-	for i, item in ipairs ( g_Items ) do
+	for i, item in ipairs(g_Items) do
 		g_List:addItem(item.name, item.img, i)
 	end
 	
@@ -120,6 +136,7 @@ end
 
 function UpRegister(item)
 	--assert(type(item) == "table")
+	item.idx = #g_Items + 1
 	table.insert(g_Items, item)
 end
 
@@ -131,9 +148,16 @@ function UpToggle()
 	end
 end
 
+function UpUpdate(item)
+	if(not g_List) then return end
+	
+	
+	g_List:setItemImg(item.idx, item.img)
+end
 
 ------------
 -- Events --
 ------------
 
 addInternalEventHandler($(EV_CLIENT_INIT), UpInit)
+addEventHandler("main.onAccountChange", g_ResRoot, UpSetAccount)

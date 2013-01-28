@@ -66,7 +66,7 @@ local function ShpUpdateItemInfo(itemId, isInventory)
 	local item = g_ShopItems[itemId]
 	
 	if(item.img) then
-		guiStaticImageLoadImage ( g_ItemIcon, "img/shop/"..item.img )
+		guiStaticImageLoadImage ( g_ItemIcon, item.img )
 		guiSetVisible(g_ItemIcon, true)
 	else
 		guiSetVisible(g_ItemIcon, false)
@@ -144,8 +144,7 @@ local function ShpUpdateShopList()
 	
 	for itemId, item in pairs(g_ShopItems) do
 		local title = MuiGetMsg(item.name).."\n"..formatMoney(item.cost)
-		local imgPath = item.img and "img/shop/"..item.img
-		g_ShopList:addItem(title, imgPath, itemId)
+		g_ShopList:addItem(title, item.img, itemId)
 		
 		if(itemId == oldItemId) then
 			g_ShopList:setActiveItem(itemId)
@@ -248,8 +247,7 @@ local function ShpUpdateInventoryList ()
 			
 			if(cnt) then
 				local title = MuiGetMsg(item.name).." ("..tostring(cnt)..")"
-				local imgPath = item.img and "img/shop/"..item.img
-				g_InventoryList:addItem(title, imgPath, itemId)
+				g_InventoryList:addItem(title, item.img, itemId)
 				
 				if(oldItemId == itemId) then
 					g_InventoryList:setActiveItem(itemId)
@@ -303,7 +301,7 @@ local function ShpUpdateItemsWnd ()
 			local gui = { id = item_id }
 			
 			if ( item.img ) then
-				gui.img = guiCreateStaticImage ( x + 20, 25, 50, 50, "img/shop/"..item.img, false, g_ItemsWnd )
+				gui.img = guiCreateStaticImage ( x + 20, 25, 50, 50, item.img, false, g_ItemsWnd )
 				assert ( gui.img )
 				gui.cnt = guiCreateLabel ( 0, 0, 50, 50, tostring ( count ), false, gui.img )
 				guiLabelSetHorizontalAlign ( gui.cnt, "right" )

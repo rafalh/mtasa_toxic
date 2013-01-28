@@ -107,6 +107,7 @@
 	<script src="gui/radio_c.lua" type="client" />
 	<script src="gui/settings_c.lua" type="client" />
 	<script src="gui/about_c.lua" type="client" />
+	<script src="gui/vipSupport_c.lua" type="client" />
 	<script src="gui/advert_c.lua" type="client" />
 	<script src="gui/listView_c.lua" type="client" />
 	<script src="gui/login_c.lua" type="client" />
@@ -156,6 +157,7 @@
 	<file src="img/no_img.png" />
 	<file src="img/login.png" />
 	<file src="img/register.png" />
+	<file src="img/chgPw.png" />
 	
 	<file src="img/userpanel/stats.png" />
 	<file src="img/userpanel/profile.png" />
@@ -165,6 +167,8 @@
 	<file src="img/userpanel/music.png" />
 	<file src="img/userpanel/options.png" />
 	<file src="img/userpanel/about.png" />
+	<file src="img/userpanel/vip.png" />
+	<file src="img/userpanel/vip2.png" />
 	
 	<file src="img/shop/coins.png" />
 	<file src="img/shop/beer.png" />
@@ -179,7 +183,6 @@
 	<file src="img/shop/godmode.png" />
 	<file src="img/shop/smoke.png" />
 	<file src="img/shop/nextmap.png" />
-	<file src="img/shop/vip.png" />
 	
 	<file src="img/flags/en.png" />
 	<file src="img/flags/pl.png" />

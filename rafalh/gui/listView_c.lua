@@ -66,6 +66,12 @@ function ListView:clear()
 	self.activeItem = false
 end
 
+function ListView:setItemImg(id, img)
+	local item = self.idToItem[id]
+	local imgPath = img or "img/empty.png"
+	guiStaticImageLoadImage(item.imgEl, imgPath)
+end
+
 function ListView:setFilter(filter)
 	filter = (filter or ""):lower()
 	local idx = 0

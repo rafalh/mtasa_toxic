@@ -8,21 +8,100 @@
 -- Local variables --
 ---------------------
 
-local g_Panel = nil
+local g_Panel, g_ChangePwBtn
 local g_EditFields = {}
 local g_ChangedEdits = {}
 local g_Profile = {}
+local g_ChangePwGui = false
 
 local EditProfilePanel = {
 	name = "Profile",
 	img = "img/userpanel/profile.png",
 	width = 300,
-	height = 300,
+	height = 340,
 }
+
+addEvent("main.onChgPwResult", true)
 
 --------------------------------
 -- Local function definitions --
 --------------------------------
+
+local function onChgPwEditChange()
+	local pw = guiGetText(g_ChangePwGui.pw)
+	local strength = getPasswordStrength(pw)*100
+	
+	guiSetText(g_ChangePwGui.pwStr, ("%d%%"):format(strength))
+	if(strength > 70) then
+		guiLabelSetColor(g_ChangePwGui.pwStr, 0, 200, 0)
+	elseif(strength > 40) then
+		guiLabelSetColor(g_ChangePwGui.pwStr, 200, 200, 0)
+	else
+		guiLabelSetColor(g_ChangePwGui.pwStr, 200, 0, 0)
+	end
+end
+
+local function onChgPwOkClick()
+	local oldPw = guiGetText(g_ChangePwGui.oldPw)
+	local pw = guiGetText(g_ChangePwGui.pw)
+	local pw2 = guiGetText(g_ChangePwGui.pw2)
+	local err = false
+	
+	if(pw ~= pw2) then
+		err = "Passwords do not match!"
+	end
+	if(pw:len() < 3) then
+		err = "Password is too short!"
+	end
+	
+	if(err) then
+		guiSetText(g_ChangePwGui.info, err)
+		guiLabelSetColor(g_ChangePwGui.info, 255, 0, 0)
+	else
+		triggerServerEvent("main.onChgPwReq", g_ResRoot, oldPw, pw)
+	end
+end
+
+local function onChgPwCancelClick()
+	g_ChangePwGui:destroy()
+	guiSetInputEnabled(false)
+	g_ChangePwGui = false
+end
+
+local function onChgPwResult(success)
+	if(not g_ChangePwGui) then return end
+	
+	if(success) then
+		g_ChangePwGui:destroy()
+		guiSetInputEnabled(false)
+		g_ChangePwGui = false
+	else
+		guiSetText(g_ChangePwGui.info, "Old password is invalid!")
+		guiLabelSetColor(g_ChangePwGui.info, 255, 0, 0)
+	end
+end
+
+local function onChangePwClick()
+	if(g_ChangePwGui) then return end
+	
+	g_ChangePwGui = GUI.create("changePw")
+	guiSetInputEnabled(true)
+	
+	addEventHandler("onClientGUIChanged", g_ChangePwGui.pw, onChgPwEditChange, false)
+	addEventHandler("onClientGUIClick", g_ChangePwGui.ok, onChgPwOkClick, false)
+	addEventHandler("onClientGUIClick", g_ChangePwGui.cancel, onChgPwCancelClick, false)
+end
+
+local function onAccountChange(accountName)
+	if(g_ChangePwBtn) then
+		guiSetEnabled(g_ChangePwBtn, accountName and true)
+	end
+	
+	if(not accountName and g_ChangePwGui) then
+		g_ChangePwGui:remove()
+		g_ChangePwGui = false
+	end
+end
 
 function EditProfilePanel.onShow(panel)
 	g_Panel = panel
@@ -68,6 +147,12 @@ local function onSync(sync_tbl, name, arg, data)
 		
 		local w, h = guiGetSize(g_Panel, false)
 		local y = 10
+		
+		g_ChangePwBtn = guiCreateButton(10, 10, 120, 25, "Change password", false, g_Panel)
+		addEventHandler("onClientGUIClick", g_ChangePwBtn, onChangePwClick, false)
+		guiSetEnabled(g_ChangePwBtn, g_UserName and true)
+		y = y + 35
+		
 		
 		for i, cat in pairs(sync_tbl.profile_fields[2]) do
 			local catLabel = guiCreateLabel(10, y, 100, 20, cat.name, false, g_Panel)
@@ -122,3 +207,5 @@ UpRegister(EditProfilePanel)
 ------------
 
 addInternalEventHandler($(EV_SYNC), onSync)
+addEventHandler("main.onChgPwResult", g_ResRoot, onChgPwResult)
+addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)

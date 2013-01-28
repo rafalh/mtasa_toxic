@@ -190,7 +190,7 @@ local function RbAddItem(player, rank, time)
 		item.name = getPlayerName(player)
 		item.clr = {getPlayerNametagColor(player)}
 	else
-		item.name = player
+		item.name = tostring(player)
 		item.clr = {255, 255, 255}
 	end
 	item.name2 = item.name:gsub("#%x%x%x%x%x%x", "")
@@ -278,7 +278,7 @@ end
 
 g_WidgetCtrl[$(wg_reset)] = function()
 	g_Size = { 320, 0.77*g_ScreenSize[2]-250 }
-	g_Pos = { 30, 250 }
+	g_Pos = { math.floor(g_ScreenSize[1]/56), 250 } -- 30
 	g_WidgetCtrl[$(wg_show)](true)
 end
 

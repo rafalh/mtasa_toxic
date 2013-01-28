@@ -2,29 +2,6 @@
 -- Globals --
 -------------
 
-local function CmdChangePassword (message, arg)
-	local account = getPlayerAccount (source)
-	if (isGuestAccount (account)) then
-		privMsg (source, "You have to be logged in to use this command.")
-		return
-	end
-	
-	if (#arg >= 4 and getAccount (getAccountName (account), arg[2]) and arg[3] == arg[4]) then
-		if (arg[3]:len () >= 4) then
-			if (setAccountPassword (account, arg[3])) then
-				privMsg (source, "Password has been changed successfully!")
-			else
-				privMsg (source, "Unknown error! Failed to change password.")
-			end
-		else
-			privMsg (source, "Password should be at least 4 characters long!")
-		end
-	else privMsg (source, "Usage: %s", arg[1].." <old password> <new password> <retry new password>") end
-end
-
-CmdRegister ("changepassword", CmdChangePassword, false)
-CmdRegisterAlias ("chgpw", "changepassword")
-
 --[[local function CmdChangeLogin(message, arg)
 	local account = getPlayerAccount (source)
 	if (isGuestAccount (account)) then

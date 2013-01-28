@@ -9,6 +9,7 @@
 -------------------
 
 addEvent("onClientCall_race", true)
+addEvent("main.onAccountChange", true)
 
 --------------------------------
 -- Local function definitions --
@@ -66,6 +67,10 @@ local function onClientPlayerQuit(reason)
 	else customMsg(255, 96, 96, "* %s has left the game [%s].", nick, reason) end
 end
 
+local function onAccountChange(accountName)
+	g_UserName = accountName
+end
+
 local function onClientInit(accountId, settings, isNew)
 	g_MyId = accountId
 	g_Settings = settings
@@ -93,5 +98,6 @@ addEventHandler("onClientResourceStart", g_Root, onClientResourceStart)
 addEventHandler("onClientResourceStart", g_ResRoot, onClientThisResourceStart)
 addEventHandler("onClientResourceStop", g_ResRoot, onClientThisResourceStop)
 addEventHandler("onClientPlayerQuit", g_Root, onClientPlayerQuit)
+addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)
 addInternalEventHandler($(EV_CLIENT_INIT), onClientInit)
 addInternalEventHandler($(EV_SET_GRAVITY), setGravity)

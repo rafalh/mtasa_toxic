@@ -4,19 +4,19 @@
 local g_Adverts = {}
 local g_AdvertIdx = 0
 local g_Visible = false
+local DEBUG = true
 
 -- Settings
-local g_TextColor = tocolor ( 0, 255, 0 )
+local g_TextColor = tocolor(0, 255, 0)
 local g_TextFont = "bankgothic"
-local g_TextScale = 0.6
-local g_BgColor = tocolor ( 16, 16, 16, 128 )
-local g_VisibleTime = 10000
-local g_Speed = 200
+local g_TextScale = math.max(0.5, (g_ScreenSize[2]^0.5) / 54) -- 0.6
+local g_BgColor = tocolor(16, 16, 16, 128)
+local g_Speed = (g_ScreenSize[1]^0.5)*5 --200
 local g_AppearingTime = 500
-local g_AdvertInternal = 120000
+local g_AdvertInterval = 120000
 
-local function AdvRender ()
-	local ticks = getTickCount ()
+local function AdvRender()
+	local ticks = getTickCount()
 	local dt = ticks - g_Visible
 	
 	local text = g_Adverts[g_AdvertIdx]
@@ -39,18 +39,13 @@ local function AdvRender ()
 	local h = h * h_fact
 	dxDrawRectangle ( 0, 0, w, h, g_BgColor, true )
 	
-	
-	if ( getVersion ().sortable < "1.3.0-9.03986.0" ) then
-		text = text:gsub ( "#%x%x%x%x%x%x", "" )
-	end
-	
 	local x = w - dt * g_Speed / 1000
 	dxDrawText ( text, x, y, x, y, g_TextColor, g_TextScale, g_TextFont, "left", "top", false, false, true, true )
 end
 
-local function AdvShowNext ()
+local function AdvShowNext()
 	if ( not g_Visible ) then
-		addEventHandler ( "onClientRender", g_Root, AdvRender )
+		addEventHandler("onClientRender", g_Root, AdvRender)
 	end
 	
 	g_Visible = getTickCount ()
@@ -59,16 +54,16 @@ local function AdvShowNext ()
 		g_AdvertIdx = 1
 	end
 	
-	outputConsole ( g_Adverts[g_AdvertIdx]:gsub ( "#%x%x%x%x%x%x", "" ) )
+	outputConsole(g_Adverts[g_AdvertIdx]:gsub("#%x%x%x%x%x%x", ""))
 end
 
 local function AdvInit ()
 	local tmp = {}
-	local node, i = xmlLoadFile ( "conf/adverts.xml" ), 0
+	local node, i = xmlLoadFile("conf/adverts.xml"), 0
 	if ( node ) then
 		while ( true ) do
-			local subnode = xmlFindChild ( node, "advert", i )
-			if ( not subnode ) then break end
+			local subnode = xmlFindChild (node, "advert", i)
+			if(not subnode) then break end
 			
 			local attr = xmlNodeGetAttributes ( subnode )
 			
@@ -86,7 +81,7 @@ local function AdvInit ()
 		xmlUnloadFile ( node )
 	end
 	
-	table.sort ( tmp, function ( a, b ) return a.freq < b.freq end )
+	table.sort(tmp, function ( a, b ) return a.freq < b.freq end)
 	
 	for i, advert in ipairs ( tmp ) do
 		for j = 1, advert.freq, 1 do
@@ -94,11 +89,14 @@ local function AdvInit ()
 		end
 	end
 	
-	if ( #g_Adverts > 0 ) then
-		g_AdvertIdx = math.random ( 0, #g_Adverts )
-		setTimer ( AdvShowNext, g_AdvertInternal, 0 )
-		--AdvShowNext ()
+	if(#g_Adverts > 0) then
+		g_AdvertIdx = math.random(0, #g_Adverts)
+		setTimer(AdvShowNext, g_AdvertInterval, 0)
+		
+		if(DEBUG) then
+			AdvShowNext()
+		end
 	end
 end
 
-addInternalEventHandler ( $(EV_CLIENT_INIT), AdvInit )
+addInternalEventHandler($(EV_CLIENT_INIT), AdvInit)

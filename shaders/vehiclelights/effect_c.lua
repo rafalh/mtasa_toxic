@@ -1,15 +1,15 @@
-local g_EffectName = { "Replaced vehicle lights", pl = "Podmienione światła samochodów" }
+local g_EffectName = {"Replaced vehicle lights", pl = "Podmienione światła samochodów"}
 local g_AutoEnable = true
 
 local g_Enabled = false
 local g_Changed = false
 
-addEvent ( "onRafalhAddEffect" )
-addEvent ( "onRafalhGetEffects" )
+addEvent("onRafalhAddEffect")
+addEvent("onRafalhGetEffects")
 
-function setEffectEnabled ( enable )
+function setEffectEnabled(enable)
 	g_Changed = true
-	if ( enable == g_Enabled ) then return true end
+	if(enable == g_Enabled) then return true end
 	
 	if ( not enable ) then
 		disableCustomLights()

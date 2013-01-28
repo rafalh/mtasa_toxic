@@ -184,10 +184,11 @@ local function onRafalhStart()
 	
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd")) then
-		triggerClientEvent(client, "main_onLoginReq", g_ResRoot)
+		triggerClientEvent(client, "main.onLoginReq", g_ResRoot)
 	elseif(not isGuestAccount(account)) then
 		local accountName = getAccountName(account)
-		triggerClientEvent(pdata.el, "main_onLoginStatus", g_ResRoot, true, accountName)
+		triggerClientEvent(pdata.el, "main.onLoginStatus", g_ResRoot, true)
+		triggerClientEvent(pdata.el, "main.onAccountChange", g_ResRoot, accountName)
 	end
 	
 	pdata.new = false

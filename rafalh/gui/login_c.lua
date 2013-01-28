@@ -7,8 +7,8 @@
 local g_GUI
 g_UserName = false
 
-addEvent("main_onLoginReq", true)
-addEvent("main_onLoginStatus", true)
+addEvent("main.onLoginReq", true)
+addEvent("main.onLoginStatus", true)
 
 local function rot13(pw)
 	local buf = ""
@@ -82,7 +82,7 @@ local function onLoginClick(btn,state)
 	guiSetText(g_GUI.info, "Please wait...")
 	guiLabelSetColor(g_GUI.info, 255, 255, 255)
 	
-	triggerServerEvent("main_onLogin", g_ResRoot, name, pw)
+	triggerServerEvent("main.onLogin", g_ResRoot, name, pw)
 end
 
 local function onRegisterClick(btn,state)
@@ -93,11 +93,11 @@ end
 
 local function onPlayAsGuestClick(btn,state)
 	if btn ~= "left" or state ~= "up" then return end
-	triggerServerEvent("main_onLogin", g_ResRoot, false, false)
+	triggerServerEvent("main.onLogin", g_ResRoot, false, false)
 	closeLoginWnd()
 end
 
-local function onLoginStatus(success, username)
+local function onLoginStatus(success)
 	if(not success) then
 		if(not g_GUI) then
 			openLoginWnd()
@@ -115,8 +115,6 @@ local function onLoginStatus(success, username)
 		
 		closeLoginWnd()
 	end
-	
-	g_UserName = username
 end
 
 local function onFlagClick()
@@ -169,5 +167,5 @@ function openLoginWnd(loginFailed)
 	loadAutoLogin()
 end
 
-addEventHandler("main_onLoginReq", g_ResRoot, openLoginWnd)
-addEventHandler("main_onLoginStatus", g_ResRoot, onLoginStatus)
+addEventHandler("main.onLoginReq", g_ResRoot, openLoginWnd)
+addEventHandler("main.onLoginStatus", g_ResRoot, onLoginStatus)

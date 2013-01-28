@@ -136,8 +136,6 @@ addEventHandler("onClientResourceStart", resourceRoot, function()
 		g_CurrentLight = (light ~= "" and light)
 	end
 	setElementData(localPlayer, "vehiclelight", g_CurrentLight, true)
-	
-	enableCustomLights()
 end)
 
 addEventHandler("onClientElementStreamIn", root, function()
@@ -189,7 +187,7 @@ local function applyChangesAndClose(btn)
 	closeWindow(btn)
 end
 
-local function updatePreview ()
+local function updatePreview()
 	local id = guiComboBoxGetSelected(g_LightsComboBox)
 	local light = (id ~= 0 and guiComboBoxGetItemText(g_LightsComboBox, id))
 	if(not light) then

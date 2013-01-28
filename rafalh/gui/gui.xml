@@ -30,21 +30,44 @@
 		<button id="guestBtn" rx="50" x="50" y="235" w="100" h="30" text="Play as guest" />
 	</window>
 	
-	<window id="registerWnd" title="Register" rx="50" x="-175" ry="50" y="-130" w="350" h="260" sizeable="false">
+	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="290" sizeable="false">
 		<image rx="50" x="-32" y="25" w="64" h="64" src="img/register.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Register new account" align="center" />
 		
 		<label x="10" y="125" w="120" h="20" text="Username:" />
-		<edit id="name" x="130" y="120" w="200" h="25" maxlen="128" focus="true" />
+		<edit id="name" x="130" y="120" w="150" h="25" maxlen="128" focus="true" />
 		
 		<label x="10" y="155" w="120" h="20" text="Password:" />
-		<edit id="pw" x="130" y="150" w="200" h="25" maxlen="128" masked="true" />
+		<edit id="pw" x="130" y="150" w="150" h="25" maxlen="128" masked="true" />
 		
 		<label x="10" y="185" w="120" h="20" text="Retry password:" />
-		<edit id="pw2" x="130" y="180" w="200" h="25" maxlen="128" masked="true" />
+		<edit id="pw2" x="130" y="180" w="150" h="25" maxlen="128" masked="true" />
 		
-		<button id="regBtn" x="15" y="220" w="150" h="30" text="Register" />
-		<button id="backBtn" rx="100" x="-175" y="220" w="150" h="30" text="Back" />
+		<label x="10" y="215" w="120" h="20" text="Password strength:" />
+		<label id="pwStr" x="130" y="215" w="120" h="20" text="" />
+		
+		<button id="regBtn" rx="50" x="-145" y="250" w="140" h="25" text="Register" />
+		<button id="backBtn" rx="50" x="5" y="250" w="140" h="25" text="Back" />
+	</window>
+	
+	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false">
+		<image rx="50" x="-32" y="25" w="64" h="64" src="img/chgPw.png" />
+		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Change password for your account" align="center" />
+		
+		<label x="10" y="125" w="120" h="20" text="Old password:" />
+		<edit id="oldPw" x="130" y="120" w="120" h="25" maxlen="128" masked="true" />
+		
+		<label x="10" y="155" w="120" h="20" text="Password:" />
+		<edit id="pw" x="130" y="150" w="120" h="25" maxlen="128" masked="true" />
+		
+		<label x="10" y="185" w="120" h="20" text="Retry password:" />
+		<edit id="pw2" x="130" y="180" w="120" h="25" maxlen="128" masked="true" />
+		
+		<label x="10" y="215" w="120" h="20" text="Password strength:" />
+		<label id="pwStr" x="130" y="215" w="120" h="20" text="" />
+		
+		<button id="ok" rx="100" x="-180" ry="100" y="-35" w="80" h="25" text="OK" />
+		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 </gui>

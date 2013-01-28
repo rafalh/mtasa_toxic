@@ -56,7 +56,7 @@ g_ShopItems.joinmsg = {
 	name = "Join Message",
 	cost = 20000,
 	descr = "Set message, which is displayed when you join.",
-	img = "joinmsg.png",
+	img = "img/shop/joinmsg.png",
 	onUse = ShpOnJoinMsgUse,
 	dataToCount = function ( val ) return val and 1 end,
 	getAllowedAct = function ( val ) return not val, true, true end -- buy, sell, use
@@ -66,7 +66,7 @@ g_ShopItems.health100 = {
 	name = "Repair",
 	cost = 100000,
 	descr = "Repair your vehicle when you want.",
-	img = "repair.png",
+	img = "img/shop/repair.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -75,7 +75,7 @@ g_ShopItems.flip = {
 	name = "Flip",
 	cost = 50000,
 	descr = "Flips your vehicle.",
-	img = "flip.png",
+	img = "img/shop/flip.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val )
 		local veh = getPedOccupiedVehicle ( g_Me )
@@ -92,7 +92,7 @@ g_ShopItems.selfdestr = {
 	name = "Self-destruction",
 	cost = 500000,
 	descr = "Make self-destruciton and kill all players, which are near to your vehicle!",
-	img = "selfdestr.png",
+	img = "img/shop/selfdestr.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -101,7 +101,7 @@ g_ShopItems.mine = {
 	name = "Mine",
 	cost = 200000,
 	descr = "Place a mine under your car!",
-	img = "mine.png",
+	img = "img/shop/mine.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -110,7 +110,7 @@ g_ShopItems.oil = {
 	name = "Oil",
 	cost = 100000,
 	descr = "Spill oli over road!",
-	img = "oil.png",
+	img = "img/shop/oil.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -119,7 +119,7 @@ g_ShopItems.beer = {
 	name = "Beer",
 	cost = 2,
 	descr = "Are you angry with whole world? Get drunk!",
-	img = "beer.png",
+	img = "img/shop/beer.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, true end -- buy, sell, use
 }
@@ -128,7 +128,7 @@ g_ShopItems.invisibility = {
 	name = "Invisibility",
 	cost = 300000,
 	descr = "Make your vehicle invisible...",
-	img = "ghost.png",
+	img = "img/shop/ghost.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -137,7 +137,7 @@ g_ShopItems.godmode30 = {
 	name = "Godmode",
 	cost = 300000,
 	descr = "Make your vehicle indestructible for 60 seconds!",
-	img = "godmode.png",
+	img = "img/shop/godmode.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -146,7 +146,7 @@ g_ShopItems.thunder = {
 	name = "Thunder",
 	cost = 200000,
 	descr = "Attack near player for few seconds",
-	img = "thunder.png",
+	img = "img/shop/thunder.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -155,7 +155,7 @@ g_ShopItems.smoke = {
 	name = "Smoke",
 	cost = 100000,
 	descr = "Smoke behind your vehicle for 15 seconds.",
-	img = "smoke.png",
+	img = "img/shop/smoke.png",
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -164,7 +164,7 @@ g_ShopItems.nextmap = {
 	name = "Next map",
 	cost = 20000,
 	descr = "Add your favorite map to queue.",
-	img = "nextmap.png",
+	img = "img/shop/nextmap.png",
 	getAllowedAct = function ( v ) return true, false, false end, -- buy, sell, use
 	onBuy = function ()
 		MlstDisplay ( "Choose the next map to buy", "Buy map", function ( res_name )
@@ -177,9 +177,9 @@ g_ShopItems.nextmap = {
 
 g_ShopItems.vip1w = {
 	name = "VIP rank",
-	cost = 2200000,
+	cost = 2500000,
 	descr = "VIP rank activation for 1 week.",
-	img = "vip.png",
+	img = "img/userpanel/vip.png",
 	getAllowedAct = function ( v ) return true, false, false end -- buy, sell, use
 }
 

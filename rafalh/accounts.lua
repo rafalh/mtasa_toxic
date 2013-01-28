@@ -1,5 +1,7 @@
-addEvent("main_onLogin", true)
-addEvent("main_onRegisterReq", true)
+addEvent("main.onLogin", true)
+addEvent("main.onRegisterReq", true)
+addEvent("main.onChgPwReq", true)
+
 
 local g_RegTimeStamp = 0
 
@@ -15,7 +17,13 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 		DbQuery("UPDATE rafalh_players SET account=? WHERE player=?", accountName, self.id)
 	end
 	
-	triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, true, accountName)
+	triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
+	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, accountName)
+end
+
+local function onPlayerLogout()
+	local self = g_Players[source]
+	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, false)
 end
 
 local function onLoginReq(name, passwd)
@@ -31,14 +39,16 @@ local function onLoginReq(name, passwd)
 		end
 		
 		if(not success) then -- if we succeeded onLogin do the rest
-			triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, false)
+			triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, false)
 		end
 	else -- play as guest
-		triggerClientEvent(self.el, "main_onLoginStatus", g_ResRoot, true, false)
+		triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
 	end
 end
 
 local function onRegisterReq(name, passwd)
+	if(not name or name:len() < 3 or not passwd or passwd:len() < 3) then return end
+	
 	local self = g_Players[client]
 	local account = false
 	local ticks = getTickCount()
@@ -48,7 +58,18 @@ local function onRegisterReq(name, passwd)
 	else
 		privMsg(self.el, "Wait a moment...")
 	end
-	triggerClientEvent(self.el, "main_onRegStatus", g_ResRoot, account and true)
+	triggerClientEvent(self.el, "main.onRegStatus", g_ResRoot, account and true)
+end
+
+local function onChgPwReq(oldPw, pw)
+	local account = getPlayerAccount(client)
+	if(isGuestAccount(account) or pw:len() < 3) then return end
+	
+	local status = getAccount(getAccountName(account), oldPw) and true
+	if(status) then
+		status = setAccountPassword(account, pw)
+	end
+	triggerClientEvent(client, "main.onChgPwResult", g_ResRoot, status)
 end
 
 ------------
@@ -56,5 +77,7 @@ end
 ------------
 
 addEventHandler("onPlayerLogin", g_Root, onPlayerLogin)
-addEventHandler("main_onLogin", g_ResRoot, onLoginReq)
-addEventHandler("main_onRegisterReq", g_ResRoot, onRegisterReq)
+addEventHandler("onPlayerLogout", g_Root, onPlayerLogout)
+addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
+addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
+addEventHandler("main.onChgPwReq", g_ResRoot, onChgPwReq)

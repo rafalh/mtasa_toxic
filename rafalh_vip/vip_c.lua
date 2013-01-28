@@ -44,6 +44,7 @@ addEvent ( "onClientRafalhVip", true )
 addEvent ( "onRafalhAddWidget" )
 addEvent ( "onRafalhGetWidgets" )
 addEvent ( "onRafalhColorDlgClose" )
+addEvent("vip.onStatus")
 
 --------------------------------
 -- Local function definitions --
@@ -151,10 +152,10 @@ local function VipLoadSettings ()
 	end
 end
 
-local function onClientResourceStart ()
-	triggerServerEvent ( "onRafalhVipStart", g_Me )
-	VipLoadSkins ()
-	VipLoadSettings ()
+local function VipInit()
+	triggerServerEvent("onRafalhVipStart", g_Me)
+	VipLoadSkins()
+	VipLoadSettings()
 end
 
 local function VipCloseSettings ()
@@ -692,27 +693,32 @@ local function VipOpenSettings ()
 	showCursor ( true )
 end
 
-local function VipOnClientVip ( timestamp )
+local function VipOnClientVip(timestamp)
 	g_VipEnd = timestamp
 	
-	if ( g_IsVip ) then
+	if(g_IsVip) then
 		return
 	end
 	
 	g_IsVip = true
 	
-	outputChatBox ( "You are a VIP! Press \"g\" to access VIP settings.", 255, 0, 0 )
+	outputChatBox("You are a VIP! Press \"g\" to access VIP settings.", 255, 0, 0)
 	
-	triggerServerEvent ( "onRafalhVipSettings", g_Me, g_Settings )
+	triggerServerEvent("onRafalhVipSettings", g_Me, g_Settings)
 	
-	VipApplySettings ()
+	VipApplySettings()
 	
-	bindKey ( "g", "down", VipOpenSettings )
+	bindKey("g", "down", VipOpenSettings)
 	
-	triggerEvent ( "onRafalhGetWidgets", g_Root )
+	triggerEvent("vip.onStatus", resourceRoot, g_IsVip)
+	triggerEvent("onRafalhGetWidgets", g_Root)
 end
 
 local function VipOnAddWidget ( res, widgetName )
+	--[[if(sourceResource ~= res) then
+		outputDebugString(getResourceName(sourceResource).." <> "..getResourceName(res), 2)
+	end]]
+	
 	local resName = getResourceName ( res )
 	
 	if ( not g_Widgets[resName] ) then
@@ -734,12 +740,26 @@ local function VipOnAddWidget ( res, widgetName )
 	end
 end
 
+-- Exported function
+function openVipPanel()
+	if(not g_IsVip) then
+		return false
+	end
+	
+	VipOpenSettings()
+	return true
+end
+
+function isVip()
+	return g_IsVip
+end
+
 ------------
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN ( "391B3F7ABE5BE708D973349E47113A5C" )
-	addEventHandler ( "onClientRafalhVip", g_Root, VipOnClientVip )
-	addEventHandler ( "onRafalhAddWidget", g_Root, VipOnAddWidget )
-	onClientResourceStart ()
+#VERIFY_SERVER_BEGIN("391B3F7ABE5BE708D973349E47113A5C")
+	addEventHandler("onClientRafalhVip", g_Root, VipOnClientVip)
+	addEventHandler("onRafalhAddWidget", g_Root, VipOnAddWidget)
+	VipInit()
 #VERIFY_SERVER_END ()

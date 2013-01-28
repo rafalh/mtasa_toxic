@@ -4,6 +4,12 @@
     <msg id="* %s has been banned from the game.">* %s został zbanowany.</msg>
     <msg id="* %s has left the game [%s].">* %s opuścił grę [%s].</msg>
 	
+	<msg id="Save">Zapisz</msg>
+	<msg id="Cancel">Anuluj</msg>
+	<msg id="Apply">Zastosuj</msg>
+    <msg id="Close">Zamknij</msg>
+	<msg id="Color">Kolor</msg>
+	
     <msg id="Usage: %s">Użycie: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
     
@@ -16,6 +22,10 @@
 	<msg id="Play as guest">Graj jako gość</msg>
 	<msg id="Register new account">Zarejestruj nowe konto</msg>
 	<msg id="Retry password:">Powtórz hasło:</msg>
+	<msg id="Password strength:">Siła hasła:</msg>
+	<msg id="Username is too short!">Nazwa użytkownika jest za krótka!</msg>
+	<msg id="Password is too short!">Hasło jest za krótkie!</msg>
+	<msg id="Passwords do not match!">Hasła nie pasują!</msg>
 	
 	<msg id="Statistics">Statystyki</msg>
     <msg id="Player:">Gracz:</msg>
@@ -41,6 +51,11 @@
 	<msg id="City:">Miasto:</msg>
 	<msg id="Interests:">Zainteresowania:</msg>
 	<msg id="Contact">Kontakt</msg>
+	
+	<msg id="Change password">Zmień hasło</msg>
+	<msg id="Change password for your account">Zmień hasło do swojego konta</msg>
+	<msg id="Old password:">Stare hasło:</msg>
+	<msg id="Old password is invalid!">Stare hasło nie jest poprawne!</msg>
 	
     <msg id="Players list">Lista graczy</msg>
 	<msg id="Player name">Nazwa gracza</msg>
@@ -112,10 +127,6 @@
 	<msg id="Show stars animation above winner car">Pokaż animację gwiazdek nad samochodem zwycięzcy</msg>
 	<msg id="Effects">Efekty</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
-	
-    <msg id="Save">Zapisz</msg>
-    <msg id="Color">Kolor</msg>
-    <msg id="Close">Zamknij</msg>
 	
 	<msg id="Map Info">Informacje o mapie</msg>
 	<msg id="Map: %s">Mapa: %s</msg>
