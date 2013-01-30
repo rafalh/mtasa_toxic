@@ -84,11 +84,11 @@ function table.find ( t, v )
 	return false
 end
 
-function table.copy ( t )
+function table.copy(tbl, full)
 	local ret = {}
-	for k, v in pairs ( t ) do
-		if ( type ( v ) == "table" ) then
-			ret[k] = table.copy ( v )
+	for k, v in pairs(tbl) do
+		if(type(v) == "table" and full) then
+			ret[k] = table.copy(v)
 		else
 			ret[k] = v
 		end

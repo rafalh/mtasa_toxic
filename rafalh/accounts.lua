@@ -1,7 +1,7 @@
 addEvent("main.onLogin", true)
 addEvent("main.onRegisterReq", true)
 addEvent("main.onChgPwReq", true)
-
+addEvent("main.onLogoutReq", true)
 
 local g_RegTimeStamp = 0
 
@@ -72,6 +72,10 @@ local function onChgPwReq(oldPw, pw)
 	triggerClientEvent(client, "main.onChgPwResult", g_ResRoot, status)
 end
 
+local function onLogoutReq()
+	logOut(client)
+end
+
 ------------
 -- Events --
 ------------
@@ -81,3 +85,5 @@ addEventHandler("onPlayerLogout", g_Root, onPlayerLogout)
 addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
 addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
 addEventHandler("main.onChgPwReq", g_ResRoot, onChgPwReq)
+addEventHandler("main.onLogoutReq", g_ResRoot, onLogoutReq)
+

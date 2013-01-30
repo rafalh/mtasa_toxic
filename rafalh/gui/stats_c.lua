@@ -9,14 +9,14 @@
 ---------------------
 
 local g_StatFields = {
-	{ "cash", "Cash", formatMoney },
-	{ "points", "Points", formatNumber },
+	{ "cash", "Cash" },
+	{ "points", "Points" },
 	{ "_rank", "Rank" },
-	{ "dm", "DD/DM Played", formatNumber },
-	{ "dm_wins", "DD/DM Wins", formatNumber },
-	{ "first", "Race - 1st", formatNumber, "%s times" },
-	{ "second", "Race - 2nd", formatNumber, "%s times" },
-	{ "third", "Race - 3rd", formatNumber, "%s times" },
+	{ "dmVictories", "DM Victories" },
+	{ "huntersTaken", "Hunters taken" },
+	{ "ddVictories", "DD Victories" },
+	{ "raceVictories", "Race Victories" },
+	{ "maxWinStreak", "Maximal Win Streak" },
 	{ "toptimes_count", "Top Times held" },
 	{ "bidlvl", "Bidlevel" },
 	{ "exploded", "Exploded", formatNumber, "%s times" },
@@ -40,37 +40,44 @@ local StatsPanel = {
 
 local function StUpdatePlaytime()
 	local now = getRealTime().timestamp
-	for parent, gui in pairs ( g_Gui ) do
+	for parent, gui in pairs(g_Gui) do
 		local play_time = g_Stats[gui.id] and g_Stats[gui.id].time_here
-		if ( play_time ) then
+		if(play_time) then
 			local join_time = g_Stats[gui.id] and g_Stats[gui.id]._join_time
-			if ( join_time ) then
+			if(join_time) then
 				play_time = now - join_time + play_time
 			end
-			guiSetText ( gui._time_here, formatTimePeriod ( play_time, 0 ) )
+			guiSetText(gui._time_here, formatTimePeriod(play_time, 0))
 		end
 	end
 end
 
 local function StUpdateGui(id)
 	-- update playtime
-	StUpdatePlaytime ()
+	StUpdatePlaytime()
 	
 	-- update rest
-	for parent, gui in pairs ( g_Gui ) do
-		if ( gui.id == id ) then
-			for i, data in ipairs ( g_StatFields ) do
-				local val = g_Stats[id] and g_Stats[id][data[1]]
-				if ( val ) then
-					if ( data[3] ) then
-						val = data[3] ( val )
-					end
-					if ( data[4] ) then
-						val = MuiGetMsg ( data[4] ):format ( val )
-					end
-					guiSetText ( gui[data[1]], val )
-				end
-			end
+	local stats = g_Stats[id]
+	if(not stats) then return end
+	
+	for parent, gui in pairs(g_Gui) do
+		if(gui.id == id) then
+			guiSetText(gui.cash, formatMoney(stats.cash))
+			guiSetText(gui.points, formatNumber(stats.points))
+			guiSetText(gui._rank, stats._rank)
+			local dmVictRate = stats.dmVictories / math.max(stats.dmPlayed, 1) * 100
+			guiSetText(gui.dmVictories, ("%s/%s (%.1f%%)"):format(formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmVictRate))
+			local huntRate = stats.huntersTaken / math.max(stats.dmPlayed, 1) * 100
+			guiSetText(gui.huntersTaken, ("%s/%s (%.1f%%)"):format(formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRate))
+			local ddVictRate = stats.ddVictories / math.max(stats.ddPlayed, 1) * 100
+			guiSetText(gui.ddVictories, ("%s/%s (%.1f%%)"):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate))
+			local raceVictRate = stats.raceVictories / math.max(stats.racesPlayed, 1) * 100
+			guiSetText(gui.raceVictories, ("%s/%s (%.1f%%)"):format(formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceVictRate))
+			guiSetText(gui.maxWinStreak, stats.maxWinStreak)
+			guiSetText(gui.toptimes_count, stats.toptimes_count)
+			guiSetText(gui.bidlvl, stats.bidlvl)
+			guiSetText(gui.exploded, MuiGetMsg("%s times"):format(stats.exploded))
+			guiSetText(gui.drowned, MuiGetMsg("%s times"):format(stats.drowned))
 		end
 	end
 end
@@ -91,7 +98,7 @@ function StCreateGui(id, parent, x, y, w, h)
 		end
 	end
 	
-	StUpdateGui ( id )
+	StUpdateGui(id)
 	if ( not g_Timer ) then
 		g_Timer = setTimer ( StUpdatePlaytime, 1000, 0 )
 	end

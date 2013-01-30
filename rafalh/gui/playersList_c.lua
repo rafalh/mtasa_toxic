@@ -9,9 +9,11 @@ local g_Stats = {
 	{"points", 		"Points",		0.10,	true,	formatNumber},
 	{"cash",		"Cash",			0.14,	true,	formatMoney},
 	{"time_here",	"Playtime",		0.12,	true,	function(n) return formatTimePeriod(n, 0) end},
-	{"toptimes_count", "Top times", 0.10,	true,	formatNumber},
-	{"first",		"Race Vict",	0.10,	true,	formatNumber},
-	{"dm_wins",		"DD/DM Vict",	0.10,	true,	formatNumber}
+	{"toptimes_count", "Top times", 0.09,	true,	formatNumber},
+	{"dmVictories",	"DM Vict",		0.08,	true,	formatNumber},
+	{"ddVictories",	"DD Vict",		0.08,	true,	formatNumber},
+	{"raceVictories", "Race Vict",	0.08,	true,	formatNumber},
+	
 }
 	
 local g_Col = {}
@@ -22,7 +24,7 @@ local g_RefreshTimer
 local PlayersPanel = {
 	name = "Players list",
 	img = "img/userpanel/users.png",
-	width = 600,
+	width = 620,
 }
 
 --------------------------------
@@ -119,7 +121,7 @@ local function initGui(panel)
 	-- disable sorting because it breaks adding rows (MTA 1.3)
 	guiGridListSetSortingEnabled(g_Gui.list, false)
 	
-	g_Col.idx = guiGridListAddColumn(g_Gui.list, "#", 0.08)
+	g_Col.idx = guiGridListAddColumn(g_Gui.list, "#", 0.06)
 	
 	for i, data in ipairs(g_Stats) do
 		g_Col[data[1]] = guiGridListAddColumn(g_Gui.list, data[2], data[3])

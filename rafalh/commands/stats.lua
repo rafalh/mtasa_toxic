@@ -177,27 +177,7 @@ end
 CmdRegister ("warnings", CmdWarnings, false, "Shows player warnings count")
 CmdRegisterAlias ("warns", "warnings")
 
-local function CmdStats (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local rows = DbQuery ("SELECT first, second, third, dm, dm_wins, points, toptimes_count FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id)
-	if (rows[1]) then
-		local dm_ratio = 0
-		if (rows[1].dm > 0) then
-			dm_ratio = rows[1].dm_wins / rows[1].dm
-		end
-		
-		scriptMsg ("%s's statistics:", getPlayerName (player))
-		scriptMsg ("Placed: 1st: %s - 2nd: %s - 3rd: %s.", formatNumber (rows[1].first), formatNumber (rows[1].second), formatNumber (rows[1].third))
-		scriptMsg ("Deathmatches: %s - Wins: %s - Ratio: %.2f%%.", formatNumber (rows[1].dm), formatNumber (rows[1].dm_wins), 100 * dm_ratio)
-		scriptMsg ("Top Times held: %s - Points: %s.", formatNumber (rows[1].toptimes_count), formatNumber (rows[1].points))
-	end
-end
-
-CmdRegister ("stats", CmdStats, false, "Shows player statistics")
-CmdRegisterAlias ("stat", "stats")
-CmdRegisterAlias ("st", "stats")
-
-local function CmdStats2(msg, arg)
+local function CmdStats(msg, arg)
 	local player = (#arg >= 2 and findPlayer(msg:sub (arg[1]:len() + 2))) or source
 	local pdata = g_Players[player]
 	local stats = StGet(player, {"points", "mapsPlayed",
@@ -219,4 +199,25 @@ local function CmdStats2(msg, arg)
 	scriptMsg("Race Victories: %s / %s (%.2f%%)", formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceRatio*100)
 end
 
-CmdRegister("st2", CmdStats2, false)
+CmdRegister ("stats", CmdStats, false, "Shows player statistics")
+CmdRegisterAlias ("stat", "stats")
+CmdRegisterAlias ("st", "stats")
+
+local function CmdStatsOld(message, arg)
+	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
+	local rows = DbQuery ("SELECT first, second, third, dm, dm_wins, points, toptimes_count FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id)
+	if (rows[1]) then
+		local dm_ratio = 0
+		if (rows[1].dm > 0) then
+			dm_ratio = rows[1].dm_wins / rows[1].dm
+		end
+		
+		scriptMsg ("%s's statistics:", getPlayerName (player))
+		scriptMsg ("Placed: 1st: %s - 2nd: %s - 3rd: %s.", formatNumber (rows[1].first), formatNumber (rows[1].second), formatNumber (rows[1].third))
+		scriptMsg ("Deathmatches: %s - Wins: %s - Ratio: %.2f%%.", formatNumber (rows[1].dm), formatNumber (rows[1].dm_wins), 100 * dm_ratio)
+		scriptMsg ("Top Times held: %s - Points: %s.", formatNumber (rows[1].toptimes_count), formatNumber (rows[1].points))
+	end
+end
+
+CmdRegister("stats2", CmdStatsOld, false)
+CmdRegisterAlias ("st2", "stats2")

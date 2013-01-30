@@ -33,7 +33,7 @@ local function CmdTrace (message, arg)
 	if (not g_TracedPlayers[player_id]) then
 		g_TracedPlayers[player_id] = {}
 	end
-	table.insert (g_TracedPlayers[player_id], table.copy (g_ScriptMsgState))
+	table.insert(g_TracedPlayers[player_id], table.copy(g_ScriptMsgState, true))
 	
 	local shared_res = getResourceFromName ("rafalh_shared")
 	if (shared_res and getResourceState (shared_res) == "running") then

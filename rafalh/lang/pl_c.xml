@@ -37,6 +37,11 @@
     <msg id="Race - 1st:">Wyścigi - 1.:</msg>
     <msg id="Race - 2nd:">Wyścigi - 2.:</msg>
     <msg id="Race - 3rd:">Wyścigi - 3.:</msg>
+	<msg id="DM Victories:">Wygrane DM:</msg>
+	<msg id="Hunters taken:">Zdobyte Huntery:</msg>
+	<msg id="DD Victories:">Wygrane DD:</msg>
+	<msg id="Race Victories:">Wygrane wyścigi:</msg>
+	<msg id="Maximal Win Streak:">Maks. Win Streak:</msg>
     <msg id="Top Times held:">Liczba Top Time&apos;ów:</msg>
     <msg id="Bidlevel:">Bidlevel:</msg>
     <msg id="Exploded:">Eksplozje:</msg>
@@ -68,6 +73,8 @@
 	<msg id="Top times">Top Time'y</msg>
     <msg id="Race Vict">Wygr Wyścigi</msg>
     <msg id="DD/DM Vict">Wygr DD/DM</msg>
+	<msg id="DM Vict">Wygr DM</msg>
+	<msg id="DD Vict">Wygr DD</msg>
 	
     <msg id="Shop">Sklep</msg>
 	<msg id="All items:">Wszystkie przedmioty:</msg>
@@ -161,6 +168,8 @@
 	<msg id="Description">Opis</msg>
 	
     <msg id="User Panel">Panel Użytkownika</msg>
+	<msg id="Log In">Zaloguj</msg>
+	<msg id="Log Out">Wyloguj</msg>
 	<msg id="Back">Wstecz</msg>
 	<msg id="You are logged in as %s">Jesteś zalogowany jako %s</msg>
 	<msg id="You are not logged in">Nie jesteś zalogowany</msg>

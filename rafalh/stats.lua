@@ -9,38 +9,25 @@ addEvent ( "onClientTop", true )]]
 local function StPlayerStatsSyncCallback ( id )
 	id = touint ( id )
 	if ( id ) then
-		local rows = DbQuery ( "SELECT name, cash, points, first, second, third, dm, dm_wins, toptimes_count, bidlvl, time_here, exploded, drowned FROM rafalh_players WHERE player=?", id )
-		local data = rows and rows[1]
-		if ( data ) then
-			data._rank = StRankFromPoints ( data.points )
+		local data = StGet(id, {
+			"name", "cash",
+			"points", "mapsPlayed",
+			"dmVictories", "huntersTaken", "dmPlayed",
+			"ddVictories", "ddPlayed",
+			"raceVictories", "racesPlayed",
+			"maxWinStreak", "toptimes_count",
+			"bidlvl", "time_here", "exploded", "drowned"})
+		--local rows = DbQuery ( "SELECT name, cash, points, first, second, third, dm, dm_wins, toptimes_count, bidlvl, time_here, exploded, drowned FROM rafalh_players WHERE player=?", id )
+		--local data = rows and rows[1]
+		if(data) then
+			data._rank = StRankFromPoints(data.points)
 			local player = g_IdToPlayer[id]
-			if ( player ) then
+			if(player) then
 				data._join_time = g_Players[player].join_time
 			end
 			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
 			return data
 		end
-	end
-	
-	return false
-end
-
-local function StTopSyncCallback ( toptype )
-	toptype = toint ( toptype )
-	local top_fields = { "cash", "points", "first", "second", "third", "dm", "dm_wins", "bidlvl" }
-	local field = toptype and top_fields[math.abs ( toptype )]
-	
-	if ( field ) then
-		local query = "SELECT player AS id, name, "..field.." FROM rafalh_players WHERE serial<>'0'"
-		if ( toptype > 0 ) then
-			query = query.." AND online=1"
-		end
-		query = query.." ORDER BY "..field.." DESC LIMIT 18"
-		local rows = DbQuery ( query )
-		for i, data in ipairs(rows) do
-			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
-		end
-		return rows
 	end
 	
 	return false
@@ -70,16 +57,14 @@ local function StInit ()
 		end
 	end
 	
-	addSyncer ( "stats", StPlayerStatsSyncCallback )
-	
-	addSyncer ( "tops", StTopSyncCallback, true )
+	addSyncer("stats", StPlayerStatsSyncCallback)
 end
 
 local function StCleanupPlayer ( player )
 	local pdata = g_Players[player]
-	local timestamp = getRealTime ().timestamp
-	local add_timehere = timestamp - pdata.join_time
-	DbQuery ( "UPDATE rafalh_players SET time_here=time_here+"..add_timehere..", last_visit=?, online=0 WHERE player=?", timestamp, pdata.id )
+	local timestamp = getRealTime().timestamp
+	local timeSpent = timestamp - pdata.join_time
+	StSet(player, "time_here", StGet(player, "time_here") + timeSpent)
 	pdata.join_time = timestamp
 end
 

@@ -201,13 +201,20 @@ function GUI.onDestroy()
 	end
 end
 
-function GUI.create(tpl, parent)
+function GUI.create(tpl, x, y, w, h, parent)
 	if(type(tpl) ~= "table") then
 		tpl = GUI.getTemplate(tpl)
 		if(not tpl) then
 			outputDebugString("Unknown template ID "..tostring(tpl), 1)
 			return false
 		end
+	end
+	
+	if(x and y and w and h) then
+		tpl = table.copy(tpl)
+		tpl.x, tpl.y = x, y
+		tpl.w, tpl.h = w, h
+		tpl.rx, tpl.ry, tpl.rh, tpl.rw = 0, 0, 0, 0
 	end
 	
 	local self = setmetatable({}, GUI.__mt)

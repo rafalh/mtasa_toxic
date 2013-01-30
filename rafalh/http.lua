@@ -26,7 +26,11 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	local rows = DbQuery ( "SELECT COUNT(*) AS c FROM rafalh_players"..where )
 	local players_count = rows[1].c
 	
-	local query = "SELECT player, cash, points, warnings, dm, dm_wins, first, second, third, time_here, first_visit, last_visit, bidlvl, name, toptimes_count, online, ip FROM rafalh_players"..where
+	local query = "SELECT player, cash, points, "..
+		"dm, dm_wins, first, second, third,"..
+		"dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesPlayed,"..
+		"time_here, first_visit, last_visit, bidlvl, name, toptimes_count, online, ip "..
+		"FROM rafalh_players"..where
 	if ( order ) then
 		query = query.." ORDER BY "..tostring ( order )..( ( desc and " DESC" ) or "" )
 	end

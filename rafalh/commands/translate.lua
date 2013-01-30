@@ -78,7 +78,7 @@ local function CmdTranslate (message, arg)
 	
 	if (text ~= "") then
 		if (validateLangCode (lang)) then
-			local state = table.copy (g_ScriptMsgState)
+			local state = table.copy(g_ScriptMsgState, true)
 			translate (text, false, lang, function (text, state)
 				local old_state = g_ScriptMsgState
 				g_ScriptMsgState = state

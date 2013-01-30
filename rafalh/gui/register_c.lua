@@ -1,13 +1,6 @@
 local g_GUI
 
-addEvent("main_onRegStatus", true)
-
-local function onLoginClick()
-	local name = guiGetText(g_GUI.name)
-	local pw = guiGetText(g_GUI.pw)
-	triggerServerEvent("main_onLogin", g_ResRoot, name, pw)
-	closeRegisterWnd()
-end
+addEvent("main.onRegStatus", true)
 
 local function onRegisterClick(btn,state)
 	if btn ~= "left" or state ~= "up" then return end
@@ -28,7 +21,7 @@ local function onRegisterClick(btn,state)
 		guiSetText(g_GUI.info, err)
 		guiLabelSetColor(g_GUI.info, 255, 0, 0)
 	else
-		triggerServerEvent("main_onRegisterReq", g_ResRoot, name, pw)
+		triggerServerEvent("main.onRegisterReq", g_ResRoot, name, pw)
 	end
 end
 
@@ -103,5 +96,5 @@ function openRegisterWnd()
 	addEventHandler("onClientGUIChanged", g_GUI.pw, onPwChange, false)
 end
 
-addEventHandler("main_onLoginStatus", g_ResRoot, onLoginStatus)
-addEventHandler("main_onRegStatus", g_ResRoot, onRegStatus)
+addEventHandler("main.onLoginStatus", g_ResRoot, onLoginStatus)
+addEventHandler("main.onRegStatus", g_ResRoot, onRegStatus)

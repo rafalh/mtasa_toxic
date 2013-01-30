@@ -14,7 +14,7 @@ end
 function CmdRegisterAlias (alias_name, cmd_name, ignore_console, ignore_chat)
 	assert (alias_name and cmd_name and not g_Commands[alias_name] and g_Commands[cmd_name])
 	
-	g_Commands[alias_name] = table.copy (g_Commands[cmd_name])
+	g_Commands[alias_name] = table.copy(g_Commands[cmd_name])
 	local cmd_data = g_Commands[alias_name]
 	cmd_data.alias = true
 	cmd_data.ignore_con = ignore_console

@@ -20,7 +20,7 @@ g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = "default-bold-small"}
 g_ListStyle.active = g_ListStyle.hover
 
 local g_Items = {}
-local g_Wnd, g_List, g_UserLabel
+local g_Wnd, g_List, g_UserLabel, g_LogInOutBtn
 local g_CurrentItem = false
 local g_Hiding = false
 
@@ -87,25 +87,40 @@ local function UpSetAccount(accountName)
 	
 	local userMsg = accountName and MuiGetMsg("You are logged in as %s"):format(accountName) or MuiGetMsg("You are not logged in")
 	guiSetText(g_UserLabel, userMsg)
+	
+	guiSetText(g_LogInOutBtn, accountName and "Log Out" or "Log In")
+end
+
+local function UpLogInOut()
+	if(g_UserName) then
+		triggerServerEvent("main.onLogoutReq", g_ResRoot)
+	else
+		UpHide()
+		openLoginWnd()
+	end
 end
 
 local function UpCreateGui()
 	local w = ITEM_W * PANEL_COLUMNS + 20
-	local h = 80 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
+	local h = 90 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
 	local x = ( g_ScreenSize[1] - w ) / 2
 	local y = ( g_ScreenSize[2] - h ) / 2
 	g_Wnd = guiCreateWindow(x, y, w, h, "User Panel", false)
 	guiSetVisible(g_Wnd, false)
 	guiWindowSetSizable(g_Wnd, false)
 	
-	g_UserLabel = guiCreateLabel(10, 20, w - 20, 20, "", false, g_Wnd)
+	g_UserLabel = guiCreateLabel(10, 20, w - 100, 20, "", false, g_Wnd)
 	guiSetFont(g_UserLabel, "default-bold-small")
+	
+	g_LogInOutBtn = guiCreateButton(w - 90, 20, 80, 25, "Logout", false, g_Wnd)
+	addEventHandler("onClientGUIClick", g_LogInOutBtn, UpLogInOut, false)
+	
 	UpSetAccount(g_UserName)
 	
-	local listSize = {w - 20, h - 80}
+	local listSize = {w - 20, h - 90}
 	local itemSize = {listSize[1]/PANEL_COLUMNS, ITEM_H}
 	
-	g_List = ListView.create({10, 40}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
+	g_List = ListView.create({10, 50}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
 	g_List.onClickHandler = onItemClick
 	
 	for i, item in ipairs(g_Items) do
