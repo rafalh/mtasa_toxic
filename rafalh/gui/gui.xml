@@ -71,44 +71,44 @@
 		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
-	<label id="stats">
+	<label id="stats" w="200" h="195">
 		<label x="0" y="0" w="120" h="15" text="Cash:" />
-		<label id="cash" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label id="cash" x="120" y="0" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Points:" />
-		<label id="points" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="15" w="120" h="15" text="Points:" />
+		<label id="points" x="120" y="15" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Rank:" />
-		<label id="_rank" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="30" w="120" h="15" text="Rank:" />
+		<label id="_rank" x="120" y="30" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="DM Victories:" />
-		<label id="dmVictories" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="45" w="120" h="15" text="DM Victories:" />
+		<label id="dmVictories" x="120" y="45" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Hunters taken:" />
-		<label id="huntersTaken" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="60" w="120" h="15" text="Hunters taken:" />
+		<label id="huntersTaken" x="120" y="60" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="DD Victories:" />
-		<label id="ddVictories" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="75" w="120" h="15" text="DD Victories:" />
+		<label id="ddVictories" x="120" y="75" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Race Victories:" />
-		<label id="raceVictories" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="90" w="120" h="15" text="Race Victories:" />
+		<label id="raceVictories" x="120" y="90" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Maximal Win Streak:" />
-		<label id="maxWinStreak" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="105" w="120" h="15" text="Maximal Win Streak:" />
+		<label id="maxWinStreak" x="120" y="105" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Top Times held:" />
-		<label id="toptimes_count" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="120" w="120" h="15" text="Top Times held:" />
+		<label id="toptimes_count" x="120" y="120" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Bidlevel:" />
-		<label id="bidlvl" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="135" w="120" h="15" text="Bidlevel:" />
+		<label id="bidlvl" x="120" y="135" rw="100" w="-120" h="15" text="" />
 
-		<label x="0" y="0" w="120" h="15" text="Exploded:" />
-		<label id="exploded" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="150" w="120" h="15" text="Exploded:" />
+		<label id="exploded" x="120" y="150" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Drowned:" />
-		<label id="drowned" x="100" y="0" rw="100" w="-120" h="15" text="" />
+		<label x="0" y="165" w="120" h="15" text="Drowned:" />
+		<label id="drowned" x="120" y="165" rw="100" w="-120" h="15" text="" />
 		
-		<label x="0" y="0" w="120" h="15" text="Playtime:" />
-		<label id="_time_here" x="100" y="0" rw="100" w="-120" h="15" text="" />
-	</window>
+		<label x="0" y="180" w="120" h="15" text="Playtime:" />
+		<label id="_time_here" x="120" y="180" rw="100" w="-120" h="15" text="" />
+	</label>
 </gui>

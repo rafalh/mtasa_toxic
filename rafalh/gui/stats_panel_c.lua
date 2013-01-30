@@ -11,6 +11,7 @@
 local g_Wnd, g_Anim, g_Visible
 local g_PosX, g_PosY = g_ScreenSize[1] - 230, (g_ScreenSize[2] - 280)/2
 local g_Width, g_Height = 220, 250
+local g_StatsView
 
 --------------------------------
 -- Local function definitions --
@@ -21,10 +22,10 @@ local function SpInitGui()
 	guiSetAlpha(g_Wnd, 0.8)
 	guiSetVisible(g_Wnd, false)
 	
-	StCreateGui(g_MyId, g_Wnd, 10, 25, g_Width - 20, g_Height - 35)
+	g_StatsView = StatsView.create(g_MyId, g_Wnd, 10, 25, g_Width - 20, g_Height - 35)
 end
 
-local function onClientInit()
+local function SpInit()
 	bindKey(g_ClientSettings.stats_panel_key, "up", openStatsPanel)
 end
 
@@ -32,7 +33,7 @@ end
 -- Global functions --
 ----------------------
 
-function openStatsPanel ()
+function openStatsPanel()
 	if(not g_Wnd) then
 		SpInitGui()
 	end
@@ -45,11 +46,11 @@ function openStatsPanel ()
 		g_Anim = Animation.createAndPlay(g_Wnd,
 			Animation.presets.guiMoveEx(g_ScreenSize[1] + g_Width, g_PosY, 500, "InQuad"),
 			Animation.presets.guiSetVisible(false))
-		StHideGui(g_Wnd)
+		g_StatsView:hide()
 	else -- show panel
 		guiSetVisible(g_Wnd, true)
 		g_Anim = Animation.createAndPlay(g_Wnd, Animation.presets.guiMoveEx(g_PosX, g_PosY, 500, "InOutQuad"))
-		StShowGui(g_Wnd)
+		g_StatsView:show()
 	end
 	g_Visible = not g_Visible
 end
@@ -58,4 +59,4 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler($(EV_CLIENT_INIT), onClientInit)
+addInternalEventHandler($(EV_CLIENT_INIT), SpInit)

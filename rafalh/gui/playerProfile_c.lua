@@ -15,17 +15,25 @@ end
 
 function ProfileView.onDestroy()
 	local self = g_WndToObj[source]
-	StDestroyGui(self.wnd)
+	self:destroy(true)
+end
+
+function ProfileView:destroy(ignoreEl)
+	self.statsView:destroy()
 	guiSetInputEnabled(false)
 	g_WndToObj[self.wnd] = nil
 	g_IdToObj[self.id] = nil
+	
+	if(not ignoreEl) then
+		destroyElement(self.wnd)
+	end
 end
 
 function ProfileView.create(id, name)
 	local self = setmetatable({}, ProfileView.__mt)
 	self.id = id
 	
-	local w, h = 420, 100 + StGetHeight()
+	local w, h = 420, 100 + StatsView.getHeight()
 	local x, y = ( g_ScreenSize[1] - w ) / 2, ( g_ScreenSize[2] - h ) / 2
 	self.wnd = guiCreateWindow(x, y, w, h, "Player profile", false)
 	guiSetVisible(self.wnd, false)
@@ -38,7 +46,7 @@ function ProfileView.create(id, name)
 	guiSetFont(statsLabel, "default-bold-small")
 	guiLabelSetColor(statsLabel, 255, 255, 128)
 	
-	StCreateGui(id, self.wnd, 10, 60, 240, h - 80)
+	self.statsView = StatsView.create(id, self.wnd, 10, 60, 240, h - 80)
 	
 	local infoLabel = guiCreateLabel(250, 45, 100, 15, "Information", false, self.wnd)
 	guiSetFont(infoLabel, "default-bold-small")

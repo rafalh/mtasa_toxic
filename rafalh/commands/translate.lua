@@ -2,7 +2,7 @@ local g_Queries = {}
 local g_BingAppId = "3F57A5F6F90AA286DB6B0557CC897B1C4C88206E"
 local g_Langs = false
 
-addEvent ("onHttpResult")
+addEvent("onHttpResult")
 
 local function onTranslateResult (new_text, old_text, lang_to)
 	if (new_text == "ERROR" or not new_text) then
@@ -72,9 +72,9 @@ local function translate (text, from, to, callback, ...)
 	return true
 end
 
-local function CmdTranslate (message, arg)
+local function CmdTranslate(message, arg)
 	local lang = arg[2] or ""
-	local text = message:sub (arg[1]:len () + lang:len () + 3)
+	local text = message:sub(arg[1]:len () + lang:len () + 3)
 	
 	if (text ~= "") then
 		if (validateLangCode (lang)) then
@@ -130,10 +130,10 @@ end
 CmdRegister ("tsay", CmdTranslateSay, false, "Translate message and says it")
 
 -- FIXME
-addEvent ("onTranslateReq", true)
-addEvent ("onTranslateLangListReq", true)
-addEvent ("onClientTranslate", true)
-addEvent ("onClientTranslateLangList", true)
+addEvent("onTranslateReq", true)
+addEvent("onTranslateLangListReq", true)
+addEvent("onClientTranslate", true)
+addEvent("onClientTranslateLangList", true)
 
 local function onTranslateReq (text, from, to, say)
 	translate (text, from, to, function (text, player)
@@ -168,5 +168,5 @@ local function onTranslateLangListReq ()
 	end
 end
 
-addEventHandler ("onTranslateReq", g_Root, onTranslateReq)
-addEventHandler ("onTranslateLangListReq", g_Root, onTranslateLangListReq)
+addEventHandler("onTranslateReq", g_Root, onTranslateReq)
+addEventHandler("onTranslateLangListReq", g_Root, onTranslateLangListReq)
