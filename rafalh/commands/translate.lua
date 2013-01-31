@@ -144,6 +144,8 @@ local function onTranslateReq (text, from, to, say)
 		end
 		triggerClientEvent (player, "onClientTranslate", g_Root, text)
 	end, client)
+	
+	AchvActivate(client, "Try built-in translator")
 end
 
 local function onTranslateLangList (data, player)

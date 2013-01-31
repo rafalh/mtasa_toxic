@@ -11,6 +11,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	local player_id = touint(player)
 	if(player_id) then
 		table.insert(cond, "player="..player_id)
+		limit = 1
 	elseif(player) then
 		table.insert(cond, "name LIKE "..DbStr("%"..tostring(player).."%"))
 	end
@@ -27,7 +28,6 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	local players_count = rows[1].c
 	
 	local query = "SELECT player, cash, points, "..
-		"dm, dm_wins, first, second, third,"..
 		"dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesPlayed,"..
 		"time_here, first_visit, last_visit, bidlvl, name, toptimes_count, online, ip "..
 		"FROM rafalh_players"..where

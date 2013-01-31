@@ -8,7 +8,7 @@
 -- Local variables --
 ---------------------
 
-local PANEL_COLUMNS = 3
+local PANEL_COLUMNS = 4
 local PANEL_ALPHA = 0.9
 local ITEM_W = 100
 local ITEM_H = 100
@@ -134,6 +134,7 @@ end
 local function UpShow()
 	if(not g_Wnd) then
 		UpCreateGui()
+		AchvActivate("Open User Panel")
 	end
 	
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)

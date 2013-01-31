@@ -36,6 +36,7 @@ end
 function openStatsPanel()
 	if(not g_Wnd) then
 		SpInitGui()
+		AchvActivate("Open Statistics Panel")
 	end
 	
 	if(g_Anim) then

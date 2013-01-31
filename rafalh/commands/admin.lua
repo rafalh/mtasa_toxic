@@ -446,20 +446,6 @@ end
 CmdRegister ("findaccountsip", CmdFindAccountsIp, "resource.rafalh.findaccounts")
 CmdRegisterAlias ("findaccip", "findaccountsip")
 
-local function CmdAccountLastVisit (message, arg)
-	local id = touint (arg[2])
-	if (id) then
-		local rows = DbQuery ("SELECT last_visit FROM rafalh_players WHERE player=?", id)
-		if (rows and rows[1]) then
-			local time = getRealTime (rows[1].last_visit)
-			scriptMsg ("Account last visit: %d-%02d-%02d %d:%02d:%02d.", time.monthday, time.month + 1, time.year + 1900, time.hour, time.minute, time.second)
-		else privMsg (source, "Cannot find account %u!", id) end
-	else privMsg (source, "Usage: %s", arg[1].." <account ID>") end
-end
-
-CmdRegister ("accountlastvisit", CmdAccountLastVisit, "resource.rafalh.findaccounts")
-CmdRegisterAlias ("alastvisit", "accountlastvisit")
-
 local function CmdFindLostAccount (message, arg)
 	if (#arg >= 2) then
 		local player = findPlayer (message:sub (arg[1]:len () + 2))
@@ -683,7 +669,7 @@ end
 
 CmdRegister ("sqlquery", CmdSqlQuery, true)
 
-local function CmdMapId (message, arg)
+local function CmdMapId(message, arg)
 	local room = g_Players[source].room
 	local map = getCurrentMap(room)
 	scriptMsg("Map ID: %u", map:getId())

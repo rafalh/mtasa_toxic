@@ -7,12 +7,12 @@ ListView.style.normal = {clr = {196, 196, 196}, a = 0.8, fnt = "default-normal"}
 ListView.style.hover = {clr = {255, 255, 255}, a = 1, fnt = "default-normal"}
 ListView.style.active = {clr = {255, 255, 255}, a = 1, fnt = "default-bold-small"}
 
-function ListView:addItem(name, img, id)
+function ListView:addItem(name, img, id, style)
 	local idxX = #self.items % self.cols
 	local idxY = math.floor(#self.items/self.cols)
 	local x, y = idxX*self.itemSize[1], idxY*self.itemSize[2]
 	local w, h = self.itemSize[1], self.itemSize[2]
-	local item = {title = name, id = id}
+	local item = {title = name, id = id, style = style or self.style}
 	
 	item.el = guiCreateLabel(x, y, w, h, "", false, self.el)
 	self.itemsMap[item.el] = item
@@ -23,32 +23,34 @@ function ListView:addItem(name, img, id)
 	local imgX, imgY = (w - self.imgSize[1])/2, 5
 	local imgPath = img or "img/empty.png"
 	item.imgEl = guiCreateStaticImage(imgX, imgY, self.imgSize[1], self.imgSize[2], imgPath, false, item.el)
-	guiSetAlpha(item.imgEl, self.style.normal.a)
+	guiSetAlpha(item.imgEl, item.style.normal.a)
 	
 	local titleX, titleY = 0, 10 + self.imgSize[2]
 	local titleW, titleH = w, h - 10 - self.imgSize[2]
 	item.titleEl = guiCreateLabel(titleX, titleY, titleW, titleH, name, false, item.el)
 	guiLabelSetHorizontalAlign(item.titleEl, "center", true)
-	guiLabelSetColor(item.titleEl, unpack(self.style.normal.clr))
-	guiSetFont(item.titleEl, self.style.normal.fnt)
+	guiLabelSetColor(item.titleEl, unpack(item.style.normal.clr))
+	guiSetFont(item.titleEl, item.style.normal.fnt)
 	
 	table.insert(self.items, item)
-	self.idToItem[item.id] = item
+	if(item.id) then
+		self.idToItem[item.id] = item
+	end
 end
 
 function ListView:setActiveItem(id)
 	if(self.activeItem) then
-		guiSetAlpha(self.activeItem.imgEl, self.style.normal.a)
-		guiLabelSetColor(self.activeItem.titleEl, unpack(self.style.normal.clr))
-		guiSetFont(self.activeItem.titleEl, self.style.normal.fnt)
+		guiSetAlpha(self.activeItem.imgEl, self.activeItem.style.normal.a)
+		guiLabelSetColor(self.activeItem.titleEl, unpack(self.activeItem.style.normal.clr))
+		guiSetFont(self.activeItem.titleEl, self.activeItem.style.normal.fnt)
 	end
 	
 	local item = self.idToItem[id]
 	self.activeItem = item
 	if(item) then
-		guiSetAlpha(item.imgEl, self.style.active.a)
-		guiLabelSetColor(item.titleEl, unpack(self.style.active.clr))
-		guiSetFont(item.titleEl, self.style.active.fnt)
+		guiSetAlpha(item.imgEl, item.style.active.a)
+		guiLabelSetColor(item.titleEl, unpack(item.style.active.clr))
+		guiSetFont(item.titleEl, item.style.active.fnt)
 	end
 end
 
@@ -70,6 +72,16 @@ function ListView:setItemImg(id, img)
 	local item = self.idToItem[id]
 	local imgPath = img or "img/empty.png"
 	guiStaticImageLoadImage(item.imgEl, imgPath)
+end
+
+function ListView:setItemStyle(id, style)
+	local item = self.idToItem[id]
+	item.style = style or self.style
+	
+	local subStyle = self.activeItem == item and item.style.active or item.style.normal
+	guiSetAlpha(item.imgEl, subStyle.a)
+	guiLabelSetColor(item.titleEl, unpack(subStyle.clr))
+	guiSetFont(item.titleEl, subStyle.fnt)
 end
 
 function ListView:setFilter(filter)
@@ -143,9 +155,9 @@ function ListView.onMouseEnter()
 	
 	if(self.activeItem == item) then return end -- nothing to do
 	
-	guiLabelSetColor(item.titleEl, unpack(self.style.hover.clr))
-	guiSetAlpha(item.imgEl, self.style.hover.a)
-	guiSetFont(item.titleEl, self.style.hover.fnt)
+	guiLabelSetColor(item.titleEl, unpack(item.style.hover.clr))
+	guiSetAlpha(item.imgEl, item.style.hover.a)
+	guiSetFont(item.titleEl, item.style.hover.fnt)
 end
 
 function ListView.onMouseLeave()
@@ -156,9 +168,9 @@ function ListView.onMouseLeave()
 	
 	if(self.activeItem == item) then return end -- nothing to do
 	
-	guiSetAlpha(item.imgEl, self.style.normal.a)
-	guiLabelSetColor(item.titleEl, unpack(self.style.normal.clr))
-	guiSetFont(item.titleEl, self.style.normal.fnt)
+	guiSetAlpha(item.imgEl, item.style.normal.a)
+	guiLabelSetColor(item.titleEl, unpack(item.style.normal.clr))
+	guiSetFont(item.titleEl, item.style.normal.fnt)
 end
 
 function ListView.onMouseClick()
@@ -174,6 +186,6 @@ function ListView.onMouseWheel(upOrDown)
 	if(not self) then return end -- if mouse wheel is used over the scrollPane it is handled properly
 	
 	local pos = guiScrollPaneGetVerticalScrollPosition(self.el)
-	pos = pos - upOrDown * 50
+	pos = pos - upOrDown * 20
 	guiScrollPaneSetVerticalScrollPosition(self.el, pos)
 end

@@ -2,7 +2,7 @@ local g_Wnd = false
 local g_RadioImg, g_RadioName
 local g_VolumeImg, g_VolumeBar
 local g_List, g_TurnOffBtn
-local g_Sound, g_Url, g_Volume, g_AutoStart = false, false, 100, true
+local g_Sound, g_Url, g_Volume = false, false, 100
 local g_Muted, g_Filter = false, ""
 local g_IgnoreFilterChange = true
 local g_LastWarning = 0
@@ -43,9 +43,7 @@ local function startRadio ( url )
 	setRadioChannel ( 0 )
 	
 	g_Url = url
-	if(g_AutoStart) then
-		g_ClientSettings.radio_channel = url
-	end
+	g_ClientSettings.radio_channel = url
 	
 	if(not g_Muted) then
 		g_Sound = playSound ( url, true )
@@ -53,6 +51,8 @@ local function startRadio ( url )
 			setSoundVolume ( g_Sound, g_Volume / 100 )
 		end
 	end
+	
+	AchvActivate("Try built-in radio")
 end
 
 local function stopRadio()
@@ -140,35 +140,35 @@ local function onFilterChange()
 	g_List:setFilter(g_Filter)
 end
 
-local function createGui ( parent )
-	g_Wnd = parent
-	local w, h = guiGetSize ( g_Wnd, false )
+local function createGui(panel)
+	g_Wnd = panel
+	local w, h = guiGetSize(panel, false)
 	
-	g_RadioImg = guiCreateStaticImage(10, 10, 48, 48, "img/no_img.png", false, g_Wnd)
-	g_RadioName = guiCreateLabel(65, 10, w - 75, 15, "Select radio channel", false, g_Wnd)
+	g_RadioImg = guiCreateStaticImage(10, 10, 48, 48, "img/no_img.png", false, panel)
+	g_RadioName = guiCreateLabel(65, 10, w - 75, 15, "Select radio channel", false, panel)
 	guiSetFont(g_RadioName, "default-bold-small")
 	
-	g_VolumeImg = guiCreateStaticImage ( 65, 30, 24, 24, "img/volume.png", false, g_Wnd )
-	addEventHandler ( "onClientGUIClick", g_VolumeImg, onVolumeClick, false )
-	g_VolumeBar = guiCreateScrollBar ( 95, 32, w - 105, 20, true, false, g_Wnd )
-	guiScrollBarSetScrollPosition ( g_VolumeBar, g_Volume )
-	addEventHandler ( "onClientGUIScroll", g_VolumeBar, onVolumeChange )
+	g_VolumeImg = guiCreateStaticImage ( 65, 30, 24, 24, "img/volume.png", false, panel)
+	addEventHandler("onClientGUIClick", g_VolumeImg, onVolumeClick, false)
+	g_VolumeBar = guiCreateScrollBar(95, 32, w - 105, 20, true, false, panel)
+	guiScrollBarSetScrollPosition(g_VolumeBar, g_Volume)
+	addEventHandler("onClientGUIScroll", g_VolumeBar, onVolumeChange)
 	
-	g_SearchBox = guiCreateEdit(10, 65, 150, 25, MuiGetMsg("Search..."), false, g_Wnd)
+	g_SearchBox = guiCreateEdit(10, 65, 150, 25, MuiGetMsg("Search..."), false, panel)
 	addEventHandler("onClientGUIFocus", g_SearchBox, onFilterFocus, false)
 	addEventHandler("onClientGUIBlur", g_SearchBox, onFilterBlur, false)
 	addEventHandler("onClientGUIChanged", g_SearchBox, onFilterChange, false)
 	
-	g_TurnOffBtn = guiCreateButton(w - 110, 65, 100, 25, "Turn off", false, g_Wnd)
+	g_TurnOffBtn = guiCreateButton(w - 110, 65, 100, 25, "Turn off", false, panel)
 	guiSetVisible(g_TurnOffBtn, g_Sound and true)
-	addEventHandler ( "onClientGUIClick", g_TurnOffBtn, onTurnOffClick, false)
+	addEventHandler("onClientGUIClick", g_TurnOffBtn, onTurnOffClick, false)
 	
 	g_Channels = loadChannels ()
 	
-	g_List = ListView.create({10, 100}, {w - 20, h - 140}, g_Wnd)
+	g_List = ListView.create({10, 100}, {w - 20, h - 140}, panel)
 	g_List.onClickHandler = onChannelClick
 	
-	for i, ch in ipairs ( g_Channels ) do
+	for i, ch in ipairs(g_Channels) do
 		local imgPath = ch.img and "img/radio/"..ch.img or "img/no_img.png"
 		g_List:addItem(ch.name, imgPath, i)
 		
@@ -179,19 +179,19 @@ local function createGui ( parent )
 		end
 	end
 	
-	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, g_Wnd)
+	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
 	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
-function RadioPanel.onShow ( tab )
-	if ( not g_Wnd ) then
-		g_Wnd = tab
-		createGui ( tab )
+function RadioPanel.onShow(panel)
+	if(not g_Wnd) then
+		g_Wnd = panel
+		createGui(panel)
 	end
 end
 
-function RadioPanel.onHide ()
-	saveSettings ()
+function RadioPanel.onHide()
+	saveSettings()
 end
 
 local function onRadioSwitch ( channel )

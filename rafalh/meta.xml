@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.44" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.45" description="Rafalh Scripts System"   />
 	
 	<!--script src="debug.lua" type="client" /-->
 	
@@ -21,47 +21,48 @@
 	<script src="main_c.lua" type="client" />
 	<script src="player.lua" />
 	
-	<script src="commands/commands.lua" />
-	<script src="mui.lua" />
+	<script src="commands/commands.lua" type="server" />
+	<script src="mui.lua" type="server" />
 	<script src="mui_c.lua" type="client" />
-	<script src="accounts.lua" />
-	<script src="anticheat.lua" />
-	<script src="antilag.lua" />
-	<script src="anticamp.lua" />
-	<script src="antispam.lua" />
-	<script src="alias.lua" />
-	<script src="avg_players.lua" />
-	<script src="besttimes.lua" />
+	<script src="accounts.lua" type="server" />
+	<script src="achievements.lua" type="server" />
+	<script src="anticheat.lua" type="server" />
+	<script src="antilag.lua" type="server" />
+	<script src="anticamp.lua" type="server" />
+	<script src="antispam.lua" type="server" />
+	<script src="alias.lua" type="server" />
+	<script src="avg_players.lua" type="server" />
+	<script src="besttimes.lua" type="server" />
 	<script src="carhide_c.lua" type="client" />
-	<script src="censor.lua" />
-	<script src="chat.lua" />
+	<script src="censor.lua" type="server" />
+	<script src="chat.lua" type="server" />
 	<script src="chat_c.lua" type="client" />
 	<script src="effects_c.lua" type="client" />
-	<script src="gambling.lua" />
-	<script src="ghostmode.lua" />
+	<script src="gambling.lua" type="server" />
+	<script src="ghostmode.lua" type="server" />
 	<script src="ghostmode_c.lua" type="client" />
 	<script src="glass_c.lua" type="client" />
-	<script src="http.lua" />
-	<script src="langs.lua" />
-	<script src="room.lua" />
-	<script src="map.lua" />
-	<script src="maps.lua" />
-	<script src="map_queue.lua" />
-	<script src="nickblocker.lua" />
-	<script src="profiles.lua" />
-	<script src="shop.lua" />
-	<script src="shop_items.lua" />
+	<script src="http.lua" type="server" />
+	<script src="langs.lua" type="server" />
+	<script src="room.lua" type="server" />
+	<script src="map.lua" type="server" />
+	<script src="maps.lua" type="server" />
+	<script src="map_queue.lua" type="server" />
+	<script src="nickblocker.lua" type="server" />
+	<script src="profiles.lua" type="server" />
+	<script src="shop.lua" type="server" />
+	<script src="shop_items.lua" type="server" />
 	<script src="shop_items_c.lua" type="client" />
-	<script src="stats.lua" />
-	<script src="stunt.lua" />
-	<script src="sync.lua" />
-	<script src="spectators.lua" />
-	<script src="teams.lua" />
-	<script src="rate.lua" />
-	<script src="rec.lua" />
+	<script src="stats.lua" type="server" />
+	<script src="stunt.lua" type="server" />
+	<script src="sync.lua" type="server" />
+	<script src="spectators.lua" type="server" />
+	<script src="teams.lua" type="server" />
+	<script src="rate.lua" type="server" />
+	<script src="rec.lua" type="server" />
 	<script src="rec_c.lua" type="client" />
-	<script src="votes.lua" />
-	<script src="winevents.lua" />
+	<script src="votes.lua" type="server" />
+	<script src="winevents.lua" type="server" />
 	<script src="win_anim_c.lua"  type="client" />
 	<script src="water_fix_c.lua" type="client" />
 	
@@ -103,6 +104,7 @@
 	<script src="gui/playersList_c.lua" type="client" />
 	<script src="gui/playerProfile_c.lua" type="client" />
 	<script src="gui/shop_c.lua" type="client" />
+	<script src="gui/achievements_c.lua" type="client" />
 	<script src="gui/translate_c.lua" type="client" />
 	<script src="gui/radio_c.lua" type="client" />
 	<script src="gui/settings_c.lua" type="client" />
@@ -112,6 +114,9 @@
 	<script src="gui/listView_c.lua" type="client" />
 	<script src="gui/login_c.lua" type="client" />
 	<script src="gui/register_c.lua" type="client" />
+	
+	<script src="achievementsList_sc.lua" type="server" />
+	<script src="achievementsList_sc.lua" type="client" />
 	
 	<script src="stop.lua" />
 	
@@ -158,11 +163,14 @@
 	<file src="img/login.png" />
 	<file src="img/register.png" />
 	<file src="img/chgPw.png" />
+	<file src="img/locked.png" />
+	<file src="img/beta.png" />
 	
 	<file src="img/userpanel/stats.png" />
 	<file src="img/userpanel/profile.png" />
 	<file src="img/userpanel/users.png" />
 	<file src="img/userpanel/shop.png" />
+	<file src="img/userpanel/achievements.png" />
 	<file src="img/userpanel/translator.png" />
 	<file src="img/userpanel/music.png" />
 	<file src="img/userpanel/options.png" />

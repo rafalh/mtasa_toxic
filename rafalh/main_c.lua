@@ -33,7 +33,7 @@ local function onClientThisResourceStart(res)
 		bindKey("k", "down", suicide)
 	end
 	
-	triggerServerInternalEvent($(EV_RAFALH_START), g_Me)
+	triggerServerEvent("main.onPlayerReady", g_ResRoot)
 end
 
 local function onClientResourceStart(res)

@@ -70,10 +70,11 @@ local function createGui(panel)
 	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
-function AboutPanel.onShow ( panel )
-	if ( not g_Tab ) then
+function AboutPanel.onShow(panel)
+	if(not g_Tab) then
 		g_Tab = panel
-		createGui ( g_Tab )
+		createGui(g_Tab)
+		AchvActivate("Read about the server")
 	end
 end
 

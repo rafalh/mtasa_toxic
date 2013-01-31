@@ -82,6 +82,7 @@ local function setupDatabase ()
 			"drowned INTEGER DEFAULT 0 NOT NULL,"..
 			"locked_nick BOOL DEFAULT 0 NOT NULL,"..
 			"invitedby INTEGER DEFAULT 0 NOT NULL,"..
+			"achievements BLOB DEFAULT x'' NOT NULL,"..
 			
 			-- New stats
 			"maxWinStreak INTEGER DEFAULT 0 NOT NULL,"..
@@ -92,6 +93,7 @@ local function setupDatabase ()
 			"dmVictories INTEGER DEFAULT 0 NOT NULL,"..
 			"ddVictories INTEGER DEFAULT 0 NOT NULL,"..
 			"raceVictories INTEGER DEFAULT 0 NOT NULL,"..
+			"racesFinished INTEGER DEFAULT 0 NOT NULL,"..
 			"dmPlayed INTEGER DEFAULT 0 NOT NULL,"..
 			"ddPlayed INTEGER DEFAULT 0 NOT NULL,"..
 			"racesPlayed INTEGER DEFAULT 0 NOT NULL,"..
@@ -187,7 +189,7 @@ local function setupDatabase ()
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local current_ver = 141
+	local current_ver = 143
 	local ver = SmGetUInt ( "version", current_ver )
 	if ( ver == 0 ) then
 		ver = touint ( get ( "version" ) ) or current_ver
@@ -248,6 +250,16 @@ local function setupDatabase ()
 		if(not err and ver < 141) then
 			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN dmVictories INTEGER DEFAULT 0 NOT NULL")) then
 				err = "Failed to add dmVictories column."
+			end
+		end
+		if(not err and ver < 142) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN achievements BLOB DEFAULT x'' NOT NULL")) then
+				err = "Failed to add achievements column."
+			end
+		end
+		if(not err and ver < 143) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN racesFinished INTEGER DEFAULT 0 NOT NULL")) then
+				err = "Failed to add racesFinished column."
 			end
 		end
 		

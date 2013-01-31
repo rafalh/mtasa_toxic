@@ -365,20 +365,19 @@ local function onPlayerFinish(rank, ms)
 	local map = getCurrentMap(room)
 	local map_id = map:getId()
 	
-	if (rank <= 3) then
+	if(rank <= 3) then
 		local rank_str = ({ "first", "second", "third" })[rank]
-		local val = StGet (source, rank_str) + 1
+		local val = StGet(source, rank_str) + 1
 		StSet(source, rank_str, val)
 	end
 	
-	--local rows = DbQuery ("SELECT time FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 1", map_id)
-	--scriptMsg (rank..th.." "..getPlayerName (source).." - "..formatTimePeriod (ms / 1000)..((rows and rows[1] and rows[1].time < ms and " (+"..formatTimePeriod ((ms - rows[1].time) / 1000)..")") or ""))
+	StAdd(source, "racesFinished", 1)
 	
-	local n = handlePlayerTime (source, ms)
+	local n = handlePlayerTime(source, ms)
 	
-	RcFinishRecordingPlayer (source, ms, map_id, n >= 1)
+	RcFinishRecordingPlayer(source, ms, map_id, n >= 1)
 	
-	setPlayerFinalRank (source, rank)
+	setPlayerFinalRank(source, rank)
 end
 
 local function onPlayerWinDD()

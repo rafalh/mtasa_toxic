@@ -8,6 +8,8 @@
 -- Local function definitions --
 --------------------------------
 
+addEvent("main.onPlayerReady", true)
+
 local function onPlayerJoin ()
 	local player = Player.create(source) -- name can change here
 	player.new = true
@@ -32,22 +34,22 @@ local function onPlayerJoin ()
 	end
 end
 
-local function onPlayerPMRequest ( msg, recipient )
-	if ( isPlayerMuted ( source ) ) then
-		outputChatBox ( "pm: You are muted", source, 255, 128, 0 )
+local function onPlayerPMRequest(msg, recipient)
+	if(isPlayerMuted(source)) then
+		outputChatBox("pm: You are muted", source, 255, 128, 0)
 	else
-		outputChatBox ( "PM from "..getPlayerName ( source ):gsub ( "#%x%x%x%x%x%x", "" )..": "..msg, recipient, 255, 96, 96 )
-		triggerClientInternalEvent ( recipient, $(EV_CLIENT_PLAYER_PM), source, msg )
+		outputChatBox("PM from "..getPlayerName ( source ):gsub ( "#%x%x%x%x%x%x", "" )..": "..msg, recipient, 255, 96, 96)
+		triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), source, msg)
 	end
 end
 
-local function onPlayerPrivateMessage ( msg, recipient )
-	triggerClientInternalEvent ( recipient, $(EV_CLIENT_PLAYER_PM), source, msg )
+local function onPlayerPrivateMessage(msg, recipient)
+	triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), source, msg)
 end
 
-local function onPlayerChangeNick ( oldNick, newNick )
+local function onPlayerChangeNick(oldNick, newNick)
 	local pdata = g_Players[source]
-	if(wasEventCancelled () or not pdata) then
+	if(wasEventCancelled() or not pdata) then
 		return
 	end
 	
@@ -82,20 +84,20 @@ local function onPlayerChangeNick ( oldNick, newNick )
 	end
 end
 
-local function onPlayerChat ( message, messageType )
-	if ( wasEventCancelled () ) then return end
+local function onPlayerChat(message, messageType)
+	if(wasEventCancelled()) then return end
 	
-	local message2 = message:gsub ( "#%x%x%x%x%x%x", "" )
-	if ( message2:gsub ( " ", "" ) == "" ) then
-		cancelEvent ()
+	local message2 = message:gsub("#%x%x%x%x%x%x", "")
+	if(message2:gsub(" ", "") == "") then
+		cancelEvent()
 		return
 	end
 	
 	local arg = split ( message, ( " " ):byte () ) -- defined in other place
 	local cmd = arg[1]:lower () -- defined in other place
 	
-	local str = cmd:match ( "[^%w]?(%w)" )
-	if ( ( str == "login" or str == "register" ) and arg[2] ) then -- never display someone's password
+	local str = cmd:match("[^%w]?(%w)")
+	if((str == "login" or str == "register") and arg[2]) then -- never display someone's password
 		privMsg ( source, "DON'T USE \""..arg[1].."\" anymore!!! It could show your password to everybody. Type /"..str.." <password> instead." )
 		cancelEvent ()
 		return
@@ -169,7 +171,7 @@ local function onPlayerChat ( message, messageType )
 	--end
 end
 
-local function onRafalhStart()
+local function onPlayerReady()
 	local pdata = g_Players[client]
 	pdata.sync = true
 	
@@ -221,6 +223,6 @@ addEventHandler("onPlayerJoin", g_Root, onPlayerJoin)
 addEventHandler("onPlayerPrivateMessage", g_Root, onPlayerPrivateMessage)
 addEventHandler("onPlayerChangeNick", g_Root, onPlayerChangeNick)
 addEventHandler("onPlayerChat", g_Root, onPlayerChat)
-addInternalEventHandler($(EV_RAFALH_START), onRafalhStart)
+addEventHandler("main.onPlayerReady", g_ResRoot, onPlayerReady)
 addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
 addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)

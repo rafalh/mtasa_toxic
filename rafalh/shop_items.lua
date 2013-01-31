@@ -89,7 +89,8 @@ local SelfDestrItem = {
 	cost = 500000,
 	field = "selfdestr",
 	onBuy = function ( player, val )
-		return DbQuery ( "UPDATE rafalh_players SET selfdestr=selfdestr+1 WHERE player=?", g_Players[player].id )
+		AchvActivate(player, "Buy a weapon")
+		return DbQuery("UPDATE rafalh_players SET selfdestr=selfdestr+1 WHERE player=?", g_Players[player].id)
 	end,
 	onUse = function ( player, val )
 		local res = getResourceFromName ( "race" )
@@ -118,6 +119,7 @@ local MineItem = {
 	cost = 200000,
 	field = "mines",
 	onBuy = function ( player, val )
+		AchvActivate(player, "Buy a weapon")
 		return DbQuery ( "UPDATE rafalh_players SET mines=mines+1 WHERE player=?", g_Players[player].id )
 	end,
 	onUse = function ( player, val )
@@ -161,6 +163,7 @@ local OilItem = {
 	cost = 100000,
 	field = "oil",
 	onBuy = function ( player, val )
+		AchvActivate(player, "Buy a weapon")
 		return DbQuery ( "UPDATE rafalh_players SET oil=oil+1 WHERE player=?", g_Players[player].id )
 	end,
 	onUse = function ( player, val )
@@ -218,6 +221,7 @@ local InvisibilityItem = {
 	cost = 300000,
 	field = "invisibility",
 	onBuy = function ( player, val )
+		AchvActivate(player, "Buy a weapon")
 		return DbQuery ( "UPDATE rafalh_players SET invisibility=invisibility+1 WHERE player=?", g_Players[player].id )
 	end,
 	onUse = function ( player, val )
@@ -258,6 +262,7 @@ local GodmodeItem = {
 	cost = 300000,
 	field = "godmodes30",
 	onBuy = function ( player, val )
+		AchvActivate(player, "Buy a weapon")
 		return DbQuery ( "UPDATE rafalh_players SET godmodes30=godmodes30+1 WHERE player=?", g_Players[player].id )
 	end,
 	onUse = function ( player, val )
@@ -288,6 +293,7 @@ local ThunderItem = {
 	cost = 200000,
 	field = "thunders",
 	onBuy = function ( player, val )
+		AchvActivate(player, "Buy a weapon")
 		return DbQuery ( "UPDATE rafalh_players SET thunders=thunders+1 WHERE player=?", g_Players[player].id )
 	end,
 	onUse = function ( player, val )
@@ -338,6 +344,7 @@ local SmokeItem = {
 	cost = 100000,
 	field = "smoke",
 	onBuy = function ( player )
+		AchvActivate(player, "Buy a weapon")
 		return DbQuery ( "UPDATE rafalh_players SET smoke=smoke+1 WHERE player=?", g_Players[player].id )
 	end,
 	onUse = function ( player, val )
@@ -353,6 +360,9 @@ local SmokeItem = {
 		
 		DbQuery ( "UPDATE rafalh_players SET smoke=smoke-1 WHERE player=?", g_Players[player].id )
 		return true
+	end,
+	onSell = function(player, val)
+		return val > 0 and DbQuery("UPDATE rafalh_players SET smoke=smoke-1 WHERE player=?", g_Players[player].id)
 	end
 }
 
