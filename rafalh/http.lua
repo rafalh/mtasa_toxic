@@ -28,7 +28,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	local players_count = rows[1].c
 	
 	local query = "SELECT player, cash, points, "..
-		"dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesPlayed,"..
+		"dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesFinished, racesPlayed, mapsPlayed,"..
 		"time_here, first_visit, last_visit, bidlvl, name, toptimes_count, online, ip "..
 		"FROM rafalh_players"..where
 	if ( order ) then

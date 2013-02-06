@@ -30,7 +30,7 @@
 		<button id="guestBtn" rx="50" x="50" y="235" w="100" h="30" text="Play as guest" />
 	</window>
 	
-	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="290" sizeable="false">
+	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false">
 		<image rx="50" x="-32" y="25" w="64" h="64" src="img/register.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Register new account" align="center" />
@@ -47,8 +47,11 @@
 		<label x="10" y="215" w="120" h="20" text="Password strength:" />
 		<label id="pwStr" x="130" y="215" w="120" h="20" text="" />
 		
-		<button id="regBtn" rx="50" x="-145" y="250" w="140" h="25" text="Register" />
-		<button id="backBtn" rx="50" x="5" y="250" w="140" h="25" text="Back" />
+		<label x="10" y="245" w="120" h="20" text="E-Mail (optional):" />
+		<edit id="email" x="130" y="240" w="150" h="25" maxlen="128" />
+		
+		<button id="regBtn" rx="50" x="-145" ry="100" y="-35" w="140" h="25" text="Register" />
+		<button id="backBtn" rx="50" x="5" ry="100" y="-35" w="140" h="25" text="Back" />
 	</window>
 	
 	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false">

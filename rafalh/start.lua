@@ -54,7 +54,7 @@ local function setupDatabase ()
 	DbInit ()
 	local err = false
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_players ("..
 			"player INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"..
 			"serial VARCHAR(32) NOT NULL,"..
@@ -114,61 +114,61 @@ local function setupDatabase ()
 			"efectiveness REAL DEFAULT 0 NOT NULL,"..
 			"efectiveness_dd REAL DEFAULT 0 NOT NULL,"..
 			"efectiveness_dm REAL DEFAULT 0 NOT NULL,"..
-			"efectiveness_race REAL DEFAULT 0 NOT NULL)" ) ) then
+			"efectiveness_race REAL DEFAULT 0 NOT NULL)")) then
 		err = "Cannot create rafalh_players table."
 	end
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE INDEX IF NOT EXISTS rafalh_players_idx ON rafalh_players (account)" ) ) then
 		err = "Cannot create rafalh_players_idx index."
 	end
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_names ("..
 			"player INTEGER NOT NULL,"..
-			"name VARCHAR(32) NOT NULL)" ) ) then
+			"name VARCHAR(32) NOT NULL)")) then
 		err = "Cannot create rafalh_names table."
 	end
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE INDEX IF NOT EXISTS rafalh_names_idx ON rafalh_names (player)" ) ) then
 		err = "Cannot create rafalh_names_idx index."
 	end
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_rates ("..
 			"player INTEGER NOT NULL,"..
 			"map INTEGER NOT NULL,"..
-			"rate TINYINT NOT NULL)" ) ) then
+			"rate TINYINT NOT NULL)")) then
 		err = "Cannot create rafalh_rates table."
 	end
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE INDEX IF NOT EXISTS rafalh_rates_idx ON rafalh_rates (map)" ) ) then
 		err = "Cannot create rafalh_rates_idx index."
 	end
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_besttimes ("..
 			"player INTEGER NOT NULL,"..
 			"map INTEGER NOT NULL,"..
 			"time INTEGER NOT NULL,"..
 			"rec BLOB DEFAULT x'' NOT NULL,"..
 			"cp_times BLOB DEFAULT x'' NOT NULL,"..
-			"timestamp INTEGER)" ) ) then
+			"timestamp INTEGER)")) then
 		err = "Cannot create rafalh_besttimes table."
 	end
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE INDEX IF NOT EXISTS rafalh_besttimes_idx ON rafalh_besttimes (map)" ) ) then
 		err = "Cannot create rafalh_besttimes_idx index."
 	end
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_profiles ("..
 			"player INTEGER NOT NULL,"..
 			"field VARCHAR(64) NOT NULL,"..
-			"value VARCHAR(255) NOT NULL)" ) ) then
+			"value VARCHAR(255) NOT NULL)")) then
 		err = "Cannot create rafalh_profiles table."
 	end
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_maps ("..
 			"map INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"..
 			"name VARCHAR(255) NOT NULL,"..
@@ -176,77 +176,29 @@ local function setupDatabase ()
 			"rates INTEGER DEFAULT 0 NOT NULL,"..
 			"rates_count INTEGER DEFAULT 0 NOT NULL,"..
 			"removed VARCHAR(255) DEFAULT '' NOT NULL,"..
-			"played_timestamp NTEGER DEFAULT 0 NOT NULL)" ) ) then
+			"played_timestamp NTEGER DEFAULT 0 NOT NULL)")) then
 		err = "Cannot create rafalh_maps table."
 	end
 	
-	if ( not err and not DbQuery (
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_settings ("..
 			"version INTEGER DEFAULT 0 NOT NULL,"..
 			"avg_players REAL DEFAULT 0 NOT NULL,"..
 			"arit_avg_players_m INTEGER DEFAULT 0 NOT NULL,"..
-			"cleanup_done BOOL DEFAULT 0 NOT NULL)" ) ) then
+			"cleanup_done BOOL DEFAULT 0 NOT NULL)")) then
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local current_ver = 143
-	local ver = SmGetUInt ( "version", current_ver )
-	if ( ver == 0 ) then
-		ver = touint ( get ( "version" ) ) or current_ver
-		set ( "version", false )
-		SmSet ( "version", current_ver )
-		outputDebugString ( "Version: "..ver, 2 )
+	local currentVer = 144
+	local ver = SmGetUInt("version", currentVer)
+	if(ver == 0) then
+		ver = touint(get("version")) or currentVer
+		set("version", false)
+		SmSet("version", currentVer)
+		outputDebugString ("Version: "..ver, 2)
 	end
 	
-	if(ver < current_ver) then
-		if(not err and ver < 137) then
-			if (not DbRedefineTable("rafalh_besttimes",
-					"player INTEGER NOT NULL,"..
-					"map INTEGER NOT NULL,"..
-					"time INTEGER NOT NULL,"..
-					"rec BLOB DEFAULT x'' NOT NULL,"..
-					"cp_times BLOB DEFAULT x'' NOT NULL,"..
-					"timestamp INTEGER")) then
-				err = "Failed to modify rafalh_besttimes."
-			end
-		end
-		if(not err and ver < 138) then
-			if(not zlibCompress or not zlibUncompress) then
-				err = "Toxic module has not been loaded"
-			else
-				local co = coroutine.create(compressGhosts)
-				coroutine.resume(co)
-				if(coroutine.status(co) ~= "dead") then
-					g_CompressionTimer = setTimer(function()
-						coroutine.resume(co)
-						if(coroutine.status(co) == "dead") then
-							killTimer(g_CompressionTimer)
-							g_CompressionTimer = false
-						end
-					end, 100, 0)
-				end
-			end
-		end
-		if(not err and ver < 139) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapsPlayed INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapsBought INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapsRated INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN maxWinStreak INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN huntersTaken INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN ddVictories INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN raceVictories INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN dmPlayed INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN ddPlayed INTEGER DEFAULT 0 NOT NULL") or
-			   not DbQuery("ALTER TABLE rafalh_players ADD COLUMN racesPlayed INTEGER DEFAULT 0 NOT NULL")) then
-				err = "Failed to add columns."
-			end
-		end
-		if(not err and ver < 140) then
-			local rows = DbQuery("SELECT player, COUNT(rate) AS c FROM rafalh_rates GROUP BY player")
-			for i, data in ipairs(rows) do
-				DbQuery("UPDATE rafalh_players SET mapsRated=? WHERE player=?", data.c, data.player)
-			end
-		end
+	if(ver < currentVer) then
 		if(not err and ver < 141) then
 			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN dmVictories INTEGER DEFAULT 0 NOT NULL")) then
 				err = "Failed to add dmVictories column."
@@ -262,15 +214,20 @@ local function setupDatabase ()
 				err = "Failed to add racesFinished column."
 			end
 		end
+		if(not err and ver < 144) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN email VARCHAR(128) DEFAULT '' NOT NULL")) then
+				err = "Failed to add email column."
+			end
+		end
 		
 		if(not err) then
-			SmSet("version", current_ver)
-			outputDebugString("Database update ("..ver.." -> "..current_ver..") succeeded", 2)
+			SmSet("version", currentVer)
+			outputDebugString("Database update ("..ver.." -> "..currentVer..") succeeded", 2)
 		end
 	end
 	
 	if(err) then
-		outputDebugString("Database update ("..ver.." -> "..current_ver..") failed: "..tostring(err), 1)
+		outputDebugString("Database update ("..ver.." -> "..currentVer..") failed: "..tostring(err), 1)
 		return false
 	end
 	
@@ -308,37 +265,37 @@ local function setupACL()
 	return true
 end
 
-local function LoadCountries ()
-	local node, i = xmlLoadFile ( "conf/countries.xml" ), 0
-	if ( node ) then
-		while ( true ) do
-			local subnode = xmlFindChild ( node, "country", i )
-			if ( not subnode ) then break end
+local function LoadCountries()
+	local node, i = xmlLoadFile("conf/countries.xml"), 0
+	if(node) then
+		while(true) do
+			local subnode = xmlFindChild (node, "country", i)
+			if(not subnode) then break end
 			i = i + 1
 			
-			local code = xmlNodeGetAttribute ( subnode, "code" )
-			local name = xmlNodeGetAttribute ( subnode, "name" )
-			assert ( code and name )
+			local code = xmlNodeGetAttribute(subnode, "code")
+			local name = xmlNodeGetAttribute(subnode, "name")
+			assert(code and name)
 			g_Countries[code:upper ()] = name
 		end
-		xmlUnloadFile ( node )
+		xmlUnloadFile(node)
 	end
 end
 
-local function LoadLanguages ()
-	local node, i = xmlLoadFile ( "conf/iso_langs.xml" ), 0
-	if ( node ) then
-		while ( true ) do
-			local subnode = xmlFindChild ( node, "lang", i )
-			if ( not subnode ) then break end
+local function LoadLanguages()
+	local node, i = xmlLoadFile("conf/iso_langs.xml"), 0
+	if(node) then
+		while(true) do
+			local subnode = xmlFindChild(node, "lang", i)
+			if(not subnode) then break end
 			i = i + 1
 			
-			local code = xmlNodeGetAttribute ( subnode, "code" )
-			local name = xmlNodeGetValue ( subnode )
-			assert ( code and name )
+			local code = xmlNodeGetAttribute(subnode, "code")
+			local name = xmlNodeGetValue(subnode)
+			assert(code and name)
 			g_IsoLangs[code:upper ()] = name
 		end
-		xmlUnloadFile ( node )
+		xmlUnloadFile(node)
 	end
 end
 

@@ -1,4 +1,4 @@
-local g_Wnd = false
+local g_Panel = false
 local g_RadioImg, g_RadioName
 local g_VolumeImg, g_VolumeBar
 local g_List, g_TurnOffBtn
@@ -15,40 +15,42 @@ local RadioPanel = {
 
 local function loadChannels ()
 	local channels = {}
-	local node, i = xmlLoadFile ( "conf/radio.xml" ), 0
-	if ( node ) then
-		while ( true ) do
-			local subnode = xmlFindChild ( node, "channel", i )
-			if ( not subnode ) then break end
+	local node, i = xmlLoadFile("conf/radio.xml"), 0
+	if(node) then
+		while(true) do
+			local subnode = xmlFindChild(node, "channel", i)
+			if(not subnode) then break end
 			i = i + 1
 			
 			local ch = {}
-			ch.name = xmlNodeGetAttribute ( subnode, "name" )
-			ch.img = xmlNodeGetAttribute ( subnode, "img" )
-			ch.url = xmlNodeGetValue ( subnode )
-			assert ( ch.name and ch.url )
+			ch.name = xmlNodeGetAttribute(subnode, "name")
+			ch.img = xmlNodeGetAttribute(subnode, "img")
+			ch.url = xmlNodeGetValue(subnode)
+			assert(ch.name and ch.url)
 			
-			table.insert ( channels, ch )
+			table.insert(channels, ch)
 		end
 		
-		xmlUnloadFile ( node )
+		xmlUnloadFile(node)
+	else
+		outputDebugString("Failed to load radio channnels list", 2)
 	end
 	
-	table.sort ( channels, function ( ch1, ch2 ) return ch1.name < ch2.name end )
+	table.sort(channels, function(ch1, ch2) return ch1.name < ch2.name end)
 	
 	return channels
 end
 
-local function startRadio ( url )
-	setRadioChannel ( 0 )
+local function startRadio(url)
+	setRadioChannel(0)
 	
 	g_Url = url
 	g_ClientSettings.radio_channel = url
 	
 	if(not g_Muted) then
-		g_Sound = playSound ( url, true )
-		if ( g_Sound ) then
-			setSoundVolume ( g_Sound, g_Volume / 100 )
+		g_Sound = playSound(url, true)
+		if(g_Sound) then
+			setSoundVolume(g_Sound, g_Volume / 100)
 		end
 	end
 	
@@ -56,8 +58,8 @@ local function startRadio ( url )
 end
 
 local function stopRadio()
-	if ( g_Sound ) then
-		stopSound ( g_Sound )
+	if(g_Sound) then
+		stopSound(g_Sound)
 		g_Sound = false
 	end
 end
@@ -96,9 +98,9 @@ local function setMuted(muted)
 end
 
 local function onVolumeChange()
-	g_Volume = guiScrollBarGetScrollPosition ( g_VolumeBar )
-	if ( g_Sound ) then
-		setSoundVolume ( g_Sound, g_Volume / 100 )
+	g_Volume = guiScrollBarGetScrollPosition(g_VolumeBar)
+	if(g_Sound) then
+		setSoundVolume(g_Sound, g_Volume / 100)
 		g_ClientSettings.radio_volume = g_Volume
 	end
 	
@@ -141,14 +143,14 @@ local function onFilterChange()
 end
 
 local function createGui(panel)
-	g_Wnd = panel
+	g_Panel = panel
 	local w, h = guiGetSize(panel, false)
 	
 	g_RadioImg = guiCreateStaticImage(10, 10, 48, 48, "img/no_img.png", false, panel)
 	g_RadioName = guiCreateLabel(65, 10, w - 75, 15, "Select radio channel", false, panel)
 	guiSetFont(g_RadioName, "default-bold-small")
 	
-	g_VolumeImg = guiCreateStaticImage ( 65, 30, 24, 24, "img/volume.png", false, panel)
+	g_VolumeImg = guiCreateStaticImage(65, 30, 24, 24, "img/volume.png", false, panel)
 	addEventHandler("onClientGUIClick", g_VolumeImg, onVolumeClick, false)
 	g_VolumeBar = guiCreateScrollBar(95, 32, w - 105, 20, true, false, panel)
 	guiScrollBarSetScrollPosition(g_VolumeBar, g_Volume)
@@ -184,8 +186,8 @@ local function createGui(panel)
 end
 
 function RadioPanel.onShow(panel)
-	if(not g_Wnd) then
-		g_Wnd = panel
+	if(not g_Panel) then
+		g_Panel = panel
 		createGui(panel)
 	end
 end
@@ -195,24 +197,24 @@ function RadioPanel.onHide()
 end
 
 local function onRadioSwitch ( channel )
-	if ( g_Sound and channel ~= 0 ) then
+	if(g_Sound and channel ~= 0) then
 		cancelEvent ()
 		
 		local ticks = getTickCount ()
-		if ( ticks - g_LastWarning > 3000 ) then
-			outputChatBox ( "Disable online radio before using ingame radio (you can do it in User Panel)!", 255, 0, 0 )
+		if(ticks - g_LastWarning > 3000) then
+			outputChatBox("Disable online radio before using ingame radio (you can do it in User Panel)!", 255, 0, 0)
 			g_LastWarning = ticks
 		end
 	end
 end
 
 local function checkSounds ()
-	if ( not g_Sound or g_Volume == 0 ) then return end
+	if(not g_Sound or g_Volume == 0) then return end
 	
 	-- find long sounds
 	local found = false
 	--outputDebugString ( "sounds "..#getElementsByType ( "sound" )..":", 3 )
-	for i, sound in ipairs ( getElementsByType ( "sound" ) ) do
+	for i, sound in ipairs(getElementsByType("sound")) do
 		--outputDebugString ( i.." "..getSoundLength ( sound ).." "..getSoundVolume ( sound ), 3 )
 		local len = getSoundLength ( sound )
 		-- Note: streams has len == 0
@@ -223,24 +225,24 @@ local function checkSounds ()
 	end
 	
 	-- disable radio if map has music background
-	local real_volume = getSoundVolume ( g_Sound )
-	if ( real_volume and real_volume > 0 and found ) then
-		setSoundVolume ( g_Sound, 0 )
-		outputChatBox ( "Radio has been temporary disabled because other music source has been detected!", 255, 0, 0 )
-	elseif ( real_volume == 0 and not found ) then
-		setSoundVolume ( g_Sound, g_Volume / 100 )
+	local real_volume = getSoundVolume(g_Sound)
+	if(real_volume and real_volume > 0 and found) then
+		setSoundVolume(g_Sound, 0)
+		outputChatBox("Radio has been temporary disabled because other music source has been detected!", 255, 0, 0)
+	elseif(real_volume == 0 and not found) then
+		setSoundVolume(g_Sound, g_Volume / 100)
 	end
 end
 
-local function initRadio ()
-	setTimer ( checkSounds, 1000, 0 )
+local function initRadio()
+	setTimer(checkSounds, 1000, 0)
 	
-	g_Volume = math.min ( g_ClientSettings.radio_volume, 100 )
-	if ( g_ClientSettings.radio_channel ~= "" ) then
-		startRadio ( g_ClientSettings.radio_channel )
+	g_Volume = math.min(g_ClientSettings.radio_volume, 100)
+	if(g_ClientSettings.radio_channel ~= "") then
+		startRadio(g_ClientSettings.radio_channel)
 	end
 end
 
-UpRegister ( RadioPanel )
-addEventHandler ( "onClientPlayerRadioSwitch", g_Me, onRadioSwitch )
-addEventHandler ( "onClientResourceStart", g_ResRoot, initRadio )
+UpRegister(RadioPanel)
+addEventHandler("onClientPlayerRadioSwitch", g_Me, onRadioSwitch)
+addEventHandler("onClientResourceStart", g_ResRoot, initRadio)

@@ -213,16 +213,15 @@
 	<file src="img/radio/chilliz.png" />
 	<file src="img/radio/radioparty.png" />
 	<file src="img/radio/eska.jpg" />
-	<file src="img/radio/discopolo.jpg" />
+	<file src="img/radio/DiscoParty.png" />
 	<file src="img/radio/polskastacja.jpg" />
 	<file src="img/radio/przeboje80and90.png" />
 	<file src="img/radio/bassdrive.png" />
 	<file src="img/radio/dubstepfm.jpg" />
 	<file src="img/radio/discopolofm.jpg" />
 	<file src="img/radio/dubstep_openfm.jpg" />
-	<file src="img/radio/christmas88.png" />
-	<file src="img/radio/christmas89.png" />
 	<file src="img/radio/ClubMusic24.png" />
+	<file src="img/radio/All4Music.png" />
 	
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />

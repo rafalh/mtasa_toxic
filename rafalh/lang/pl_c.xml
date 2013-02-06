@@ -23,6 +23,8 @@
 	<msg id="Register new account">Zarejestruj nowe konto</msg>
 	<msg id="Retry password:">Powtórz hasło:</msg>
 	<msg id="Password strength:">Siła hasła:</msg>
+	<msg id="E-Mail (optional):">E-Mail (opcjonalnie):</msg>
+	
 	<msg id="Username is too short!">Nazwa użytkownika jest za krótka!</msg>
 	<msg id="Password is too short!">Hasło jest za krótkie!</msg>
 	<msg id="Passwords do not match!">Hasła nie pasują!</msg>

@@ -46,15 +46,18 @@ local function onLoginReq(name, passwd)
 	end
 end
 
-local function onRegisterReq(name, passwd)
-	if(not name or name:len() < 3 or not passwd or passwd:len() < 3) then return end
+local function onRegisterReq(name, passwd, email)
+	if(not name or name:len() < 3 or not passwd or passwd:len() < 3 or not email) then return end
 	
 	local self = g_Players[client]
 	local account = false
 	local ticks = getTickCount()
 	if(ticks - g_RegTimeStamp >= 1000) then
 		account = addAccount(name, passwd)
-		g_RegTimeStamp = ticks
+		if(account) then
+			g_RegTimeStamp = ticks
+			DbQuery("UPDATE rafalh_players SET email=? WHERE player=?", email, self.id)
+		end
 	else
 		privMsg(self.el, "Wait a moment...")
 	end

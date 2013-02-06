@@ -18,7 +18,7 @@ local EditProfilePanel = {
 	name = "Profile",
 	img = "img/userpanel/profile.png",
 	width = 300,
-	height = 340,
+	height = 360,
 }
 
 addEvent("main.onChgPwResult", true)

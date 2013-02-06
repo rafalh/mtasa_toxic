@@ -17,6 +17,9 @@ local function PfSyncCallback(id)
 		ret[data.field] = data.value
 	end
 	
+	local rows = DbQuery("SELECT email FROM rafalh_players WHERE player=?", id)
+	ret.email = rows[1].email
+	
 	return ret
 end
 
@@ -27,26 +30,26 @@ end
 local function PfLoadCat(node, cat)
 	local i = 0
 	while (true) do
-			local subnode = xmlFindChild(node, "field", i)
-			if(not subnode) then break end
-			i = i + 1
-			
-			local data = {}
-			data.name = xmlNodeGetAttribute(subnode, "name")
-			assert(data.name)
-			data.longname = xmlNodeGetAttribute(subnode, "longname") or data.name
-			data.type = xmlNodeGetAttribute(subnode, "type") or "str"
-			data.w = tonumber(xmlNodeGetAttribute(subnode, "w"))
-			
-			g_ProfileFields[data.name] = data
-			table.insert(cat, data)
+		local subnode = xmlFindChild(node, "field", i)
+		if(not subnode) then break end
+		i = i + 1
+		
+		local data = {}
+		data.name = xmlNodeGetAttribute(subnode, "name")
+		assert(data.name)
+		data.longname = xmlNodeGetAttribute(subnode, "longname") or data.name
+		data.type = xmlNodeGetAttribute(subnode, "type") or "str"
+		data.w = tonumber(xmlNodeGetAttribute(subnode, "w"))
+		
+		g_ProfileFields[data.name] = data
+		table.insert(cat, data)
 	end
 end
 
 local function PfInit()
 	local node, i = xmlLoadFile("conf/profile_fields.xml"), 0
 	if(node) then
-		while (true) do
+		while(true) do
 			local subnode = xmlFindChild(node, "cat", i)
 			if(not subnode) then break end
 			i = i + 1
@@ -69,17 +72,24 @@ function setPlayerProfile(id, data)
 	for field, value in pairs(data) do
 		local fieldInfo = g_ProfileFields[field]
 		if(fieldInfo) then
+			value = tostring(value or "")
 			if(fieldInfo.type == "num") then
 				value = value:match("^%d+%.?%d?%d?$") and tofloat(value)
 			elseif(fieldInfo.type == "int") then
 				value = value:match("^%d+$") and toint(value)
+			elseif(fieldInfo.type == "email") then
+				value = value:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$") and value
 			else
-				value = tostring(value):sub(1, 128)
+				value = value:sub(1, 128)
 			end
 			data[field] = value
 			if(value) then
-				DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
-				DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
+				if(field == "email") then
+					DbQuery("UPDATE rafalh_players SET email=? WHERE player=?", value, id)
+				else
+					DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
+					DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
+				end
 			end
 		else
 			data[field] = nil

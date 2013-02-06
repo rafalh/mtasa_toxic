@@ -7,6 +7,7 @@ local function onRegisterClick(btn,state)
 	local name = guiGetText(g_GUI.name)
 	local pw = guiGetText(g_GUI.pw)
 	local pw2 = guiGetText(g_GUI.pw2)
+	local email = guiGetText(g_GUI.email)
 	
 	local err = false
 	if(pw ~= pw2) then
@@ -15,13 +16,15 @@ local function onRegisterClick(btn,state)
 		err = "Username is too short!"
 	elseif(pw:len() < 3) then
 		err = "Password is too short!"
+	elseif(email ~= "" and not email:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$")) then
+		err = "E-Mail is invalid!"
 	end
 	
 	if(err) then
 		guiSetText(g_GUI.info, err)
 		guiLabelSetColor(g_GUI.info, 255, 0, 0)
 	else
-		triggerServerEvent("main.onRegisterReq", g_ResRoot, name, pw)
+		triggerServerEvent("main.onRegisterReq", g_ResRoot, name, pw, email)
 	end
 end
 
@@ -63,7 +66,7 @@ local function onRegStatus(success)
 	
 	if(not success) then
 		guiSetText(g_GUI.info, "Registration failed")
-		dxSetColor(g_GUI.info, 255, 0, 0)
+		guiLabelSetColor(g_GUI.info, 255, 0, 0)
 	else
 		outputChatBox("Registration succeeded!", 0, 255, 0)
 		closeRegisterWnd()
