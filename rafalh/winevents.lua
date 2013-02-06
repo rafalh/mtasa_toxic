@@ -8,7 +8,7 @@ addEvent("onClientWinnerAnim", true)
 -- Local function definitions --
 --------------------------------
 
-local function WePlayerWinDD ()
+local function WePlayerWinDD()
 	triggerClientEvent(g_Root, "onClientWinnerAnim", source)
 end
 
