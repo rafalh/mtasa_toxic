@@ -1,16 +1,16 @@
 <strings>
     <msg id='Access denied for &quot;%s&quot;!'>Acces interzis pentru &quot;%s&quot;!</msg>
-	
+    
     <msg id="%uth">%uth</msg>
     <msg id="%ust">%ust</msg>
     <msg id="%und">%und</msg>
     <msg id="%urd">%urd</msg>
-	
+    
     <msg id="* %s died!">* %s a murit!</msg>
     <msg id="* %s drowned!">* %s s-a inecat!</msg>
     <msg id="* %s has joined the game%s.">* %s s-a alaturat jocului%s.</msg>
     <msg id="* %s is now known as %s.">* %s este cunoscut acum ca %s.</msg>
-	
+    
     <msg id="Nick change spam! Wait %u seconds and try again.">Numele nu este permis! Asteapta %u secunde si reincearca.</msg>
     <msg id="Empty nick is not allowed!">Numele gol nu este permis!</msg>
     <msg id="Do not swear %s! %s taked from your cash.">Nu injura %s! %s au fost luati din banii tai.</msg>
@@ -28,7 +28,6 @@
     <msg id="Ghostmode enabled for %u seconds!">Invizibilitate pornita pentru %u secunde!</msg>
     <msg id="Ghostmode disabled!">Invizibilitate oprita!</msg>
     <msg id="%s added to your cash! Total: %s.">%s adaugati in portofelul tau! Total: %s.</msg>
-    <msg id="You earned %u points. Total: %s.">Ai castigat %u puncte. Total: %s.</msg>
     <msg id="%s is the winner!">%s este castigator!</msg>
     <msg id="Top Times:">Cei mai buni timpi:</msg>
     <msg id="The %s top time: %s by %s!">Cel mai bun timp este %s: %s by %s!</msg>
@@ -50,7 +49,7 @@
     <msg id="%s&apos;s %s: %s">%s este %s: %s</msg>
     <msg id="%s&apos;s %s is not set.">%s este %s nu este setat.</msg>
     <msg id="%s set his %s: %s.">%s seteaza %s: lui %s.</msg>
-	
+    
     <msg id="player">jucator</msg>
     <msg id="cash">bani</msg>
     <msg id="points">puncte</msg>
@@ -59,7 +58,7 @@
     <msg id="name">nume</msg>
     <msg id="account ID">cont ID</msg>
     <msg id="level">nivel</msg>
-	
+    
     <msg id="Do not spam %s! Otherwise you will get kicked.">Nu fi vulgar %s! Altfel vei fi dat afara.</msg>
     <msg id="Do not spam %s! Otherwise you will get muted.">Nu fi vulgar %s! Altfel vei fi redus la tacere.</msg>
     <msg id="%s has been kicked for spamming.">%s a fost dat afara pentru nesimtire.</msg>
@@ -109,14 +108,11 @@
     <msg id="Respawn is disabled.">&quot;Renasterea este oprita.</msg>
     <msg id="Found maps: %s.">Harti gasite: %s.</msg>
     <msg id='Maps not found for &quot;%s&quot;.'>Harti negasite pentru &quot;%s&quot;.</msg>
-    <msg id="Next map set to %s!">Urmatoarea harta este %s!</msg>
     <msg id="%s started vote for next map: %s.">%s a pornit votarea pentru: %s.</msg>
     <msg id="Next map is already set.">Urmatoarea harta a fost deja setata.</msg>
-    <msg id="Next map set to %s by %s!">Urmatoarea harta este %s setata de %s!</msg>
     <msg id="Map cannot be repeated!">Harta nu se poate repeta!</msg>
     <msg id="This map has been removed!">Aceasta harta a fost stearsa!</msg>
     <msg id="You can vote only for race map now! Allowed types: %s.">Poti vota doar pentru harti de tip Race acum! Moduri permise: %s.</msg>
-    <msg id="You can vote only for not race map now!">Poti vota pentru harti in afara de tipul Race acum!</msg>
     <msg id="You have to wait %u seconds!">Trebuie sa astepti %u secunde!</msg>
     <msg id="Vehicle weapons enabled by %s!">Armele masinilor permise de %s!</msg>
     <msg id="Vehicle weapons disabled by %s!">Armele masinilor nepermise de %s!</msg>

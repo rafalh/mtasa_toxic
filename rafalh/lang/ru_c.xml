@@ -3,11 +3,11 @@
     <msg id="* %s has been kicked from the game.">* %s был удален из игры.</msg>
     <msg id="* %s has been banned from the game.">* %s забанен.</msg>
     <msg id="* %s has left the game [%s].">* %s покинул игру [%s].</msg>
-	
+    
     <msg id="Usage: %s">Использование: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Нажми %s чтобы открыть панель управления и %s чтобы открыть статистику!</msg>
     
-	<msg id="Statistics">Статистика</msg>
+    <msg id="Statistics">Статистика</msg>
     <msg id="Player:">Игрок:</msg>
     <msg id="Cash:">Деньги:</msg>
     <msg id="Points:">Очки:</msg>
@@ -22,121 +22,111 @@
     <msg id="Exploded:">Взорван:</msg>
     <msg id="Drowned:">Утонул:</msg>
     <msg id="Playtime:">Времени в игре:</msg>
-	<msg id="%s times">%s раз</msg>
-	
+    <msg id="%s times">%s раз</msg>
+    
     <msg id="Profile">Профиль</msg>
-	<msg id="Firstname:">Имя:</msg>
-	<msg id="Age:">Возраст:</msg>
-	<msg id="City:">Город:</msg>
-	
-    <msg id="Tops">Рекорды</msg>
-	<msg id="Player">Игрок</msg>
-	<msg id="Top Cash">Наибольшее количество денег</msg>
-	<msg id="Top Points">Наибольшее количество очков</msg>
+    <msg id="Firstname:">Имя:</msg>
+    <msg id="Age:">Возраст:</msg>
+    <msg id="City:">Город:</msg>
+    
     <msg id="Players online only">Считать только онлайн игроков</msg>
-	
+    
     <msg id="Shop">Магазин</msg>
-    <msg id="Item">Предметы</msg>
-    <msg id="Cost">Цена</msg>
-	<msg id="Cost:">Цена:</msg>
+    <msg id="Cost:">Цена:</msg>
     <msg id="Buy">Купить</msg>
     <msg id="Sell">Продать</msg>
     <msg id="Use">Использовать</msg>
-    <msg id="Count">Кол-во</msg>
     <msg id="Description:">Описание:</msg>
-	<msg id="%u%% price reduction for VIP">%u%% скидка для VIP игрока</msg>
-	
-	<msg id="User Items">Твои предметы</msg>
-	<msg id="You don't have any item!">У тебя ничего нет!</msg>
-	
-	<msg id="Beer">Пиво</msg>
-	<msg id="Repair">Здоровье</msg>
-	<msg id="Smoke">Дым</msg>
-	<msg id="Mine">Мина</msg>
-	<msg id="Godmode">Режим бога</msg>
-	<msg id="Oil">Масло</msg>
-	<msg id="Self-destruction">Самоуничтожение</msg>
-	<msg id="Flip">Трамплин</msg>
-	<msg id="VIP rank">VIP ранк</msg>
-	<msg id="Thunder">Молния</msg>
-	<msg id="Godmode (60 seconds)">Режим бога (60 sekund)</msg>
-	<msg id="Invisibility">Невидимость</msg>
-	<msg id="Next map">Карта</msg>
-	<msg id="VIP rank (1 week)">VIP ранк (1 неделя)</msg>
-	
-	<msg id="Translator">Переводчик</msg>
-	<msg id="From:">Из:</msg>
-	<msg id="To:">В:</msg>
-	<msg id="Translate">Превести</msg>
-	<msg id="Say translated">Сказать переведенное</msg>
-	<msg id="Load chat message">Загрузить сообщение из чата</msg>
-	<msg id="Input:">Ввод:</msg>
-	<msg id="Output:">Вывод:</msg>
-	<msg id="Please wait...">Пожалуйста подожди...</msg>
-	<msg id="Translation by %s">Перевод сделал %s</msg>
-	<msg id="Auto-detect">Автопоиск</msg>
-	
-	<msg id="Radio">Радио</msg>
-	<msg id="Enable radio">Вкл радио</msg>
-	<msg id="Volume: %u%%">Громкость: %u%%</msg>
-	<msg id="Channel">Волна</msg>
-	<msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Отключить онлайн радио перед использованием игрового(Ты можешь сделать это в панели управления)</msg>
-	<msg id="Radio has been temporary disabled because other music source has been detected!">Радио отключилось так как был обнаружен другой источник музыки!</msg>
-	
+    <msg id="%u%% price reduction for VIP">%u%% скидка для VIP игрока</msg>
+    
+    <msg id="User Items">Твои предметы</msg>
+    <msg id="You don&apos;t have any item!">У тебя ничего нет!</msg>
+    
+    <msg id="Beer">Пиво</msg>
+    <msg id="Repair">Здоровье</msg>
+    <msg id="Smoke">Дым</msg>
+    <msg id="Mine">Мина</msg>
+    <msg id="Godmode">Режим бога</msg>
+    <msg id="Oil">Масло</msg>
+    <msg id="Self-destruction">Самоуничтожение</msg>
+    <msg id="Flip">Трамплин</msg>
+    <msg id="VIP rank">VIP ранк</msg>
+    <msg id="Thunder">Молния</msg>
+    <msg id="Godmode (60 seconds)">Режим бога (60 sekund)</msg>
+    <msg id="Invisibility">Невидимость</msg>
+    <msg id="Next map">Карта</msg>
+    <msg id="VIP rank (1 week)">VIP ранк (1 неделя)</msg>
+    
+    <msg id="Translator">Переводчик</msg>
+    <msg id="From:">Из:</msg>
+    <msg id="To:">В:</msg>
+    <msg id="Translate">Превести</msg>
+    <msg id="Say translated">Сказать переведенное</msg>
+    <msg id="Load chat message">Загрузить сообщение из чата</msg>
+    <msg id="Input:">Ввод:</msg>
+    <msg id="Output:">Вывод:</msg>
+    <msg id="Please wait...">Пожалуйста подожди...</msg>
+    <msg id="Translation by %s">Перевод сделал %s</msg>
+    <msg id="Auto-detect">Автопоиск</msg>
+    
+    <msg id="Radio">Радио</msg>
+    <msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Отключить онлайн радио перед использованием игрового(Ты можешь сделать это в панели управления)</msg>
+    <msg id="Radio has been temporary disabled because other music source has been detected!">Радио отключилось так как был обнаружен другой источник музыки!</msg>
+    
     <msg id="Settings">Настройки</msg>
     <msg id="Language:">Язык:</msg>
     <msg id="Nick:">Ник:</msg>
     <msg id="Suicide key:">Кнопка самоубийства:</msg>
     <msg id="User Panel key:">Кнопка панели управления:</msg>
     <msg id="Statistics Panel key:">Кнопка статистики:</msg>
-	<msg id="Effects">Спецэффекты</msg>
-	
+    <msg id="Effects">Спецэффекты</msg>
+    
     <msg id="Save">Сохранить</msg>
     <msg id="Color">Цвет</msg>
     <msg id="Close">Закрыть</msg>
-	
-	<msg id="Map Info">Информация о карте</msg>
-	<msg id="Map: %s">Карта: %s</msg>
+    
+    <msg id="Map Info">Информация о карте</msg>
+    <msg id="Map: %s">Карта: %s</msg>
     <msg id="Author: %s">Автор: %s</msg>
-	<msg id="unknown">Неизвестно</msg>
+    <msg id="unknown">Неизвестно</msg>
     <msg id="Played: %u times">Сыграна: %u раз</msg>
     <msg id="Rating:">Оценка:</msg>
-	<msg id="(%u rates)">(%u раз оценено)</msg>
+    <msg id="(%u rates)">(%u раз оценено)</msg>
     <msg id="Top Times:">Рекорды:</msg>
     <msg id="Pos">Место</msg>
     <msg id="Time">Время</msg>
     <msg id="Empty">Отсутствует</msg>
-	
-	<msg id="Rate this map">Оцени каоту</msg>
-	<msg id="Press 1-5 to rate this map">Нажми 1-5 чтобы оценить</msg>
-	
+    
+    <msg id="Rate this map">Оцени каоту</msg>
+    <msg id="Press 1-5 to rate this map">Нажми 1-5 чтобы оценить</msg>
+    
     <msg id="Private Chat - %s">Личные сообщения - %s</msg>
     <msg id="Say:">Сказать:</msg>
     <msg id="Send">Отправить</msg>
     <msg id="In background">В задники</msg>
-	<msg id="Restore">Восстановить</msg>
-	
-	<msg id="Help">Помощь</msg>
-	<msg id="Controls">Управление</msg>
-	<msg id="Press %s to show Statistics Panel.">Нажми %s чтобы открыть статистику.</msg>
-	<msg id="Press %s to show User Panel.">Нажми %s чтобы открыть панель доступа.</msg>
-	<msg id="Press %s to show User Items.">Нажми %s чтобы показать твои вещи.</msg>
-	<msg id="Press %s to show Top Times.">Нажми %s чтобы показать Рекорды.</msg>
-	<msg id="Commands">Команды</msg>
-	<msg id="Search:">Поиск:</msg>
-	<msg id="Command">Команда</msg>
-	<msg id="Description">Описание</msg>
-	
+    <msg id="Restore">Восстановить</msg>
+    
+    <msg id="Help">Помощь</msg>
+    <msg id="Controls">Управление</msg>
+    <msg id="Press %s to show Statistics Panel.">Нажми %s чтобы открыть статистику.</msg>
+    <msg id="Press %s to show User Panel.">Нажми %s чтобы открыть панель доступа.</msg>
+    <msg id="Press %s to show User Items.">Нажми %s чтобы показать твои вещи.</msg>
+    <msg id="Press %s to show Top Times.">Нажми %s чтобы показать Рекорды.</msg>
+    <msg id="Commands">Команды</msg>
+    <msg id="Search:">Поиск:</msg>
+    <msg id="Command">Команда</msg>
+    <msg id="Description">Описание</msg>
+    
     <msg id="User Panel">Панель доступа</msg>
-	<msg id="Back">Назад</msg>
-	
+    <msg id="Back">Назад</msg>
+    
     <msg id="About">Про сервер</msg>
-	<msg id="About ToxiC Server">Про сервер ToxiC</msg>
-	
-	<msg id="Select next map">Выбрать следущую карту</msg>
-	<msg id="Add to queue">Добавить в очередь</msg>
-	<msg id="Map name">Имя карты</msg>
-	<msg id="Played">Сыграна раз</msg>
-	<msg id="Map rating">Оценка карты</msg>
-	<msg id="Select your candidate for next map">Выбрать вариант следующей карты</msg>
+    <msg id="About ToxiC Server">Про сервер ToxiC</msg>
+    
+    <msg id="Select next map">Выбрать следущую карту</msg>
+    <msg id="Add to queue">Добавить в очередь</msg>
+    <msg id="Map name">Имя карты</msg>
+    <msg id="Played">Сыграна раз</msg>
+    <msg id="Map rating">Оценка карты</msg>
+    <msg id="Select your candidate for next map">Выбрать вариант следующей карты</msg>
 </strings>

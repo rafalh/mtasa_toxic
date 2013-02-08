@@ -1,4 +1,4 @@
-local function CmdBet (message, arg)
+local function CmdBet(message, arg)
 	local cash, player
 	if (#arg >= 3) then
 		cash = touint (arg[3])
@@ -30,9 +30,9 @@ local function CmdBet (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." [<player>] <cash>") end
 end
 
-CmdRegister ("bet", CmdBet, false, "Bets on a player")
+CmdRegister("bet", CmdBet, false, "Bets on a player")
 
-local function CmdUnbet (message, arg)
+local function CmdUnbet(message, arg)
 	if (GbAreBetsPlaced ()) then
 		privMsg (source, "Bets are placed!")
 	else
@@ -44,4 +44,4 @@ local function CmdUnbet (message, arg)
 	end
 end
 
-CmdRegister ("unbet", CmdUnbet, false, "Cancels your last bet")
+CmdRegister("unbet", CmdUnbet, false, "Cancels your last bet")

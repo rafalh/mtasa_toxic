@@ -1,16 +1,16 @@
 <strings>
     <msg id='Access denied for &quot;%s&quot;!'>Acces refuse pour &quot;%s&quot;!</msg>
-	
+    
     <msg id="%uth">%uth</msg>
     <msg id="%ust">%ust</msg>
     <msg id="%und">%und</msg>
     <msg id="%urd">%urd</msg>
-	
+    
     <msg id="* %s died!">* %s est mort!</msg>
     <msg id="* %s drowned!">* %s s&apos;est noye!</msg>
     <msg id="* %s has joined the game%s.">* %s a rejoint la partie%s.</msg>
     <msg id="* %s is now known as %s.">* %s est maintenant connue en tant que %s.</msg>
-	
+    
     <msg id="Nick change spam! Wait %u seconds and try again.">Anti Spam pseudo! Attendez %u secondes et reessayez.</msg>
     <msg id="Empty nick is not allowed!">Au moins un caractere necessaire!</msg>
     <msg id="Do not swear %s! %s taked from your cash.">Ne jurez pas %s! %s retire de votre argent.</msg>
@@ -28,7 +28,6 @@
     <msg id="Ghostmode enabled for %u seconds!">Ghostmode actif pour %u secondes!</msg>
     <msg id="Ghostmode disabled!">Ghostmode desactive!</msg>
     <msg id="%s added to your cash! Total: %s.">%s ajoute a votre argent! Total: %s.</msg>
-    <msg id="You earned %u points. Total: %s.">Vous avez gagne %u points. Total: %s.</msg>
     <msg id="%s is the winner!">%s a gagne!</msg>
     <msg id="Top Times:">Records:</msg>
     <msg id="The %s top time: %s by %s!">Le %s top time: %s by %s!</msg>
@@ -49,7 +48,7 @@
     <msg id="%s&apos;s %s: %s">%s: %s: %s</msg>
     <msg id="%s&apos;s %s is not set.">%s: %s n&apos;est pas regle(e).</msg>
     <msg id="%s set his %s: %s.">%s a change son(sa) %s: %s.</msg>
-	
+    
     <msg id="player">joueur</msg>
     <msg id="cash">argent</msg>
     <msg id="points">points</msg>
@@ -57,7 +56,7 @@
     <msg id="time">temps</msg>
     <msg id="name">nom</msg>
     <msg id="account ID">account ID</msg>
-	
+    
     <msg id="Do not spam %s! Otherwise you will get kicked.">Ne floodez pas %s! Sinon vous serez kick.</msg>
     <msg id="Do not spam %s! Otherwise you will get muted.">Ne floodez pas %s! Sinon vous serez mute.</msg>
     <msg id="%s has been kicked for spamming.">%s a ete kick pour flood.</msg>
@@ -106,10 +105,8 @@
     <msg id="Respawn is disabled.">La reapparition est deactivee.</msg>
     <msg id="Found maps: %s.">Carte trouvee: %s.</msg>
     <msg id='Maps not found for &quot;%s&quot;.'>Aucune carte trouvee pour &quot;%s&quot;.</msg>
-    <msg id="Next map set to %s!">Prochaine carte reglee sur %s!</msg>
     <msg id="%s started vote for next map: %s.">%s a debute un vote pour la carte: %s.</msg>
     <msg id="Next map is already set.">La prochaine carte est deja reglee.</msg>
-    <msg id="Next map set to %s by %s!">Prochhaine carte reglee sur %s par %s!</msg>
     <msg id="Map cannot be repeated!">La carte ne peut etre repetee!</msg>
     <msg id="This map has been removed!">Cet carte a ete supprimee!</msg>
     <msg id="You can vote only for race map now! Allowed types: %s.">You can vote only for race map now! Allowed types: %s.</msg>

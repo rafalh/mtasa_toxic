@@ -4,40 +4,6 @@ local g_LastRedo = 0
 -- Global function definitions --
 ---------------------------------
 
-local function CmdLockPlayerNick (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
-	
-	if (player) then
-		DbQuery ("UPDATE rafalh_players SET locked_nick=1 WHERE player=?", g_Players[player].id)
-		customMsg (255, 0, 0, "%s's nick has been locked by %s!", getPlayerName (player), getPlayerName (source))
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
-end
-
-CmdRegister ("lockplayernick", CmdLockPlayerNick, "resource.rafalh.lockplayernick")
-
-local function CmdUnlockPlayerNick (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
-	
-	if (player) then
-		DbQuery ("UPDATE rafalh_players SET locked_nick=0 WHERE player=?", g_Players[player].id)
-		customMsg (0, 255, 0, "%s's nick has been unlocked by %s!", getPlayerName (player), getPlayerName (source))
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
-end
-
-CmdRegister ("unlockplayernick", CmdUnlockPlayerNick, "resource.rafalh.lockplayernick")
-
-local function CmdSetMaxPing (message, arg)
-	local max_ping = touint (arg[2], 0)
-	set ("max_ping", max_ping)
-	if (max_ping > 0) then
-		scriptMsg ("Maximal ping set to: %u.", max_ping)
-	else
-		scriptMsg ("Maximal ping disabled.")
-	end
-end
-
-CmdRegister ("setmaxping", CmdSetMaxPing, "resource.rafalh.setmaxping")
-
 local function CmdPBan (message, arg)
 	local player = (#arg >= 2 and findPlayer (arg[2]))
 	
@@ -411,76 +377,35 @@ end
 
 CmdRegister ("account", CmdAccount, false, "Shows player account ID")
 
-local function CmdFindAccounts (message, arg)
-	if (#arg >= 2) then
+local function CmdFindAccountsIp(message, arg)
+	if(#arg >= 2) then
 		local buf = ""
-		local tbl = {}
-		local name = message:sub (arg[1]:len () + 2)
-		local rows = DbQuery ("SELECT player FROM rafalh_names WHERE name LIKE ?", "%"..name.."%")
-		
-		for i, data in ipairs (rows) do
-			if not tbl[data.player] then
-				buf = buf..((buf ~= "" and ", ") or "")..data.player
-				tbl[data.player] = true
-			end
-		end
-		scriptMsg ("Found accounts: "..((buf ~= "" and buf..".") or "none."))
-	else privMsg (source, "Usage: %s", arg[1].." <name>") end
-end
-
-CmdRegister ("findaccounts", CmdFindAccounts, "resource.rafalh.findaccounts")
-CmdRegisterAlias ("findacc", "findaccounts")
-
-local function CmdFindAccountsIp (message, arg)
-	if (#arg >= 2) then
-		local buf = ""
-		local rows = DbQuery ("SELECT player FROM rafalh_players WHERE ip LIKE ?", arg[2].."%")
+		local rows = DbQuery("SELECT player FROM rafalh_players WHERE ip LIKE ?", arg[2].."%")
 		
 		for i, data in ipairs (rows) do
 			buf = buf..((buf ~= "" and ", ") or "")..data.player
 		end
-		scriptMsg ("Found accounts: %s", (buf ~= "" and buf..".") or "none.")
-	else privMsg (source, "Usage: %s", arg[1].." <ip>") end
+		scriptMsg("Found accounts: %s", (buf ~= "" and buf..".") or "none.")
+	else privMsg(source, "Usage: %s", arg[1].." <ip>") end
 end
 
 CmdRegister ("findaccountsip", CmdFindAccountsIp, "resource.rafalh.findaccounts")
 CmdRegisterAlias ("findaccip", "findaccountsip")
 
-local function CmdFindLostAccount (message, arg)
-	if (#arg >= 2) then
-		local player = findPlayer (message:sub (arg[1]:len () + 2))
-		if (player) then
-			local t = {}
-			local str = message:sub (arg[1]:len () + 2)
-			local rows = DbQuery ("SELECT player FROM rafalh_names WHERE name LIKE ?", "%"..str.."%")
-			for i, data in ipairs (rows) do
-				if not t[data.player] then
-					buf = buf..((buf ~= "" and ", ") or "")..data.player
-					t[data.player] = true
-				end
-			end
-			scriptMsg ("Found accounts: %s", (buf ~= "" and buf..".") or "none.")
-		else privMsg (source, "Cannot find player") end
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
-end
-
-CmdRegister ("findlostaccount", CmdFindLostAccount, "resource.rafalh.findaccounts")
-CmdRegisterAlias ("findlostacc", "findlostaccount")
-
-local function CmdDescribeAccount (message, arg)
-	local id = touint (arg[2])
-	if (id) then
-		local rows = DbQuery ("SELECT * FROM rafalh_players  WHERE player=?", id)
-		if (rows and rows[1]) then
+local function CmdDescribeAccount(message, arg)
+	local id = touint(arg[2])
+	if(id) then
+		local rows = DbQuery("SELECT * FROM rafalh_players  WHERE player=?", id)
+		if(rows and rows[1]) then
 			local tm = getRealTime (rows[1].last_visit)
 			local tm2 = getRealTime (rows[1].first_visit)
-			scriptMsg ("Name: %s, points: %s, cash: %u, bidlevel: %u, playtime: %u, last visit: %d-%02d-%02d %d:%02d:%02d, joined: %d-%02d-%02d %d:%02d:%02d, ip: %s.",
+			scriptMsg("Name: %s, points: %s, cash: %u, bidlevel: %u, playtime: %u, last visit: %d-%02d-%02d %d:%02d:%02d, joined: %d-%02d-%02d %d:%02d:%02d, IP: %s.",
 				rows[1].name, rows[1].points, rows[1].cash, rows[1].bidlvl, rows[1].time_here,
 				tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second,
 				tm2.monthday, tm2.month + 1, tm2.year + 1900, tm2.hour, tm2.minute, tm2.second,
 				rows[1].ip)
-		else privMsg (source, "Cannot find account %u!", id) end
-	else privMsg (source, "Usage: %s", arg[1].." <account ID>") end
+		else privMsg(source, "Cannot find account %u!", id) end
+	else privMsg(source, "Usage: %s", arg[1].." <account ID>") end
 end
 
 CmdRegister ("describeaccount", CmdDescribeAccount, "resource.rafalh.findaccounts")
@@ -664,10 +589,10 @@ local function CmdSqlQuery(message, arg)
 		else
 			privMsg(source, "SQL query failed")
 		end
-	else privMsg (source, "Usage: %s", arg[1].." <query>") end
+	else privMsg(source, "Usage: %s", arg[1].." <query>") end
 end
 
-CmdRegister ("sqlquery", CmdSqlQuery, true)
+CmdRegister("sqlquery", CmdSqlQuery, true)
 
 local function CmdMapId(message, arg)
 	local room = g_Players[source].room
@@ -675,4 +600,64 @@ local function CmdMapId(message, arg)
 	scriptMsg("Map ID: %u", map:getId())
 end
 
-CmdRegister ("mapid", CmdMapId, true)
+CmdRegister("mapid", CmdMapId, true)
+
+local function loadMsgIdSet(path)
+	local node = xmlLoadFile(path)
+	if(not node) then return false end
+	
+	local msgIdSet = {}
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local id = xmlNodeGetAttribute(subnode, "id")
+		if(id) then
+			msgIdSet[id] = true
+		end
+	end
+	
+	xmlUnloadFile(node)
+	return msgIdSet
+end
+
+local function checkLangFile(path, msgIdSet, opt)
+	local node = xmlLoadFile(path)
+	if(not node) then return false end
+	
+	local cnt = 0
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local id = xmlNodeGetAttribute(subnode, "id")
+		if(not msgIdSet[id]) then
+			xmlDestroyNode(subnode)
+			cnt = cnt + 1
+			if(opt == "details") then
+				scriptMsg("Out-dated message: %s", id)
+			end
+		end
+	end
+	if(opt == "fix") then
+		xmlSaveFile(node)
+	end
+	xmlUnloadFile(node)
+	
+	return cnt
+end
+
+local function CmdCheckLang(message, arg)
+	local lang, opt = arg[2], arg[3]
+	if(lang) then
+		local msgIdSetS = loadMsgIdSet("lang/pl.xml")
+		local msgIdSetC = loadMsgIdSet("lang/pl_c.xml")
+		if(msgIdSetS and msgIdSetC) then
+			local countS = checkLangFile("lang/"..lang..".xml", msgIdSetS, opt)
+			local countC = checkLangFile("lang/"..lang.."_c.xml", msgIdSetC, opt)
+			scriptMsg("Out-dated lines: %u (server) + %u (client)", countS or 0, countC or 0)
+		else
+			outputDebugString("loadMsgIdSet failed", 2)
+		end
+	else
+		scriptMsg("Usage: %s", arg[1].." <lang> [fix/details]")
+	end
+	
+end
+
+CmdRegister("checklang", CmdCheckLang, true)
+

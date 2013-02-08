@@ -3,11 +3,11 @@
     <msg id="* %s has been kicked from the game.">* %s wurde vom Spiel gekickt.</msg>
     <msg id="* %s has been banned from the game.">* %s wurde vom Spiel gebannt.</msg>
     <msg id="* %s has left the game [%s].">* %s hat das Spiel verlassen [%s].</msg>
-	
+    
     <msg id="Usage: %s">Nutzung: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Druecke %s um dein User Panel zu oeffnen und %s um dein Statistiken Panel zu oeffnen!</msg>
     
-	<msg id="Statistics">Statistiken</msg>
+    <msg id="Statistics">Statistiken</msg>
     <msg id="Player:">Spieler:</msg>
     <msg id="Cash:">Geld:</msg>
     <msg id="Points:">Punkte:</msg>
@@ -22,41 +22,36 @@
     <msg id="Exploded:">Explodiert:</msg>
     <msg id="Drowned:">Ertrunken:</msg>
     <msg id="Playtime:">Spielzeit:</msg>
-	
+    
     <msg id="Profile">Profil</msg>
-	
-    <msg id="Tops">Tops</msg>
+    
     <msg id="Players online only">Online Spieler</msg>
-	
+    
     <msg id="Shop">Laden</msg>
-    <msg id="Item">Artikel</msg>
-    <msg id="Cost">Kostet</msg>
-	<msg id="Cost:">Kostet:</msg>
+    <msg id="Cost:">Kostet:</msg>
     <msg id="Buy">Kaufen</msg>
     <msg id="Sell">Verkaufen</msg>
     <msg id="Use">Benutzen</msg>
-    <msg id="Count">Zauhler</msg>
     <msg id="Description:">Beschreibung:</msg>
-	
+    
     <msg id="Settings">Einstellungen</msg>
     <msg id="Language:">Sprache:</msg>
     <msg id="Nick:">Spitzname:</msg>
     <msg id="Suicide key:">Suicide Taste:</msg>
     <msg id="User Panel key:">User Panel Taste:</msg>
     <msg id="Statistics Panel key:">Statistiken Panel Taste:</msg>
-	
+    
     <msg id="Save">Speichern</msg>
     <msg id="Color">Farbe</msg>
     <msg id="Close">Schliessen</msg>
     <msg id="Pos">Pos</msg>
     <msg id="Time">Zeit</msg>
     <msg id="Empty">Leer</msg>
-	
+    
     <msg id="Private Chat - %s">Privater Chat - %s</msg>
     <msg id="Say:">Sagen:</msg>
     <msg id="Send">Senden</msg>
     <msg id="In background">Im Hintergrund</msg>
-	
+    
     <msg id="User Panel">User Panel</msg>
-    <msg id="About">Ueber</msg>
 </strings>
