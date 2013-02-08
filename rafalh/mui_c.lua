@@ -29,6 +29,8 @@ local function MuiLoadInternal ( path )
 			end
 		end
 		xmlUnloadFile ( node )
+	else
+		outputDebugString("Failed to load "..path, 2)
 	end
 	return { strings, patterns }
 end

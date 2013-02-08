@@ -131,23 +131,26 @@
 	<config src="conf/map_types.xml" />
 	<config src="conf/languages.xml" />
 	<config src="conf/iso_langs.xml" />
-	<config src="lang/pl.xml" />
-	<config src="lang/de.xml" />
-	<config src="lang/fr.xml" />
-	<config src="lang/ro.xml" />
-	<config src="lang/ru.xml" />
 	
 	<config src="conf/about.xml" type="client" />
 	<config src="conf/adverts.xml" type="client" />
 	<config src="conf/languages.xml" type="client" />
 	<config src="conf/iso_langs.xml" type="client" />
 	<config src="conf/radio.xml" type="client" />
-	<config src="lang/pl_c.xml" type="client" />
-	<config src="lang/de_c.xml" type="client" />
-	<config src="lang/fr_c.xml" type="client" />
-	<config src="lang/ro_c.xml" type="client" />
-	<config src="lang/ru_c.xml" type="client" />
 	<config src="gui/gui.xml" type="client" />
+	
+	<config src="lang/pl.xml" type="server" />
+	<config src="lang/pl_c.xml" type="client" />
+	<config src="lang/de.xml" type="server" />
+	<config src="lang/de_c.xml" type="client" />
+	<config src="lang/fr.xml" type="server" />
+	<config src="lang/fr_c.xml" type="client" />
+	<config src="lang/ro.xml" type="server" />
+	<config src="lang/ro_c.xml" type="client" />
+	<config src="lang/ru.xml" type="server" />
+	<config src="lang/ru_c.xml" type="client" />
+	<config src="lang/lt.xml" type="server" />
+	<config src="lang/lt_c.xml" type="client" />
 	
 	<file src="img/chat.png" />
 	<file src="img/pm.png" />
@@ -198,6 +201,7 @@
 	<file src="img/flags/fr.png" />
 	<file src="img/flags/ro.png" />
 	<file src="img/flags/ru.png" />
+	<file src="img/flags/lt.png" />
 	
 	<file src="img/radio/rmffm.png" />
 	<file src="img/radio/rmf_maxxx.jpg" />
@@ -222,6 +226,7 @@
 	<file src="img/radio/dubstep_openfm.jpg" />
 	<file src="img/radio/ClubMusic24.png" />
 	<file src="img/radio/All4Music.png" />
+	<file src="img/radio/equestriafm.png" />
 	
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />
