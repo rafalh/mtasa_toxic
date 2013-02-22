@@ -4,6 +4,7 @@
 local AchievementsPanel = {
 	name = "Achievements",
 	img = "img/userpanel/achievements.png",
+	tooltip = "Check your achievements list",
 }
 
 local g_LockedStyle = {}

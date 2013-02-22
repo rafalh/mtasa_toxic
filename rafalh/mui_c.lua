@@ -1,6 +1,7 @@
 local g_Strings = {}
 local g_Patterns = {}
 local g_Mui = {}
+local g_IgnoredSet = {}
 local g_Lang
 
 addEvent ( "onClientLangChange", true )
@@ -29,7 +30,7 @@ local function MuiLoadInternal ( path )
 			end
 		end
 		xmlUnloadFile ( node )
-	else
+	elseif(fileExists(path)) then
 		outputDebugString("Failed to load "..path, 2)
 	end
 	return { strings, patterns }
@@ -49,6 +50,10 @@ function MuiGetMsg ( text )
 		text = string.gsub ( text, pattern, repl )
 	end
 	return text
+end
+
+function MuiIgnoreElement(el)
+	g_IgnoredSet[el] = true
 end
 
 local _guiSetText = guiSetText
@@ -97,17 +102,26 @@ end
 
 local _guiGridListAddColumn = guiGridListAddColumn
 function guiGridListAddColumn ( gridList, title, ... )
-	return _guiGridListAddColumn ( gridList, MuiGetMsg ( title ), ... )
+	if(not g_IgnoredSet[gridList]) then
+		title = MuiGetMsg(title)
+	end
+	return _guiGridListAddColumn ( gridList, title, ... )
 end
 
 local _guiGridListSetItemText = guiGridListSetItemText
 function guiGridListSetItemText ( gridList, rowIndex, columnIndex, text, ... )
-	return _guiGridListSetItemText ( gridList, rowIndex, columnIndex, MuiGetMsg ( text ), ... )
+	if(not g_IgnoredSet[gridList]) then
+		text = MuiGetMsg(text)
+	end
+	return _guiGridListSetItemText ( gridList, rowIndex, columnIndex, text, ... )
 end
 
 local _guiComboBoxAddItem = guiComboBoxAddItem
 function guiComboBoxAddItem ( cb, text, ... )
-	return _guiComboBoxAddItem ( cb, MuiGetMsg ( text ), ... )
+	if(not g_IgnoredSet[gridList]) then
+		text = MuiGetMsg(text)
+	end
+	return _guiComboBoxAddItem ( cb, text, ... )
 end
 
 local _outputChatBox = outputChatBox

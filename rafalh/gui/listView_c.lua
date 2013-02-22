@@ -84,6 +84,14 @@ function ListView:setItemStyle(id, style)
 	guiSetFont(item.titleEl, subStyle.fnt)
 end
 
+function ListView:setItemTooltip(id, tooltip)
+	local item = self.idToItem[id]
+	
+	setElementData(item.imgEl, "tooltip", tooltip)
+	setElementData(item.titleEl, "tooltip", tooltip)
+	setElementData(item.bgEl, "tooltip", tooltip)
+end
+
 function ListView:setFilter(filter)
 	filter = (filter or ""):lower()
 	local idx = 0

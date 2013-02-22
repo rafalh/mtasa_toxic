@@ -17,6 +17,7 @@ local g_ChangePwGui = false
 local EditProfilePanel = {
 	name = "Profile",
 	img = "img/userpanel/profile.png",
+	tooltip = "Edit your profile",
 	width = 300,
 	height = 360,
 }

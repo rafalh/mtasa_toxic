@@ -13,18 +13,19 @@ local g_MapList = false
 local function MlstUpdateList(gui)
 	guiGridListClear(gui.list)
 	
-	local pattern = guiGetText(gui.search_edit):lower ()
+	local pattern = guiGetText(gui.search_edit):lower()
 	
-	for resName, data in pairs ( g_MapList ) do
-		local mapName = data[1]
-		if(mapName:lower():find(pattern, 1, true)) then
+	for resName, data in pairs(g_MapList) do
+		local mapName, mapAuthor = data[1], data[2]
+		if(mapName:lower():find(pattern, 1, true) or mapAuthor:lower():find(pattern, 1, true)) then
 			local row = guiGridListAddRow(gui.list)
-			local played = data[2]
-			local rating = ("%.1f"):format(data[3])
-			guiGridListSetItemText ( gui.list, row, 1, mapName, false, false )
-			guiGridListSetItemText ( gui.list, row, 2, played, false, true )
-			guiGridListSetItemText ( gui.list, row, 3, rating, false, true )
-			guiGridListSetItemData ( gui.list, row, 1, resName )
+			local played = data[3]
+			local rating = ("%.1f"):format(data[4])
+			guiGridListSetItemText(gui.list, row, 1, mapName, false, false)
+			guiGridListSetItemText(gui.list, row, 2, mapAuthor, false, false)
+			guiGridListSetItemText(gui.list, row, 3, played, false, true)
+			guiGridListSetItemText(gui.list, row, 4, rating, false, true)
+			guiGridListSetItemData(gui.list, row, 1, resName)
 		end
 	end
 end
@@ -65,7 +66,7 @@ local function MlstResize ()
 	guiSetSize ( gui.list, w - 20, h - 70 - 45, false )
 	guiSetPosition ( gui.close_btn, w - 80 - 10, h - 25 - 10, false )
 	if ( gui.accept_btn ) then
-		guiSetPosition ( gui.accept_btn, w - 180, h - 25 - 10, false )
+		guiSetPosition ( gui.accept_btn, w - 200, h - 25 - 10, false )
 	end
 end
 
@@ -92,7 +93,7 @@ function MlstDisplay ( title, btn_name, callback )
 	
 	local gui = { cb = callback }
 	
-	local w, h = 320, 400
+	local w, h = 480, 400
 	local x, y = ( g_ScreenSize[1] - w ) / 2, ( g_ScreenSize[2] - h ) / 2
 	gui.wnd = guiCreateWindow ( x, y, w, h, title, false )
 	addEventHandler ( "onClientGUISize", gui.wnd, MlstResize, false )
@@ -104,9 +105,10 @@ function MlstDisplay ( title, btn_name, callback )
 	addEventHandler ( "onClientGUIChanged", gui.search_edit, MlstOnPatternChange, false )
 	
 	gui.list = guiCreateGridList ( 10, 70, w - 20, h - 70 - 45, false, gui.wnd )
-	guiGridListAddColumn ( gui.list, "Map name", 0.8 )
-	guiGridListAddColumn ( gui.list, "Played", 0.2 )
-	guiGridListAddColumn ( gui.list, "Map rating", 0.2 )
+	guiGridListAddColumn ( gui.list, "Map name", 0.5 )
+	guiGridListAddColumn ( gui.list, "Author", 0.2 )
+	guiGridListAddColumn ( gui.list, "Played", 0.1 )
+	guiGridListAddColumn ( gui.list, "Map rating", 0.1 )
 	addEventHandler ( "onClientGUIDoubleClick", gui.list, MlstAccept, false )
 	MlstUpdateList ( gui )
 	
@@ -142,7 +144,7 @@ local function MlstOnMapStart ( map_info )
 	end
 	
 	g_MapList[map_info.resname][1] = map_info.name
-	g_MapList[map_info.resname][2] = g_MapList[map_info.resname][2] + 1
+	g_MapList[map_info.resname][3] = g_MapList[map_info.resname][3] + 1
 	
 	for wnd, gui in pairs ( g_GuiList ) do
 		MlstUpdateList ( gui )

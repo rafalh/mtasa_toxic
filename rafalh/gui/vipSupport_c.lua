@@ -6,6 +6,7 @@ addEvent("vip.onStatus")
 local VipPanel = {
 	name = "VIP Panel",
 	img = "img/userpanel/vip2.png",
+	tooltip = "You don't have VIP account. More info: /vip",
 	noWnd = true,
 	onShow = function()
 		local vipRes = getResourceFromName("rafalh_vip")
@@ -27,6 +28,7 @@ UpRegister(VipPanel)
 
 local function onVipStatus(isVip)
 	VipPanel.img = isVip and "img/userpanel/vip.png" or "img/userpanel/vip2.png"
+	VipPanel.tooltip = isVip and "Press G to open VIP Panel" or "You don't have VIP account. More info: /vip"
 	UpUpdate(VipPanel)
 end
 
@@ -42,5 +44,5 @@ local function init()
 	end
 end
 
-addInternalEventHandler ( $(EV_CLIENT_INIT), init )
+addInternalEventHandler($(EV_CLIENT_INIT), init)
 addEventHandler("vip.onStatus", g_Root, onVipStatus)

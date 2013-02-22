@@ -361,11 +361,34 @@ local g_CloudsPlugin = {
 	preprocess = CloudsPreprocess,
 	fix = CloudsFix }
 
+local function CsmPreprocess(ctx)
+	if(ctx.client_scripts["CSM.lua"] and not ctx.sync_map_element_data) then
+		return true
+	end
+	return false
+end
+
+local function CsmFix(ctx)
+	if (not ctx.client_scripts["CSM.lua"]) then return false end
+	
+	-- Always sync map elements data for CSM
+	if(not ctx.sync_map_element_data) then
+		ctx.sync_map_element_data = xmlCreateChild (ctx.node, "sync_map_element_data")
+	end
+	if(xmlNodeGetValue(ctx.sync_map_element_data) == "true") then return false end
+	
+	return xmlNodeSetValue(ctx.sync_map_element_data, "true")
+end
+
+local g_CsmPlugin = {
+	preprocess = CsmPreprocess,
+	fix = CsmFix }
+
 -------------
 -- GENERAL --
 -------------
 
-local g_Plugins = { g_MusicPlugin, g_PumaMarkers2Plugin, g_CloudsPlugin }
+local g_Plugins = { g_MusicPlugin, g_PumaMarkers2Plugin, g_CloudsPlugin, g_CsmPlugin }
 
 local function FixMapScripts (map)
 	local ctx = {}

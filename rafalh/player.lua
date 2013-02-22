@@ -145,7 +145,7 @@ function Player.create(el, account)
 	g_Players[self.el] = self
 	g_IdToPlayer[self.id] = self.el
 	
-	self.lang = (g_Locales[data.lang] and data.lang) or "en"
+	self.lang = (LocaleList.exists(data.lang) and data.lang) or "en"
 	setElementData(self.el, "lang", self.lang)
 	
 	if(not self.is_console) then

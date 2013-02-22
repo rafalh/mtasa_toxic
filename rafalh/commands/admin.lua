@@ -431,12 +431,20 @@ local function CmdMergeAccounts(message, arg)
 		end
 		
 		-- remove duplicated names
+		local namesSet = {}
+		local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", pdata.id)
+		for i, data in ipairs(rows) do
+			namesSet[data.name] = true
+		end
+		
 		local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", id)
 		local names = {}
 		local questionMarks = {}
 		for i, data in ipairs(rows) do
-			table.insert(names, data.name)
-			table.insert(questionMarks, "?")
+			if(namesSet[data.name]) then
+				table.insert(names, data.name)
+				table.insert(questionMarks, "?")
+			end
 		end
 		local questionMarksStr = table.concat(questionMarks, ",")
 		DbQuery("DELETE FROM rafalh_names WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names))
@@ -633,6 +641,7 @@ local function checkLangFile(path, msgIdSet, opt)
 			end
 		end
 	end
+	
 	if(opt == "fix") then
 		xmlSaveFile(node)
 	end
@@ -660,4 +669,3 @@ local function CmdCheckLang(message, arg)
 end
 
 CmdRegister("checklang", CmdCheckLang, true)
-

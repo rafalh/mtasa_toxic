@@ -7,6 +7,7 @@ local g_Tab = nil
 local AboutPanel = {
 	name = "About",
 	img = "img/userpanel/about.png",
+	tooltip = "Learn more about this server",
 }
 
 --------------------------------

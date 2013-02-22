@@ -9,6 +9,7 @@
 ---------------------
 
 local g_LangButtons = {}
+local g_NewLang = false
 local g_EffectCheckBoxes = {}
 local g_NickEdit, g_SuicideKeyEdit, g_StatsPanelKeyEdit, g_UserPanelKeyEdit
 local g_CarHideCb, g_HideNearbyCarsCb, g_WinnerAnimCb
@@ -18,6 +19,7 @@ local g_Tab = nil
 local SettingsPanel = {
 	name = "Settings",
 	img = "img/userpanel/options.png",
+	tooltip = "Adjust settings to your needs",
 	height = 420,
 }
 
@@ -26,16 +28,12 @@ local SettingsPanel = {
 --------------------------------
 
 local function onSaveClick ()
-	local new_lang = false
-	for lang, radio_btn in pairs ( g_LangButtons ) do
-		if ( guiRadioButtonGetSelected ( radio_btn ) ) then
-			new_lang = lang -- change lang at the end
-			triggerServerInternalEvent ( $(EV_SET_LANG_REQUEST), g_Me, lang )
-			break
-		end
+	if(g_NewLang) then
+		triggerServerEvent("main.onSetLocaleReq", g_ResRoot, g_NewLang)
+		g_NewLang = false
 	end
 	
-	triggerServerInternalEvent ( $(EV_SET_NAME_REQUEST), g_Me, guiGetText ( g_NickEdit ) )
+	triggerServerInternalEvent($(EV_SET_NAME_REQUEST), g_Me, guiGetText(g_NickEdit))
 	
 	local race_res = getResourceFromName ( "race" )
 	local suicide_key = guiGetText ( g_SuicideKeyEdit )
@@ -82,42 +80,37 @@ local function onSaveClick ()
 	--setLang ( new_lang )
 end
 
+local function onFlagClick()
+	local lang = g_LangButtons[source]
+	g_NewLang = lang
+	for img, lang in pairs(g_LangButtons) do
+		guiSetAlpha(img, lang == g_NewLang and 1 or 0.3)
+	end
+end
+
 local function createGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
 	guiCreateLabel(10, 10, 100, 15, "Language:", false, panel)
 	
-	local langs = { en = { "English", "img/en.png" } }
-	local node = xmlLoadFile("conf/languages.xml")
-	local country_i = 0
-	if(node) then
-		local subnode = xmlNodeGetChildren ( node, 0 )
-		while ( subnode ) do
-			local lang = xmlNodeGetValue ( subnode )
-			langs[lang] = { xmlNodeGetAttribute ( subnode, "name" ) or lang, xmlNodeGetAttribute ( subnode, "img" ) }
-			
-			country_i = country_i + 1
-			subnode = xmlNodeGetChildren ( node, country_i )
+	local flagSpace = 5
+	local flagW = math.min(50, (w - 20 + flagSpace) / LocaleList.count() - flagSpace)
+	local flagH = math.floor(flagW * 2 / 3)
+	local x, y = 10, 30
+	for i, locale in LocaleList.ipairs() do
+		local img = guiCreateStaticImage(x, y, flagW, flagH, locale.img, false, panel)
+		setElementData(img, "tooltip", locale.name)
+		addEventHandler("onClientGUIClick", img, onFlagClick, false)
+		g_LangButtons[img] = locale.code
+		
+		if(locale.code ~= g_Settings.lang) then
+			guiSetAlpha(img, 0.3)
 		end
-		xmlUnloadFile ( node )
+		
+		x = x + flagW + flagSpace
 	end
 	
-	local flag_w = ( w - 10 ) / country_i
-	local i = 0
-	for lang, data in pairs ( langs ) do
-		g_LangButtons[lang] = guiCreateRadioButton ( 10 + i*flag_w, 30, flag_w, 15, data[1], false, panel )
-		local img = guiCreateStaticImage ( 10 + i*flag_w, 46, flag_w - 10, flag_w * 2 / 3, data[2], false, panel )
-		addEventHandler ( "onClientGUIClick", img, function ()
-			guiRadioButtonSetSelected ( g_LangButtons[lang], true )
-		end, false )
-		i = i + 1
-	end
-	
-	if ( g_LangButtons[g_Settings.lang] ) then -- select current language
-		guiRadioButtonSetSelected ( g_LangButtons[g_Settings.lang], true )
-	end
-	
-	local y = 55 + flag_w * 2 / 3
+	local y = y + flagH + 10
 	
 	guiCreateLabel ( 10, y, 160, 20, "Nick:", false, panel )
 	g_NickEdit = guiCreateEdit ( 180, y, w - 180 - 60 - 10, 20, getPlayerName ( g_Me ), false, panel )

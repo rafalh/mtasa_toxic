@@ -49,6 +49,8 @@
     <msg id="Exploded:">Eksplozje:</msg>
     <msg id="Drowned:">Utonięcia:</msg>
     <msg id="Playtime:">Czas gry:</msg>
+	<msg id="Maps rated:">Ocenione mapy:</msg>
+	<msg id="Maps bought:">Kupione mapy:</msg>
 	<msg id="%s times">%s razy</msg>
 	
     <msg id="Profile">Profil</msg>

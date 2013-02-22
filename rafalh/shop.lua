@@ -35,10 +35,10 @@ local function ShpGetInventoryRequest ()
 		end
 	end
 	
-	local rafalh_vip_res = getResourceFromName ( "rafalh_vip" )
-	local is_vip = rafalh_vip_res and getResourceState ( rafalh_vip_res ) == "running" and call ( rafalh_vip_res, "isVip", client )
+	local vipRes = getResourceFromName("rafalh_vip")
+	local isVip = vipRes and getResourceState(vipRes) == "running" and call(vipRes, "isVip", client)
 	
-	triggerClientInternalEvent ( client, $(EV_CLIENT_INVENTORY), client, inventory, is_vip )
+	triggerClientInternalEvent(client, $(EV_CLIENT_INVENTORY), client, inventory, isVip)
 end
 
 local function ShpBuyShopItemRequest ( item_id )
@@ -87,26 +87,22 @@ function ShpBuyItem ( item_id, player )
 		query = query..", "..item.field
 	end
 	query = query.." FROM rafalh_players WHERE player=? LIMIT 1"
-	local rows = DbQuery ( query, g_Players[player].id )
-	local price = item.cost
+	local rows = DbQuery(query, g_Players[player].id)
+	local data = rows and rows[1]
 	
-	local rafalh_vip_res = getResourceFromName ( "rafalh_vip" )
-	if ( rafalh_vip_res and getResourceState ( rafalh_vip_res ) == "running" and call ( rafalh_vip_res, "isVip", player ) ) then
-		price = math.ceil ( price * VIP_PRICE )
-	end
-	
-	if ( rows[1].cash < price ) then
+	local price = ShpGetItemPrice(item_id, player)
+	if(data.cash < price) then
 		return false
 	end
 	
-	local success = item.onBuy ( player, rows[1][item.field] )
-	if ( success == false ) then
+	local success = item.onBuy ( player, data[item.field] )
+	if(success == false) then
 		return false
-	elseif ( success == nil ) then
-		outputDebugString ( "Expected returned status", 2 )
+	elseif(success == nil) then
+		outputDebugString("Expected returned status", 2)
 	end
 	
-	StSet ( player, "cash", rows[1].cash - price )
+	StSet(player, "cash", data.cash - price)
 	
 	return price
 end
@@ -128,8 +124,16 @@ function ShpUseItem ( item_id, player )
 	return false
 end
 
-function ShpGetItemPrice ( item_id )
-	return g_ShopItems[item_id].cost
+function ShpGetItemPrice(item_id, player)
+	local price = g_ShopItems[item_id].cost
+	if(player) then
+		local vipRes = getResourceFromName("rafalh_vip")
+		local isVip = vipRes and getResourceState(vipRes) == "running" and call(vipRes, "isVip", player)
+		if(isVip) then
+			price = math.ceil(price * VIP_PRICE)
+		end
+	end
+	return price
 end
 
 function ShpRegisterItem(item)

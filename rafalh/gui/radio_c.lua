@@ -11,6 +11,7 @@ local g_Channels = false
 local RadioPanel = {
 	name = "Radio",
 	img = "img/userpanel/music.png",
+	tooltip = "Listen to internet radio",
 }
 
 local function loadChannels ()

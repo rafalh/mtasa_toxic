@@ -127,10 +127,11 @@ function Map:getId()
 	end
 	
 	local map = (self.res and getResourceName ( self.res )) or self.path
-	local rows = DbQuery ( "SELECT map FROM rafalh_maps WHERE name=? LIMIT 1", map )
-	if ( not rows or not rows[1] ) then
-		DbQuery ( "INSERT INTO rafalh_maps (name) VALUES(?)", map )
-		rows = DbQuery ( "SELECT map FROM rafalh_maps WHERE name=? LIMIT 1", map )
+	local rows = DbQuery("SELECT map FROM rafalh_maps WHERE name=? LIMIT 1", map)
+	if (not rows or not rows[1]) then
+		local now = getRealTime().timestamp
+		DbQuery("INSERT INTO rafalh_maps (name, added_timestamp) VALUES(?, ?)", map, now)
+		rows = DbQuery("SELECT map FROM rafalh_maps WHERE name=? LIMIT 1", map)
 	end
 	
 	map_id = rows[1].map

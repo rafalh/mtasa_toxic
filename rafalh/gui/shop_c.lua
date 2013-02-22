@@ -20,6 +20,7 @@ local g_IsVip = false
 local ShopPanel = {
 	name = "Shop",
 	img = "img/userpanel/shop.png",
+	tooltip = "Buy improvments for your car or set next map",
 }
 
 --------------------------------

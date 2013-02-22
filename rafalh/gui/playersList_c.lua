@@ -24,6 +24,7 @@ local g_RefreshTimer
 local PlayersPanel = {
 	name = "Players list",
 	img = "img/userpanel/users.png",
+	tooltip = "Read more about other players",
 	width = 620,
 }
 

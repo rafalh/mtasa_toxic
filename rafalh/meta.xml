@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.45" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.46" description="Rafalh Scripts System"   />
 	
 	<!--script src="debug.lua" type="client" /-->
 	
@@ -44,6 +44,8 @@
 	<script src="glass_c.lua" type="client" />
 	<script src="http.lua" type="server" />
 	<script src="langs.lua" type="server" />
+	<script src="localeList.lua" type="server" />
+	<script src="localeList.lua" type="client" />
 	<script src="room.lua" type="server" />
 	<script src="map.lua" type="server" />
 	<script src="maps.lua" type="server" />
@@ -58,6 +60,7 @@
 	<script src="sync.lua" type="server" />
 	<script src="spectators.lua" type="server" />
 	<script src="teams.lua" type="server" />
+	<script src="transPanel.lua" type="server" />
 	<script src="rate.lua" type="server" />
 	<script src="rec.lua" type="server" />
 	<script src="rec_c.lua" type="client" />
@@ -76,7 +79,6 @@
 	<script src="commands/gambling.lua" />
 	<script src="commands/general.lua" />
 	<script src="commands/invited.lua" />
-	<script src="commands/lang.lua" />
 	<script src="commands/map_options.lua" />
 	<script src="commands/map_fixing.lua" />
 	<script src="commands/msg_cmd.lua" />
@@ -114,6 +116,8 @@
 	<script src="gui/listView_c.lua" type="client" />
 	<script src="gui/login_c.lua" type="client" />
 	<script src="gui/register_c.lua" type="client" />
+	<script src="gui/tooltip_c.lua" type="client" />
+	<script src="gui/admin/transPanel_c.lua" type="client" />
 	
 	<script src="achievementsList_sc.lua" type="server" />
 	<script src="achievementsList_sc.lua" type="client" />

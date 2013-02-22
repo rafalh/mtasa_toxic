@@ -3,7 +3,9 @@
 
 #include "include/internal_events.lua"
 
+local g_MapInfo = false
 local g_TopTimes = false
+local g_PlayerTimes = {}
 
 function addPlayerTime(player_id, map_id, time)
 	if(g_UpdateInProgress) then return end
@@ -42,7 +44,7 @@ function addPlayerTime(player_id, map_id, time)
 		end
 	end
 	
-	g_TopTimes = false -- invalidate cache
+	BtDeleteCache() -- invalidate cache
 	
 	return pos
 end
@@ -52,29 +54,65 @@ function BtSendMapInfo(room, show, player)
 	if(not map) then return end
 	
 	local map_id = map:getId()
-	local map_name = map:getName()
 	
 	if(not g_TopTimes) then
 		-- this takes long...
-		g_TopTimes = DbQuery("SELECT bt.player, bt.time, p.name FROM rafalh_besttimes bt, rafalh_players p WHERE bt.map=? AND bt.player=p.player ORDER BY time LIMIT 8", map_id )
+		--local start = getTickCount()
+		--for i = 1, 100, 1 do
+			g_TopTimes = DbQuery("SELECT bt.player, bt.time, p.name FROM rafalh_besttimes bt, rafalh_players p WHERE bt.map=? AND bt.player=p.player ORDER BY time LIMIT 8", map_id )
+		--end
 		for i, data in ipairs(g_TopTimes) do
 			data.time = formatTimePeriod(data.time / 1000)
 		end
+		--outputDebugString("Toptimes: "..(getTickCount()-start).." ms", 2)
 	end
 	
-	local rows = DbQuery("SELECT played, rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
-	local data = rows and rows[1]
-	local rating = (data.rates_count > 0 and data.rates/data.rates_count) or 0
-	local author = map:getInfo("author")
-	triggerClientInternalEvent(player or g_Root, $(EV_CLIENT_MAP_INFO), g_Root, show, map_name, author, data.played, rating, data.rates_count, g_TopTimes)
+	if(not g_MapInfo) then
+		local rows = DbQuery("SELECT played, rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+		g_MapInfo = rows and rows[1]
+		g_MapInfo.name = map:getName()
+		g_MapInfo.rating = (g_MapInfo.rates_count > 0 and g_MapInfo.rates/g_MapInfo.rates_count) or 0
+		g_MapInfo.author = map:getInfo("author")
+	end
+	
+	local players = {player}
+	if(not player) then
+		players = getElementsByType("player")
+	end
+	
+	local start = getTickCount()
+	
+	for i, player in ipairs(players) do
+		if(g_PlayerTimes[player] == nil and g_Players[player]) then
+			local pdata = g_Players[player]
+			local rows = DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time < bt1.time", map_id, pdata.id)
+			local data = rows and rows[1]
+			if(data.time) then
+				data.time = formatTimePeriod(data.time / 1000)
+			else
+				data = false -- A bit hacky...
+			end
+			g_PlayerTimes[player] = data
+		end
+		
+		triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
+			show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
+	end
+	
+	local dt = getTickCount() - start
+	if(dt > 100) then
+		outputDebugString("Too slow: "..dt, 2)
+	end
 end
 
 function BtDeleteCache()
+	g_MapInfo = false
 	g_TopTimes = false
+	g_PlayerTimes = {}
 end
 
 local function BtGamemodeMapStop()
-	g_TopTimes = false
+	BtDeleteCache()
 end
 
 -- race_delay_indicator uses it

@@ -83,6 +83,7 @@ local function setupDatabase ()
 			"locked_nick BOOL DEFAULT 0 NOT NULL,"..
 			"invitedby INTEGER DEFAULT 0 NOT NULL,"..
 			"achievements BLOB DEFAULT x'' NOT NULL,"..
+			"mapBoughtTimestamp INT DEFAULT 0 NOT NULL,"..
 			
 			-- New stats
 			"maxWinStreak INTEGER DEFAULT 0 NOT NULL,"..
@@ -155,8 +156,9 @@ local function setupDatabase ()
 			"timestamp INTEGER)")) then
 		err = "Cannot create rafalh_besttimes table."
 	end
+	
 	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_besttimes_idx ON rafalh_besttimes (map)" ) ) then
+			"CREATE INDEX IF NOT EXISTS rafalh_besttimes_idx ON rafalh_besttimes (map, time)" ) ) then
 		err = "Cannot create rafalh_besttimes_idx index."
 	end
 	
@@ -176,7 +178,8 @@ local function setupDatabase ()
 			"rates INTEGER DEFAULT 0 NOT NULL,"..
 			"rates_count INTEGER DEFAULT 0 NOT NULL,"..
 			"removed VARCHAR(255) DEFAULT '' NOT NULL,"..
-			"played_timestamp NTEGER DEFAULT 0 NOT NULL)")) then
+			"played_timestamp INTEGER DEFAULT 0 NOT NULL,"..
+			"added_timestamp INTEGER DEFAULT 0 NOT NULL)")) then
 		err = "Cannot create rafalh_maps table."
 	end
 	
@@ -189,7 +192,7 @@ local function setupDatabase ()
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local currentVer = 144
+	local currentVer = 146
 	local ver = SmGetUInt("version", currentVer)
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
@@ -199,16 +202,6 @@ local function setupDatabase ()
 	end
 	
 	if(ver < currentVer) then
-		if(not err and ver < 141) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN dmVictories INTEGER DEFAULT 0 NOT NULL")) then
-				err = "Failed to add dmVictories column."
-			end
-		end
-		if(not err and ver < 142) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN achievements BLOB DEFAULT x'' NOT NULL")) then
-				err = "Failed to add achievements column."
-			end
-		end
 		if(not err and ver < 143) then
 			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN racesFinished INTEGER DEFAULT 0 NOT NULL")) then
 				err = "Failed to add racesFinished column."
@@ -217,6 +210,16 @@ local function setupDatabase ()
 		if(not err and ver < 144) then
 			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN email VARCHAR(128) DEFAULT '' NOT NULL")) then
 				err = "Failed to add email column."
+			end
+		end
+		if(not err and ver < 145) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapBoughtTimestamp INT DEFAULT 0 NOT NULL")) then
+				err = "Failed to add mapBoughtTimestamp column."
+			end
+		end
+		if(not err and ver < 146) then
+			if(not DbQuery("ALTER TABLE rafalh_maps ADD COLUMN added_timestamp INT DEFAULT 0 NOT NULL")) then
+				err = "Failed to add added_timestamp column."
 			end
 		end
 		
@@ -293,7 +296,7 @@ local function LoadLanguages()
 			local code = xmlNodeGetAttribute(subnode, "code")
 			local name = xmlNodeGetValue(subnode)
 			assert(code and name)
-			g_IsoLangs[code:upper ()] = name
+			g_IsoLangs[code:upper()] = name
 		end
 		xmlUnloadFile(node)
 	end
@@ -358,7 +361,7 @@ local function onResourceStart(resource)
 	end
 	SmSet("cleanup_done", false)
 	
-	LngInit()
+	LocaleList.init()
 	LoadCountries()
 	LoadLanguages()
 	LoadMapTypes()

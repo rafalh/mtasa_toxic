@@ -55,7 +55,7 @@ function ProfileView.create(id, name)
 	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, self.wnd)
 	addEventHandler("onClientGUIClick", btn, ProfileView.onClose, false)
 	
-	StShowGui(self.wnd)
+	self.statsView:show()
 	GaFadeIn(self.wnd, 200)
 	guiSetInputEnabled(true)
 	

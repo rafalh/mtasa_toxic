@@ -10,7 +10,7 @@
 
 local g_Wnd, g_Anim, g_Visible
 local g_PosX, g_PosY = g_ScreenSize[1] - 230, (g_ScreenSize[2] - 280)/2
-local g_Width, g_Height = 220, 250
+local g_Width, g_Height = 220, 270
 local g_StatsView
 
 --------------------------------

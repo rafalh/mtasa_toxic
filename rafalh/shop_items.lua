@@ -411,18 +411,19 @@ local function ShpMapStop ()
 	end
 end
 
-local function ShpBuyNextMap ( map_res_name )
+local function ShpBuyNextMap(mapResName)
 	local pdata = g_Players[client]
 	local now = getRealTime().timestamp
 	
-	local cash = StGet ( client, "cash" )
-	if ( cash < g_ShopItems.nextmap.cost ) then
-		privMsg ( client, "Not enough cash!" )
+	local cash = StGet(client, "cash")
+	local price = ShpGetItemPrice("nextmap", client)
+	if(cash < price) then
+		privMsg(client, "Not enough cash!")
 		return
 	end
 	
-	local map_res = getResourceFromName(map_res_name)
-	local map = map_res and Map.create(map_res)
+	local mapRes = getResourceFromName(mapResName)
+	local map = mapRes and Map.create(mapRes)
 	if ( not map ) then
 		outputDebugString("getResourceFromName failed", 2)
 		return
@@ -436,14 +437,16 @@ local function ShpBuyNextMap ( map_res_name )
 	end
 	
 	local forb_reason, arg = map:isForbidden(room)
-	if ( forb_reason ) then
-		privMsg ( client, forb_reason, arg )
+	if(forb_reason) then
+		privMsg(client, forb_reason, arg)
 		return
 	end
 	
 	local minDelayForPlayer = SmGetUInt("minBuyMapPlayerDelay", 600)
-	if(pdata.buyMapTimeStamp and now - pdata.buyMapTimeStamp < minDelayForPlayer) then
-		local delay = pdata.buyMapTimeStamp + minDelayForPlayer - now
+	local rows = DbQuery("SELECT mapBoughtTimestamp FROM rafalh_players WHERE player=?", pdata.id)
+	local data = rows and rows[1]
+	if(data.mapBoughtTimestamp > 0 and now - data.mapBoughtTimestamp < minDelayForPlayer) then
+		local delay = data.mapBoughtTimestamp + minDelayForPlayer - now
 		privMsg(client, "You cannot buy maps so often. Please wait %s...", formatTimePeriod(delay, 0))
 		return
 	end
@@ -457,10 +460,9 @@ local function ShpBuyNextMap ( map_res_name )
 		local pos = MqAdd(room, map)
 		customMsg(128, 255, 196, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName(client), pos)
 		
-		cash = cash - g_ShopItems.nextmap.cost
-		StSet(client, "cash", cash)
+		StSet(client, "cash", cash - price)
 		StSet(client, "mapsBought", StGet(client, "mapsBought") + 1)
-		pdata.buyMapTimeStamp = now
+		DbQuery("UPDATE rafalh_players SET mapBoughtTimestamp=? WHERE player=?", now, pdata.id)
 	else
 		local delay = minDelayForMap - dt
 		privMsg(client, "Map %s have been recently played. Please wait %s...", mapName, formatTimePeriod(delay, 0))

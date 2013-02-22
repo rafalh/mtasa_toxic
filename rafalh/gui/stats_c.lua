@@ -14,8 +14,9 @@ local g_Stats = {}
 local StatsPanel = {
 	name = "Statistics",
 	img = "img/userpanel/stats.png",
+	tooltip = "Check your statistics",
 	width = 230,
-	height = 260,
+	height = 270,
 }
 
 --------------------------------
@@ -63,6 +64,8 @@ function StatsView:update()
 	guiSetText(gui.bidlvl, stats.bidlvl)
 	guiSetText(gui.exploded, MuiGetMsg("%s times"):format(stats.exploded))
 	guiSetText(gui.drowned, MuiGetMsg("%s times"):format(stats.drowned))
+	guiSetText(gui.mapsRated, stats.mapsRated)
+	guiSetText(gui.mapsBought, stats.mapsBought)
 end
 
 function StatsView:destroy()

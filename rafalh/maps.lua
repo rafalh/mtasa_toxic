@@ -426,26 +426,27 @@ local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
 end
 
 local function onMapListReq()
-	local map_list = {}
+	local mapsList = {}
 	local maps = getMapsList()
 	
 	for i, map in maps:ipairs() do
 		local mapResName = (map.res and getResourceName(map.res)) or map.path
-		local map_name = map:getName()
-		map_list[mapResName] = { map_name, 0, 0 }
+		local mapName = map:getName()
+		local mapAuthor = map:getInfo("author") or ""
+		mapsList[mapResName] = {mapName, mapAuthor, 0, 0}
 	end
 	
-	local rows = DbQuery("SELECT * FROM rafalh_maps", map)
+	local rows = DbQuery("SELECT name, played, rates, rates_count FROM rafalh_maps", map)
 	for i, data in ipairs (rows) do
-		if (map_list[data.name]) then
-			map_list[data.name][2] = data.played
-			if (data.rates_count > 0) then
-				map_list[data.name][3] = data.rates / data.rates_count
+		if(mapsList[data.name]) then
+			mapsList[data.name][3] = data.played
+			if(data.rates_count > 0) then
+				mapsList[data.name][4] = data.rates / data.rates_count
 			end
 		end
 	end
 	
-	triggerClientEvent (client, "onClientMapList", g_ResRoot, map_list)
+	triggerClientEvent(client, "onClientMapList", g_ResRoot, mapsList)
 end
 
 local function onChangeMapReq(mapResName)

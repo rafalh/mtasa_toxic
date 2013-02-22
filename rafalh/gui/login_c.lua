@@ -2,8 +2,6 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
-
 local g_GUI
 g_UserName = false
 
@@ -22,26 +20,6 @@ local function rot13(pw)
 		buf = buf..string.char(code)
 	end
 	return buf
-end
-
-local function loadLangList()
-	local langs = {en = {"English", "img/en.png"}}
-	local langs_count = 0
-	local node = xmlLoadFile("conf/languages.xml")
-	if(node) then
-		local subnode = xmlNodeGetChildren(node, 0)
-		while(subnode) do
-			local lang = xmlNodeGetValue(subnode)
-			local name = xmlNodeGetAttribute(subnode, "name") or lang
-			local img = xmlNodeGetAttribute(subnode, "img")
-			langs[lang] = {name, img}
-			langs_count = langs_count + 1
-			subnode = xmlNodeGetChildren(node, langs_count)
-		end
-		xmlUnloadFile(node)
-	end
-	
-	return langs, langs_count
 end
 
 local function saveAutoLogin()
@@ -119,7 +97,9 @@ end
 
 local function onFlagClick()
 	local lang = g_GUI.flagTbl[source]
-	triggerServerInternalEvent($(EV_SET_LANG_REQUEST), g_Me, lang)
+	if(getElementData(g_Me, "lang") == lang) then return end
+	
+	triggerServerEvent("main.onSetLocaleReq", g_ResRoot, lang)
 	
 	for img, lang in pairs(g_GUI.flagTbl) do
 		local a = (img == source and 1 or 0.6)
@@ -140,7 +120,7 @@ function openLoginWnd(loginFailed)
 	closeLoginWnd()
 	
 	g_GUI = GUI.create("loginWnd")
-	local langs, langsCount = loadLangList()
+	local langsCount = LocaleList.count()
 	local curLang = g_Settings.lang
 	
 	g_GUI.flagTbl = {}
@@ -148,13 +128,14 @@ function openLoginWnd(loginFailed)
 	local imgW, imgH = math.floor(flagsH*80/53), flagsH
 	local spaceW = math.floor(0.2*imgW)
 	local x = (flagsW - imgW*langsCount - spaceW*(langsCount-1))/2
-	for lang, data in pairs(langs) do
-		local img = guiCreateStaticImage(x, 0, imgW, imgH, data[2], false, g_GUI.flags)
-		if(lang ~= curLang) then
+	for i, locale in LocaleList.ipairs() do
+		local img = guiCreateStaticImage(x, 0, imgW, imgH, locale.img, false, g_GUI.flags)
+		if(locale.code ~= curLang) then
 			guiSetAlpha(img, 0.6)
 		end
 		addEventHandler("onClientGUIClick", img, onFlagClick, false)
-		g_GUI.flagTbl[img] = lang
+		setElementData(img, "tooltip", locale.name)
+		g_GUI.flagTbl[img] = locale.code
 		x = x + imgW + spaceW
 	end
 	

@@ -148,6 +148,13 @@ function isPedDead ( player )
 	return ( state and state ~= "alive" ) or _isPedDead ( player )
 end
 
+function isPlayerAdmin(player)
+	local adminGroup = aclGetGroup ("Admin")
+	local account = getPlayerAccount(player)
+	local accountName = getAccountName(account)
+	return (adminGroup and account and isObjectInACLGroup("user."..accountName, adminGroup))
+end
+
 #if ( false ) then -- perf debug
 local g_Handlers = {}
 

@@ -3,9 +3,9 @@ local g_Strings = {}
 local g_Patterns = {}
 local g_TextItems = {}
 
-addEvent ( "onPlayerLangChange" )
+addEvent("onPlayerLangChange")
 
-local function MuiLoadInternal ( path )
+function MuiLoadFile(path)
 	local strings = {}
 	local patterns = {}
 	local node = xmlLoadFile ( path )
@@ -28,13 +28,15 @@ local function MuiLoadInternal ( path )
 			end
 		end
 		xmlUnloadFile ( node )
+	elseif(fileExists(path)) then
+		outputDebugString("Failed to load "..path, 2)
 	end
 	return { strings, patterns }
 end
 
-function MuiLoad ( lang_id )
-	if ( g_Langs[lang_id] ) then return end
-	g_Langs[lang_id] = MuiLoadInternal ( "lang/"..tostring ( lang_id )..".xml" )
+function MuiLoad(lang_id)
+	if(g_Langs[lang_id]) then return end
+	g_Langs[lang_id] = MuiLoadFile("lang/"..tostring(lang_id)..".xml")
 end
 
 function MuiGetMsg ( text, player )

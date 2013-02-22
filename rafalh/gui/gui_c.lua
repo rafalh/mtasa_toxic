@@ -105,8 +105,13 @@ function GUI:createControl(tpl, parent)
 		end
 	elseif(tpl.type == "image") then
 		ctrl = guiCreateStaticImage(x, y, w, h, tpl.src or "", false, parent)
+	elseif(tpl.type == "combobox") then
+		ctrl = guiCreateComboBox(x, y, w, h, "", false, parent)
 	elseif(tpl.type == "list") then
 		ctrl = guiCreateGridList(x, y, w, h, false, parent)
+		if(tpl.sorting == "false") then
+			guiGridListSetSortingEnabled(ctrl, false)
+		end
 	elseif(tpl.type == "column") then
 		ctrl = guiGridListAddColumn(parent, tpl.text or "", tpl.w or 0.5)
 	else
@@ -142,8 +147,10 @@ end
 function GUI:createControls(tpl, parent)
 	local wnd = self:createControl(tpl, parent)
 	for i, childTpl in ipairs(tpl) do
-		local ctrl = self:createControl(childTpl, wnd)
-		self.ctrlList[ctrl] = childTpl
+		local ctrl = self:createControls(childTpl, wnd)
+		if(isElement(ctrl)) then -- dont insert columns
+			self.ctrlList[ctrl] = childTpl
+		end
 	end
 	return wnd
 end

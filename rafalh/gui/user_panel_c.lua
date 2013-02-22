@@ -125,6 +125,9 @@ local function UpCreateGui()
 	
 	for i, item in ipairs(g_Items) do
 		g_List:addItem(item.name, item.img, i)
+		if(item.tooltip) then
+			g_List:setItemTooltip(i, item.tooltip)
+		end
 	end
 	
 	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, g_Wnd)
@@ -167,8 +170,8 @@ end
 function UpUpdate(item)
 	if(not g_List) then return end
 	
-	
 	g_List:setItemImg(item.idx, item.img)
+	g_List:setItemTooltip(item.idx, item.tooltip)
 end
 
 ------------
