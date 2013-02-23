@@ -5,7 +5,7 @@ local function LngOnSetLangRequest(lang)
 	
 	local pdata = g_Players[client]
 	pdata.lang = lang
-	DbQuery("UPDATE rafalh_players SET lang=? WHERE player=?", lang, pdata.id)
+	pdata.accountData:set("lang", lang)
 	setElementData(client, "lang", lang)
 	triggerClientEvent(client, "onClientLangChange", g_Root, lang)
 	triggerEvent("onPlayerLangChange", client, lang)

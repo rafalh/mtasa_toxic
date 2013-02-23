@@ -215,7 +215,7 @@ local function RcOnRecording(map_id, recording)
 	map_id = touint(map_id, 0)
 	local pdata = g_Players[client]
 	
-	if(map_id <= 0 or not pdata or type(recording) ~= "table" or #recording <= 2) then
+	if(map_id <= 0 or not pdata or type(recording) ~= "table" or #recording <= 2 or not pdata.id) then
 		outputDebugString("Invalid parameters in RcOnRecording", 2)
 		return
 	end
@@ -306,6 +306,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improved_besttime)
 	end
 	
 	if(pdata.recording) then
+		assert(pdata.id)
 		local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)", map_id, pdata.id)
 		
 		local found = false
@@ -326,6 +327,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improved_besttime)
 	end
 	
 	if(pdata.cp_times) then
+		assert(pdata.id)
 		local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? AND (length(cp_times)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
 		
 		local found = false

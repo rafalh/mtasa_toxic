@@ -20,28 +20,29 @@ end
 
 local function GbRollTimer(player)
 	local n = math.random(1, 6)
+	local pdata = g_Players[player]
 	
 	if(n == 1) then
-		local cashsub = math.random(1000, 9000)
-		StSet(player, "cash", StGet(player, "cash") - cashsub)
+		local cashsub = math.min(math.random(1000, 9000), pdata.accountData.cash)
+		pdata.accountData:add("cash", -cashsub)
 		privMsg(player, "You rolled %u, you just lost %s.", n, formatMoney(cashsub))
 	elseif(n == 2) then
 		local cashadd = math.random(1000, 5000)
-		StSet(player, "cash", StGet(player, "cash") + cashadd )
+		pdata.accountData:add("cash", cashadd)
 		privMsg(player, "You rolled %u, %s added to your cash.", n, formatMoney(cashadd))
 	elseif(n == 3) then
 		privMsg(player, "You rolled %u, which is mute.", n, player)
 		mutePlayer(player, 60)
 	elseif(n == 4) then
-		local cashsub = math.random(1000, 4000)
-		StSet(player, "cash", StGet(player, "cash") - cashsub)
+		local cashsub = math.min(math.random(1000, 4000), pdata.accountData.cash)
+		pdata.accountData:add("cash", -cashsub)
 		privMsg(player, "You rolled %u, you just lost %s.", n, formatMoney(cashsub))
 	elseif(n == 5) then
 		setSkyGradient(math.random(0,255), math.random(0,255), math.random(0,255), math.random(0,255), math.random(0,255), math.random(0,255))
-		privMsg ( player, "You rolled %u, the sky color changes.", n)
+		privMsg(player, "You rolled %u, the sky color changes.", n)
 	elseif(n == 6) then
 		local cashadd = math.random (1000, 10000)
-		StSet(player, "cash", StGet(player, "cash") + cashadd)
+		pdata.accountData:add("cash", cashadd)
 		privMsg(player, "You rolled %u, %s added to your cash.", n, formatMoney(cashadd))
 	end
 end
@@ -49,8 +50,8 @@ end
 local function GbSpinTimer(player, n, cash)
 	local n2 = math.random(1, 65)
 	if(n == n2) then
-		local cash = StGet(player, "cash") + cash * 101
-		StSet(player, "cash", cash)
+		local pdata = g_Players[player]
+		pdata.accountData:add("cash", cash * 101)
 		privMsg(player, "You spinned %u and won %s.", n2, formatMoney(cash*100))
 	else
 		privMsg(player, "You spinned %u and lost %s.", n2, formatMoney(cash))
@@ -89,10 +90,9 @@ function GbFinishLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
 		r = r - tickets
 		if(r <= 0) then
-			local cash = StGet(id, "cash")
-			StSet(id, "cash", cash + g_LotteryFund)
-			local rows = DbQuery("SELECT name FROM rafalh_players WHERE player=? LIMIT 1", id)
-			scriptMsg("%s won the lottery!", rows[1].name)
+			local accountData = PlayerAccountData.create(id)
+			accountData:add("cash", g_LotteryFund)
+			scriptMsg("%s won the lottery!", accountData:get("name"))
 			break
 		end
 	end
@@ -103,8 +103,7 @@ end
 
 function GbCancelLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
-		local cash = StGet(id, "cash") + tickets
-		StSet(id, "cash", cash)
+		PlayerAccountData.create(id):add("cash", tickets)
 		if(g_IdToPlayer[id]) then
 			privMsg(g_IdToPlayer[id], "Lottery is canceled! You get your money (%s) back.", formatMoney(tickets))
 		end
@@ -117,13 +116,18 @@ end
 
 function GbAddLotteryTickets(player, tickets_count)
 	local pdata = g_Players[player]
+	if(not pdata.id) then
+		privMsg(player, "Guests cannot take part in lottery!")
+		return false
+	end
+	
 	if ( not g_LotteryPlayers[pdata.id] ) then
 		g_LotteryPlayers[pdata.id] = 0
 	end
 	
 	local max_tickets = SmGetUInt("max_tickets", 0)
 	if(g_LotteryPlayers[pdata.id] + tickets_count > max_tickets) then
-		privMsg(player, "You can buy only %u tickets more, because maximal number of tickets per player is %u!", max_tickets - g_LotteryPlayers[g_Players[source].id], max_tickets)
+		privMsg(player, "You can buy only %u tickets more, because maximal number of tickets per player is %u!", max_tickets - g_LotteryPlayers[pdata.id], max_tickets)
 		return false
 	end
 	
@@ -149,10 +153,9 @@ function GbFinishBets(winner)
 	
 	for player, pdata in pairs(g_Players) do
 		if(winner and pdata.bet == winner) then
-			local cash_add = math.floor(pdata.betcash * mult)
-			local cash = StGet(player, "cash") + cash_add
-			StSet(player, "cash", cash)
-			privMsg(player, "You have won %s in your bet!", formatMoney(cash_add))
+			local award = math.floor(pdata.betcash * mult)
+			pdata.accountData:add("cash", award)
+			privMsg(player, "You have won %s in your bet!", formatMoney(award))
 		end
 		pdata.bet = nil
 	end
@@ -161,8 +164,7 @@ end
 function GbCancelBets()
 	for player, pdata in pairs(g_Players) do
 		if(pdata.bet) then
-			local cash = StGet(player, "cash") + pdata.betcash
-			StSet(player, "cash", cash)
+			pdata.accountData:add("cash", pdata.betcash)
 			privMsg(player, "Your bet is canceled! You get your money (%s) back.", formatMoney(pdata.betcash))
 		end
 	end
@@ -173,8 +175,7 @@ local function GbRemoveBetsPlayer(player, return_cash)
 	for player2, pdata2 in pairs(g_Players) do
 		if(pdata2.bet == player) then
 			if(return_cash) then
-				local cash = StGet(player2, "cash") + pdata2.betcash
-				StSet(player2, "cash", cash)
+				pdata2.accountData:add("cash", pdata2.betcash)
 				privMsg(player2, "Your bet is canceled! You get your money (%s) back.", formatMoney(pdata2.betcash))
 			end
 			pdata2.bet = nil
@@ -212,26 +213,26 @@ end
 function GbSpin(player, number, cash)
 	local pdata = g_Players[player]
 	if(pdata.last_spin and (getTickCount() - pdata.last_spin) < 30000) then
+		privMsg(player, "You cannot spin so often!")
 		return false
 	end
 	
-	local pcash = StGet(player, "cash")
-	
-	if(number >= 1 and number <= 65 and cash > 0 and cash < 100000 and pcash >= cash) then
+	if(number >= 1 and number <= 65 and cash > 0 and cash < 100000 and pdata.accountData.cash >= cash) then
 		pdata.last_spin = getTickCount()
-		StSet(player, "cash", pcash - cash)
+		pdata.accountData:add("cash", -cash)
 		
 		-- Create timer
 		setPlayerTimer(GbSpinTimer, 5000, 1, player, number, cash)
 		return true
 	end
 	
+	privMsg(player, "Invalid number or you don't have enough cash")
 	return false
 end
 
 function GbBet(player, player2, cash)
 	local pdata = g_Players[player]
-	StSet(player, "cash", StGet (player, "cash") - cash)
+	pdata.accountData:add("cash", -cash)
 	pdata.bet = player2
 	pdata.betcash = cash
 	return true
@@ -244,7 +245,7 @@ function GbUnbet(player)
 	end
 	
 	pdata.bet = nil
-	StSet(player, "cash", StGet(player, "cash") + pdata.betcash)
+	pdata.accountData:add("cash", pdata.betcash)
 	pdata.betcash = 0
 	return true
 end

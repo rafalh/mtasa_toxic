@@ -4,11 +4,6 @@ Player.__mt = {__index = Player}
 addEvent("onPlayerChangeRoom")
 addEvent("onPlayerChangeTeam")
 
-function Player:getStat(name)
-	if(not self.id) then return 0 end
-	return StGet(self.id, name)
-end
-
 function Player:fixName()
 	local name = getPlayerName(self.el)
 	
@@ -53,6 +48,10 @@ function Player:getName(teamColor)
 	return name
 end
 
+function Player:getPlayTime()
+	return getRealTime().timestamp - self.join_time + self.accountData:get("time_here")
+end
+
 function Player:onRoomChange(room)
 	self.room = room
 	
@@ -61,10 +60,12 @@ end
 
 function Player:onTeamChange(team)
 	local fullName = self:getName(true)
-	DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullName, self.id)
+	self.accountData:set("name", fullName)
 end
 
 function Player:destroy()
+	self.accountData:set("online", 0)
+	
 	g_Players[self.el] = nil
 	g_IdToPlayer[self.id] = nil
 	
@@ -108,6 +109,9 @@ function Player.create(el, account)
 	local accountName = nil
 	if(not isGuestAccount(account)) then
 		accountName = getAccountName(account)
+		self.guest = false
+	else
+		self.guest = true
 	end
 	
 	local serial = self:getSerial()
@@ -141,6 +145,8 @@ function Player.create(el, account)
 		end
 	end
 	self.id = data.player
+	self.accountData = PlayerAccountData.create(self.id)
+	self.accountData:set("online", 1)
 	
 	g_Players[self.el] = self
 	g_IdToPlayer[self.id] = self.el
@@ -157,10 +163,10 @@ function Player.create(el, account)
 	end
 	
 	local fullName = self:getName(true)
-	DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullName, self.id)
+	self.accountData:set("name", fullName)
 	
 	if(accountName) then
-		--DbQuery("UPDATE rafalh_players SET account=? WHERE player=?", accountName, self.id)
+		--self.accountData:set("account", accountName)
 		--setAccountData(account, "toxic.id", self.id)
 	end
 	

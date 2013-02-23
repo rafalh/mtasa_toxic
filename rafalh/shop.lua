@@ -19,19 +19,11 @@ g_ShopItems = {}
 
 local function ShpGetInventoryRequest ()
 	local inventory = {}
-	local fields = ""
+	local pdata = g_Players[client]
 	
 	for item_id, item in pairs ( g_ShopItems ) do
-		if ( item.field ) then
-			fields = fields..","..item.field
-		end
-	end
-	
-	local rows = DbQuery ( "SELECT "..fields:sub ( 2 ).." FROM rafalh_players WHERE player=? LIMIT 1", g_Players[client].id )
-	
-	for item_id, item in pairs ( g_ShopItems ) do
-		if ( item.field ) then
-			inventory[item_id] = rows[1][item.field]
+		if(item.field) then
+			inventory[item_id] = pdata.accountData:get(item.field)
 		end
 	end
 	
@@ -52,16 +44,14 @@ end
 
 local function ShpSellShopItemRequest ( item_id )
 	local item = item_id and g_ShopItems[item_id]
-	if ( not item ) then return end
+	if(not item) then return end
 	
-	if ( item.field ) then
-		local rows = DbQuery ( "SELECT cash, "..item.field.." FROM rafalh_players WHERE player=? LIMIT 1", g_Players[client].id )
-		
-		if ( item.onSell ( client, rows[1][item.field] ) ) then
-			StSet ( client, "cash", rows[1].cash + item.cost / 2 )
-			
-			ShpGetInventoryRequest ()
-		end
+	local pdata = g_Players[client]
+	local val = item.field and pdata.accountData:get(item.field)
+	
+	if(item.onSell(client, val)) then
+		pdata.accountData:add("cash", item.cost / 2)
+		ShpGetInventoryRequest()
 	end
 end
 
@@ -78,47 +68,38 @@ end
 -- Global function definitions --
 ---------------------------------
 
-function ShpBuyItem ( item_id, player )
+function ShpBuyItem(item_id, player)
 	local item = g_ShopItems[item_id]
+	local pdata = g_Players[player]
 	assert(item and item.onBuy)
 	
-	local query = "SELECT cash"
-	if ( item.field ) then
-		query = query..", "..item.field
-	end
-	query = query.." FROM rafalh_players WHERE player=? LIMIT 1"
-	local rows = DbQuery(query, g_Players[player].id)
-	local data = rows and rows[1]
-	
 	local price = ShpGetItemPrice(item_id, player)
-	if(data.cash < price) then
+	if(pdata.accountData:get("cash") < price) then
 		return false
 	end
 	
-	local success = item.onBuy ( player, data[item.field] )
+	local val = item.field and pdata.accountData:get(item.field)
+	local success = item.onBuy(player, val)
 	if(success == false) then
 		return false
 	elseif(success == nil) then
 		outputDebugString("Expected returned status", 2)
 	end
 	
-	StSet(player, "cash", data.cash - price)
+	pdata.accountData:add("cash", -price)
 	
 	return price
 end
 
-function ShpUseItem ( item_id, player )
+function ShpUseItem(item_id, player)
+	local pdata = g_Players[player]
 	local item = g_ShopItems[item_id]
 	assert(item)
 	
 	if ( item.onUse ) then
-		local data = false
-		if ( item.field ) then
-			local rows = DbQuery ( "SELECT "..item.field.." FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id )
-			data = rows[1][item.field]
-		end
+		local val = item.field and pdata.accountData:get(item.field)
 		
-		return item.onUse ( player, data )
+		return item.onUse(player, val)
 	end
 	
 	return false

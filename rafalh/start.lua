@@ -56,66 +56,7 @@ local function setupDatabase ()
 	
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_players ("..
-			"player INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"..
-			"serial VARCHAR(32) NOT NULL,"..
-			"account TEXT UNIQUE,"..
-			"cash INTEGER DEFAULT 0 NOT NULL,"..
-			"points INTEGER DEFAULT 0 NOT NULL,"..
-			"warnings INTEGER DEFAULT 0 NOT NULL,"..
-			"dm INTEGER DEFAULT 0 NOT NULL,"..
-			"dm_wins INTEGER DEFAULT 0 NOT NULL,"..
-			"first INTEGER DEFAULT 0 NOT NULL,"..
-			"second INTEGER DEFAULT 0 NOT NULL,"..
-			"third INTEGER DEFAULT 0 NOT NULL,"..
-			"time_here INTEGER DEFAULT 0 NOT NULL,"..
-			"first_visit INTEGER DEFAULT 0 NOT NULL,"..
-			"last_visit INTEGER DEFAULT 0 NOT NULL,"..
-			"bidlvl INTEGER DEFAULT 1 NOT NULL,"..
-			"ip VARCHAR(16) DEFAULT '' NOT NULL,"..
-			"name VARCHAR(32) DEFAULT '' NOT NULL,"..
-			"joinmsg VARCHAR(128) DEFAULT NULL,"..
-			"pmuted BOOL DEFAULT 0 NOT NULL,"..
-			"toptimes_count INTEGER DEFAULT 0 NOT NULL,"..
-			"online BOOL DEFAULT 0 NOT NULL,"..
-			"lang VARCHAR(2) DEFAULT '' NOT NULL,"..
-			"exploded INTEGER DEFAULT 0 NOT NULL,"..
-			"drowned INTEGER DEFAULT 0 NOT NULL,"..
-			"locked_nick BOOL DEFAULT 0 NOT NULL,"..
-			"invitedby INTEGER DEFAULT 0 NOT NULL,"..
-			"achievements BLOB DEFAULT x'' NOT NULL,"..
-			"mapBoughtTimestamp INT DEFAULT 0 NOT NULL,"..
-			
-			-- New stats
-			"maxWinStreak INTEGER DEFAULT 0 NOT NULL,"..
-			"mapsPlayed INTEGER DEFAULT 0 NOT NULL,"..
-			"mapsBought INTEGER DEFAULT 0 NOT NULL,"..
-			"mapsRated INTEGER DEFAULT 0 NOT NULL,"..
-			"huntersTaken INTEGER DEFAULT 0 NOT NULL,"..
-			"dmVictories INTEGER DEFAULT 0 NOT NULL,"..
-			"ddVictories INTEGER DEFAULT 0 NOT NULL,"..
-			"raceVictories INTEGER DEFAULT 0 NOT NULL,"..
-			"racesFinished INTEGER DEFAULT 0 NOT NULL,"..
-			"dmPlayed INTEGER DEFAULT 0 NOT NULL,"..
-			"ddPlayed INTEGER DEFAULT 0 NOT NULL,"..
-			"racesPlayed INTEGER DEFAULT 0 NOT NULL,"..
-			
-			-- Shop
-			"health100 INTEGER DEFAULT 0 NOT NULL,"..
-			"selfdestr INTEGER DEFAULT 0 NOT NULL,"..
-			"mines INTEGER DEFAULT 0 NOT NULL,"..
-			"oil INTEGER DEFAULT 0 NOT NULL,"..
-			"beers INTEGER DEFAULT 0 NOT NULL,"..
-			"invisibility INTEGER DEFAULT 0 NOT NULL,"..
-			"godmodes30 INTEGER DEFAULT 0 NOT NULL,"..
-			"flips INTEGER DEFAULT 0 NOT NULL,"..
-			"thunders INTEGER DEFAULT 0 NOT NULL,"..
-			"smoke INTEGER DEFAULT 0 NOT NULL,"..
-			
-			-- Effectiveness
-			"efectiveness REAL DEFAULT 0 NOT NULL,"..
-			"efectiveness_dd REAL DEFAULT 0 NOT NULL,"..
-			"efectiveness_dm REAL DEFAULT 0 NOT NULL,"..
-			"efectiveness_race REAL DEFAULT 0 NOT NULL)")) then
+			PlayerAccountData.getDbTableFields()..")")) then
 		err = "Cannot create rafalh_players table."
 	end
 	if(not err and not DbQuery(

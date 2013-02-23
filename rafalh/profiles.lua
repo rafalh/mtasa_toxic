@@ -17,8 +17,7 @@ local function PfSyncCallback(id)
 		ret[data.field] = data.value
 	end
 	
-	local rows = DbQuery("SELECT email FROM rafalh_players WHERE player=?", id)
-	ret.email = rows[1].email
+	ret.email = PlayerAccountData.create(id):get("email")
 	
 	return ret
 end
@@ -85,7 +84,7 @@ function setPlayerProfile(id, data)
 			data[field] = value
 			if(value) then
 				if(field == "email") then
-					DbQuery("UPDATE rafalh_players SET email=? WHERE player=?", value, id)
+					PlayerAccountData.create(id):set("email", value)
 				else
 					DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
 					DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
@@ -101,8 +100,9 @@ function setPlayerProfile(id, data)
 end
 
 local function PfOnSetProfileRequest(data)
-	if(data and type(data) == "table") then
-		setPlayerProfile(g_Players[client].id, data)
+	local pdata = g_Players[client]
+	if(data and type(data) == "table" and pdata.id) then
+		setPlayerProfile(pdata.id, data)
 	end
 end
 

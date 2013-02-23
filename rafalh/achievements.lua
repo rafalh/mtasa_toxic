@@ -15,17 +15,17 @@ end
 function AchvGetActive(player)
 	local pdata = g_Players[player]
 	
-	local rows = DbQuery("SELECT achievements FROM rafalh_players WHERE player=?", pdata.id)
-	local achvStr = rows[1].achievements
+	local achvStr = pdata.accountData:get("achievements")
 	local activeList = {string.byte(achvStr, 1, achvStr:len())}
 	local activeSet = {}
 	for i, id in ipairs(activeList) do
 		activeSet[id] = true
 	end
 	
+	local stats = pdata.accountData:getTbl()
 	for i, achv in ipairs(g_Achievements) do
 		local active = false
-		if(achv.checkStats and not activeSet[achv.id] and achv.checkStats(pdata.stats)) then
+		if(achv.checkStats and not activeSet[achv.id] and achv.checkStats(stats)) then
 			table.insert(activeList, achv.id)
 			activeSet[achv.id] = true
 		end
@@ -66,9 +66,7 @@ function AchvActivate(player, names)
 	
 	AchvInitPlayer(player)
 	local pdata = player and g_Players[player]
-	
-	local rows = DbQuery("SELECT achievements FROM rafalh_players WHERE player=?", pdata.id)
-	local achvStr = rows[1].achievements
+	local achvStr = pdata.accountData:get("achievements")
 	local achvList = {}
 	
 	for i, name in ipairs(names) do
@@ -85,11 +83,11 @@ function AchvActivate(player, names)
 			pdata.achvSet[achv.id] = true
 			pdata.achvCount = pdata.achvCount + 1
 			table.insert(achvList, achv.id)
-			StAdd(player, "cash", achv.prize)
+			pdata.accountData:add("cash", achv.prize)
 		end
 	end
 	
-	DbQuery("UPDATE rafalh_players SET achievements="..DbBlob(achvStr).." WHERE player=?", pdata.id)
+	pdata.accountData:set("achievements", achvStr, true)
 	
 	if(pdata.sync) then
 		triggerClientEvent(player, "main.onAchvUpdate", g_ResRoot, achvList)

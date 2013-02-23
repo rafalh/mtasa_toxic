@@ -8,13 +8,18 @@ local function CmdAlias(message, arg)
 			privMsg(source,  "Aliases for %s:", getPlayerName (player))
 		end
 		
+		local pdata = g_Players[player]
 		local aliases = ""
-		local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", g_Players[player].id)
-		for i, data in ipairs (rows) do
-			if(aliases ~= "") then
-				aliases = aliases..", "
+		if(pdata.id) then
+			local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", pdata.id)
+			for i, data in ipairs(rows) do
+				if(aliases ~= "") then
+					aliases = aliases..", "
+				end
+				aliases = aliases..data.name
 			end
-			aliases = aliases..data.name
+		else
+			aliases = getPlayerName(player)
 		end
 		if(alias) then
 			scriptMsg("%s", aliases..".")

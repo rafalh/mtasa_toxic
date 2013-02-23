@@ -129,6 +129,8 @@
 	
 	<msg id="Achievements">Osiągnięcia</msg>
 	<msg id="Unlocked achievements: %u/%u">Odblokowane osiągnięcia: %u/%u</msg>
+	<msg id="Achievement unlocked: %s! %s have been added to your cash.">Odblokowano osiągnięcie: %s! %s dodano do twojej kasy.</msg>
+	
 	
     <msg id="Settings">Ustawienia</msg>
     <msg id="Language:">Język:</msg>

@@ -8,8 +8,8 @@ addEvent ( "onPlayerStuntComplete", true )
 -- Events --
 ------------
 
-addEventHandler( "onPlayerStuntComplete", g_Root, function ( stuntType, vehicle, time, distance, height, rotation, greatLanding )
-	if ( SmGetBool ( "stunt_bonus" ) ) then
+addEventHandler("onPlayerStuntComplete", g_Root, function(stuntType, vehicle, time, distance, height, rotation, greatLanding)
+	if(SmGetBool("stunt_bonus")) then
 		local addcash
 		if ( stuntType == "Jump" ) then
 			addcash = distance * 4 + height * 8 + rotation * 200/360
@@ -25,10 +25,10 @@ addEventHandler( "onPlayerStuntComplete", g_Root, function ( stuntType, vehicle,
 		else
 			outputDebugString ( "Unknown stunt type: "..tostring ( stuntType ), 2 )
 		end
-		if ( addcash ) then
-			local cash = StGet ( source, "cash" ) + addcash
-			StSet ( source, "cash", cash )
-			privMsg ( source, "You get %s for your stunt!", formatMoney ( addcash ) )
+		if(addcash) then
+			local pdata = g_Players[source]
+			pdata.accountData:add("cash", addcash)
+			privMsg(source, "You get %s for your stunt!", formatMoney(addcash))
 		end
 	end
-end )
+end)

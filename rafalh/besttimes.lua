@@ -34,12 +34,12 @@ function addPlayerTime(player_id, map_id, time)
 	local pos = rows[1].c + 1
 	
 	if(pos <= 3 and not top) then -- player joined to the top
-		StSet(player_id, "toptimes_count", StGet(player_id, "toptimes_count") + 1)
+		PlayerAccountData.create(player_id):add("toptimes_count", 1)
 		
 		local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3,1", map_id)
 		if(rows and rows[1]) then -- someone left the top
 			local pl4_id = rows[1].player
-			StSet(pl4_id, "toptimes_count", StGet (pl4_id, "toptimes_count") - 1)
+			PlayerAccountData.create(pl4_id):add("toptimes_count", -1)
 			DbQuery("UPDATE rafalh_besttimes SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
 		end
 	end
@@ -85,7 +85,7 @@ function BtSendMapInfo(room, show, player)
 	for i, player in ipairs(players) do
 		if(g_PlayerTimes[player] == nil and g_Players[player]) then
 			local pdata = g_Players[player]
-			local rows = DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time < bt1.time", map_id, pdata.id)
+			local rows = pdata.id and DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time <= bt1.time", map_id, pdata.id)
 			local data = rows and rows[1]
 			if(data.time) then
 				data.time = formatTimePeriod(data.time / 1000)
@@ -147,7 +147,7 @@ end
 
 function BtPrintTimes(room, map_id)
 	for player, pdata in pairs(g_Players) do
-		if(pdata.room == room) then
+		if(pdata.room == room and pdata.id) then
 			local rows = DbQuery("SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
 			local data = rows and rows[1]
 			if(data) then

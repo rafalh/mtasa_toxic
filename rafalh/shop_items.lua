@@ -11,12 +11,12 @@ local JoinMsgItem = {
 	field = "joinmsg",
 }
 
-function JoinMsgItem.onBuy ( player, val )
-	return not val and DbQuery ( "UPDATE rafalh_players SET joinmsg='' WHERE player=?", g_Players[player].id )
+function JoinMsgItem.onBuy(player, val)
+	return not val and g_Players[player].accountData:set("joinmsg", "")
 end
 
 function JoinMsgItem.onSell ( player, val )
-	return val and DbQuery ( "UPDATE rafalh_players SET joinmsg=NULL WHERE player=?", g_Players[player].id )
+	return val and g_Players[player].accountData:set("joinmsg", nil)
 end
 
 ShpRegisterItem(JoinMsgItem)
@@ -26,11 +26,11 @@ function JmPlayerJoin ( player )
 		return
 	end
 	
-	local rows = DbQuery ( "SELECT joinmsg FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id )
+	local joinMsg = g_Players[player].accountData:get("joinmsg")
 	
-	if ( rows[1].joinmsg ) then
-		local r, g, b = getPlayerNametagColor ( player )
-		outputChatBox ( "(JOINMSG) "..getPlayerName ( player )..": #EBDDB2"..rows[1].joinmsg, g_Root, r, g, b, true )
+	if(joinMsg) then
+		local r, g, b = getPlayerNametagColor(player)
+		outputChatBox("(JOINMSG) "..getPlayerName(player)..": #EBDDB2"..joinMsg, g_Root, r, g, b, true)
 	end
 end
 
@@ -39,7 +39,7 @@ local HealthItem = {
 	cost = 100000,
 	field = "health100",
 	onBuy = function ( player, val )
-		return DbQuery ( "UPDATE rafalh_players SET health100=health100+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("health100", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -48,11 +48,11 @@ local HealthItem = {
 		end
 		
 		fixVehicle ( veh )
-		DbQuery ( "UPDATE rafalh_players SET health100=health100-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("health100", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET health100=health100-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("health100", -1)
 	end
 }
 
@@ -63,7 +63,7 @@ local FlipItem = {
 	cost = 50000,
 	field = "flips",
 	onBuy = function ( player, val )
-		return DbQuery ( "UPDATE rafalh_players SET flips=flips+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("flips", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -72,13 +72,13 @@ local FlipItem = {
 		local rx, ry, rz = getElementRotation ( veh )
 		if ( val > 0 and not isPedDead ( player ) and ( ( rx > 90 and rx < 270 ) or ( ry > 90 and ry < 270 ) ) ) then
 			setElementRotation ( veh, 0, 0, rz + 180 )
-			DbQuery ( "UPDATE rafalh_players SET flips=flips-1 WHERE player=?", g_Players[player].id )
+			g_Players[player].accountData:add("flips", -1)
 			return true
 		end
 		return false
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET flips=flips-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("flips", -1)
 	end
 }
 
@@ -90,7 +90,7 @@ local SelfDestrItem = {
 	field = "selfdestr",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery("UPDATE rafalh_players SET selfdestr=selfdestr+1 WHERE player=?", g_Players[player].id)
+		return g_Players[player].accountData:add("selfdestr", 1)
 	end,
 	onUse = function ( player, val )
 		local res = getResourceFromName ( "race" )
@@ -102,13 +102,13 @@ local SelfDestrItem = {
 					createExplosion ( x, y, z, 7 )
 				end
 			end, 3000, 1, player )
-			DbQuery ( "UPDATE rafalh_players SET selfdestr=selfdestr-1 WHERE player=?", g_Players[player].id )
+			g_Players[player].accountData:add("selfdestr", -1)
 			return true
 		end
 		return false
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET selfdestr=selfdestr-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("selfdestr", -1)
 	end
 }
 
@@ -120,7 +120,7 @@ local MineItem = {
 	field = "mines",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery ( "UPDATE rafalh_players SET mines=mines+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("mines", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 or isPedDead ( player ) ) then
@@ -137,11 +137,11 @@ local MineItem = {
 			local room = g_RootRoom
 			table.insert ( room.tempElements, createObject ( 1225, x, y, z ) )
 		end, math.max ( 60/v, 50 ), 1, x, y, z, createMarker ( x, y, z, "cylinder", 1, 255, 0, 0, 128 ) )
-		DbQuery ( "UPDATE rafalh_players SET mines=mines-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("mines", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET mines=mines-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("mines", -1)
 	end
 }
 
@@ -164,7 +164,7 @@ local OilItem = {
 	field = "oil",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery ( "UPDATE rafalh_players SET oil=oil+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("oil", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 or isPedDead ( player ) ) then
@@ -183,11 +183,11 @@ local OilItem = {
 				addEventHandler("onMarkerHit", marker, ShpOnOilHit, false)
 			end
 		end, math.max ( 60/v, 50 ), 1, marker)
-		DbQuery("UPDATE rafalh_players SET oil=oil-1 WHERE player=?", g_Players[player].id)
+		g_Players[player].accountData:add("oil", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET oil=oil-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("oil", -1)
 	end
 }
 
@@ -198,7 +198,7 @@ local BeerItem = {
 	cost = 2,
 	field = "beers",
 	onBuy = function ( player, val )
-		return DbQuery ( "UPDATE rafalh_players SET beers=beers+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("beers", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 ) then
@@ -206,11 +206,11 @@ local BeerItem = {
 		end
 		
 		triggerClientInternalEvent ( player, $(EV_CLIENT_DRUNK_EFFECT), player )
-		DbQuery ( "UPDATE rafalh_players SET beers=beers-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("beers", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET beers=beers-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("beers", -1)
 	end
 }
 
@@ -222,7 +222,7 @@ local InvisibilityItem = {
 	field = "invisibility",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery ( "UPDATE rafalh_players SET invisibility=invisibility+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("invisibility", 1)
 	end,
 	onUse = function ( player, val )
 		local pdata = g_Players[player]
@@ -240,12 +240,12 @@ local InvisibilityItem = {
 			local a = ( player2 == player ) and 102 or 0
 			triggerClientEvent ( player2, "onSetPlayerAlphaReq", player, a )
 		end
-		DbQuery ( "UPDATE rafalh_players SET invisibility=invisibility-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("invisibility", -1)
 		pdata.invisible = true
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET invisibility=invisibility-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("invisibility", -1)
 	end
 }
 
@@ -263,7 +263,7 @@ local GodmodeItem = {
 	field = "godmodes30",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery ( "UPDATE rafalh_players SET godmodes30=godmodes30+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("godmodes30", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -278,11 +278,11 @@ local GodmodeItem = {
 				removeEventHandler ( "onVehicleDamage", veh, ShpGodmodeVehicleDamage )
 			end
 		end, 60000, 1, veh )
-		DbQuery ( "UPDATE rafalh_players SET godmodes30=godmodes30-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("godmodes30", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET godmodes30=godmodes30-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("godmodes30", -1)
 	end
 }
 
@@ -294,7 +294,7 @@ local ThunderItem = {
 	field = "thunders",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery ( "UPDATE rafalh_players SET thunders=thunders+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("thunders", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 ) then
@@ -329,11 +329,11 @@ local ThunderItem = {
 		
 		addEvent ( "onThunderEffect", true )
 		triggerClientEvent ( g_Root, "onThunderEffect", player, bestplayer )
-		DbQuery ( "UPDATE rafalh_players SET thunders=thunders-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("thunders", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and DbQuery ( "UPDATE rafalh_players SET thunders=thunders-1 WHERE player=?", g_Players[player].id )
+		return val > 0 and g_Players[player].accountData:add("thunders", -1)
 	end
 }
 
@@ -345,7 +345,7 @@ local SmokeItem = {
 	field = "smoke",
 	onBuy = function ( player )
 		AchvActivate(player, "Buy a weapon")
-		return DbQuery ( "UPDATE rafalh_players SET smoke=smoke+1 WHERE player=?", g_Players[player].id )
+		return g_Players[player].accountData:add("smoke", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -358,11 +358,11 @@ local SmokeItem = {
 		attachElements ( obj, veh, 0, -2, 0 )
 		setTimer ( destroyElement, 15000, 1, obj )
 		
-		DbQuery ( "UPDATE rafalh_players SET smoke=smoke-1 WHERE player=?", g_Players[player].id )
+		g_Players[player].accountData:add("smoke", -1)
 		return true
 	end,
 	onSell = function(player, val)
-		return val > 0 and DbQuery("UPDATE rafalh_players SET smoke=smoke-1 WHERE player=?", g_Players[player].id)
+		return val > 0 and g_Players[player].accountData:add("smoke", -1)
 	end
 }
 
@@ -398,10 +398,11 @@ ShpRegisterItem(VipItem)
 -- Local function definitions --
 --------------------------------
 
-local function ShpSetJoinMsgRequest ( str )
-	local rows = DbQuery ( "SELECT joinmsg FROM rafalh_players WHERE player=? LIMIT 1", g_Players[client].id )
-	if ( str and rows[1].joinmsg ) then
-		DbQuery ( "UPDATE rafalh_players SET joinmsg=? WHERE player=?", str:sub ( 1, 128 ), g_Players[client].id )
+local function ShpSetJoinMsgRequest(str)
+	local pdata = g_Players[client]
+	local joinMsg = pdata.accountData:get("joinmsg")
+	if(joinMsg) then
+		pdata.accountData:set("joinmsg", str:sub(1, 128))
 	end
 end
 
@@ -415,9 +416,8 @@ local function ShpBuyNextMap(mapResName)
 	local pdata = g_Players[client]
 	local now = getRealTime().timestamp
 	
-	local cash = StGet(client, "cash")
 	local price = ShpGetItemPrice("nextmap", client)
-	if(cash < price) then
+	if(pdata.accountData.cash < price) then
 		privMsg(client, "Not enough cash!")
 		return
 	end
@@ -443,10 +443,9 @@ local function ShpBuyNextMap(mapResName)
 	end
 	
 	local minDelayForPlayer = SmGetUInt("minBuyMapPlayerDelay", 600)
-	local rows = DbQuery("SELECT mapBoughtTimestamp FROM rafalh_players WHERE player=?", pdata.id)
-	local data = rows and rows[1]
-	if(data.mapBoughtTimestamp > 0 and now - data.mapBoughtTimestamp < minDelayForPlayer) then
-		local delay = data.mapBoughtTimestamp + minDelayForPlayer - now
+	local mapBoughtTimestamp = pdata.accountData:get("mapBoughtTimestamp")
+	if(mapBoughtTimestamp > 0 and now - mapBoughtTimestamp < minDelayForPlayer) then
+		local delay = mapBoughtTimestamp + minDelayForPlayer - now
 		privMsg(client, "You cannot buy maps so often. Please wait %s...", formatTimePeriod(delay, 0))
 		return
 	end
@@ -460,9 +459,9 @@ local function ShpBuyNextMap(mapResName)
 		local pos = MqAdd(room, map)
 		customMsg(128, 255, 196, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName(client), pos)
 		
-		StSet(client, "cash", cash - price)
-		StSet(client, "mapsBought", StGet(client, "mapsBought") + 1)
-		DbQuery("UPDATE rafalh_players SET mapBoughtTimestamp=? WHERE player=?", now, pdata.id)
+		pdata.accountData:add("cash", -price)
+		pdata.accountData:add("mapsBought", 1)
+		pdata.accountData:set("mapBoughtTimestamp", now)
 	else
 		local delay = minDelayForMap - dt
 		privMsg(client, "Map %s have been recently played. Please wait %s...", mapName, formatTimePeriod(delay, 0))

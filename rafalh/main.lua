@@ -22,13 +22,13 @@ local function onPlayerJoin()
 	local countryStr = country and " ("..country..")" or ""
 	customMsg(255, 100, 100, "* %s has joined the game%s.", getPlayerName(source), countryStr)
 	
-	local rows = DbQuery("SELECT joinmsg, pmuted FROM rafalh_players WHERE player=? LIMIT 1", player.id)
-	
-	if(rows[1].joinmsg and rows[1].joinmsg ~= "") then
+	local joinMsg = player.accountData:get("joinmsg")
+	if(joinMsg and joinMsg ~= "") then
 		setTimer(JmPlayerJoin, 100, 1, source) -- show joinmsg after auto-login
 	end
 	
-	if(rows[1].pmuted == 1) then
+	local pmuted = player.accountData:get("pmuted")
+	if(pmuted == 1) then
 		customMsg(255, 0, 0, "%s has got permanent mute!", getPlayerName(source))
 		mutePlayer(source, 0, false, true)
 	end
@@ -77,7 +77,7 @@ local function onPlayerChangeNick(oldNick, newNick)
 				fullNick = ("#%02X%02X%02X"):format(r, g, b)..fullNick
 			end
 			
-			DbQuery("UPDATE rafalh_players SET name=? WHERE player=?", fullNick, pdata.id)
+			pdata.accountData:set("name", fullNick)
 			customMsg(255, 96, 96, "* %s is now known as %s.", oldNickPlain, newNickPlain)
 		else
 			cancelEvent()
@@ -157,8 +157,8 @@ local function onPlayerChat(message, messageType)
 	cancelEvent() -- cancel event to disallow printing message twice
 	
 	if(fine > 0) then
-		local cash = StGet(source, "cash") - fine
-		StSet(source, "cash", cash)
+		local pdata = g_Players[source]
+		pdata.accountData:add("cash", -fine)
 		privMsg(source, "Do not swear %s! %s taked from your cash.", getPlayerName(source), formatMoney(fine))
 	end
 	
@@ -176,7 +176,6 @@ local function onPlayerReady()
 	local pdata = g_Players[client]
 	pdata.sync = true
 	
-	local rows = DbQuery("SELECT lang FROM rafalh_players WHERE player=? LIMIT 1", pdata.id)
 	local clientSettings = {}
 	clientSettings.lang = pdata.lang
 	clientSettings.breakable_glass = SmGetBool("breakable_glass")
@@ -206,8 +205,8 @@ local function onSetNameRequest(name)
 	if(plainName ~= "" and not (pdata.last_nick_change and (getTickCount() - pdata.last_nick_change) < 10000) and not getPlayerFromName(name)) then
 		local oldPlainName = getPlayerName(client):gsub("#%x%x%x%x%x%x", "")
 		if(oldPlainName ~= plainName) then
-			local rows = DbQuery("SELECT locked_nick FROM rafalh_players WHERE player=? LIMIT 1", pdata.id)
-			if(rows[1].locked_nick == 1) then
+			local lockedNick = pdata.accountData:get("locked_nick")
+			if(lockedNick == 1) then
 				return
 			end
 		end

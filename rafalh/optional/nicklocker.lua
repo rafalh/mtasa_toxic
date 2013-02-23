@@ -1,12 +1,12 @@
-function NlCheckPlayer ( player, name, change )
-	name = name:lower ():gsub ( "#%x%x%x%x%x%x", "" )
+function NlCheckPlayer(player, name, change)
+	name = name:lower():gsub("#%x%x%x%x%x%x", "") -- FIXME
 	
-	local rows = DbQuery ( "SELECT locked_nick, name FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id )
+	local pdata = g_Players[player]
 	
-	if ( rows[1].locked_nick == 1 and name ~= rows[1].name ) then
-		privMsg ( player, "Your name is locked!" )
-		if ( change ) then
-			setPlayerName ( player, rows[1].name )
+	if(pdata.accountData:get("locked_nick") == 1 and name ~= pdata.accountData:get("name")) then
+		privMsg(player, "Your name is locked!")
+		if(change) then
+			setPlayerName(player, pdata.accountData:get("name"))
 		end
 		return true
 	end

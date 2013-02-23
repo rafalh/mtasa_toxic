@@ -4,56 +4,58 @@
 
 local function CmdBuy (message, arg)
 	if (#arg >= 2) then
-		local stats = StGet (source, { "cash", "bidlvl" })
-		local item = arg[2]:lower ()
+		local pdata = g_Players[source]
+		local item = arg[2]:lower()
 		
-		if (g_ShopItems[item]) then
+		if(g_ShopItems[item]) then
 			local cost = ShpBuyItem (item, source)
 			if (cost) then
 				scriptMsg ("%s has bought %s for %s!", getPlayerName (source), item, formatMoney (cost))
 			else
 				privMsg (source, "You can not buy %s right now.", item)
 			end
-		elseif (item == "bidlevel") then
-			local price = stats.bidlvl * SmGetUInt ("bidlvl_price", 1000)
-			if (stats.cash < price) then
+		elseif(item == "bidlevel") then
+			local bidlvl = pdata.accountData.bidlvl
+			local price = bidlvl * SmGetUInt ("bidlvl_price", 1000)
+			if (pdata.accountData.cash < price) then
 				privMsg (source, "You do not have enough cash! Bidlevel costs %s.", formatMoney (price))
 			else
-				StSet (source, { cash = stats.cash - price, bidlvl = stats.bidlvl + 1 })
-				local th = ({ "nd", "rd" })[stats.bidlvl] or "th" -- old value
-				scriptMsg ("%s has bought %s bidlevel for %s!", getPlayerName (source), (stats.bidlvl + 1)..th, formatMoney (price))
+				pdata.accountData:set({cash = pdata.accountData.cash - price, bidlvl = bidlvl + 1})
+				local th = ({ "nd", "rd" })[bidlvl] or "th" -- old value
+				scriptMsg ("%s has bought %s bidlevel for %s!", getPlayerName(source), (bidlvl + 1)..th, formatMoney(price))
 			end
-		elseif (item == "lottery" or item == "lotto" or item == "lotteryticket") then
+		elseif(item == "lottery" or item == "lotto" or item == "lotteryticket") then
 			local n = touint (arg[3])
 			if (n) then
-				if (stats.cash >= n) then
+				if (pdata.accountData.cash >= n) then
 					if (GbAddLotteryTickets (source, n)) then
-						StSet (source, "cash", stats.cash - n)
-						scriptMsg ("%s bought %u lottery tickets!", getPlayerName (source), n)
+						pdata.accountData:add("cash", -n)
+						scriptMsg ("%s bought %u lottery tickets!", getPlayerName(source), n)
 					end
-				else privMsg (source, "You do not have enough cash! You need %s.", formatMoney (n)) end
-			else privMsg (source, "Usage: %s", arg[1].." lottery <tickets count>") end
-		else privMsg (source, "There is no item \"%s\"! Use /itemlist to get list of items.", item) end
-	else privMsg (source, "Usage: %s", arg[1].." <item>") end
+				else privMsg(source, "You do not have enough cash! You need %s.", formatMoney (n)) end
+			else privMsg(source, "Usage: %s", arg[1].." lottery <tickets count>") end
+		else privMsg(source, "There is no item \"%s\"! Use /itemlist to get list of items.", item) end
+	else privMsg(source, "Usage: %s", arg[1].." <item>") end
 end
 
 CmdRegister ("buy", CmdBuy, false, "Buys an item")
 
 local function CmdCost (message, arg)
-	if (#arg >= 2) then
-		local item = message:sub (arg[1]:len () + 2):lower ()
-		if (g_ShopItems[item]) then
-			privMsg (source, "%s costs %s.", item, formatMoney (ShpGetItemPrice (item)))
-		elseif (item == "lottery" or item == "lotto" or item == "lotteryticket") then
-			privMsg (source, "1 lottery ticket costs %s.", formatMoney (1))
-		elseif (item == "bidlevel") then
-			local bidlvl = StGet (source, "bidlvl")
-			local price = bidlvl * SmGetUInt ("bidlvl_price", 1000)
-			privMsg (source, "Bidlevel costs %s.", formatMoney (price))
+	if(#arg >= 2) then
+		local item = message:sub(arg[1]:len () + 2):lower()
+		if(g_ShopItems[item]) then
+			privMsg(source, "%s costs %s.", item, formatMoney(ShpGetItemPrice(item)))
+		elseif(item == "lottery" or item == "lotto" or item == "lotteryticket") then
+			privMsg(source, "1 lottery ticket costs %s.", formatMoney(1))
+		elseif(item == "bidlevel") then
+			local pdata = g_Players[source]
+			local bidlvl = pdata.accountData.bidlvl
+			local price = bidlvl * SmGetUInt("bidlvl_price", 1000)
+			privMsg(source, "Bidlevel costs %s.", formatMoney(price))
 		else
-			privMsg (source, "There is no item \"%s\"! Use /itemlist to get list of items.", item)
+			privMsg(source, "There is no item \"%s\"! Use /itemlist to get list of items.", item)
 		end
-	else privMsg (source, "Usage: %s", arg[1].." <item>") end
+	else privMsg(source, "Usage: %s", arg[1].." <item>") end
 end
 
 CmdRegister ("cost", CmdCost, false, "Checks shop item cost")
@@ -83,14 +85,15 @@ end
 
 CmdRegister ("use", CmdUse, false, "Uses shop item")
 
-local function CmdSetJoinMsg (message, arg)
-	local rows = DbQuery ("SELECT joinmsg FROM rafalh_players WHERE player=? LIMIT 1", g_Players[source].id)
-	if (rows[1].joinmsg) then
-		DbQuery ("UPDATE rafalh_players SET joinmsg=? WHERE player=?", message:sub (arg[1]:len () + 2), g_Players[source].id)
-		privMsg (source, "You have successfully changed your join message!")
+local function CmdSetJoinMsg(message, arg)
+	local sourcePlayer = g_Players[source]
+	if (sourcePlayer.accountData:get("joinmsg")) then
+		local newMsg = message:sub(arg[1]:len () + 2)
+		sourcePlayer.accountData:set("joinmsg", newMsg)
+		privMsg(sourcePlayer.el, "You have successfully changed your join message!")
 	else
-		privMsg (source, "You have not bought joinmsg yet!")
+		privMsg(sourcePlayer.el, "You have not bought joinmsg yet!")
 	end
 end
 
-CmdRegister ("setjoinmsg", CmdSetJoinMsg, false, "Sets join message")
+CmdRegister("setjoinmsg", CmdSetJoinMsg, false, "Sets join message")

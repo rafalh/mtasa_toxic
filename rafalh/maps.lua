@@ -186,9 +186,9 @@ local function onMapStart(map, room)
 		end
 		
 		for player, pdata in pairs(g_Players) do
-			StSet(player, "mapsPlayed", StGet(player, "mapsPlayed") + 1)
+			pdata.accountData:add("mapsPlayed", 1)
 			if(mapTypeCounter) then
-				StSet(player, mapTypeCounter, StGet(player, mapTypeCounter) + 1)
+				pdata.accountData:add(mapTypeCounter, 1)
 			end
 		end
 		
@@ -284,18 +284,17 @@ local function handlePlayerTime(player, ms)
 	end
 	
 	local map_id = map:getId()
-	local n = addPlayerTime (g_Players[player].id, map_id, ms)
-	if (n >= 1) then -- improved best time
-		privMsg (player, "You have improved your personal best time! New: %s", formatTimePeriod (ms / 1000))
+	local n = pdata.id and addPlayerTime (pdata.id, map_id, ms)
+	if(n and n >= 1) then -- improved best time
+		privMsg (player, "You have improved your personal best time! New: %s", formatTimePeriod(ms / 1000))
 		
 		if (n <= 3) then -- new toptime
 			local th = ({ "st", "nd", "rd" })[n]
-			scriptMsg ("The %s top time: %s by %s!", n..th, formatTimePeriod (ms / 1000), getPlayerName (player))
+			scriptMsg ("The %s top time: %s by %s!", n..th, formatTimePeriod (ms / 1000), getPlayerName(player))
 			
 			local award = 30000 / n
-			local cash = StGet (player, "cash") + award
-			StSet (player, "cash", cash)
-			privMsg (player, "%s added to your cash! Total: %s.", formatMoney (award), formatMoney (cash))
+			pdata.accountData:add("cash", award)
+			privMsg(player, "%s added to your cash! Total: %s.", formatMoney(award), formatMoney(pdata.accountData.cash))
 		end
 		
 		if (n <= 8) then
@@ -307,7 +306,8 @@ local function handlePlayerTime(player, ms)
 end
 
 local function handlePlayerWin(player)
-	local room = g_Players[player].room
+	local pdata = g_Players[player]
+	local room = pdata.room
 	scriptMsg("%s is the winner!", getPlayerName(player))
 	
 	GbFinishBets(player)
@@ -326,7 +326,7 @@ local function handlePlayerWin(player)
 	end
 	
 	if(winCounter) then
-		StSet(source, winCounter, StGet(source, winCounter) + 1)
+		pdata.accountData:add(winCounter, 1)
 	end
 	
 	if(room.winStreakPlayer == player) then
@@ -338,22 +338,23 @@ local function handlePlayerWin(player)
 		room.winStreakPlayer = player
 		room.winStreakLen = 1
 	end
-	local maxStreak = StGet(player, "maxWinStreak")
+	local maxStreak = pdata.accountData.maxWinStreak
 	if(room.winStreakLen > maxStreak) then
-		StSet(player, "maxWinStreak", room.winStreakLen)
+		pdata.accountData:set("maxWinStreak", room.winStreakLen)
 	end
 end
 
 local function setPlayerFinalRank(player, rank)
 	local cashadd = math.floor (1000 * g_PlayersCount / rank)
 	local pointsadd = math.floor (g_PlayersCount / rank)
+	local pdata = g_Players[player]
 	
-	local stats = StGet(player, { "cash", "points" })
-	stats.cash = stats.cash + cashadd
-	stats.points = stats.points + pointsadd
-	StSet (player, stats)
-	privMsg (player, "%s added to your cash! Total: %s.", formatMoney (cashadd), formatMoney (stats.cash))
-	privMsg (player, "You earned %s points. Total: %s.", formatNumber (pointsadd), formatNumber (stats.points))
+	local stats = {}
+	stats.cash = pdata.accountData.cash + cashadd
+	stats.points = pdata.accountData.points + pointsadd
+	pdata.accountData:set(stats)
+	privMsg (player, "%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash))
+	privMsg (player, "You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points))
 	
 	if(rank == 1) then
 		handlePlayerWin(player)
@@ -361,17 +362,16 @@ local function setPlayerFinalRank(player, rank)
 end
 
 local function onPlayerFinish(rank, ms)
-	local room = g_Players[source].room
-	local map = getCurrentMap(room)
+	local pdata = g_Players[source]
+	local map = getCurrentMap(pdata.room)
 	local map_id = map:getId()
 	
 	if(rank <= 3) then
-		local rank_str = ({ "first", "second", "third" })[rank]
-		local val = StGet(source, rank_str) + 1
-		StSet(source, rank_str, val)
+		local rank_str = ({"first", "second", "third"})[rank]
+		pdata.accountData:add(rank_str, 1)
 	end
 	
-	StAdd(source, "racesFinished", 1)
+	pdata.accountData:add("racesFinished", 1)
 	
 	local n = handlePlayerTime(source, ms)
 	
@@ -381,22 +381,21 @@ local function onPlayerFinish(rank, ms)
 end
 
 local function onPlayerWinDD()
-	local dm_wins = StGet (source, "dm_wins") + 1
-	StSet (source, "dm_wins", dm_wins)
+	local pdata = g_Players[source]
+	pdata.accountData:add("dm_wins", 1)
 	
 	--local game_weight = 0.007 * g_PlayersCount / 32
 	
-	for player, pdata in pairs (g_Players) do
-		local dm_count = StGet (player, "dm") + 1
-		StSet (player, "dm", dm_count)
+	for player, pdata in pairs(g_Players) do
+		pdata.accountData:add("dm", 1)
 		
-		--local efectiveness_dd = StGet (player, "efectiveness_dd")
+		--local efectiveness_dd = pdata.accountData.efectiveness_dd
 		--local rank = (player == source) and 1 or g_PlayersCount
 		--efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
-		--StSet (player, "efectiveness_dd", efectiveness_dd)
+		--pdata.accountData:set("efectiveness_dd", efectiveness_dd)
 	end
 	
-	setPlayerFinalRank (source, 1)
+	setPlayerFinalRank(source, 1)
 end
 
 local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
@@ -413,7 +412,7 @@ local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
 		end
 		
 		if(mapType.name == "DM") then
-			StSet(pdata.el, "huntersTaken", StGet(pdata.el, "huntersTaken") + 1)
+			pdata.accountData:add("huntersTaken", 1)
 		end
 		
 		local race_res = getResourceFromName("race")

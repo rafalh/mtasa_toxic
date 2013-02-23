@@ -20,6 +20,7 @@
 	<script src="main.lua" />
 	<script src="main_c.lua" type="client" />
 	<script src="player.lua" />
+	<script src="playerAccountData.lua" />
 	
 	<script src="commands/commands.lua" type="server" />
 	<script src="mui.lua" type="server" />

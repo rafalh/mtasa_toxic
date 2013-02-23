@@ -1,33 +1,34 @@
 local function CmdBet(message, arg)
-	local cash, player
+	local sourcePlayer = g_Players[source]
+	local cash, targetPlayer
 	if (#arg >= 3) then
-		cash = touint (arg[3])
-		player = findPlayer (arg[2])
+		cash = touint(arg[3])
+		local el = findPlayer(arg[2])
+		targetPlayer = el and g_Players[el]
 	else
-		cash = touint (arg[2])
-		player = source
+		cash = touint(arg[2])
+		targetPlayer = sourcePlayer
 	end
-	if (cash and player) then
+	if(cash and targetPlayer) then
 		local bet_min_players = SmGetUInt ("bet_min_players", 0)
-		if (g_PlayersCount < bet_min_players) then
-			privMsg (source, "Not enough players to bet - %u are needed.", bet_min_players)
-		elseif (GbAreBetsPlaced ()) then
-			privMsg (source, "Bets are placed!")
+		if(g_PlayersCount < bet_min_players) then
+			privMsg (sourcePlayer.el, "Not enough players to bet - %u are needed.", bet_min_players)
+		elseif(GbAreBetsPlaced ()) then
+			privMsg(sourcePlayer.el, "Bets are placed!")
 		elseif (cash) then
-			local rows = DbQuery ("SELECT cash, bidlvl FROM rafalh_players WHERE player=? LIMIT 1", g_Players[source].id)
-			local max_bet = SmGetUInt ("max_bet", 0) * rows[1].bidlvl
-			if (rows[1].cash < cash) then
-				privMsg (source, "You do not have enough cash!")
+			local max_bet = SmGetUInt("max_bet", 0) * sourcePlayer.accountData:get("bidlvl")
+			if(sourcePlayer.accountData:get("cash") < cash) then
+				privMsg(sourcePlayer.el, "You do not have enough cash!")
 			elseif (cash > max_bet) then
-				privMsg (source, "Your maximal bet is %s!", formatNumber (max_bet))
-			elseif (g_Players[source].bet) then
-				privMsg (source, "You already bet %s on %s!", formatMoney (g_Players[source].betcash), getPlayerName (g_Players[source].bet))
+				privMsg(sourcePlayer.el, "Your maximal bet is %s!", formatNumber(max_bet))
+			elseif(sourcePlayer.bet) then
+				privMsg(sourcePlayer.el, "You already bet %s on %s!", formatMoney(sourcePlayer.betcash), getPlayerName(sourcePlayer.bet))
 			else
-				GbBet (source, player, cash)
-				privMsg (source, "You bet %s on %s!", formatMoney (cash), getPlayerName (player))
+				GbBet(sourcePlayer.el, targetPlayer.el, cash)
+				privMsg(sourcePlayer.el, "You bet %s on %s!", formatMoney(cash), getPlayerName(targetPlayer.el))
 			end
 		end
-	else privMsg (source, "Usage: %s", arg[1].." [<player>] <cash>") end
+	else privMsg(sourcePlayer.el, "Usage: %s", arg[1].." [<player>] <cash>") end
 end
 
 CmdRegister("bet", CmdBet, false, "Bets on a player")

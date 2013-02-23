@@ -1,6 +1,7 @@
 local function AlAddPlayerAlias(player, name)
 	name = name:gsub("#%x%x%x%x%x%x", "")
 	local pdata = g_Players[player]
+	if(not pdata.id) then return end -- guest
 	
 	local rows = DbQuery("SELECT player FROM rafalh_names WHERE player=? AND name=? LIMIT 1", pdata.id, name)
 	if(not rows or not rows[1]) then

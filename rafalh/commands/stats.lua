@@ -86,7 +86,8 @@ CmdRegister ("gtop", CmdGlobalTop, false, "Shows global top of given type")
 
 local function CmdCash (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local stats = StGet (player, { "cash", "bidlvl" })
+	local pdata = g_Players[player]
+	local stats = pdata.accountData:getTbl()
 	scriptMsg ("%s's cash: %s - Bidlevel: %u.", getPlayerName (player), formatMoney (stats.cash), stats.bidlvl)
 end
 
@@ -95,47 +96,46 @@ CmdRegisterAlias ("money", "cash")
 
 local function CmdPoints (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local points = StGet (player, "points")
-	scriptMsg ("%s's points: %s.", getPlayerName (player), formatNumber (points))
+	local pdata = g_Players[player]
+	local pts = pdata.accountData.points
+	scriptMsg ("%s's points: %s.", getPlayerName(player), formatNumber(pts))
 end
 
 CmdRegister ("points", CmdPoints, false, "Shows player points count")
 
 local function CmdRank (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local points = StGet (player, "points")
-	scriptMsg ("%s's rank: %s.", getPlayerName (player), StRankFromPoints (points))
+	local player = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
+	local pdata = g_Players[player]
+	local pts = pdata.accountData.points
+	scriptMsg ("%s's rank: %s.", getPlayerName(player), StRankFromPoints(pts))
 end
 
 CmdRegister ("rank", CmdRank, false, "Shows player rank title")
 
 local function CmdBidLevel (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local rows = DbQuery ("SELECT bidlvl FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id)
+	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
+	local player = g_Players[playerEl]
 	
-	if (rows[1]) then
-		scriptMsg ("%s's bidlevel: %u.", getPlayerName (player), rows[1].bidlvl)
-	end
+	scriptMsg("%s's bidlevel: %u.", getPlayerName(player), player.accountData.bidlvl)
 end
 
 CmdRegister ("bidlevel", CmdBidLevel, false, "Shows player bidlevel")
 
 local function CmdGiveMoney (message, arg)
-	local c = touint (arg[3])
-	local player = arg[2] and findPlayer (arg[2])
+	local amount = touint (arg[3])
+	local dstEl = arg[2] and findPlayer (arg[2])
+	local srcPlayer = g_Players[source]
+	local dstPlayer = dstEl and g_Players[dstEl]
 	
-	if (c and player) then
-		local src_cash = StGet (source, "cash")
-		if (src_cash >= c) then
-			StSet (source, "cash", src_cash - c)
+	if (amount and dstPlayer) then
+		if (srcPlayer.accountData.cash >= amount) then
+			srcPlayer.accountData:add("cash", -amount)
+			dstPlayer.accountData:add("cash", amount)
 			
-			local dst_cash = StGet (player, "cash")
-			StSet (player, "cash", dst_cash + c)
-			
-			privMsg (source, "%s gave %s %s.", getPlayerName (source), getPlayerName (player), formatMoney (c))
-			privMsg (player, "You received %s from %s.", formatMoney (c), getPlayerName (source))
-		else privMsg (source, "You do not have enough cash!") end
-	else privMsg (source, "Usage: %s", arg[1].." <player> <cash>") end
+			privMsg(source, "%s gave %s %s.", getPlayerName(source), getPlayerName(dstEl), formatMoney(amount))
+			privMsg(dstEl, "You received %s from %s.", formatMoney(amount), getPlayerName(source))
+		else privMsg(source, "You do not have enough cash!") end
+	else privMsg(source, "Usage: %s", arg[1].." <player> <cash>") end
 end
 
 CmdRegister ("givemoney", CmdGiveMoney, false, "Transfers money to other player")
@@ -152,39 +152,30 @@ end
 CmdRegister ("seen", CmdSeen, false, "Shows when player joined the game")
 
 local function CmdPlayTime (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local rows = DbQuery ("SELECT time_here FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id)
-	local playtime = getRealTime ().timestamp - g_Players[player].join_time + rows[1].time_here
-	
-	if (rows[1]) then
-		scriptMsg ("%s's time here: %s.", getPlayerName (player), formatTimePeriod (playtime, 0))
-	end
+	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
+	local player = g_Players[playerEl]
+	local playtime = player:getPlayTime()
+	scriptMsg("%s's time here: %s.", getPlayerName(player.el), formatTimePeriod(playtime, 0))
 end
 
-CmdRegister ("playtime", CmdPlayTime, false, "Shows time player spent in game")
-CmdRegisterAlias ("timehere", "playtime")
+CmdRegister("playtime", CmdPlayTime, false, "Shows time player spent in game")
+CmdRegisterAlias("timehere", "playtime")
 
 
-local function CmdWarnings (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local rows = DbQuery ("SELECT warnings FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id)
-	
-	if (rows[1]) then
-		scriptMsg ("%s has been warned %u times.", getPlayerName (player), rows[1].warnings)
-	end
+local function CmdWarnings(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
+	local player = g_Players[playerEl]
+	local warns = player.accountData:get("warnings")
+	scriptMsg("%s has been warned %u times.", getPlayerName(player.el), warns)
 end
 
-CmdRegister ("warnings", CmdWarnings, false, "Shows player warnings count")
-CmdRegisterAlias ("warns", "warnings")
+CmdRegister("warnings", CmdWarnings, false, "Shows player warnings count")
+CmdRegisterAlias("warns", "warnings")
 
 local function CmdStats(msg, arg)
 	local player = (#arg >= 2 and findPlayer(msg:sub (arg[1]:len() + 2))) or source
 	local pdata = g_Players[player]
-	local stats = StGet(player, {"points", "mapsPlayed",
-		"dmVictories", "huntersTaken", "dmPlayed",
-		"ddVictories", "ddPlayed",
-		"raceVictories", "racesPlayed",
-		"maxWinStreak", "toptimes_count"})
+	local stats = pdata.accountData:getTbl()
 	
 	local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
 	local huntRatio = stats.huntersTaken/math.max(stats.dmPlayed, 1)
@@ -204,18 +195,19 @@ CmdRegisterAlias ("stat", "stats")
 CmdRegisterAlias ("st", "stats")
 
 local function CmdStatsOld(message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local rows = DbQuery ("SELECT first, second, third, dm, dm_wins, points, toptimes_count FROM rafalh_players WHERE player=? LIMIT 1", g_Players[player].id)
-	if (rows[1]) then
+	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
+	local player = g_Players[playerEl]
+	local oldStats = player.accountData:getTbl()
+	if(oldStats) then
 		local dm_ratio = 0
-		if (rows[1].dm > 0) then
-			dm_ratio = rows[1].dm_wins / rows[1].dm
+		if(oldStats.dm > 0) then
+			dm_ratio = oldStats.dm_wins / oldStats.dm
 		end
 		
-		scriptMsg ("%s's statistics:", getPlayerName (player))
-		scriptMsg ("Placed: 1st: %s - 2nd: %s - 3rd: %s.", formatNumber (rows[1].first), formatNumber (rows[1].second), formatNumber (rows[1].third))
-		scriptMsg ("Deathmatches: %s - Wins: %s - Ratio: %.2f%%.", formatNumber (rows[1].dm), formatNumber (rows[1].dm_wins), 100 * dm_ratio)
-		scriptMsg ("Top Times held: %s - Points: %s.", formatNumber (rows[1].toptimes_count), formatNumber (rows[1].points))
+		scriptMsg("%s's statistics:", getPlayerName(player.el))
+		scriptMsg("Placed: 1st: %s - 2nd: %s - 3rd: %s.", formatNumber(oldStats.first), formatNumber(oldStats.second), formatNumber(oldStats.third))
+		scriptMsg("Deathmatches: %s - Wins: %s - Ratio: %.2f%%.", formatNumber(oldStats.dm), formatNumber(oldStats.dm_wins), 100 * dm_ratio)
+		scriptMsg("Top Times held: %s - Points: %s.", formatNumber(oldStats.toptimes_count), formatNumber(oldStats.points))
 	end
 end
 

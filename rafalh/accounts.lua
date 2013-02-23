@@ -14,7 +14,14 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 	local accountName = not isGuestAccount(account) and getAccountName(account)
 	if(self and accountName) then
 		DbQuery("UPDATE rafalh_players SET account=NULL WHERE account=?", accountName)
-		DbQuery("UPDATE rafalh_players SET account=? WHERE player=?", accountName, self.id)
+		self.accountData:set("account", accountName)
+		if(not self.guest) then
+			outputDebugString("onPlayerLogin: not guest!", 2)
+		end
+		self.guest = false
+	else
+		outputDebugString("onPlayerLogin: guest!", 2)
+		self.guest = true
 	end
 	
 	triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
@@ -23,6 +30,10 @@ end
 
 local function onPlayerLogout()
 	local self = g_Players[source]
+	if(self.guest) then
+		outputDebugString("onPlayerLogout: guest!", 2)
+	end
+	self.guest = true
 	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, false)
 end
 
@@ -56,7 +67,7 @@ local function onRegisterReq(name, passwd, email)
 		account = addAccount(name, passwd)
 		if(account) then
 			g_RegTimeStamp = ticks
-			DbQuery("UPDATE rafalh_players SET email=? WHERE player=?", email, self.id)
+			self.accountData:set("email", email)
 		end
 	else
 		privMsg(self.el, "Wait a moment...")
