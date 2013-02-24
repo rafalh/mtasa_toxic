@@ -228,7 +228,7 @@ local function RcOnRecording(map_id, recording)
 		-- check if player has a toptime
 		local found = false
 		for i, data in ipairs(rows) do
-			if(i < $(MAX_RECORDINGS+1) and data.player == pdata.id) then
+			if(i <= $(MAX_RECORDINGS) and data.player == pdata.id) then
 				found = true
 				break
 			end
@@ -236,7 +236,7 @@ local function RcOnRecording(map_id, recording)
 		
 		-- if player just get this besttime or there is fewer than 3 recordings
 		if(found or #rows < $(MAX_RECORDINGS)) then
-			outputDebugString("Saving ghost trace (stage 2)", 3)
+			outputDebugString("Saving ghost trace (stage 2): "..getPlayerName(client), 3)
 			local encoded = RcEncodeTrace(recording)
 			encoded = zlibCompress(encoded)
 			local blob = DbBlob(encoded)
@@ -245,7 +245,7 @@ local function RcOnRecording(map_id, recording)
 				DbQuery("UPDATE rafalh_besttimes SET rec=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
 			end
 		else
-			outputDebugString("Invalid player", 2)
+			outputDebugString("Invalid player: "..getPlayerName(client), 2)
 		end
 	end
 end
@@ -318,7 +318,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improved_besttime)
 		end
 		
 		if(found or #rows < 3) then -- if player just get this besttime or there is fewer than 3 recordings
-			outputDebugString("Saving ghost trace (stage 1)", 3)
+			outputDebugString("Saving ghost trace (stage 1): "..getPlayerName(player), 3)
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), player, map_id)
 		else
 			--outputDebugString("Ghost trace won't be saved", 3)

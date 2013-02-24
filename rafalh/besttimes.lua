@@ -83,20 +83,22 @@ function BtSendMapInfo(room, show, player)
 	local start = getTickCount()
 	
 	for i, player in ipairs(players) do
-		if(g_PlayerTimes[player] == nil and g_Players[player]) then
-			local pdata = g_Players[player]
-			local rows = pdata.id and DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time <= bt1.time", map_id, pdata.id)
-			local data = rows and rows[1]
-			if(data.time) then
-				data.time = formatTimePeriod(data.time / 1000)
-			else
-				data = false -- A bit hacky...
+		local pdata = g_Players[player]
+		if(pdata) then
+			if(g_PlayerTimes[player] == nil) then
+				local rows = pdata.id and DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time <= bt1.time", map_id, pdata.id)
+				local data = rows and rows[1]
+				if(data.time) then
+					data.time = formatTimePeriod(data.time / 1000)
+				else
+					data = false -- A bit hacky...
+				end
+				g_PlayerTimes[player] = data
 			end
-			g_PlayerTimes[player] = data
+			
+			triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
+				show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
 		end
-		
-		triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
-			show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
 	end
 	
 	local dt = getTickCount() - start

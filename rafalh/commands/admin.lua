@@ -439,69 +439,125 @@ local function CmdMergeAccounts(message, arg)
 			return
 		end
 		
-		-- remove duplicated names
-		local namesSet = {}
-		local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", pdata.id)
-		for i, data in ipairs(rows) do
-			namesSet[data.name] = true
+		if(src_data.first_visit > pdata.accountData.first_visit) then
+			privMsg(source, "Account for merge is newer")
+			return
 		end
 		
-		local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", id)
+		-- remove duplicated names
 		local names = {}
 		local questionMarks = {}
+		local rows = DbQuery("SELECT n1.name FROM rafalh_names n1, rafalh_names n2 WHERE n1.player=? AND n2.player=? AND n1.name=n2.name", pdata.id, id)
 		for i, data in ipairs(rows) do
-			if(namesSet[data.name]) then
-				table.insert(names, data.name)
-				table.insert(questionMarks, "?")
-			end
+			table.insert(names, data.name)
+			table.insert(questionMarks, "?")
 		end
-		local questionMarksStr = table.concat(questionMarks, ",")
-		DbQuery("DELETE FROM rafalh_names WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names))
 		
-		-- change all names owner
-		DbQuery("UPDATE rafalh_names SET player=? WHERE player=?", pdata.id, id)
+		local questionMarksStr = table.concat(questionMarks, ",")
+		DbQuery("DELETE FROM rafalh_names WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names)) -- remove duplicates
+		DbQuery("UPDATE rafalh_names SET player=? WHERE player=?", pdata.id, id) -- change all names owner
 		
 		-- update stats
-		local stats = {}
-		stats.cash = pdata.accountData.cash + src_data.cash
-		stats.points = pdata.accountData.points + src_data.points
-		stats.warnings = pdata.accountData.warnings + src_data.warnings
-		stats.dm = pdata.accountData.dm + src_data.dm
-		stats.dm_wins= pdata.accountData.dm_wins + src_data.dm_wins
-		stats.first = pdata.accountData.first + src_data.first
-		stats.second = pdata.accountData.second + src_data.second
-		stats.third = pdata.accountData.third + src_data.third
-		stats.bidlvl = math.max(src_data.bidlvl, pdata.accountData.bidlvl)
-		stats.time_here = pdata.accountData.time_here + src_data.time_here
-		pdata.accountData:set(stats)
+		local newData = {}
+		newData.cash = pdata.accountData.cash + src_data.cash
+		newData.points = pdata.accountData.points + src_data.points
+		newData.warnings = pdata.accountData.warnings + src_data.warnings
+		newData.bidlvl = math.max(src_data.bidlvl, pdata.accountData.bidlvl)
+		newData.time_here = pdata.accountData.time_here + src_data.time_here
+		newData.first_visit = src_data.first_visit
+		if(pdata.accountData.email == "") then
+			newData.email = src_data.email
+		end
+		
+		-- Old statistics
+		newData.dm = pdata.accountData.dm + src_data.dm
+		newData.dm_wins= pdata.accountData.dm_wins + src_data.dm_wins
+		newData.first = pdata.accountData.first + src_data.first
+		newData.second = pdata.accountData.second + src_data.second
+		newData.third = pdata.accountData.third + src_data.third
+		newData.exploded = pdata.accountData.exploded + src_data.exploded
+		newData.drowned = pdata.accountData.drowned + src_data.drowned
+		
+		-- New statistics
+		newData.maxWinStreak = math.max(pdata.accountData.maxWinStreak, src_data.maxWinStreak)
+		newData.mapsPlayed = pdata.accountData.mapsPlayed + src_data.mapsPlayed
+		newData.mapsBought = pdata.accountData.mapsBought + src_data.mapsBought
+		-- mapsRated are set later
+		newData.huntersTaken = pdata.accountData.huntersTaken + src_data.huntersTaken
+		newData.dmVictories = pdata.accountData.dmVictories + src_data.dmVictories
+		newData.ddVictories = pdata.accountData.ddVictories + src_data.ddVictories
+		newData.raceVictories = pdata.accountData.raceVictories + src_data.raceVictories
+		newData.racesFinished = pdata.accountData.racesFinished + src_data.racesFinished
+		newData.dmPlayed = pdata.accountData.dmPlayed + src_data.dmPlayed
+		newData.ddPlayed = pdata.accountData.ddPlayed + src_data.ddPlayed
+		newData.racesPlayed = pdata.accountData.racesPlayed + src_data.racesPlayed
+		pdata.accountData:set(newData)
 		
 		if(pdata.accountData:get("joinmsg") == "" and src_data.joinmsg ~= "") then
 			pdata.accountData:set("joinmsg", src_data.joinmsg)
 		end
 		
 		-- remove duplicated rates
-		local rows = DbQuery("SELECT map FROM rafalh_rates WHERE player=?", id)
+		local rows = DbQuery("SELECT r1.map FROM rafalh_rates r1, rafalh_rates r2 WHERE r1.player=? AND r2.player=? AND r1.map=r2.map", pdata.id, id)
 		local maps = {}
 		local questionMarks = {}
 		for i, data in ipairs(rows) do
 			table.insert(maps, data.map)
 			table.insert(questionMarks, "?")
 		end
-		local questionMarksStr = table.concat(questionMarks, ",")
-		DbQuery("DELETE FROM rafalh_rates WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(maps))
-		
-		-- set new rates owner
-		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", pdata.id, id)
-		
-		-- sync best times
-		local rows = DbQuery ("SELECT map, time FROM rafalh_besttimes WHERE player=?", id)
-		for i, data in ipairs (rows) do
-			addPlayerTime (pdata.id, data.map, data.time)
+		if(#maps > 0) then
+			local questionMarksStr = table.concat(questionMarks, ",")
+			DbQuery("DELETE FROM rafalh_rates WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(maps)) -- remove duplicates
 		end
+		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", pdata.id, id) -- set new rates owner
+		local rows = DbQuery("SELECT COUNT(map) AS c FROM rafalh_rates WHERE player=?", pdata.id)
+		pdata.accountData:set("mapsRated", rows[1].c)
+		
+		-- Best times
+		local rows = DbQuery("SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map", pdata.id, id)
+		local mapsSrc, mapsDst = {}, {}
+		local questionMarksSrc, questionMarksDst = {}, {}
+		local topTimesCount = pdata.accountData.toptimes_count + src_data.toptimes_count
+		
+		for i, data in ipairs(rows) do
+			local delTime = math.min(data.time1, data.time2)
+			if(data.time1 > data.time2) then -- old besttime was better
+				table.insert(mapsDst, data.map)
+				table.insert(questionMarksDst, "?")
+			else -- new besttime is better
+				table.insert(mapsSrc, data.map)
+				table.insert(questionMarksSrc, "?")
+			end
+			
+			local rows = DbQuery("SELECT COUNT(player) AS c FROM rafalh_besttimes WHERE map=? AND time<?", data.map, delTime)
+			if(rows[1].c < 3) then
+				topTimesCount = topTimesCount - 1
+			end
+		end
+		if(#mapsDst > 0) then
+			local questionMarksStr = table.concat(questionMarksDst, ",")
+			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", pdata.id, unpack(mapsDst)) -- remove duplicates
+		end
+		if(#mapsSrc > 0) then
+			local questionMarksStr = table.concat(questionMarksSrc, ",")
+			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(mapsSrc)) -- remove duplicates
+		end
+		DbQuery("UPDATE rafalh_besttimes SET player=? WHERE player=?", pdata.id, id) -- set new best times owner
+		pdata.accountData:set("toptimes_count", topTimesCount)
+		
+		-- Profile fields
+		local rows = DbQuery("SELECT p1.field FROM rafalh_profiles p1, rafalh_profiles p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field", pdata.id, id)
+		local fields = {}
+		local questionMarks = {}
+		for i, data in ipairs(rows) do
+			table.insert(fields, data.field)
+			table.insert(questionMarks, "?")
+		end
+		local questionMarksStr = table.concat(questionMarks, ",")
+		DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field IN ("..questionMarksStr..")", id, unpack(fields)) -- remove duplicates
+		DbQuery("UPDATE rafalh_profiles SET player=? WHERE player=?", pdata.id, id) -- set new profile fields owner
 		
 		-- remove player from system
-		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", id)
-		DbQuery("DELETE FROM rafalh_profiles WHERE player=?", id)
 		DbQuery("DELETE FROM rafalh_players WHERE player=?", id)
 		
 		scriptMsg("Accounts has been merged. Old account has been removed...")
@@ -518,7 +574,7 @@ local function CmdRemTopTime(message, arg)
 		local map = getCurrentMap(room)
 		if (map) then
 			local map_id = map:getId()
-			local rows = DbQuery("SELECT bt.player, bt.time FROM rafalh_besttimes btWHERE map=?ORDER BY time LIMIT "..(n + 3), map_id)
+			local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT "..math.max(n, 4), map_id)
 			if(rows and rows[n]) then
 				DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map=?", rows[n].player, map_id)
 				local accountData = PlayerAccountData.create(rows[n].player)
@@ -531,18 +587,18 @@ local function CmdRemTopTime(message, arg)
 				BtDeleteCache()
 				BtSendMapInfo(false)
 				
-				local f = fileExists ("logs/remtoptime.log") and fileOpen ("logs/remtoptime.log") or fileCreate ("logs/remtoptime.log")
-				if (f) then
-					fileSetPos (f, fileGetSize (f)) -- append to file
+				local f = fileExists("logs/remtoptime.log") and fileOpen("logs/remtoptime.log") or fileCreate("logs/remtoptime.log")
+				if(f) then
+					fileSetPos(f, fileGetSize (f)) -- append to file
 					
 					local next_tops = ""
 					for i = n + 1, math.min (n+3, #rows), 1 do
 						next_tops = next_tops..", "..formatTimePeriod(rows[i].time / 1000)
 					end
 					
-					local tm = getRealTime ()
+					local tm = getRealTime()
 					fileWrite(f, ("[%u.%02u.%u %u-%02u-%02u] "):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second)..
-						getPlayerName(source).." removed "..n..". toptime ("..formatTimePeriod (rows[n].time / 1000).." by "..accountData:get("name")..") on map "..map:getName().."."..
+						getPlayerName(source).." removed "..n..". toptime ("..formatTimePeriod(rows[n].time / 1000).." by "..accountData:get("name")..") on map "..map:getName().."."..
 						(next_tops ~= "" and " Next toptimes: "..next_tops:sub(3).."." or "").."\n")
 					
 					fileClose(f)
@@ -550,11 +606,11 @@ local function CmdRemTopTime(message, arg)
 				
 				outputMsg(room.el, "#FF0000", "%u. toptime (%s by %s) has been removed by %s!",
 					n, formatTimePeriod(rows[n].time / 1000), accountData:get("name"), getPlayerName(source))
-			else
+			elseif(rows) then
 				privMsg(source, "There are only %u toptimes saved!", #rows)
 			end
-		else privMsg (source, "Cannot find map!") end
-	else privMsg (source, "Usage: %s", arg[1].." <toptime number>") end
+		else privMsg(source, "Cannot find map!") end
+	else privMsg(source, "Usage: %s", arg[1].." <toptime number>") end
 end
 
 CmdRegister ("remtoptime", CmdRemTopTime, "resource.rafalh.remtoptime", "Removes specified toptime on current map")
