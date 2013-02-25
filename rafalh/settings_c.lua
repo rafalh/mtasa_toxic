@@ -20,11 +20,7 @@ SmRegister("radio_volume", 100, touint)
 SmRegister("carHide", false, tobool)
 SmRegister("winAnim", true, tobool)
 SmRegister("hideNearbyCars", true, tobool)
-
-g_SettingsInfo = {
-	suicide_key = { def = "k", f = tostring },
-	stats_panel_key = {},
-	effects = {def = {}, tostring}}
+SmRegister("locale", "")
 
 function loadSettings ()
 	local node = xmlLoadFile ( "settings.xml" )

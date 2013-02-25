@@ -4,7 +4,7 @@
 local g_Adverts = {}
 local g_AdvertIdx = 0
 local g_Visible = false
-local DEBUG = true
+local DEBUG = false
 
 -- Settings
 local g_TextColor = tocolor(0, 255, 0)
@@ -69,8 +69,8 @@ local function AdvInit ()
 			
 			local advert = {}
 			advert.freq = touint ( attr.freq, 1 )
-			if ( attr[g_Settings.lang] ) then
-				advert.text = attr[g_Settings.lang]
+			if ( attr[g_ClientSettings.locale] ) then
+				advert.text = attr[g_ClientSettings.locale]
 			else
 				advert.text = xmlNodeGetValue ( subnode )
 			end

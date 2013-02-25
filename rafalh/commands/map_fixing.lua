@@ -191,7 +191,9 @@ local function MusicFixClientScript (path, ctx)
 	--end
 	if (not ctx.music_path) then
 		local f = function (path, opt_code)
-			if ((not ctx.files[path] and not ctx.client_scripts[path]) or ctx.music_path) then
+			local isUrl = (path:sub(1, 7) == "http://")
+			local isValidPath = isUrl or (ctx.files[path] or ctx.client_scripts[path])
+			if(not isValidPath or ctx.music_path) then
 				outputDebugString ("Invalid music "..path.." in "..ctx.mapPath, 2)
 				return false
 			end
@@ -244,9 +246,11 @@ local function MusicFix (ctx)
 	end
 	
 	local music_node = ctx.files[ctx.music_path] or ctx.client_scripts[ctx.music_path]
-	xmlNodeSetName (music_node, "html")
-	xmlNodeSetAttribute (music_node, "raw", "true")
-	setMetaSetting (ctx.node, "music", ctx.music_path)
+	if(music_node) then -- may be URL
+		xmlNodeSetName(music_node, "html")
+		xmlNodeSetAttribute(music_node, "raw", "true")
+	end
+	setMetaSetting(ctx.node, "music", ctx.music_path)
 	
 	return true
 end

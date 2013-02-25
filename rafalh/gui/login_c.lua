@@ -96,12 +96,14 @@ local function onLoginStatus(success)
 end
 
 local function onFlagClick()
-	local lang = g_GUI.flagTbl[source]
-	if(getElementData(g_Me, "lang") == lang) then return end
+	local localeId = g_GUI.flagTbl[source]
+	if(g_ClientSettings.locale == localeId) then return end
 	
-	triggerServerEvent("main.onSetLocaleReq", g_ResRoot, lang)
+	triggerServerEvent("main.onSetLocaleReq", g_ResRoot, localeId)
+	g_ClientSettings.locale = localeId
+	saveSettings()
 	
-	for img, lang in pairs(g_GUI.flagTbl) do
+	for img, localeId in pairs(g_GUI.flagTbl) do
 		local a = (img == source and 1 or 0.6)
 		guiSetAlpha(img, a)
 	end
@@ -121,7 +123,7 @@ function openLoginWnd(loginFailed)
 	
 	g_GUI = GUI.create("loginWnd")
 	local langsCount = LocaleList.count()
-	local curLang = g_Settings.lang
+	local curLocale = g_ClientSettings.locale
 	
 	g_GUI.flagTbl = {}
 	local flagsW, flagsH = guiGetSize(g_GUI.flags, false)
@@ -130,7 +132,7 @@ function openLoginWnd(loginFailed)
 	local x = (flagsW - imgW*langsCount - spaceW*(langsCount-1))/2
 	for i, locale in LocaleList.ipairs() do
 		local img = guiCreateStaticImage(x, 0, imgW, imgH, locale.img, false, g_GUI.flags)
-		if(locale.code ~= curLang) then
+		if(locale.code ~= curLocale) then
 			guiSetAlpha(img, 0.6)
 		end
 		addEventHandler("onClientGUIClick", img, onFlagClick, false)

@@ -33,7 +33,7 @@ local function onClientThisResourceStart(res)
 		bindKey("k", "down", suicide)
 	end
 	
-	triggerServerEvent("main.onPlayerReady", g_ResRoot)
+	triggerServerEvent("main.onPlayerReady", g_ResRoot, g_ClientSettings.locale)
 end
 
 local function onClientResourceStart(res)
@@ -44,10 +44,6 @@ local function onClientResourceStart(res)
 				triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")
 			end
 		end, 1000, 1)
-	end
-	
-	if(g_Settings.lang) then
-		triggerEvent("onClientLangChange", getResourceRootElement(res), g_Settings.lang)
 	end
 end
 
@@ -71,11 +67,12 @@ local function onAccountChange(accountName)
 	g_UserName = accountName
 end
 
-local function onClientInit(accountId, settings, isNew)
+local function onClientInit(accountId, settings, isNew, localeId)
 	g_MyId = accountId
 	g_Settings = settings
+	g_ClientSettings.locale = localeId
+	triggerEvent("onClientLangChange", g_Root, localeId)
 	
-	triggerEvent("onClientLangChange", g_Root, settings.lang)
 	if(isNew) then
 		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", g_ClientSettings.user_panel_key, g_ClientSettings.stats_panel_key)
 	end

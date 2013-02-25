@@ -9,7 +9,7 @@
 ---------------------
 
 local g_LangButtons = {}
-local g_NewLang = false
+local g_NewLocale = false
 local g_EffectCheckBoxes = {}
 local g_NickEdit, g_SuicideKeyEdit, g_StatsPanelKeyEdit, g_UserPanelKeyEdit
 local g_CarHideCb, g_HideNearbyCarsCb, g_WinnerAnimCb
@@ -28,9 +28,10 @@ local SettingsPanel = {
 --------------------------------
 
 local function onSaveClick ()
-	if(g_NewLang) then
-		triggerServerEvent("main.onSetLocaleReq", g_ResRoot, g_NewLang)
-		g_NewLang = false
+	if(g_NewLocale) then
+		triggerServerEvent("main.onSetLocaleReq", g_ResRoot, g_NewLocale)
+		g_ClientSettings.locale = g_NewLocale
+		g_NewLocale = false
 	end
 	
 	triggerServerInternalEvent($(EV_SET_NAME_REQUEST), g_Me, guiGetText(g_NickEdit))
@@ -82,9 +83,9 @@ end
 
 local function onFlagClick()
 	local lang = g_LangButtons[source]
-	g_NewLang = lang
+	g_NewLocale = lang
 	for img, lang in pairs(g_LangButtons) do
-		guiSetAlpha(img, lang == g_NewLang and 1 or 0.3)
+		guiSetAlpha(img, lang == g_NewLocale and 1 or 0.3)
 	end
 end
 
@@ -103,7 +104,7 @@ local function createGui(panel)
 		addEventHandler("onClientGUIClick", img, onFlagClick, false)
 		g_LangButtons[img] = locale.code
 		
-		if(locale.code ~= g_Settings.lang) then
+		if(locale.code ~= g_ClientSettings.locale) then
 			guiSetAlpha(img, 0.3)
 		end
 		
@@ -154,7 +155,7 @@ local function createGui(panel)
 	for res, name in pairs(g_Effects) do
 		local enabled = call ( res, "isEffectEnabled" )
 		if ( type ( name ) == "table" ) then
-			name = name[g_Settings.lang] or name[1]
+			name = name[g_ClientSettings.locale] or name[1]
 		end
 		if ( name ) then
 			local cb = guiCreateCheckBox ( 10, effect_y, 300, 20, name, enabled, false, effects_pane )

@@ -51,7 +51,7 @@ local function checkFps()
 			
 			-- display message for user
 			if(type(name) == "table") then
-				name = name[g_Settings.lang] or name[1]
+				name = name[g_ClientSettings.locale] or name[1]
 			end
 			if(name) then
 				outputChatBox(MuiGetMsg("%s has been disabled to improve your FPS!"):format(name), 255, 0, 0)

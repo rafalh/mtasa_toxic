@@ -26,7 +26,7 @@ local AccountDataFields = {
 	{"pmuted", "BOOL DEFAULT 0 NOT NULL", 0},
 	{"toptimes_count", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"online", "BOOL DEFAULT 0 NOT NULL", 0},
-	{"lang", "VARCHAR(2) DEFAULT '' NOT NULL", ""},
+	--{"lang", "VARCHAR(2) DEFAULT '' NOT NULL", ""},
 	{"exploded", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"drowned", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"locked_nick", "BOOL DEFAULT 0 NOT NULL", 0},

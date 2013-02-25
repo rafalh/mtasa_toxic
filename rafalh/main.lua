@@ -14,12 +14,14 @@ local function onPlayerJoin()
 	local player = Player.create(source) -- name can change here
 	player.new = true
 	
-	local country = getElementData(source, "country")
-	if(g_Countries[country]) then
-		country = g_Countries[country]
+	local countryName
+	if(g_Countries[player.country]) then
+		countryName = g_Countries[player.country]
+	else
+		countryName = player.country
 	end
 	
-	local countryStr = country and " ("..country..")" or ""
+	local countryStr = countryName and " ("..countryName..")" or ""
 	customMsg(255, 100, 100, "* %s has joined the game%s.", getPlayerName(source), countryStr)
 	
 	local joinMsg = player.accountData:get("joinmsg")
@@ -172,15 +174,26 @@ local function onPlayerChat(message, messageType)
 	--end
 end
 
-local function onPlayerReady()
+local function onPlayerReady(localeId)
 	local pdata = g_Players[client]
-	pdata.sync = true
+	
+	if(not LocaleList.exists(localeId)) then
+		localeId = pdata.country and pdata.country:lower()
+		if(not LocaleList.exists(localeId)) then
+			localeId = "en"
+		end
+	end
+	
+	
+	pdata:setLocale(localeId) -- set locale
 	
 	local clientSettings = {}
-	clientSettings.lang = pdata.lang
+	clientSettings.lang = localeId
 	clientSettings.breakable_glass = SmGetBool("breakable_glass")
 	clientSettings.red_damage_screen = SmGetBool("red_damage_screen")
-	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new)
+	
+	pdata.sync = true -- set sync to true just before init event
+	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new, localeId)
 	
 	BtSendMapInfo(pdata.room, pdata.new, client)
 	

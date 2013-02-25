@@ -123,20 +123,20 @@ function Player.create(el, account)
 	
 	-- try account first
 	if(accountName) then
-		local rows = DbQuery("SELECT player, lang FROM rafalh_players WHERE account=? LIMIT 1", accountName)
+		local rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", accountName)
 		data = rows and rows[1]
 	end
 	
 	-- try serial now
 	if(not data) then
-		local rows = DbQuery("SELECT player, lang FROM rafalh_players WHERE serial=? LIMIT 1", serial)
+		local rows = DbQuery("SELECT player FROM rafalh_players WHERE serial=? LIMIT 1", serial)
 		data = rows and rows[1]
 	end
 	
 	if(not data) then
 		-- user has no account
 		DbQuery("INSERT INTO rafalh_players (serial, account, ip, first_visit, online) VALUES (?, ?, ?, ?, 1)", serial, accountName, ip or "", now)
-		rows = DbQuery("SELECT player, lang FROM rafalh_players WHERE serial=? AND account=? LIMIT 1", serial, accountName)
+		rows = DbQuery("SELECT player FROM rafalh_players WHERE serial=? AND account=? LIMIT 1", serial, accountName)
 		data = rows and rows[1]
 	else
 		DbQuery("UPDATE rafalh_players SET serial=?, ip=?, online=1 WHERE player=?", serial, ip, data.player)
@@ -151,7 +151,7 @@ function Player.create(el, account)
 	g_Players[self.el] = self
 	g_IdToPlayer[self.id] = self.el
 	
-	self.lang = (LocaleList.exists(data.lang) and data.lang) or "en"
+	self.lang = "en"
 	setElementData(self.el, "lang", self.lang)
 	
 	if(not self.is_console) then
@@ -171,10 +171,10 @@ function Player.create(el, account)
 	end
 	
 	local adminRes = getResourceFromName("admin")
-	local country = adminRes and getResourceState(adminRes) == "running" and call(adminRes, "getPlayerCountry", self.el)
+	self.country = adminRes and getResourceState(adminRes) == "running" and call(adminRes, "getPlayerCountry", self.el)
 	
-	setElementData(self.el, "country", country)
-	local imgPath = country and ":admin/client/images/flags/"..country:lower()..".png"
+	setElementData(self.el, "country", self.country)
+	local imgPath = self.country and ":admin/client/images/flags/"..self.country:lower()..".png"
 	if(imgPath and fileExists(imgPath)) then
 		setElementData(self.el, "country_img", imgPath)
 	end
