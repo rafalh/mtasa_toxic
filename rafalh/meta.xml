@@ -4,23 +4,24 @@
 	
 	<!--script src="debug.lua" type="client" /-->
 	
-	<script src="utils/common.lua" />
+	<script src="utils/common.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
-	<script src="utils/common_sc.lua" />
+	<script src="utils/common_sc.lua" type="server" />
 	<script src="utils/common_sc.lua" type="client" />
 	<script src="utils/vector_c.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />
-	<script src="utils/timers.lua" />
+	<script src="utils/timers.lua" type="server" />
+	<script src="utils/binary.lua" type="server" />
 	
-	<script src="start.lua" />
-	<script src="settings.lua" />
+	<script src="start.lua" type="server" />
+	<script src="settings.lua" type="server" />
 	<script src="settings_c.lua" type="client" />
-	<script src="database.lua" />
+	<script src="database.lua" type="server" />
 	
-	<script src="main.lua" />
+	<script src="main.lua" type="server" />
 	<script src="main_c.lua" type="client" />
-	<script src="player.lua" />
-	<script src="playerAccountData.lua" />
+	<script src="player.lua" type="server" />
+	<script src="playerAccountData.lua" type="server" />
 	
 	<script src="commands/commands.lua" type="server" />
 	<script src="mui.lua" type="server" />
@@ -123,7 +124,7 @@
 	<script src="achievementsList_sc.lua" type="server" />
 	<script src="achievementsList_sc.lua" type="client" />
 	
-	<script src="stop.lua" />
+	<script src="stop.lua" type="server" />
 	
 	<config src="conf/censor.xml" />
 	<config src="conf/commands.xml" />

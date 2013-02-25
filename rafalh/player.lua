@@ -49,7 +49,55 @@ function Player:getName(teamColor)
 end
 
 function Player:getPlayTime()
-	return getRealTime().timestamp - self.join_time + self.accountData:get("time_here")
+	return getRealTime().timestamp - self.loginTimestamp + self.accountData:get("time_here")
+end
+
+function Player:disconnectFromAccount()
+	self.accountData:set("online", 0)
+	
+	local now = getRealTime().timestamp
+	local timeSpent = now - self.loginTimestamp
+	self.accountData:add("time_here", timeSpent)
+	self.accountData:set("last_visit", now)
+	
+	if(self.id) then
+		g_IdToPlayer[self.id] = nil
+	end
+end
+
+function Player:setAccount(account)
+	local now = getRealTime().timestamp
+	
+	if(self.accountData) then
+		self:disconnectFromAccount()
+	end
+	
+	if(type(account) == "userdata") then
+		account = not isGuestAccount(account) and getAccountName(account)
+	end
+	
+	self.id = false
+	if(account) then
+		local rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", account)
+		self.id = rows and rows[1] and rows[1].player
+		
+		if(not self.id) then
+			DbQuery("INSERT INTO rafalh_players (account, first_visit) VALUES (?, ?)", account, now)
+			rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", account)
+			self.id = rows and rows[1] and rows[1].player
+		end
+		
+		assert(self.id)
+		g_IdToPlayer[self.id] = self.el
+	end
+	self.guest = not self.id
+	self.loginTimestamp = now
+	
+	self.accountData = PlayerAccountData.create(self.id)
+	self.accountData:set("online", 1)
+	self.accountData:set("serial", self:getSerial())
+	self.accountData:set("ip", self:getIP())
+	self.accountData:set("last_visit", now)
 end
 
 function Player:onRoomChange(room)
@@ -64,10 +112,9 @@ function Player:onTeamChange(team)
 end
 
 function Player:destroy()
-	self.accountData:set("online", 0)
+	self:disconnectFromAccount()
 	
 	g_Players[self.el] = nil
-	g_IdToPlayer[self.id] = nil
 	
 	if(not self.is_console) then
 		g_PlayersCount = g_PlayersCount - 1
@@ -84,7 +131,7 @@ function Player:destroy()
 	end
 end
 
-function Player.create(el, account)
+function Player.create(el)
 	local now = getRealTime().timestamp
 	
 	local self = setmetatable({}, Player.__mt)
@@ -103,53 +150,10 @@ function Player.create(el, account)
 	self.room = roomEl and Room.create(roomEl)
 	
 	-- get player account name
-	if(not account) then
-		account = getPlayerAccount(self.el)
-	end
-	local accountName = nil
-	if(not isGuestAccount(account)) then
-		accountName = getAccountName(account)
-		self.guest = false
-	else
-		self.guest = true
-	end
-	
-	local serial = self:getSerial()
-	local ip = self:getIP()
-	local name = self:fixName()
-	
-	-- Get player ID
-	local data = false
-	
-	-- try account first
-	if(accountName) then
-		local rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", accountName)
-		data = rows and rows[1]
-	end
-	
-	-- try serial now
-	if(not data) then
-		local rows = DbQuery("SELECT player FROM rafalh_players WHERE serial=? LIMIT 1", serial)
-		data = rows and rows[1]
-	end
-	
-	if(not data) then
-		-- user has no account
-		DbQuery("INSERT INTO rafalh_players (serial, account, ip, first_visit, online) VALUES (?, ?, ?, ?, 1)", serial, accountName, ip or "", now)
-		rows = DbQuery("SELECT player FROM rafalh_players WHERE serial=? AND account=? LIMIT 1", serial, accountName)
-		data = rows and rows[1]
-	else
-		DbQuery("UPDATE rafalh_players SET serial=?, ip=?, online=1 WHERE player=?", serial, ip, data.player)
-		if(accountName) then
-			DbQuery("UPDATE rafalh_players SET account=? WHERE player=?", accountName, data.player)
-		end
-	end
-	self.id = data.player
-	self.accountData = PlayerAccountData.create(self.id)
-	self.accountData:set("online", 1)
+	local account = getPlayerAccount(self.el)
+	self:setAccount(account)
 	
 	g_Players[self.el] = self
-	g_IdToPlayer[self.id] = self.el
 	
 	self.lang = "en"
 	setElementData(self.el, "lang", self.lang)
@@ -159,16 +163,12 @@ function Player.create(el, account)
 	end
 	
 	if(NlCheckPlayer) then
+		local name = self:fixName()
 		NlCheckPlayer(self.el, name, true)
 	end
 	
 	local fullName = self:getName(true)
 	self.accountData:set("name", fullName)
-	
-	if(accountName) then
-		--self.accountData:set("account", accountName)
-		--setAccountData(account, "toxic.id", self.id)
-	end
 	
 	local adminRes = getResourceFromName("admin")
 	self.country = adminRes and getResourceState(adminRes) == "running" and call(adminRes, "getPlayerCountry", self.el)

@@ -5,9 +5,11 @@ g_ProfileFields = {}
 local g_ProfileCats = {}
 
 local function PfSyncCallback(id)
+	if(not id) then return {} end -- guest
+	
 	id = touint(id)
 	if (not id) then
-		outputDebugScript("Wrong id", 2)
+		outputDebugString("Wrong id", 2)
 		return false
 	end
 	
@@ -68,11 +70,15 @@ local function PfInit()
 end
 
 function setPlayerProfile(id, data)
+	if(not id) then return end
+	
 	for field, value in pairs(data) do
 		local fieldInfo = g_ProfileFields[field]
 		if(fieldInfo) then
 			value = tostring(value or "")
-			if(fieldInfo.type == "num") then
+			if(value == "") then
+				-- empty field - ok
+			elseif(fieldInfo.type == "num") then
 				value = value:match("^%d+%.?%d?%d?$") and tofloat(value)
 			elseif(fieldInfo.type == "int") then
 				value = value:match("^%d+$") and toint(value)
@@ -87,7 +93,9 @@ function setPlayerProfile(id, data)
 					PlayerAccountData.create(id):set("email", value)
 				else
 					DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
-					DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
+					if(value ~= "") then
+						DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
+					end
 				end
 			end
 		else

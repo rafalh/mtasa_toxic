@@ -16,7 +16,7 @@ end
 
 local function IvNewPlayer(player)
 	local pdata = g_Players[player]
-	local playtime = pdata.accountData.time_here
+	local playtime = pdata:getPlayTime()
 	
 	if(playtime < 10*3600) then
 		setPlayerTimer(IvTimerProc, (10*3600 - playtime) * 1000, 1, player)

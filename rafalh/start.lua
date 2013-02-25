@@ -4,54 +4,9 @@
 
 g_UpdateInProgress = false
 
-local function compressGhosts()
-	g_UpdateInProgress = true
-	local start = getTickCount()
-	local bytesOld, bytesZlib, bytesNew = 0, 0, 0
-	
-	local rows = DbQuery("SELECT * FROM rafalh_besttimes WHERE rec<>'' OR cp_times <> ''")
-	for i, data in ipairs(rows) do
-		local dt = getTickCount() - start
-		if (dt > 1000) then
-			outputDebugString("Compressing ghosts: "..i.."/"..#rows, 3)
-			outputDebugString("bytesOld "..bytesOld.." bytesZlib "..bytesZlib.." bytesNew "..bytesNew, 3)
-			coroutine.yield()
-			start = getTickCount()
-		end
-		
-		local newRec, newCpTimes = "", ""
-		
-		if(data.rec ~= "") then
-			--newRec = zlibCompress(data.rec)
-			
-			bytesOld = bytesOld + data.rec:len()
-			--bytesZlib = bytesZlib + newRec:len()
-			
-			local recTbl = RcDecodeTraceOld(data.rec)
-			local newRecStr = RcEncodeTrace(recTbl)
-			--assert(#RcDecodeTrace(newRecStr) == #recTbl) -- test with asserts
-			local newRec2 = zlibCompress(newRecStr)
-			newRec = newRec2
-			bytesNew = bytesNew + newRec2:len()
-		end
-		
-		if(data.cp_times ~= "") then
-			newCpTimes = zlibCompress(data.cp_times)
-		end
-		
-		DbQuery("UPDATE rafalh_besttimes SET "..
-			"rec="..DbBlob(newRec)..", "..
-			"cp_times="..DbBlob(newCpTimes).." "..
-			"WHERE map=? AND player=?", data.map, data.player)
-	end
-	
-	outputDebugString("Compressing ghosts finished", 3)
-	g_UpdateInProgress = false
-end
-
-local function setupDatabase ()
-	--g_Db = Database:create ()
-	DbInit ()
+local function setupDatabase()
+	--g_Db = Database:create()
+	DbInit()
 	local err = false
 	
 	if(not err and not DbQuery(
@@ -333,4 +288,4 @@ end
 -- Events --
 ------------
 
-addEventHandler ( "onResourceStart", g_ResRoot, onResourceStart )
+addEventHandler("onResourceStart", g_ResRoot, onResourceStart)

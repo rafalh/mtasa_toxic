@@ -22,11 +22,17 @@ local function SpInitGui()
 	guiSetAlpha(g_Wnd, 0.8)
 	guiSetVisible(g_Wnd, false)
 	
-	g_StatsView = StatsView.create(g_MyId, g_Wnd, 10, 25, g_Width - 20, g_Height - 35)
+	g_StatsView = StatsView.create(g_MyId or g_Me, g_Wnd, 10, 25, g_Width - 20, g_Height - 35)
 end
 
 local function SpInit()
 	bindKey(g_ClientSettings.stats_panel_key, "up", openStatsPanel)
+end
+
+local function onAccountChange()
+	if(g_StatsView) then
+		g_StatsView:changeTarget(g_MyId or g_Me)
+	end
 end
 
 ----------------------
@@ -61,3 +67,4 @@ end
 ------------
 
 addInternalEventHandler($(EV_CLIENT_INIT), SpInit)
+addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)

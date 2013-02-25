@@ -88,7 +88,7 @@ function BtSendMapInfo(room, show, player)
 			if(g_PlayerTimes[player] == nil) then
 				local rows = pdata.id and DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time <= bt1.time", map_id, pdata.id)
 				local data = rows and rows[1]
-				if(data.time) then
+				if(data and data.time) then
 					data.time = formatTimePeriod(data.time / 1000)
 				else
 					data = false -- A bit hacky...

@@ -105,6 +105,7 @@ local function ShpOnInventoryListClick(itemId)
 end
 
 local function ShpBuyClick ()
+	if(not guiGetEnabled(g_BuyButton)) then return end
 	local itemId = g_ShopList:getActiveItem()
 	
 	if(itemId) then -- item is selected
@@ -118,6 +119,7 @@ local function ShpBuyClick ()
 end
 
 local function ShpSellClick ()
+	if(not guiGetEnabled(g_SellButton)) then return end
 	local itemId = g_InventoryList:getActiveItem()
 	
 	if(itemId) then -- item is selected
@@ -126,6 +128,7 @@ local function ShpSellClick ()
 end
 
 local function ShpUseClick ()
+	if(not guiGetEnabled(g_UseButton)) then return end
 	local itemId = g_InventoryList:getActiveItem()
 	
 	if(itemId) then -- item is selected
@@ -211,15 +214,15 @@ function ShopPanel.onShow(panel)
 		triggerServerInternalEvent($(EV_GET_INVENTORY_REQUEST), g_Me)
 	end
 	
-	triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, { stats = g_MyId })
+	triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, { stats = g_MyId or g_Me })
 end
 
 function ShopPanel.onHide(panel)
-	triggerServerInternalEvent($(EV_STOP_SYNC_REQUEST), g_Me, { stats = g_MyId })
+	triggerServerInternalEvent($(EV_STOP_SYNC_REQUEST), g_Me, { stats = g_MyId or g_Me })
 end
 
 local function ShpOnSync(sync_tbl, name, arg, data)
-	if(sync_tbl.stats and sync_tbl.stats[2] and sync_tbl.stats[1] == g_MyId and sync_tbl.stats[2].cash) then
+	if(sync_tbl.stats and sync_tbl.stats[2] and sync_tbl.stats[1] == (g_MyId or g_Me) and sync_tbl.stats[2].cash) then
 		g_Cash = sync_tbl.stats[2].cash
 		if(g_CashLabel) then
 			guiSetText(g_CashLabel, formatMoney(g_Cash))

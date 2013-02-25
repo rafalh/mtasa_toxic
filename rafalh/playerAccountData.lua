@@ -55,7 +55,7 @@ local AccountDataFields = {
 	{"oil", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"beers", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"invisibility", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"godmodes", "INTEGER DEFAULT 0 NOT NULL", 0},
+	{"godmodes30", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"flips", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"thunders", "INTEGER DEFAULT 0 NOT NULL", 0},
 	{"smoke", "INTEGER DEFAULT 0 NOT NULL", 0},
@@ -70,12 +70,9 @@ local DefaultData = {}
 
 function PlayerAccountData:getTbl()
 	if(not self.cache) then
-		if(self.id) then
-			local rows = DbQuery("SELECT * FROM rafalh_players WHERE player=? LIMIT 1", self.id)
-			self.cache = rows[1]
-		else
-			self.cache = table.copy(DefaultData)
-		end
+		assert(self.id)
+		local rows = DbQuery("SELECT * FROM rafalh_players WHERE player=? LIMIT 1", self.id)
+		self.cache = rows[1]
 	end
 	
 	return self.cache
@@ -155,13 +152,17 @@ function PlayerAccountData:add(name, num)
 end
 
 function PlayerAccountData.create(id)
-	if(PlayerAccountData.map[id]) then
+	if(id and PlayerAccountData.map[id]) then
 		return PlayerAccountData.map[id]
 	end
 	
 	local self = {id = id, cache = false}
 	setmetatable(self, PlayerAccountData.__mt)
-	PlayerAccountData.map[id] = self
+	if(id) then
+		PlayerAccountData.map[id] = self
+	else
+		self.cache = table.copy(DefaultData)
+	end
 	return self
 end
 

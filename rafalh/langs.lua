@@ -1,6 +1,8 @@
 addEvent("main.onSetLocaleReq", true)
 
 function Player:setLocale(localeId)
+	if(self.lang == localeId) then return end
+	
 	self.lang = localeId
 	setElementData(self.el, "lang", localeId)
 	if(self.sync) then
@@ -17,3 +19,4 @@ local function LngOnSetLocaleRequest(localeId)
 end
 
 addEventHandler("main.onSetLocaleReq", g_ResRoot, LngOnSetLocaleRequest)
+

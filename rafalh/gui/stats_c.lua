@@ -32,8 +32,11 @@ function StatsView.updatePlayTime()
 	
 	for wnd, view in pairs(StatsView.elMap) do
 		local stats = g_Stats[view.id]
-		if(stats) then
-			local playTime = now - stats._join_time + stats.time_here
+		if(stats and view.sync) then
+			local playTime = stats.time_here
+			if(stats._loginTimestamp) then
+				playTime = now - tonumber(stats._loginTimestamp) + playTime
+			end
 			guiSetText(view.gui._time_here, formatTimePeriod(playTime, 0))
 		end
 	end
@@ -72,11 +75,22 @@ function StatsView:destroy()
 	self:hide()
 	
 	local id = self.id
-	if ( id ~= g_MyId and g_Stats[id].refs == 0 ) then
+	if(id ~= g_MyId and g_Stats[id].refs == 0) then
 		g_Stats[id] = nil
 	end
 	
+	self.gui:destroy()
 	StatsView.elMap[self.el] = nil
+end
+
+function StatsView:changeTarget(id)
+	local oldSync = self.sync
+	self:hide(true)
+	self.id = id
+	self:update()
+	if(oldSync) then
+		self:show()
+	end
 end
 
 function StatsView.getHeight()
@@ -84,6 +98,11 @@ function StatsView.getHeight()
 end
 
 function StatsView.create(id, parent, x, y, w, h)
+	if(not id) then
+		outputDebugString("Wrong ID", 2)
+		return false
+	end
+	
 	local self = setmetatable({}, StatsView.__mt)
 	self.gui = GUI.create("stats", x, y, w, h, parent)
 	self.id = id
@@ -101,8 +120,11 @@ function StatsView.create(id, parent, x, y, w, h)
 end
 
 function StatsView:show()
+	if(self.sync) then return end
+	
 	local id = self.id
 	local force = false
+	
 	
 	if(not g_Stats[id]) then
 		g_Stats[id] = { refs = 0 }
@@ -110,17 +132,23 @@ function StatsView:show()
 	end
 	
 	if(g_Stats[id].refs == 0) then
+		--outputDebugString("start sync "..tostring(id), 2)
 		triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, {stats = id}, force)
 	end
 	g_Stats[id].refs = g_Stats[id].refs + 1
+	self.sync = true
 end
 
-function StatsView:hide()
-	local id = self.id
+function StatsView:hide(stopSync)
+	if(not self.sync) then return end
 	
+	local id = self.id
+	self.sync = false
 	g_Stats[id].refs = g_Stats[id].refs - 1
 	if(g_Stats[id].refs == 0) then
-		triggerServerInternalEvent($(EV_PAUSE_SYNC_REQUEST), g_Me, {stats = id})
+		--outputDebugString("pause sync "..tostring(id), 2)
+		local req = stopSync and $(EV_STOP_SYNC_REQUEST) or $(EV_PAUSE_SYNC_REQUEST)
+		triggerServerInternalEvent(req, g_Me, {stats = id})
 	end
 end
 
@@ -130,7 +158,7 @@ function StatsView.onSync(sync_tbl)
 	
 	-- check id
 	local id = sync_tbl.stats[1]
-	if(not g_Stats[id] and id ~= g_MyId) then return end
+	if(not g_Stats[id] and id ~= g_MyId and id ~= g_Me) then return end
 	
 	-- create table if not exists
 	if(not g_Stats[id]) then
@@ -153,7 +181,7 @@ end
 function StatsPanel.onShow(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	StatsPanel.statsView = StatsView.create(g_MyId, panel, 10, 10, w - 20, h - 20)
+	StatsPanel.statsView = StatsView.create(g_MyId or g_Me, panel, 10, 10, w - 20, h - 20)
 	StatsPanel.statsView:show()
 	
 	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
@@ -164,6 +192,12 @@ function StatsPanel.onHide(panel)
 	StatsPanel.statsView:hide()
 end
 
+function StatsPanel.onAccountChange()
+	if(StatsPanel.statsView) then
+		StatsPanel.statsView:changeTarget(g_MyId or g_Me)
+	end
+end
+
 UpRegister(StatsPanel)
 
 ------------
@@ -171,3 +205,4 @@ UpRegister(StatsPanel)
 ------------
 
 addInternalEventHandler($(EV_SYNC), StatsView.onSync)
+addEventHandler("main.onAccountChange", g_ResRoot, StatsPanel.onAccountChange)

@@ -63,8 +63,9 @@ local function onClientPlayerQuit(reason)
 	else customMsg(255, 96, 96, "* %s has left the game [%s].", nick, reason) end
 end
 
-local function onAccountChange(accountName)
+local function onAccountChange(accountName, accountId)
 	g_UserName = accountName
+	g_MyId = accountId
 end
 
 local function onClientInit(accountId, settings, isNew, localeId)

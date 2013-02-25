@@ -8,40 +8,6 @@ local g_Stats = {
 	"maxWinStreak", "toptimes_count",
 	"bidlvl", "time_here", "exploded", "drowned"}
 
-function StGet(elOrId, name)
-	assert(elOrId and name)
-	outputDebugString("StGet is deprecated", 2)
-	
-	local accountData
-	if(isElement(elOrId)) then
-		accountData = g_Players[elOrId].accountData
-	elseif(g_IdToPlayer[elOrId]) then
-		local playerEl = g_IdToPlayer[elOrId]
-		accountData = g_Players[playerEl].accountData
-	else
-		accountData = PlayerAccountData.create(elOrId)
-	end
-	
-	return accountData:get(name)
-end
-
-function StSet(elOrId, name, value)
-	assert(elOrId and name)
-	outputDebugString("StSet is deprecated", 2)
-	
-	local accountData
-	if(isElement(elOrId)) then
-		accountData = g_Players[elOrId].accountData
-	elseif(g_IdToPlayer[elOrId]) then
-		local playerEl = g_IdToPlayer[elOrId]
-		accountData = g_Players[playerEl].accountData
-	else
-		accountData = PlayerAccountData.create(elOrId)
-	end
-	
-	accountData:set(name, value)
-end
-
 local function StAccountDataChange(accountData, name, newValue)
 	if(not table.find(g_Stats, name)) then return end -- not a stat
 	
@@ -64,11 +30,6 @@ local function StAccountDataChange(accountData, name, newValue)
 	notifySyncerChange("stats", accountData.id)
 end
 
-function StAdd(elOrId, name, n)
-	outputDebugString("StAdd is deprecated", 2)
-	StSet(elOrId, name, StGet(elOrId, name) + n)
-end
-
 function StRankFromPoints(points)
 	local pt = -1
 	local rank = nil
@@ -83,22 +44,30 @@ function StRankFromPoints(points)
 	return rank or "none"
 end
 
-local function StPlayerStatsSyncCallback ( id )
-	id = touint(id)
-	if(id) then
-		local data = PlayerAccountData.create(id):getTbl()
-		if(data) then
-			data._rank = StRankFromPoints(data.points)
-			local player = g_IdToPlayer[id]
-			if(player) then
-				data._join_time = g_Players[player].join_time
-			end
-			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
-			return data
-		end
+local function StPlayerStatsSyncCallback(idOrPlayer)
+	local id = touint(idOrPlayer)
+	local player = g_IdToPlayer[id] or idOrPlayer
+	local pdata = g_Players[player]
+	
+	local accountData
+	if(pdata) then
+		accountData = pdata.accountData
+	elseif(id) then
+		accountData = PlayerAccountData.create(id)
+	else
+		return false
 	end
 	
-	return false
+	local data = accountData:getTbl()
+	if(not data) then return false end
+	
+	data._rank = StRankFromPoints(data.points)
+	if(pdata) then
+		-- send timestamp as string, because MTA converts all number to float (low precision)
+		data._loginTimestamp = tostring(pdata.loginTimestamp)
+	end
+	data.name = data.name:gsub("#%x%x%x%x%x%x", "")
+	return data
 end
 
 local function StInit ()
@@ -127,27 +96,6 @@ local function StInit ()
 	addSyncer("stats", StPlayerStatsSyncCallback)
 end
 
-local function StCleanupPlayer(playerEl)
-	local player = g_Players[playerEl]
-	local now = getRealTime().timestamp
-	local timeSpent = now - player.join_time
-	local playTime = player.accountData:get("time_here") + timeSpent
-	player.join_time = now
-	player.accountData:set({time_here = playTime, last_visit = now})
-end
-
-local function StCleanup()
-	for playerEl, player in pairs(g_Players) do
-		StCleanupPlayer(playerEl)
-	end
-end
-
-local function StOnPlayerJoin()
-	local player = g_Players[source]
-	local pts = player.accountData:get("points")
-	setPlayerAnnounceValue(source, "score", tostring(pts))
-end
-
 local function StOnPlayerConnect(playerNick, playerIP, playerUsername, playerSerial)
 	local max_warns = SmGetUInt("max_warns", 0)
 	if(max_warns > 0) then
@@ -159,8 +107,10 @@ local function StOnPlayerConnect(playerNick, playerIP, playerUsername, playerSer
 	end
 end
 
-local function StOnPlayerQuit()
-	StCleanupPlayer(source)
+local function StOnPlayerJoin()
+	local player = g_Players[source]
+	local pts = player.accountData:get("points")
+	setPlayerAnnounceValue(source, "score", tostring(pts))
 end
 
 local function StOnPlayerWasted(totalAmmo, killer, weapon)
@@ -184,10 +134,8 @@ local function StOnVehicleExplode()
 end
 
 addEventHandler("onResourceStart", g_ResRoot, StInit)
-addEventHandler("onResourceStop", g_ResRoot, StCleanup)
 addEventHandler("onPlayerConnect", g_Root, StOnPlayerConnect)
 addEventHandler("onPlayerJoin", g_Root, StOnPlayerJoin)
-addEventHandler("onPlayerQuit", g_Root, StOnPlayerQuit)
 addEventHandler("onPlayerWasted", g_Root, StOnPlayerWasted)
 addEventHandler("onVehicleExplode", g_Root, StOnVehicleExplode)
 table.insert(PlayerAccountData.onChangeHandlers, StAccountDataChange)

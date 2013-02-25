@@ -11,30 +11,31 @@ local g_RegTimeStamp = 0
 
 local function onPlayerLogin(prevAccount, account, autoLogin)
 	local self = g_Players[source]
-	local accountName = not isGuestAccount(account) and getAccountName(account)
-	if(self and accountName) then
-		DbQuery("UPDATE rafalh_players SET account=NULL WHERE account=?", accountName)
-		self.accountData:set("account", accountName)
-		if(not self.guest) then
-			outputDebugString("onPlayerLogin: not guest!", 2)
-		end
-		self.guest = false
-	else
-		outputDebugString("onPlayerLogin: guest!", 2)
-		self.guest = true
+	if(not self) then return end
+	
+	if(isGuestAccount(account)) then
+		outputDebugString("onPlayerLogin: login to guest", 2)
+	elseif(not self.guest) then
+		outputDebugString("onPlayerLogin: no logout before login", 2)
 	end
 	
+	self:setAccount(account)
+	local accountName = not isGuestAccount(account) and getAccountName(account)
+	
 	triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
-	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, accountName)
+	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, accountName, self.id)
 end
 
 local function onPlayerLogout()
 	local self = g_Players[source]
+	if(not self) then return end
+	
 	if(self.guest) then
-		outputDebugString("onPlayerLogout: guest!", 2)
+		outputDebugString("onPlayerLogout: guest tried to logout", 2)
 	end
-	self.guest = true
-	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, false)
+	
+	self:setAccount(false)
+	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, false, false)
 end
 
 local function onLoginReq(name, passwd)

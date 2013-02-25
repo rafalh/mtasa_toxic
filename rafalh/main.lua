@@ -203,7 +203,7 @@ local function onPlayerReady(localeId)
 	elseif(not isGuestAccount(account)) then
 		local accountName = getAccountName(account)
 		triggerClientEvent(pdata.el, "main.onLoginStatus", g_ResRoot, true)
-		triggerClientEvent(pdata.el, "main.onAccountChange", g_ResRoot, accountName)
+		triggerClientEvent(pdata.el, "main.onAccountChange", g_ResRoot, accountName, pdata.id)
 	end
 	
 	pdata.new = false
