@@ -21,17 +21,11 @@ end
 
 ShpRegisterItem(JoinMsgItem)
 
-function JmPlayerJoin ( player )
-	if ( not g_Players[player] ) then
-		return
-	end
+function JmPlayerJoin(player, joinMsg)
+	if(not isElement(player)) then return end
 	
-	local joinMsg = g_Players[player].accountData:get("joinmsg")
-	
-	if(joinMsg) then
-		local r, g, b = getPlayerNametagColor(player)
-		outputChatBox("(JOINMSG) "..getPlayerName(player)..": #EBDDB2"..joinMsg, g_Root, r, g, b, true)
-	end
+	local r, g, b = getPlayerNametagColor(player)
+	outputChatBox("(JOINMSG) "..getPlayerName(player)..": #EBDDB2"..joinMsg, g_Root, r, g, b, true)
 end
 
 local HealthItem = {

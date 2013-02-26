@@ -22,11 +22,11 @@
 	<script src="main_c.lua" type="client" />
 	<script src="player.lua" type="server" />
 	<script src="playerAccountData.lua" type="server" />
+	<script src="accounts.lua" type="server" />
 	
 	<script src="commands/commands.lua" type="server" />
 	<script src="mui.lua" type="server" />
 	<script src="mui_c.lua" type="client" />
-	<script src="accounts.lua" type="server" />
 	<script src="achievements.lua" type="server" />
 	<script src="anticheat.lua" type="server" />
 	<script src="antilag.lua" type="server" />

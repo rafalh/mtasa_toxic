@@ -3,6 +3,7 @@ Player.__mt = {__index = Player}
 
 addEvent("onPlayerChangeRoom")
 addEvent("onPlayerChangeTeam")
+addEvent("main.onAccountChange")
 
 function Player:fixName()
 	local name = getPlayerName(self.el)
@@ -82,7 +83,7 @@ function Player:setAccount(account)
 		self.id = rows and rows[1] and rows[1].player
 		
 		if(not self.id) then
-			DbQuery("INSERT INTO rafalh_players (account, first_visit) VALUES (?, ?)", account, now)
+			DbQuery("INSERT INTO rafalh_players (account, serial, first_visit) VALUES (?, ?, ?)", account, self:getSerial(), now)
 			rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", account)
 			self.id = rows and rows[1] and rows[1].player
 		end
@@ -94,10 +95,10 @@ function Player:setAccount(account)
 	self.loginTimestamp = now
 	
 	self.accountData = PlayerAccountData.create(self.id)
-	self.accountData:set("online", 1)
-	self.accountData:set("serial", self:getSerial())
-	self.accountData:set("ip", self:getIP())
-	self.accountData:set("last_visit", now)
+	self.accountData:set("online", 1, true)
+	self.accountData:set("serial", self:getSerial(), true)
+	self.accountData:set("ip", self:getIP(), true)
+	self.accountData:set("last_visit", now, true)
 end
 
 function Player:onRoomChange(room)
@@ -168,7 +169,7 @@ function Player.create(el)
 	end
 	
 	local fullName = self:getName(true)
-	self.accountData:set("name", fullName)
+	self.accountData:set("name", fullName, true)
 	
 	local adminRes = getResourceFromName("admin")
 	self.country = adminRes and getResourceState(adminRes) == "running" and call(adminRes, "getPlayerCountry", self.el)

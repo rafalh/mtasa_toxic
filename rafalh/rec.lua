@@ -232,13 +232,13 @@ function RcStopRecording(room)
 	triggerClientInternalEvent(room.el, $(EV_CLIENT_STOP_RECORDING_REQUEST), g_Root)
 end
 
-function RcFinishRecordingPlayer(player, time, map_id, improved_besttime)
+function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	if(g_UpdateInProgress) then return end
 	
 	local pdata = g_Players[player]
 	assert(pdata and map_id)
 	
-	if(not improved_besttime) then
+	if(not improvedBestTime) then
 		if (pdata.recording) then
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_RECORDING_REQUEST), player, map_id)
 		end

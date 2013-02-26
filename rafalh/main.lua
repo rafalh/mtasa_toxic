@@ -24,12 +24,16 @@ local function onPlayerJoin()
 	local countryStr = countryName and " ("..countryName..")" or ""
 	customMsg(255, 100, 100, "* %s has joined the game%s.", getPlayerName(source), countryStr)
 	
-	local joinMsg = player.accountData:get("joinmsg")
+	local rows = DbQuery("SELECT joinmsg, pmuted FROM rafalh_players WHERE serial=? LIMIT 1", player:getSerial())
+	
+	local joinMsg = rows and rows[1] and rows[1].joinmsg
+	--local joinMsg = player.accountData:get("joinmsg")
 	if(joinMsg and joinMsg ~= "") then
-		setTimer(JmPlayerJoin, 100, 1, source) -- show joinmsg after auto-login
+		setTimer(JmPlayerJoin, 100, 1, source, joinMsg) -- show joinmsg after auto-login
 	end
 	
-	local pmuted = player.accountData:get("pmuted")
+	local pmuted = rows and rows[1] and rows[1].pmuted
+	--local pmuted = player.accountData:get("pmuted")
 	if(pmuted == 1) then
 		customMsg(255, 0, 0, "%s has got permanent mute!", getPlayerName(source))
 		mutePlayer(source, 0, false, true)

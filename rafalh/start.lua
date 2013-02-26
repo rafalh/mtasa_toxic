@@ -88,7 +88,7 @@ local function setupDatabase()
 		err = "Cannot create rafalh_settings table."
 	end
 	
-	local currentVer = 146
+	local currentVer = 147
 	local ver = SmGetUInt("version", currentVer)
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
@@ -116,6 +116,11 @@ local function setupDatabase()
 		if(not err and ver < 146) then
 			if(not DbQuery("ALTER TABLE rafalh_maps ADD COLUMN added_timestamp INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add added_timestamp column."
+			end
+		end
+		if(not err and ver < 147) then
+			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN achvCount INT DEFAULT 0 NOT NULL")) then
+				err = "Failed to add achvCount column."
 			end
 		end
 		

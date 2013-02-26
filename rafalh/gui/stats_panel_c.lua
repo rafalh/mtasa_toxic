@@ -42,7 +42,6 @@ end
 function openStatsPanel()
 	if(not g_Wnd) then
 		SpInitGui()
-		AchvActivate("Open Statistics Panel")
 	end
 	
 	if(g_Anim) then
@@ -58,6 +57,7 @@ function openStatsPanel()
 		guiSetVisible(g_Wnd, true)
 		g_Anim = Animation.createAndPlay(g_Wnd, Animation.presets.guiMoveEx(g_PosX, g_PosY, 500, "InOutQuad"))
 		g_StatsView:show()
+		AchvActivate("Open Statistics Panel")
 	end
 	g_Visible = not g_Visible
 end

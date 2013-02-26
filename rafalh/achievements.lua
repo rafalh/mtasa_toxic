@@ -2,14 +2,15 @@ local g_Achievements = {}
 local g_NameToAchv = {}
 
 addEvent("main.onAchvActivate", true)
+--addEvent("main.onAchvListReq", true)
 
-local function AchvInitPlayer(player)
+local function AchvUpdateCache(player, changed)
 	local pdata = g_Players[player]
-	if(not pdata.achvSet) then
-		local achvList, achvSet = AchvGetActive(player)
-		pdata.achvCount = #achvList
-		pdata.achvSet = achvSet
-	end
+	if(not changed and pdata.achvSet) then return end
+	
+	local achvList, achvSet = AchvGetActive(player)
+	pdata.accountData:set("achvCount", #achvList)
+	pdata.achvSet = achvSet
 end
 
 function AchvGetActive(player)
@@ -36,10 +37,10 @@ end
 
 function AchvCheckPlayer(player)
 	local pdata = g_Players[player]
-	AchvInitPlayer(player)
+	assert(pdata.achvSet)
 	
 	local activeList, activeSet = AchvGetActive(player)
-	if(pdata.achvCount == #activeList) then return end
+	if(pdata.accountData.achvCount == #activeList) then return end
 	
 	local newAchv = {}
 	for i, achv in ipairs(g_Achievements) do
@@ -49,7 +50,11 @@ function AchvCheckPlayer(player)
 	end
 	
 	if(#newAchv > 0) then
-		AchvActivate(player, newAchv)
+		if(#newAchv >= 3) then
+			outputDebugString("Tried to activate "..#newAchv.." achievements at once!", 1)
+		else
+			AchvActivate(player, newAchv)
+		end
 	end
 end
 
@@ -64,10 +69,10 @@ function AchvActivate(player, names)
 		names = {names}
 	end
 	
-	AchvInitPlayer(player)
+	AchvUpdateCache(player)
 	local pdata = player and g_Players[player]
 	local achvStr = pdata.accountData:get("achievements")
-	local achvList = {}
+	local newAchv = {}
 	
 	for i, name in ipairs(names) do
 		local achv = g_NameToAchv[name]
@@ -81,23 +86,40 @@ function AchvActivate(player, names)
 			
 			outputDebugString("Achievement "..achv.name.." activated for "..tostring(getPlayerName(player)), 3)
 			pdata.achvSet[achv.id] = true
-			pdata.achvCount = pdata.achvCount + 1
-			table.insert(achvList, achv.id)
+			pdata.accountData:add("achvCount", 1)
+			table.insert(newAchv, achv.id)
 			pdata.accountData:add("cash", achv.prize)
+		else
+			--outputDebugString("Failed to activate achievement: "..achv.name, 3)
 		end
 	end
 	
-	pdata.accountData:set("achievements", achvStr, true)
-	
-	if(pdata.sync) then
-		triggerClientEvent(player, "main.onAchvUpdate", g_ResRoot, achvList)
+	if(#newAchv > 0) then
+		pdata.accountData:set("achievements", achvStr)
+		
+		if(pdata.sync) then
+			triggerClientEvent(player, "main.onAchvChange", g_ResRoot, newAchv)
+		end
 	end
 end
 
-local function AchvPlayerReady()
-	AchvInitPlayer(client)
-	local achvList = AchvGetActive(client)
-	triggerClientEvent(client, "main.onAchvUpdate", g_ResRoot, achvList)
+local function AchvInitAccount(player)
+	AchvUpdateCache(player, true)
+	
+	local pdata = g_Players[player]
+	if(pdata.achvReq) then
+		local achvList = AchvGetActive(player)
+		triggerClientEvent(player, "main.onAchvList", g_ResRoot, achvList)
+	end
+end
+
+local function AchvPlayerLoginLogout()
+	--outputDebugString("AchvPlayerLoginLogout!", 3)
+	AchvInitAccount(source)
+end
+
+local function AchvPlayerJoin()
+	AchvInitAccount(source)
 end
 
 local function AchvClientActivate(name)
@@ -109,6 +131,24 @@ local function AchvClientActivate(name)
 	AchvActivate(client, name)
 end
 
-addEventHandler("main.onPlayerReady", g_ResRoot, AchvPlayerReady)
-addEventHandler("main.onAchvActivate", g_ResRoot, AchvClientActivate)
+local function AchvListReq()
+	local achvList = AchvGetActive(client)
+	triggerClientEvent(client, "main.onAchvList", g_ResRoot, achvList)
+	local pdata = g_Players[client]
+	pdata.achvReq = true
+end
 
+local function AchvInit()
+	addEventHandler("onPlayerLogin", g_Root, AchvPlayerLoginLogout)
+	addEventHandler("onPlayerLogout", g_Root, AchvPlayerLoginLogout)
+	addEventHandler("onPlayerJoin", g_Root, AchvPlayerJoin)
+	addEventHandler("main.onAchvActivate", g_ResRoot, AchvClientActivate)
+	--addEventHandler("main.onAchvListReq", g_ResRoot, AchvListReq)
+	addEventHandler("main.onPlayerReady", g_ResRoot, AchvListReq) -- hmm
+	
+	for player, pdata in pairs(g_Players) do
+		AchvInitAccount(player)
+	end
+end
+
+addEventHandler("onResourceStart", g_ResRoot, AchvInit)

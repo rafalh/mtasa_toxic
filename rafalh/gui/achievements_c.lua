@@ -21,10 +21,10 @@ local g_Achievements = {}
 local g_IdToAchievement = {}
 local g_NameToAchv = {}
 local g_List, g_AchvCountLabel
-local g_FirstUpdate = true
 local g_ActiveCount = 0
 
-addEvent("main.onAchvUpdate", true)
+addEvent("main.onAchvList", true)
+addEvent("main.onAchvChange", true)
 
 local function AchvInitGui(panel)
 	local w, h = guiGetSize(panel, false)
@@ -46,6 +46,8 @@ local function AchvInitGui(panel)
 	
 	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
 	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	
+	--triggerServerEvent("main.onAchvListReq", g_ResRoot)
 end
 
 local function AchvUpdateGui()
@@ -69,20 +71,30 @@ local function AchvSetActive(id)
 	achv.active = true
 	g_ActiveCount = g_ActiveCount + 1
 	
-	if(not g_FirstUpdate) then
-		local achvUnlockedStr = MuiGetMsg("Achievement unlocked: %s! %s have been added to your cash."):format(achv.name, formatMoney(achv.prize))
-		outputChatBox(achvUnlockedStr, 255, 255, 0)
-	end
+	local achvUnlockedStr = MuiGetMsg("Achievement unlocked: %s! %s have been added to your cash."):format(achv.name, formatMoney(achv.prize))
+	outputChatBox(achvUnlockedStr, 255, 255, 0)
 end
 
-local function AchvOnUpdate(achvTbl)
-	--outputDebugString("AchvOnUpdate", 3)
+local function AchvOnList(achvTbl)
+	--outputDebugString("AchvOnList", 3)
+	
+	for i, achv in ipairs(g_Achievements) do
+		achv.active = false
+	end
 	
 	for i, achvId in ipairs(achvTbl) do
-		AchvSetActive(achvId)
+		local achv = g_IdToAchievement[achvId]
+		achv.active = true
 	end
-	g_FirstUpdate = false
 	
+	g_ActiveCount = #achvTbl
+	AchvUpdateGui()
+end
+
+local function AchvOnChange(achvTbl)
+	for i, achvId in ipairs(achvTbl) do
+		AchvSetActive(achvId, true)
+	end
 	AchvUpdateGui()
 end
 
@@ -97,7 +109,10 @@ end
 function AchvActivate(name)
 	local achv = g_NameToAchv[name]
 	assert(achv and achv.client)
-	if(achv.active) then return end -- nothing to do
+	if(achv.active) then
+		--outputDebugString("Failed to activate client achievement "..name, 3)
+		return -- nothing to do
+	end
 	triggerServerEvent("main.onAchvActivate", g_ResRoot, achv.name)
 end
 
@@ -109,4 +124,5 @@ end
 
 UpRegister(AchievementsPanel)
 
-addEventHandler("main.onAchvUpdate", g_ResRoot, AchvOnUpdate)
+addEventHandler("main.onAchvList", g_ResRoot, AchvOnList)
+addEventHandler("main.onAchvChange", g_ResRoot, AchvOnChange)

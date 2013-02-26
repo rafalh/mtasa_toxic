@@ -5,68 +5,71 @@ PlayerAccountData.map = {}
 setmetatable(PlayerAccountData.map, {__mode = "v"}) -- weak table
 
 local AccountDataFields = {
-	{"player", "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL", 0},
-	{"serial", "VARCHAR(32) NOT NULL", ""},
-	{"account", "TEXT UNIQUE", ""},
-	{"cash", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"points", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"warnings", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"dm", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"dm_wins", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"first", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"second", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"third", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"time_here", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"first_visit", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"last_visit", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"bidlvl", "INTEGER DEFAULT 1 NOT NULL", 0},
-	{"ip", "VARCHAR(16) DEFAULT '' NOT NULL", ""},
-	{"name", "VARCHAR(32) DEFAULT '' NOT NULL", ""},
-	{"joinmsg", "VARCHAR(128) DEFAULT NULL", ""},
-	{"pmuted", "BOOL DEFAULT 0 NOT NULL", 0},
-	{"toptimes_count", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"online", "BOOL DEFAULT 0 NOT NULL", 0},
-	--{"lang", "VARCHAR(2) DEFAULT '' NOT NULL", ""},
-	{"exploded", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"drowned", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"locked_nick", "BOOL DEFAULT 0 NOT NULL", 0},
-	{"invitedby", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"achievements", "BLOB DEFAULT x'' NOT NULL", ""},
-	{"mapBoughtTimestamp", "INT DEFAULT 0 NOT NULL", 0},
-			
+--   name              type           flags                 default value
+	{"player",         "INTEGER",     "PRIMARY KEY AUTOINCREMENT NOT NULL", 0},
+	{"serial",         "VARCHAR(32)", "NOT NULL",             ""},
+	{"account",        "TEXT",        "UNIQUE",               ""},
+	{"cash",           "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"points",         "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"warnings",       "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"dm",             "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"dm_wins",        "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"first",          "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"second",         "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"third",          "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"time_here",      "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"first_visit",    "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"last_visit",     "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"bidlvl",         "INTEGER",     "DEFAULT 1 NOT NULL",   1},
+	{"ip",             "VARCHAR(16)", "DEFAULT '' NOT NULL",  ""},
+	{"name",           "VARCHAR(32)", "DEFAULT '' NOT NULL",  ""},
+	{"joinmsg",        "VARCHAR(128)", "DEFAULT NULL",        false},
+	{"pmuted",         "BOOL",        "DEFAULT 0 NOT NULL",   0},
+	{"toptimes_count", "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"online",         "BOOL",        "DEFAULT 0 NOT NULL",   0},
+	{"exploded",       "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"drowned",        "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"locked_nick",    "BOOL",        "DEFAULT 0 NOT NULL",   0},
+	{"invitedby",      "INTEGER",     "DEFAULT 0 NOT NULL",   0},
+	{"achievements",   "BLOB",        "DEFAULT x'' NOT NULL", ""},
+	{"mapBoughtTimestamp", "INTEGER", "DEFAULT 0 NOT NULL",   0},
+	{"email",          "VARCHAR(128)", "DEFAULT '' NOT NULL", ""},
+	
 	-- New stats
-	{"maxWinStreak", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"mapsPlayed", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"mapsBought", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"mapsRated", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"huntersTaken", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"dmVictories", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"ddVictories", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"raceVictories", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"racesFinished", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"dmPlayed", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"ddPlayed", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"racesPlayed", "INTEGER DEFAULT 0 NOT NULL", 0},
+	{"maxWinStreak",  "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"mapsPlayed",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"mapsBought",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"mapsRated",     "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"huntersTaken",  "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"dmVictories",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"ddVictories",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"raceVictories", "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"racesFinished", "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"dmPlayed",      "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"ddPlayed",      "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"racesPlayed",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"achvCount",     "INTEGER", "DEFAULT 0 NOT NULL", 0},
 	
 	-- Shop
-	{"health100", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"selfdestr", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"mines", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"oil", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"beers", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"invisibility", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"godmodes30", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"flips", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"thunders", "INTEGER DEFAULT 0 NOT NULL", 0},
-	{"smoke", "INTEGER DEFAULT 0 NOT NULL", 0},
+	{"health100",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"selfdestr",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"mines",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"oil",          "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"beers",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"invisibility", "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"godmodes30",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"flips",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"thunders",     "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"smoke",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
 	
 	-- Effectiveness
-	{"efectiveness", "REAL DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_dd", "REAL DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_dm", "REAL DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_race", "REAL DEFAULT 0 NOT NULL", 0}
+	{"efectiveness",      "REAL", "DEFAULT 0 NOT NULL", 0},
+	{"efectiveness_dd",   "REAL", "DEFAULT 0 NOT NULL", 0},
+	{"efectiveness_dm",   "REAL", "DEFAULT 0 NOT NULL", 0},
+	{"efectiveness_race", "REAL", "DEFAULT 0 NOT NULL", 0}
 }
 local DefaultData = {}
+local FieldsMap = {}
 
 function PlayerAccountData:getTbl()
 	if(not self.cache) then
@@ -104,7 +107,7 @@ function PlayerAccountData:get(name)
 	end
 end
 
-function PlayerAccountData:set(name, value, isBlob)
+function PlayerAccountData:set(name, value, silent)
 	assert(type(self) == "table" and name)
 	
 	local data = name
@@ -115,25 +118,30 @@ function PlayerAccountData:set(name, value, isBlob)
 	local set = ""
 	local params = {}
 	for k, v in pairs(data) do
-		if(v == false) then
-			set = set..","..k.."=NULL"
-		elseif(isBlob) then
-			set = set..","..k.."="..DbBlob(v)
-		else
-			set = set..","..k.."=?"
-			table.insert(params, v)
-		end
-		
-		for i, handler in ipairs(PlayerAccountData.onChangeHandlers) do
-			handler(self, k, v)
-		end
-		
-		if(self.cache) then
-			self.cache[k] = v
+		assert(FieldsMap[k])
+		if(not self.cache or self.cache[k] ~= v) then
+			if(v == false) then
+				set = set..","..k.."=NULL"
+			elseif(type(v) == "string" and FieldsMap[k][2] == "BLOB" and v) then
+				set = set..","..k.."="..DbBlob(v)
+			else
+				set = set..","..k.."=?"
+				table.insert(params, v)
+			end
+			
+			if(not silent) then
+				for i, handler in ipairs(PlayerAccountData.onChangeHandlers) do
+					handler(self, k, v)
+				end
+			end
+			
+			if(self.cache) then
+				self.cache[k] = v
+			end
 		end
 	end
 	
-	if(self.id) then
+	if(self.id and set ~= "") then
 		-- Add player ID at the end of parameters table. Note: we can't use it when calling DbQuery
 		-- because unpack has to be on the last place. If it's not only one element from table is used.
 		table.insert(params, self.id)
@@ -182,14 +190,15 @@ end
 
 local function init()
 	for i, fieldInfo in ipairs(AccountDataFields) do
-		DefaultData[fieldInfo[1]] = fieldInfo[3]
+		DefaultData[fieldInfo[1]] = fieldInfo[4]
+		FieldsMap[fieldInfo[1]] = fieldInfo
 	end
 end
 
 function PlayerAccountData.getDbTableFields()
 	local fields = {}
 	for i, fieldInfo in ipairs(AccountDataFields) do
-		table.insert(fields, fieldInfo[1].." "..fieldInfo[2])
+		table.insert(fields, fieldInfo[1].." "..fieldInfo[2].." "..fieldInfo[3])
 	end
 	return table.concat(fields, ", ")
 end

@@ -2,7 +2,7 @@
 -- Local variables --
 ---------------------
 
-local g_Tab = nil
+local g_Panel = nil
 
 local AboutPanel = {
 	name = "About",
@@ -72,15 +72,15 @@ local function createGui(panel)
 end
 
 function AboutPanel.onShow(panel)
-	if(not g_Tab) then
-		g_Tab = panel
-		createGui(g_Tab)
-		AchvActivate("Read about the server")
+	if(not g_Panel) then
+		g_Panel = panel
+		createGui(panel)
 	end
+	AchvActivate("Read about the server")
 end
 
 ----------------------
 -- Global variables --
 ----------------------
 
-UpRegister ( AboutPanel )
+UpRegister(AboutPanel)

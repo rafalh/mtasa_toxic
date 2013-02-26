@@ -116,7 +116,7 @@ local function CmdBidLevel (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
 	local player = g_Players[playerEl]
 	
-	scriptMsg("%s's bidlevel: %u.", getPlayerName(player), player.accountData.bidlvl)
+	scriptMsg("%s's bidlevel: %u.", getPlayerName(player.el), player.accountData.bidlvl)
 end
 
 CmdRegister ("bidlevel", CmdBidLevel, false, "Shows player bidlevel")
