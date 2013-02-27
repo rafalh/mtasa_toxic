@@ -10,7 +10,8 @@ local g_PlayerTimes = {}
 function addPlayerTime(player_id, map_id, time)
 	if(g_UpdateInProgress) then return end
 	
-	local top = false
+	local wasInTop = false
+	local now = getRealTime().timestamp
 	
 	local rows = DbQuery("SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", player_id, map_id)
 	local besttime = rows and rows[1]
@@ -19,32 +20,31 @@ function addPlayerTime(player_id, map_id, time)
 			return -1
 		else
 			local rows2 = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<?", map_id, besttime.time)
+			wasInTop = (rows2[1].c < 3) -- were we in the top?
 			
-			top = (rows2[1].c < 3) -- were we in the top?
-			
-			local now = getRealTime().timestamp
 			DbQuery("UPDATE rafalh_besttimes SET time=?, timestamp=? WHERE player=? AND map=?", time, now, player_id, map_id)
 		end
 	else
-		local now = getRealTime().timestamp
 		DbQuery("INSERT INTO rafalh_besttimes (player, map, time, timestamp) VALUES(?, ?, ?, ?)", player_id, map_id, time, now)
 	end
 	
-	local rows = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<?", map_id, time)
-	local pos = rows[1].c + 1
+	local rows = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<=?", map_id, time)
+	local pos = rows[1].c
 	
-	if(pos <= 3 and not top) then -- player joined to the top
-		PlayerAccountData.create(player_id):add("toptimes_count", 1)
-		
-		local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3,1", map_id)
-		if(rows and rows[1]) then -- someone left the top
-			local pl4_id = rows[1].player
-			PlayerAccountData.create(pl4_id):add("toptimes_count", -1)
-			DbQuery("UPDATE rafalh_besttimes SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
+	if(pos <= 8) then
+		if(pos <= 3 and not wasInTop) then -- player joined to the top
+			PlayerAccountData.create(player_id):add("toptimes_count", 1)
+			
+			local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3,1", map_id)
+			if(rows and rows[1]) then -- someone left the top
+				local pl4_id = rows[1].player
+				PlayerAccountData.create(pl4_id):add("toptimes_count", -1)
+				DbQuery("UPDATE rafalh_besttimes SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
+			end
 		end
+		
+		BtDeleteCache() -- invalidate cache
 	end
-	
-	BtDeleteCache() -- invalidate cache
 	
 	return pos
 end

@@ -275,6 +275,8 @@ end
 
 local function handlePlayerTime(player, ms)
 	local pdata = g_Players[player]
+	if(not pdata.id) then return 0 end
+	
 	local map = getCurrentMap(pdata.room)
 	local default_speed = tonumber(map:getSetting("gamespeed")) or 1
 	local speed = getGameSpeed ()
@@ -284,8 +286,8 @@ local function handlePlayerTime(player, ms)
 	end
 	
 	local map_id = map:getId()
-	local n = pdata.id and addPlayerTime (pdata.id, map_id, ms)
-	if(n and n >= 1) then -- improved best time
+	local n = addPlayerTime(pdata.id, map_id, ms)
+	if(n >= 1) then -- improved best time
 		privMsg (player, "You have improved your personal best time! New: %s", formatTimePeriod(ms / 1000))
 		
 		if (n <= 3) then -- new toptime
@@ -374,8 +376,9 @@ local function onPlayerFinish(rank, ms)
 	pdata.accountData:add("racesFinished", 1)
 	
 	local n = handlePlayerTime(source, ms)
+	local improvedBestTime = (n >= 1)
 	
-	RcFinishRecordingPlayer(source, ms, map_id, n >= 1)
+	RcFinishRecordingPlayer(source, ms, map_id, improvedBestTime)
 	
 	setPlayerFinalRank(source, rank)
 end
@@ -419,7 +422,7 @@ local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)
 		local ms = race_res and call(race_res, "getTimePassed")
 		if(ms) then
 			local n = handlePlayerTime(source, ms)
-			local improvedBestTime = (n and n >= 1)
+			local improvedBestTime = (n >= 1)
 			RcFinishRecordingPlayer(source, ms, map:getId(), improvedBestTime)
 		end
 	end

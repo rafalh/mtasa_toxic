@@ -107,12 +107,18 @@ function PlayerAccountData:get(name)
 	end
 end
 
-function PlayerAccountData:set(name, value, silent)
-	assert(type(self) == "table" and name)
+-- PlayerAccountData:set(tbl, silent)
+-- PlayerAccountData:set(name, value, silent)
+function PlayerAccountData:set(arg1, arg2, arg3)
+	assert(type(self) == "table" and arg1)
 	
-	local data = name
-	if(type(data) ~= "table") then
-		data = {[name] = value or false}
+	local data, silent
+	if(type(arg1) == "table") then
+		data = arg1
+		silent = arg2
+	else
+		data = {[arg1] = arg2 or false}
+		silent = arg3
 	end
 	
 	local set = ""

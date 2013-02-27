@@ -491,13 +491,13 @@ local function CmdMergeAccounts(message, arg)
 		newData.dmPlayed = pdata.accountData.dmPlayed + src_data.dmPlayed
 		newData.ddPlayed = pdata.accountData.ddPlayed + src_data.ddPlayed
 		newData.racesPlayed = pdata.accountData.racesPlayed + src_data.racesPlayed
-		pdata.accountData:set(newData)
 		
-		if(pdata.accountData:get("joinmsg") == "" and src_data.joinmsg ~= "") then
-			pdata.accountData:set("joinmsg", src_data.joinmsg)
+		-- Join Msg
+		if(pdata.accountData.joinmsg == "" and src_data.joinmsg ~= "") then
+			newData.joinmsg = src_data.joinmsg
 		end
 		
-		-- remove duplicated rates
+		-- Rates
 		local rows = DbQuery("SELECT r1.map FROM rafalh_rates r1, rafalh_rates r2 WHERE r1.player=? AND r2.player=? AND r1.map=r2.map", pdata.id, id)
 		local maps = {}
 		local questionMarks = {}
@@ -511,13 +511,13 @@ local function CmdMergeAccounts(message, arg)
 		end
 		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", pdata.id, id) -- set new rates owner
 		local rows = DbQuery("SELECT COUNT(map) AS c FROM rafalh_rates WHERE player=?", pdata.id)
-		pdata.accountData:set("mapsRated", rows[1].c)
+		newData.mapsRated = rows[1].c
 		
 		-- Best times
 		local rows = DbQuery("SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map", pdata.id, id)
 		local mapsSrc, mapsDst = {}, {}
 		local questionMarksSrc, questionMarksDst = {}, {}
-		local topTimesCount = pdata.accountData.toptimes_count + src_data.toptimes_count
+		newData.toptimes_count = pdata.accountData.toptimes_count + src_data.toptimes_count
 		
 		for i, data in ipairs(rows) do
 			local delTime = math.min(data.time1, data.time2)
@@ -531,7 +531,7 @@ local function CmdMergeAccounts(message, arg)
 			
 			local rows = DbQuery("SELECT COUNT(player) AS c FROM rafalh_besttimes WHERE map=? AND time<?", data.map, delTime)
 			if(rows[1].c < 3) then
-				topTimesCount = topTimesCount - 1
+				newData.toptimes_count = newData.toptimes_count - 1
 			end
 		end
 		if(#mapsDst > 0) then
@@ -543,7 +543,6 @@ local function CmdMergeAccounts(message, arg)
 			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(mapsSrc)) -- remove duplicates
 		end
 		DbQuery("UPDATE rafalh_besttimes SET player=? WHERE player=?", pdata.id, id) -- set new best times owner
-		pdata.accountData:set("toptimes_count", topTimesCount)
 		
 		-- Profile fields
 		local rows = DbQuery("SELECT p1.field FROM rafalh_profiles p1, rafalh_profiles p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field", pdata.id, id)
@@ -557,8 +556,10 @@ local function CmdMergeAccounts(message, arg)
 		DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field IN ("..questionMarksStr..")", id, unpack(fields)) -- remove duplicates
 		DbQuery("UPDATE rafalh_profiles SET player=? WHERE player=?", pdata.id, id) -- set new profile fields owner
 		
-		-- remove player from system
+		-- Set new account data and delete old account
+		pdata.accountData:set(newData, true)
 		DbQuery("DELETE FROM rafalh_players WHERE player=?", id)
+		AchvInvalidateCache(player)
 		
 		scriptMsg("Accounts has been merged. Old account has been removed...")
 	else privMsg(source, "Usage: %s", arg[1].." <player> <other account ID>") end

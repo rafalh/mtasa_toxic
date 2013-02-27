@@ -222,7 +222,7 @@ local function CmdCheckMap(message, arg)
 				local data = DbQuery("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 				
 				if(data[1].removed ~= "") then
-					buf = buf.."(removed)"
+					buf = buf.." (removed)"
 				end
 				
 				if(buf:len() > 256) then

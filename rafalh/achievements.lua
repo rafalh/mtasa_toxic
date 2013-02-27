@@ -4,10 +4,9 @@ local g_NameToAchv = {}
 addEvent("main.onAchvActivate", true)
 --addEvent("main.onAchvListReq", true)
 
-local function AchvUpdateCache(player, changed)
+-- called from mergeaccounts command handler
+function AchvInvalidateCache(player)
 	local pdata = g_Players[player]
-	if(not changed and pdata.achvSet) then return end
-	
 	local achvList, achvSet = AchvGetActive(player)
 	pdata.accountData:set("achvCount", #achvList)
 	pdata.achvSet = achvSet
@@ -69,10 +68,11 @@ function AchvActivate(player, names)
 		names = {names}
 	end
 	
-	AchvUpdateCache(player)
 	local pdata = player and g_Players[player]
 	local achvStr = pdata.accountData:get("achievements")
 	local newAchv = {}
+	
+	assert(pdata.achvSet)
 	
 	for i, name in ipairs(names) do
 		local achv = g_NameToAchv[name]
@@ -104,7 +104,7 @@ function AchvActivate(player, names)
 end
 
 local function AchvInitAccount(player)
-	AchvUpdateCache(player, true)
+	AchvInvalidateCache(player)
 	
 	local pdata = g_Players[player]
 	if(pdata.achvReq) then
