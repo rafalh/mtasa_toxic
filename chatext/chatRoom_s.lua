@@ -15,7 +15,7 @@ ChatRoom.__mt = {__index = ChatRoom}
 ChatRoom.idToRoom = {}
 
 function ChatRoom:onPlayerMsg(player, msg)
-	outputDebugString("[chatext] Chat msg: "..self.id.." player "..getPlayerName(player), 3)
+	--outputDebugString("[chatext] Chat msg: "..self.id.." player "..getPlayerName(player), 3)
 	
 	msg = tostring(msg)
 	if(msg == "") then return end
@@ -38,12 +38,12 @@ function ChatRoom:onPlayerMsg(player, msg)
 	if(utfSub(msg, 1, 1) ~= "/") then
 		local str = chatPrefix..playerName..": #EBDDB2"..msg
 		local r, g, b = getPlayerNametagColor(player)
-		local foundSender = false
+		--local foundSender = false
 		for i, recipient in ipairs(recipients) do
 			outputChatBox(str, recipient, r, g, b, true)
-			if(player == recipient) then foundSender = true end
+			--if(player == recipient) then foundSender = true end
 		end
-		assert(foundSender)
+		--assert(foundSender)
 		outputServerLog(logPrefix..playerName..": "..msg)
 	end
 	
