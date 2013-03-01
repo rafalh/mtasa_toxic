@@ -1,0 +1,10 @@
+<meta>
+	<info author="rafalh" version="1.0" type="script" name="Chat extensions" description="Contains support for chat rooms (Moderators/Admins chat and language chat)" />
+
+	<script src="chatRoom_s.lua" type="server" />
+	<script src="chatRoom_c.lua" type="client" />
+	<script src="rooms.lua" type="server" />
+	<script src="rooms.lua" type="client" />
+	
+	<include resource="rafalh_shared" />
+</meta>

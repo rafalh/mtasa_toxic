@@ -1,8 +1,0 @@
-<meta>
-	<info author="rafalh" version="1.0" name="Chat for Admins and Moderators" type="script" />
-
-	<script src="modchat.lua" />
-	<script src="modchat_c.lua" type="client" />
-	
-	<include resource="rafalh_shared" />
-</meta>
