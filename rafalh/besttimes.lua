@@ -80,31 +80,65 @@ function BtSendMapInfo(room, show, player)
 		players = getElementsByType("player")
 	end
 	
+	-- NEW METHOD
 	local start = getTickCount()
 	
+	local idList = {}
 	for i, player in ipairs(players) do
 		local pdata = g_Players[player]
-		if(pdata) then
-			if(g_PlayerTimes[player] == nil) then
-				local rows = pdata.id and DbQuery("SELECT COUNT(bt2.player) AS place, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time <= bt1.time", map_id, pdata.id)
-				local data = rows and rows[1]
-				if(data and data.time) then
-					data.time = formatTimePeriod(data.time / 1000)
-				else
-					data = false -- A bit hacky...
-				end
+		if(pdata and g_PlayerTimes[player] == nil and pdata.id) then
+			g_PlayerTimes[player] = false
+			table.insert(idList, pdata.id)
+		end
+	end
+	
+	if(#idList > 0) then
+		local rows = DbQuery(
+			"SELECT bt1.player, bt1.time, (SELECT COUNT(*) FROM rafalh_besttimes AS bt2 WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos "..
+			"FROM rafalh_besttimes bt1 "..
+			"WHERE bt1.map=? AND bt1.player IN (??)", map_id, table.concat(idList, ","))
+		for i, data in ipairs(rows) do
+			if(data.time) then -- hacky...
+				local player = g_IdToPlayer[data.player]
+				data.time = formatTimePeriod(data.time / 1000)
 				g_PlayerTimes[player] = data
+			else
+				outputDebugString("wtf", 2)
 			end
-			
-			triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
-				show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
 		end
 	end
 	
 	local dt = getTickCount() - start
 	if(dt > 100) then
 		outputDebugString("Too slow: "..dt, 2)
+	elseif(#idList > 1) then
+		outputDebugString("New dt: "..dt, 3)
 	end
+	
+	-- OLD METHOD
+	if(#idList > 1) then
+		local start = getTickCount()
+		for i, playerId in ipairs(idList) do
+			local player = g_IdToPlayer[playerId]
+			local pdata = g_Players[player]
+			local rows = DbQuery("SELECT COUNT(bt2.player) AS pos, bt1.time AS time FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.map=? AND bt1.player=? AND bt1.map=bt2.map AND bt2.time <= bt1.time", map_id, pdata.id)
+			local data = rows and rows[1]
+			if(data and data.time) then
+				data.time = formatTimePeriod(data.time / 1000)
+			else
+				data = false -- A bit hacky...
+			end
+		end
+		local dt = getTickCount() - start
+		outputDebugString("Old dt: "..dt, 3)
+	end
+	
+	for i, player in ipairs(players) do
+		triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
+				show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
+	end
+	
+	
 end
 
 function BtDeleteCache()

@@ -109,6 +109,9 @@ end
 function AchvActivate(name)
 	local achv = g_NameToAchv[name]
 	assert(achv and achv.client)
+	
+	if(not g_MyId) then return end
+	
 	if(achv.active) then
 		--outputDebugString("Failed to activate client achievement "..name, 3)
 		return -- nothing to do

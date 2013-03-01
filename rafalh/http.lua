@@ -47,6 +47,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 		for i, data in ipairs ( rows ) do
 			data.rank = StRankFromPoints ( data.points )
 			data.name = data.name:gsub("#%x%x%x%x%x%x", "")
+			data.maxAchvCount = AchvGetCount()
 		end
 	end
 	

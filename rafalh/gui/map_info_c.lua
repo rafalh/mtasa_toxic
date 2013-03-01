@@ -75,14 +75,14 @@ local function MiRenderMapInfo(x, y, w, h)
 	if(g_MyBestTime) then
 		local itemY = y + 95 + (#g_Toptimes + 1) * 14
 		
-		if(g_MyBestTime.place > #g_Toptimes + 1) then -- dont display "..." if we are 9th
+		if(g_MyBestTime.pos > #g_Toptimes + 1) then -- dont display "..." if we are 9th
 			dxDrawText("...", x + 10, itemY)
 			dxDrawText("...", x + 45, itemY)
 			dxDrawText("...", x + 120, itemY)
 			itemY = itemY + 14
 		end
 		
-		dxDrawText(g_MyBestTime.place, x + 10, itemY, x + 45, itemY + 15, MYSELF_COLOR, 1, "default-bold")
+		dxDrawText(g_MyBestTime.pos, x + 10, itemY, x + 45, itemY + 15, MYSELF_COLOR, 1, "default-bold")
 		dxDrawText(g_MyBestTime.time, x + 45, itemY, x + 120, itemY + 15, MYSELF_COLOR, 1, "default-bold")
 		dxDrawText(getPlayerName(g_Me), x + 120, itemY, x + w, itemY + 15, MYSELF_COLOR, 1, "default-bold", "left", "top", true, false, false, true)
 	end
@@ -95,7 +95,7 @@ local function MiGetSize()
 	end
 	if(g_MyBestTime) then
 		h = h + 14
-		if(g_MyBestTime.place > #g_Toptimes + 1) then
+		if(g_MyBestTime.pos > #g_Toptimes + 1) then
 			h = h + 14
 		end
 	end
@@ -198,7 +198,7 @@ end
 
 local function onClientMapInfo(show, mapInfo, topTimes, myBestTime)
 	g_MapInfo, g_Toptimes = mapInfo, topTimes
-	g_MyBestTime = myBestTime and myBestTime.place > #g_Toptimes and myBestTime
+	g_MyBestTime = myBestTime and myBestTime.pos > #g_Toptimes and myBestTime
 	
 	if(USE_RENDER_TARGER) then
 		MiUpdateBuffer()

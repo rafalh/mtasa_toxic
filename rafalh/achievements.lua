@@ -4,6 +4,10 @@ local g_NameToAchv = {}
 addEvent("main.onAchvActivate", true)
 --addEvent("main.onAchvListReq", true)
 
+function AchvGetCount()
+	return #g_Achievements
+end
+
 -- called from mergeaccounts command handler
 function AchvInvalidateCache(player)
 	local pdata = g_Players[player]
@@ -64,11 +68,14 @@ function AchvRegister(achv)
 end
 
 function AchvActivate(player, names)
+	local pdata = g_Players[player]
+	assert(pdata and names)
 	if(type(names) ~= "table") then
 		names = {names}
 	end
 	
-	local pdata = player and g_Players[player]
+	if(not pdata.id) then return end -- dont support achievements for guests
+	
 	local achvStr = pdata.accountData:get("achievements")
 	local newAchv = {}
 	

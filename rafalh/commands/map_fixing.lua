@@ -310,18 +310,18 @@ local function PumaMarkers2Fix (ctx)
 	xmlDestroyNode (script_node)
 	ctx.client_scripts[ctx.puma_markers2] = nil
 	local abs_path = ctx.mapPath.."/"..ctx.puma_markers2
-	fileDelete (abs_path)
+	fileDelete(abs_path)
 	
-	local node = xmlCreateChild (ctx.node, "include")
-	xmlNodeSetAttribute (node, "resource", "pumamarkers2")
+	local node = xmlCreateChild(ctx.node, "include")
+	xmlNodeSetAttribute(node, "resource", "pumamarkers2")
 	
-	for path, node in pairs (ctx.files) do
-		if (path:match ("Icons/%w+%.png")) then
-			xmlDestroyNode (node)
+	for path, node in pairs(ctx.files) do
+		if(path:match ("Icons/%w+%.png")) then
+			xmlDestroyNode(node)
 			ctx.files[path] = nil
 			
 			local abs_path = ctx.mapPath.."/"..path
-		fileDelete (abs_path)
+			fileDelete(abs_path)
 		end
 	end
 	

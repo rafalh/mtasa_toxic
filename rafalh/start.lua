@@ -59,6 +59,11 @@ local function setupDatabase()
 	end
 	
 	if(not err and not DbQuery(
+			"CREATE INDEX IF NOT EXISTS rafalh_besttimes_idx2 ON rafalh_besttimes (map, player)" ) ) then
+		err = "Cannot create rafalh_besttimes_idx2 index."
+	end
+	
+	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_profiles ("..
 			"player INTEGER NOT NULL,"..
 			"field VARCHAR(64) NOT NULL,"..

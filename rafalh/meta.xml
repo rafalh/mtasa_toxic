@@ -272,7 +272,8 @@
 		<setting group="General" name="*win_events" accept="false,true" value="true" desc="If enabled random event will happen when player won DD match (for example gravity will be set to 0)" friendlyname="Win events" />
 		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />
 		<setting group="General" name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" friendlyname="Login window" />
-	
+		<setting group="General" name="*debug" accept="false,true" value="false" desc="Scripts debugging" friendlyname="Debugging" />
+		
 		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
 		<setting group="Maps" name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." friendlyname="Ghostmode OFF warning time" />
 		

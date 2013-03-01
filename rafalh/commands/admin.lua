@@ -19,7 +19,7 @@ local function CmdPBan (message, arg)
 	end
 end
 
-CmdRegister ("pban", CmdPBan, "command.banserial")
+CmdRegister("pban", CmdPBan, "command.banserial")
 
 local function CmdBan1m (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -34,7 +34,7 @@ local function CmdBan1m (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("ban1m", CmdBan1m, "resource.rafalh.ban1m", "Bans player for 1 minute")
+CmdRegister("ban1m", CmdBan1m, "resource.rafalh.ban1m", "Bans player for 1 minute")
 
 local function CmdBan5m (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -49,7 +49,7 @@ local function CmdBan5m (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("ban5m", CmdBan5m, "resource.rafalh.ban5m", "Bans player for 5 minutes")
+CmdRegister("ban5m", CmdBan5m, "resource.rafalh.ban5m", "Bans player for 5 minutes")
 
 local function CmdBan1h (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -64,7 +64,7 @@ local function CmdBan1h (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("ban1h", CmdBan1h, "resource.rafalh.ban1h", "Bans player for 1 hour")
+CmdRegister("ban1h", CmdBan1h, "resource.rafalh.ban1h", "Bans player for 1 hour")
 
 local function CmdBan24h (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -79,7 +79,7 @@ local function CmdBan24h (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("ban24h", CmdBan24h, "resource.rafalh.ban24h", "Bans player for 24 hours")
+CmdRegister("ban24h", CmdBan24h, "resource.rafalh.ban24h", "Bans player for 24 hours")
 
 local function CmdMute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -89,7 +89,7 @@ local function CmdMute (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player> [<time>]") end
 end
 
-CmdRegister ("mute", CmdMute, "command.mute", "Mutes player on chat and voice-chat for 1 minute")
+CmdRegister("mute", CmdMute, "command.mute", "Mutes player on chat and voice-chat for 1 minute")
 
 local function CmdPMute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -101,7 +101,7 @@ local function CmdPMute (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("pmute", CmdPMute, "resource.rafalh.pmute", "Mutes player for ever")
+CmdRegister("pmute", CmdPMute, "resource.rafalh.pmute", "Mutes player for ever")
 
 local function CmdUnmute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -115,7 +115,7 @@ local function CmdUnmute (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and voice-chat")
+CmdRegister("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and voice-chat")
 
 local function CmdSetAddCash (message, arg)
 	local playerEl = (#arg >= 3 and findPlayer (arg[2])) or source
@@ -132,7 +132,7 @@ local function CmdSetAddCash (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." [<player>] <cash>") end
 end
 
-CmdRegister ("setcash", CmdSetAddCash, "command.setmoney")
+CmdRegister("setcash", CmdSetAddCash, "command.setmoney")
 CmdRegisterAlias ("addcash", "setcash")
 
 local function CmdSetPoints (message, arg)
@@ -146,7 +146,7 @@ local function CmdSetPoints (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." [<player>] <points>") end
 end
 
-CmdRegister ("setpoints", CmdSetPoints, "resource.rafalh.setpoints", "Sets player points")
+CmdRegister("setpoints", CmdSetPoints, "resource.rafalh.setpoints", "Sets player points")
 
 local function CmdSetBidLevel (message, arg)
 	local playerEl = (#arg >= 3 and findPlayer (arg[2])) or source
@@ -181,7 +181,7 @@ local function CmdWarn(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("warn", CmdWarn, "resource.rafalh.warn", "Adds player warning and bans if he has too many")
+CmdRegister("warn", CmdWarn, "resource.rafalh.warn", "Adds player warning and bans if he has too many")
 
 local function CmdUnwarn (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -196,7 +196,7 @@ local function CmdUnwarn (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister ("unwarn", CmdUnwarn, "resource.rafalh.unwarn", "Removes player warning")
+CmdRegister("unwarn", CmdUnwarn, "resource.rafalh.unwarn", "Removes player warning")
 
 local function CmdKill (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
@@ -208,7 +208,7 @@ local function CmdKill (message, arg)
 	end
 end
 
-CmdRegister ("kill", CmdKill, false, "Kills player", true)
+CmdRegister("kill", CmdKill, false, "Kills player", true)
 
 local function CmdRemMap (message, arg)
 	local room = g_Players[source].room
@@ -232,7 +232,7 @@ local function CmdRemMap (message, arg)
 	startRandomMap(room)
 end
 
-CmdRegister ("remmap", CmdRemMap, "resource.rafalh.remmap", "Removes map from server")
+CmdRegister("remmap", CmdRemMap, "resource.rafalh.remmap", "Removes map from server")
 CmdRegisterAlias ("removemap", "remmap")
 
 local function CmdRestoreMap (message, arg)
@@ -249,7 +249,7 @@ local function CmdRestoreMap (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <map>") end
 end
 
-CmdRegister ("restoremap", CmdRestoreMap, "resource.rafalh.restoremap", "Restores proviously removed map")
+CmdRegister("restoremap", CmdRestoreMap, "resource.rafalh.restoremap", "Restores proviously removed map")
 
 local function CmdMap (message, arg)
 	local mapName = message:sub (arg[1]:len () + 2)
@@ -284,7 +284,7 @@ local function CmdMap (message, arg)
 	end
 end
 
-CmdRegister ("map", CmdMap, "command.setmap", "Changes current map")
+CmdRegister("map", CmdMap, "command.setmap", "Changes current map")
 
 local function AddMapToQueue(room, map)
 	local map_id = map:getId()
@@ -323,7 +323,7 @@ local function CmdNextMap (message, arg)
 	end
 end
 
-CmdRegister ("nextmap", CmdNextMap, "resource.rafalh.nextmap", "Adds next map to queue")
+CmdRegister("nextmap", CmdNextMap, "resource.rafalh.nextmap", "Adds next map to queue")
 CmdRegisterAlias ("next", "nextmap", true)
 
 -- For Admin Panel
@@ -351,7 +351,7 @@ local function CmdCancelNextMap (message, arg)
 	end
 end
 
-CmdRegister ("cancelnext", CmdCancelNextMap, "resource.rafalh.nextmap", "Removes last map from queue")
+CmdRegister("cancelnext", CmdCancelNextMap, "resource.rafalh.nextmap", "Removes last map from queue")
 
 local function CmdRedo (message, arg)
 	local now = getRealTime ().timestamp
@@ -362,11 +362,11 @@ local function CmdRedo (message, arg)
 		g_LastRedo = now
 		map:start(room)
 	else
-		privMsg(source, "You cannot redo yet "..(now - g_LastRedo).." "..tostring(map))
+		privMsg(source, "You cannot redo yet! Please wait "..(now - g_LastRedo).." seconds.")
 	end
 end
 
-CmdRegister ("redo", CmdRedo, "command.setmap", "Restarts current map")
+CmdRegister("redo", CmdRedo, "command.setmap", "Restarts current map")
 
 local function CmdIp (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
@@ -374,7 +374,7 @@ local function CmdIp (message, arg)
 	scriptMsg ("%s's IP: %s.", getPlayerName (player), getPlayerIP (player))
 end
 
-CmdRegister ("ip", CmdIp, "resource.rafalh.ip", "Shows player IP address")
+CmdRegister("ip", CmdIp, "resource.rafalh.ip", "Shows player IP address")
 
 local function CmdAccount(message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
@@ -417,7 +417,7 @@ local function CmdDescribeAccount(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <account ID>") end
 end
 
-CmdRegister ("describeaccount", CmdDescribeAccount, "resource.rafalh.findaccounts")
+CmdRegister("describeaccount", CmdDescribeAccount, "resource.rafalh.findaccounts")
 CmdRegisterAlias ("descra", "describeaccount")
 
 local function CmdMergeAccounts(message, arg)
@@ -439,10 +439,10 @@ local function CmdMergeAccounts(message, arg)
 			return
 		end
 		
-		if(src_data.first_visit > pdata.accountData.first_visit) then
+		--[[if(src_data.first_visit > pdata.accountData.first_visit) then
 			privMsg(source, "Account for merge is newer")
 			return
-		end
+		end]]
 		
 		-- remove duplicated names
 		local names = {}
@@ -529,8 +529,8 @@ local function CmdMergeAccounts(message, arg)
 				table.insert(questionMarksSrc, "?")
 			end
 			
-			local rows = DbQuery("SELECT COUNT(player) AS c FROM rafalh_besttimes WHERE map=? AND time<?", data.map, delTime)
-			if(rows[1].c < 3) then
+			local rows = DbQuery("SELECT COUNT(player) AS pos FROM rafalh_besttimes WHERE map=? AND time<=?", data.map, delTime)
+			if(rows[1].pos <= 3) then
 				newData.toptimes_count = newData.toptimes_count - 1
 			end
 		end
@@ -565,7 +565,7 @@ local function CmdMergeAccounts(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player> <other account ID>") end
 end
 
-CmdRegister ("mergeaccounts", CmdMergeAccounts, "resource.rafalh.mergeaccounts")
+CmdRegister("mergeaccounts", CmdMergeAccounts, "resource.rafalh.mergeaccounts")
 CmdRegisterAlias ("mergeacc", "mergeaccounts")
 
 local function CmdRemTopTime(message, arg)
@@ -614,7 +614,7 @@ local function CmdRemTopTime(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <toptime number>") end
 end
 
-CmdRegister ("remtoptime", CmdRemTopTime, "resource.rafalh.remtoptime", "Removes specified toptime on current map")
+CmdRegister("remtoptime", CmdRemTopTime, "resource.rafalh.remtoptime", "Removes specified toptime on current map")
 
 local function CmdResetStats(message, arg)
 	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))
@@ -663,7 +663,7 @@ local function CmdSqlQuery(message, arg)
 					table.insert(tbl, tostring(k).."="..tostring(v))
 				end
 				local buf = i..". "..table.concat(tbl, ", ")
-				privMsg(source, buf:sub(1, 100))
+				privMsg(source, buf:sub(1, 512))
 				if(i > 10) then break end
 			end
 		else
