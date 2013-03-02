@@ -75,6 +75,10 @@ local function TmRequestRespawn ( data )
 	spawnPlayer ( player, unpack ( data.pos ) )
 	
 	local veh = exports.race:getPlayerVehicle ( player )
+	if(not isElement(veh)) then
+		outputDebugString("Invalid vehicle", 2)
+		return
+	end
 	warpPedIntoVehicle ( player, veh )
 	triggerClientEvent ( player, "onClientCall_race", player, "Spectate.stop", "manual" )
 	
