@@ -28,7 +28,7 @@ local g_WidgetCtrl = {}
 local g_Items = {}
 local g_FirstTime = false
 local g_MaxNameW = 0
-local g_InsertTimeStamp, g_InsertRank = false, false
+local g_InsertTicks, g_InsertRank = false, false
 local g_Buffer = false
 
 addEvent("rb_addItem", true)
@@ -67,7 +67,7 @@ local function RbRenderBoard(x, y, w, h, anim)
 			
 			if(g_InsertRank == rank and anim) then
 				local ticks = getTickCount()
-				local progress = (ticks - g_InsertTimeStamp)/500
+				local progress = (ticks - g_InsertTicks)/500
 				if(progress < 1) then
 					if(first) then
 						-- scroll rest of items
@@ -106,28 +106,36 @@ local function RbRenderBuffered()
 	
 	local ticks = getTickCount()
 	local progress = 1
-	if(g_InsertTimeStamp) then
-		progress = (ticks - g_InsertTimeStamp)/500
+	if(g_InsertTicks) then
+		progress = (ticks - g_InsertTicks)/500
 	end
 	
 	--dxSetBlendMode("add")
 	if(progress < 1) then
-		local offset = 0
+		local srcOffset, dstOffset = 0, 0
+		local rowsBefore = 0
+		for i = 1, g_InsertRank - 1 do
+			if(g_Items[i]) then
+				rowsBefore = rowsBefore + 1
+			end
+		end
 		
 		-- draw lines before
-		if(g_InsertRank > 1) then
-			local beforeH = (g_InsertRank - 1)*FONT_HEIGHT
+		if(rowsBefore > 0) then
+			local beforeH = rowsBefore*FONT_HEIGHT
 			dxDrawImageSection(x, y, w, beforeH, 0, 0, w, beforeH, g_Buffer)
-			offset = beforeH
+			srcOffset = beforeH
+			dstOffset = beforeH
 		end
 		
 		local clr = tocolor(255, 255, 255, progress*255)
-		dxDrawImageSection(x, y + offset, w, FONT_HEIGHT, 0, offset, w, FONT_HEIGHT, g_Buffer, 0, 0, 0, clr)
-		offset = offset + progress*FONT_HEIGHT
+		dxDrawImageSection(x, y + dstOffset, w, FONT_HEIGHT, 0, srcOffset, w, FONT_HEIGHT, g_Buffer, 0, 0, 0, clr)
+		srcOffset = srcOffset + FONT_HEIGHT
+		dstOffset = dstOffset + progress*FONT_HEIGHT
 		
 		-- draw rest
 		if(g_InsertRank < #g_Items) then
-			dxDrawImageSection(x, y + offset, w, h - offset, 0, offset, w, h - offset, g_Buffer)
+			dxDrawImageSection(x, y + dstOffset, w, h - srcOffset, 0, srcOffset, w, h - srcOffset, g_Buffer)
 		end
 	else
 		dxDrawImage(x, y, w, h, g_Buffer)
@@ -159,7 +167,7 @@ local function RbClear()
 	--outputDebugString("RbClear", 3)
 	g_Items = {}
 	g_FirstTime = false
-	g_InsertTimeStamp = false
+	g_InsertTicks = false
 	g_InsertRank = false
 	g_MaxNameW = 0
 	
@@ -200,7 +208,7 @@ local function RbAddItem(player, rank, time)
 	end
 	
 	g_Items[rank] = item
-	g_InsertTimeStamp = getTickCount()
+	g_InsertTicks = getTickCount()
 	g_InsertRank = rank
 	
 	if(USE_RENDER_TARGET) then

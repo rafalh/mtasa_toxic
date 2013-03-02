@@ -73,12 +73,15 @@ addEventHandler("onGamemodeMapStop", root, RbMapStop)
 addEventHandler("rb_onPlayerReady", resourceRoot, RbPlayerReady)
 
 if(TEST) then
-	addCommandHandler("testrb", function(player, cmd, arg)
+	addCommandHandler("testrb", function(player, cmd, arg, arg2)
 		local n = tonumber(arg) or 1
+		local dir = arg2 and true
+		local sec = g_Items[#g_Items] and g_Items[#g_Items][3] or 0
+		local pos = g_Items[#g_Items] and g_Items[#g_Items][2] or (dir and 15 or 0)
 		for i = 1, n do
-			local t = g_Items[#g_Items] and g_Items[#g_Items][3] or 0
-			t = t + math.random(0, 100)
-			RbAddItem(player, #g_Items + 1, t)
+			sec = sec + math.random(20, 100)
+			pos = pos + (dir and -1 or 1)
+			RbAddItem(player, pos, sec)
 		end
 	end)
 end
