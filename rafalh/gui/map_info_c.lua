@@ -16,7 +16,7 @@ local DISABLED_STAR_CLR = tocolor(255, 255, 255, 64)
 local USE_RENDER_TARGER = true
 
 local g_MapInfo = {name = "", author = false, rating = 0, rates_count = 0, played = 0}
-local g_Toptimes = {}
+local g_TopTimes = {}
 local g_MyBestTime = false
 local g_HideTimer = false
 local g_Visible, g_AnimStart, g_Hiding = false, false, false
@@ -53,7 +53,7 @@ local function MiRenderMapInfo(x, y, w, h)
 	dxDrawText(MuiGetMsg("(%u rates)"):format(g_MapInfo.rates_count), x + 65 + 5*16, y + 55)
 	
 	-- Top times
-	if(#g_Toptimes == 0) then return end
+	if(#g_TopTimes == 0) then return end
 	
 	dxDrawText("Top Times:", x + 10, y + 75)
 	
@@ -63,7 +63,7 @@ local function MiRenderMapInfo(x, y, w, h)
 	
 	dxDrawLine(x + 10, y + 105, x + w - 10, y + 105)
 	
-	for i, data in ipairs ( g_Toptimes ) do
+	for i, data in ipairs ( g_TopTimes ) do
 		local itemY = y + 95 + i * 14
 		local clr = (data.player == g_MyId) and MYSELF_COLOR or TEXT_COLOR
 		
@@ -73,9 +73,9 @@ local function MiRenderMapInfo(x, y, w, h)
 	end
 	
 	if(g_MyBestTime) then
-		local itemY = y + 95 + (#g_Toptimes + 1) * 14
+		local itemY = y + 95 + (#g_TopTimes + 1) * 14
 		
-		if(g_MyBestTime.pos > #g_Toptimes + 1) then -- dont display "..." if we are 9th
+		if(g_MyBestTime.pos > #g_TopTimes + 1) then -- dont display "..." if we are 9th
 			dxDrawText("...", x + 10, itemY)
 			dxDrawText("...", x + 45, itemY)
 			dxDrawText("...", x + 120, itemY)
@@ -90,12 +90,12 @@ end
 
 local function MiGetSize()
 	local w, h = 300, 80
-	if(#g_Toptimes > 0) then
-		h = h + 35 + #g_Toptimes * 14
+	if(#g_TopTimes > 0) then
+		h = h + 35 + #g_TopTimes * 14
 	end
 	if(g_MyBestTime) then
 		h = h + 14
-		if(g_MyBestTime.pos > #g_Toptimes + 1) then
+		if(g_MyBestTime.pos > #g_TopTimes + 1) then
 			h = h + 14
 		end
 	end
@@ -158,7 +158,7 @@ local function MiRestore()
 	end
 end
 
-local function hideTopTimes()
+local function MiHide()
 	if(not g_Visible or g_Hiding) then return end
 	
 	if(g_HideTimer) then
@@ -170,42 +170,42 @@ local function hideTopTimes()
 	g_AnimStart = getTickCount()
 end
 
-local function showTopTimes()
+local function MiShow()
 	if(g_Visible) then return end
 	
 	g_Visible = true
 	g_Hiding = false
 	g_AnimStart = getTickCount()
 	addEventHandler("onClientRender", g_Root, MiRender)
-	g_HideTimer = setTimer(hideTopTimes, 15000, 1)
+	g_HideTimer = setTimer(MiHide, 15000, 1)
 end
 
-local function keyUpHandler()
+local function MiToggle()
 	if(g_Visible) then
-		hideTopTimes()
+		MiHide()
 	else
-		showTopTimes()
+		MiShow()
 	end
 end
 
-local function onClientInit()
-	bindKey("f5", "up", keyUpHandler)
+local function MiInit()
+	bindKey("f5", "up", MiToggle)
 	
 	g_Textures.star = dxCreateTexture("img/star.png")
 	g_Textures.star_l = dxCreateTexture("img/star_l.png")
 	g_Textures.star_r = dxCreateTexture("img/star_r.png")
 end
 
-local function onClientMapInfo(show, mapInfo, topTimes, myBestTime)
-	g_MapInfo, g_Toptimes = mapInfo, topTimes
-	g_MyBestTime = myBestTime and myBestTime.pos > #g_Toptimes and myBestTime
+local function MiOnMapInfo(show, mapInfo, topTimes, myBestTime)
+	g_MapInfo, g_TopTimes = mapInfo, topTimes
+	g_MyBestTime = myBestTime and myBestTime.pos > #g_TopTimes and myBestTime
 	
 	if(USE_RENDER_TARGER) then
 		MiUpdateBuffer()
 	end
 	
 	if(show) then
-		showTopTimes()
+		MiShow()
 		if(g_HideTimer) then
 			resetTimer(g_HideTimer)
 		end
@@ -217,5 +217,5 @@ end
 ------------
 
 addEventHandler("onClientRestore", g_Root, MiRestore)
-addInternalEventHandler($(EV_CLIENT_INIT), onClientInit)
-addInternalEventHandler($(EV_CLIENT_MAP_INFO), onClientMapInfo)
+addInternalEventHandler($(EV_CLIENT_INIT), MiInit)
+addInternalEventHandler($(EV_CLIENT_MAP_INFO), MiOnMapInfo)

@@ -10,7 +10,30 @@
 
 addEvent("main.onPlayerReady", true)
 
+local function isNickChangeAllowed(player, name)
+	local namePlain = name:gsub("#%x%x%x%x%x%x", "")
+	if(namePlain == "") then
+		privMsg(player, "Empty nick is not allowed!")
+		return false
+	end
+	
+	if(NbCheckName and NbCheckName(namePlain)) then
+		privMsg(player, "This nickname is not allowed!")
+		return false
+	end
+	
+	if(not AsCanPlayerChangeNick(source, namePlain)) then
+		return false
+	end
+	
+	return true
+end
+
 local function onPlayerJoin()
+	if(NbCheckPlayerAndFix) then
+		NbCheckPlayerAndFix(source)
+	end
+	
 	local player = Player.create(source) -- name can change here
 	player.new = true
 	
@@ -56,38 +79,43 @@ end
 
 local function onPlayerChangeNick(oldNick, newNick)
 	local pdata = g_Players[source]
-	if(wasEventCancelled() or not pdata) then
-		return
-	end
+	if(not pdata) then return end
 	
 	local oldNickPlain = oldNick:gsub("#%x%x%x%x%x%x", "")
 	local newNickPlain = newNick:gsub("#%x%x%x%x%x%x", "")
+	local onlyColorChanged = (oldNickPlain == newNickPlain)
 	
-	if(newNickPlain == "") then
-		privMsg(source, "Empty nick is not allowed!")
+	if(not onlyColorChanged and not isNickChangeAllowed(source, newNickPlain)) then
 		cancelEvent()
 		return
 	end
 	
-	if(oldNickPlain ~= newNickPlain) then -- not only color changed
-		if(NlCheckPlayer and NlCheckPlayer(source, newNickPlain)) then
-			cancelEvent()
-			return
-		end
-		
-		if(AsCanPlayerChangeNick(source, oldNickPlain, newNickPlain)) then
-			-- Note: getPlayerName returns old nick
-			local fullNick = newNick
-			local r, g, b = getPlayerNametagColor(pdata.el)
-			if(r ~= 255 or g ~= 255 or b ~= 255) then
-				fullNick = ("#%02X%02X%02X"):format(r, g, b)..fullNick
-			end
-			
-			pdata.accountData:set("name", fullNick)
-			customMsg(255, 96, 96, "* %s is now known as %s.", oldNickPlain, newNickPlain)
-		else
-			cancelEvent()
-		end
+	if(AsNotifyOfNickChange) then
+		AsNotifyOfNickChange(source)
+	end
+	
+	-- Note: getPlayerName returns old nick
+	local fullNick = newNick
+	local r, g, b = getPlayerNametagColor(pdata.el)
+	if(r ~= 255 or g ~= 255 or b ~= 255) then
+		fullNick = ("#%02X%02X%02X"):format(r, g, b)..fullNick
+	end
+	
+	pdata.accountData:set("name", fullNick)
+	if(not onlyColorChanged) then
+		customMsg(255, 96, 96, "* %s is now known as %s.", oldNickPlain, newNickPlain)
+	end
+end
+
+local function onSetNameRequest(name)
+	name = tostring(name)
+	if(getPlayerFromName(name)) then return end
+	
+	-- Note: Cancelling event after setPlayerName doesn't work
+	local oldPlainName = getPlayerName(client):gsub("#%x%x%x%x%x%x", "")
+	local plainName = name:gsub("#%x%x%x%x%x%x", "")
+	if(plainName == oldPlainName or isNickChangeAllowed(client, name)) then
+		setPlayerName(client, name)
 	end
 end
 
@@ -211,25 +239,6 @@ local function onPlayerReady(localeId)
 	end
 	
 	pdata.new = false
-end
-
-local function onSetNameRequest(name)
-	name = tostring(name)
-	local pdata = g_Players[client]
-	
-	-- HACK: Cancelling event after setPlayerName doesn't work
-	local plainName = name:gsub("#%x%x%x%x%x%x", "")
-	if(plainName ~= "" and not (pdata.last_nick_change and (getTickCount() - pdata.last_nick_change) < 10000) and not getPlayerFromName(name)) then
-		local oldPlainName = getPlayerName(client):gsub("#%x%x%x%x%x%x", "")
-		if(oldPlainName ~= plainName) then
-			local lockedNick = pdata.accountData:get("locked_nick")
-			if(lockedNick == 1) then
-				return
-			end
-		end
-		
-		setPlayerName(client, name)
-	end
 end
 
 ------------

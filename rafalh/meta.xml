@@ -228,11 +228,12 @@
 	<file src="img/radio/przeboje80and90.png" />
 	<file src="img/radio/bassdrive.png" />
 	<file src="img/radio/dubstepfm.jpg" />
-	<file src="img/radio/discopolofm.jpg" />
-	<file src="img/radio/dubstep_openfm.jpg" />
+	<file src="img/radio/DiscoPoloClassicOpenFM.png" />
+	<file src="img/radio/DupstepOpenFM.png" />
 	<file src="img/radio/ClubMusic24.png" />
 	<file src="img/radio/All4Music.png" />
 	<file src="img/radio/equestriafm.png" />
+	<file src="img/radio/HipHopPLOpenFM.png" />
 	
 	<export function="getPlayersStats" http="true" />
 	<export function="getPlayerProfile" http="true" />

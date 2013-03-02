@@ -98,12 +98,19 @@ end
 
 function formatTimePeriod(t, decimals)
 	assert(t)
-	local dec = touint(decimals, 2)
+	
 	local h = math.floor(t / 3600)
 	local m = math.floor((t % 3600) / 60)
-	local s = t % 60
+	local s = math.floor(t % 60)
+	local str = (h > 0 and h..":%02u:%02u" or "%u:%02u"):format(m, s)
 	
-	return (( h > 0 and h..":" ) or "")..( "%"..( ( h > 0 and "02" ) or "" ).."u:%0"..( 2 + ( ( dec > 0 and dec + 1 ) or 0 ) ).."."..dec.."f"):format(m, s)
+	local dec = touint(decimals, 2)
+	if(dec > 0) then
+		local rest = math.floor((t % 1)*(10^dec))
+		str = str..(".%0"..dec.."u"):format(rest)
+	end
+	
+	return str
 end
 
 function formatNumber ( num, decimals )

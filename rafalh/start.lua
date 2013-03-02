@@ -83,6 +83,10 @@ local function setupDatabase()
 			"added_timestamp INTEGER DEFAULT 0 NOT NULL)")) then
 		err = "Cannot create rafalh_maps table."
 	end
+	if(not err and not DbQuery(
+			"CREATE INDEX IF NOT EXISTS rafalh_maps_idx ON rafalh_maps (name)" ) ) then
+		err = "Cannot create rafalh_maps_idx index."
+	end
 	
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS rafalh_settings ("..
@@ -278,6 +282,10 @@ local function onResourceStart(resource)
 	end
 	
 	for i, playerEl in ipairs (getElementsByType("player")) do
+		if(NbCheckPlayerAndFix) then
+			NbCheckPlayerAndFix(playerEl)
+		end
+		
 		Player.create(playerEl)
 	end
 	

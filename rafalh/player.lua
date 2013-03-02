@@ -5,23 +5,6 @@ addEvent("onPlayerChangeRoom")
 addEvent("onPlayerChangeTeam")
 addEvent("main.onAccountChange")
 
-function Player:fixName()
-	local name = getPlayerName(self.el)
-	
-	-- Change default name to allow new players join
-	if(name == "Player" or name:gsub("#%x%x%x%x%x%x", "") == "") then
-		name = "ToxicPlayer"
-		local i = 1
-		while(getPlayerFromName(name)) do
-			i = i + 1
-			name = "ToxicPlayer"..i
-		end
-		setPlayerName(self.el, name)
-	end
-	
-	return name
-end
-
 function Player:getSerial()
 	if(self.is_console) then
 		return "0"
@@ -161,11 +144,6 @@ function Player.create(el)
 	
 	if(not self.is_console) then
 		g_PlayersCount = g_PlayersCount + 1
-	end
-	
-	if(NlCheckPlayer) then
-		local name = self:fixName()
-		NlCheckPlayer(self.el, name, true)
 	end
 	
 	local fullName = self:getName(true)
