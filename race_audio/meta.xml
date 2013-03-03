@@ -1,13 +1,18 @@
 <meta>
-	<info name="Race audio" version="1.0" type="script" author="Flobu and dragon" description="Audio support for Race gamemode" />
+	<info name="Race audio" version="1.0" type="script" author="rafalh" description="Audio support for Race gamemode" />
 
 	<script src="audio_s.lua" type="server"/>
 	<script src="audio_c.lua" type="client"/>
 	
-	<file src="audio/raceon.mp3"/>
-	<file src="audio/wasted.mp3"/>
-	<file src="audio/timesup.mp3"/>
-	<file src="audio/jobfail.mp3"/>
-	<file src="audio/jobcomplete.mp3"/>
-	<file src="audio/nicework.mp3"/>
+	<file src="audio/raceon.mp3" />
+	<file src="audio/wasted.mp3" />
+	<file src="audio/timesup.mp3" />
+	<file src="audio/jobfail.mp3" />
+	<file src="audio/jobcomplete.mp3" />
+	<file src="audio/nicework.mp3" />
+	
+	<file src="audio/countdown.mp3" />
+	<file src="audio/go.mp3" />
+	<file src="audio/cp.mp3" />
+	<file src="audio/mission_accomplished.mp3" />
 </meta>
