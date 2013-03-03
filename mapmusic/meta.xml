@@ -1,0 +1,14 @@
+<meta>
+	<info type="script" name="Music manager" author="Rafalh" version="2.0.0"></info>
+	
+	<script src="music_c.lua" type="client" />
+	<script src="music.lua" />
+	<script src="effect_c.lua" type="client" />
+	
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+	
+	<settings>
+		<setting name="*server_address" value="[ '127.0.0.1:22005' ]" />
+	</settings>
+</meta>
