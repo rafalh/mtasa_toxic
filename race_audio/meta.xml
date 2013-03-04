@@ -1,5 +1,5 @@
 <meta>
-	<info name="Race audio" version="1.0" type="script" author="rafalh" description="Audio support for Race gamemode" />
+	<info name="Race audio" version="1.0" type="script" author="rafalh" description="Audio support for Race gamemode" addon="race" />
 
 	<script src="audio_s.lua" type="server"/>
 	<script src="audio_c.lua" type="client"/>
