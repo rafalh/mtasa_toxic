@@ -46,7 +46,7 @@ local function startRadio(url)
 	setRadioChannel(0)
 	
 	g_Url = url
-	g_ClientSettings.radio_channel = url
+	g_LocalSettings.radio_channel = url
 	
 	if(not g_Muted) then
 		g_Sound = playSound(url, true)
@@ -102,7 +102,7 @@ local function onVolumeChange()
 	g_Volume = guiScrollBarGetScrollPosition(g_VolumeBar)
 	if(g_Sound) then
 		setSoundVolume(g_Sound, g_Volume / 100)
-		g_ClientSettings.radio_volume = g_Volume
+		g_LocalSettings.radio_volume = g_Volume
 	end
 	
 	setMuted(g_Volume == 0)
@@ -114,7 +114,7 @@ end
 
 local function onTurnOffClick()
 	guiSetVisible(g_TurnOffBtn, false)
-	g_ClientSettings.radio_channel = ""
+	g_LocalSettings.radio_channel = ""
 	
 	g_List:setActiveItem(false)
 	stopRadio()
@@ -238,9 +238,9 @@ end
 local function initRadio()
 	setTimer(checkSounds, 1000, 0)
 	
-	g_Volume = math.min(g_ClientSettings.radio_volume, 100)
-	if(g_ClientSettings.radio_channel ~= "") then
-		startRadio(g_ClientSettings.radio_channel)
+	g_Volume = math.min(g_LocalSettings.radio_volume, 100)
+	if(g_LocalSettings.radio_channel ~= "") then
+		startRadio(g_LocalSettings.radio_channel)
 	end
 end
 

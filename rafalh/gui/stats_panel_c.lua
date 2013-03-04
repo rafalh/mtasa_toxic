@@ -26,7 +26,7 @@ local function SpInitGui()
 end
 
 local function SpInit()
-	bindKey(g_ClientSettings.stats_panel_key, "up", openStatsPanel)
+	bindKey(g_LocalSettings.stats_panel_key, "up", openStatsPanel)
 end
 
 local function onAccountChange()

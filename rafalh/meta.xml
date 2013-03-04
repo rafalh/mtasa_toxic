@@ -67,7 +67,6 @@
 	<script src="rec.lua" type="server" />
 	<script src="rec_c.lua" type="client" />
 	<script src="votes.lua" type="server" />
-	<script src="winevents.lua" type="server" />
 	<script src="win_anim_c.lua"  type="client" />
 	<script src="water_fix_c.lua" type="client" />
 	

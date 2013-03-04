@@ -56,6 +56,10 @@ function tostr ( var )
 	return ( var and tostring ( var ) ) or ""
 end
 
+function tobool(val)
+	return (val == true or val == "true" or val == 1)
+end
+
 function table.size ( t )
 	local n = 0
 	

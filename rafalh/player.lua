@@ -82,6 +82,8 @@ function Player:setAccount(account)
 	self.accountData:set("serial", self:getSerial(), true)
 	self.accountData:set("ip", self:getIP(), true)
 	self.accountData:set("last_visit", now, true)
+	local fullName = self:getName(true)
+	self.accountData:set("name", fullName, true)
 end
 
 function Player:onRoomChange(room)

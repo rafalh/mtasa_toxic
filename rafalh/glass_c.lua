@@ -54,14 +54,14 @@ local function renderGlass()
 	if(a <= 0) then
 		g_BigDemageTime = false
 	else
-		if(g_Settings.breakable_glass) then
+		if(g_ServerSettings.breakable_glass) then
 			-- broken glass
 			dxDrawImage(g_Pos * g_ScreenSize[1], g_Pos * g_ScreenSize[2], g_Size * g_ScreenSize[1], g_Size * g_ScreenSize[2], g_Texture, 0, 0, 0, tocolor(255, 255, 255, a))
 		end
 		
 		-- red screen for 128 ms
 		a = 128 - (ticks - g_BigDemageTime)
-		if(a > 0 and g_Settings.red_damage_screen) then
+		if(a > 0 and g_ServerSettings.red_damage_screen) then
 			dxDrawRectangle(0, 0, g_ScreenSize[1], g_ScreenSize[2], tocolor(255, 0, 0, a))
 		end
 	end

@@ -69,8 +69,8 @@ local function AdvInit ()
 			
 			local advert = {}
 			advert.freq = touint ( attr.freq, 1 )
-			if ( attr[g_ClientSettings.locale] ) then
-				advert.text = attr[g_ClientSettings.locale]
+			if ( attr[g_LocalSettings.locale] ) then
+				advert.text = attr[g_LocalSettings.locale]
 			else
 				advert.text = xmlNodeGetValue ( subnode )
 			end

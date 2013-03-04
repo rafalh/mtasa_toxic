@@ -399,6 +399,7 @@ local function onPlayerWinDD()
 	end
 	
 	setPlayerFinalRank(source, 1)
+	triggerClientEvent(root, "main.onPlayerWinDD", source)
 end
 
 local function onPlayerPickUpRacePickup (pickupID, pickupType, vehicleModel)

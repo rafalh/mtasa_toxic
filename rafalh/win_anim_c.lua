@@ -9,7 +9,7 @@ local g_WinnerAnim = false
 local g_WinnerAnimStart
 local g_StarTexture
 
-addEvent("onClientWinnerAnim", true)
+addEvent("main.onPlayerWinDD", true)
 addEvent("onClientMapStopping")
 
 local function starsSortHelper(star1, star2)
@@ -76,8 +76,8 @@ local function renderWinnerAnim()
 	end
 end
 
-local function startWinnerAnim(arg)
-	if(g_WinnerAnim or not g_ClientSettings.winAnim) then return end
+local function startWinnerAnim()
+	if(g_WinnerAnim or not g_LocalSettings.winAnim) then return end
 	
 	g_WinnerAnimStart = getTickCount()
 	g_WinnerAnim = source
@@ -105,7 +105,7 @@ local function init()
 	end
 end
 
-addEventHandler("onClientWinnerAnim", g_Root, startWinnerAnim)
+addEventHandler("main.onPlayerWinDD", g_Root, startWinnerAnim)
 addEventHandler("onClientMapStopping", g_Root, stopWinnerAnim)
 addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 addEventHandler("onClientResourceStart", g_ResRoot, init)

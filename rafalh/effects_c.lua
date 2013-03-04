@@ -51,7 +51,7 @@ local function checkFps()
 			
 			-- display message for user
 			if(type(name) == "table") then
-				name = name[g_ClientSettings.locale] or name[1]
+				name = name[g_LocalSettings.locale] or name[1]
 			end
 			if(name) then
 				outputChatBox(MuiGetMsg("%s has been disabled to improve your FPS!"):format(name), 255, 0, 0)
@@ -92,7 +92,7 @@ local function onAddEffect(res, name)
 	
 	-- Apply effect settings
 	local res_name = getResourceName(res)
-	local effect_enabled = g_ClientSettings.effects[res_name]
+	local effect_enabled = g_LocalSettings.effects[res_name]
 	if(effect_enabled ~= nil) then
 		call(res, "setEffectEnabled", effect_enabled)
 	end

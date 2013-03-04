@@ -28,12 +28,12 @@ local function onClientThisResourceStart(res)
 	
 	loadSettings()
 	
-	if(not bindKey(g_ClientSettings.suicide_key, "down", suicide)) then
-		g_ClientSettings.suicide_key = "k"
+	if(not bindKey(g_LocalSettings.suicide_key, "down", suicide)) then
+		g_LocalSettings.suicide_key = "k"
 		bindKey("k", "down", suicide)
 	end
 	
-	triggerServerEvent("main.onPlayerReady", g_ResRoot, g_ClientSettings.locale)
+	triggerServerEvent("main.onPlayerReady", g_ResRoot, g_LocalSettings.locale)
 end
 
 local function onClientResourceStart(res)
@@ -70,12 +70,12 @@ end
 
 local function onClientInit(accountId, settings, isNew, localeId)
 	g_MyId = accountId
-	g_Settings = settings
-	g_ClientSettings.locale = localeId
+	g_ServerSettings = settings
+	g_LocalSettings.locale = localeId
 	triggerEvent("onClientLangChange", g_Root, localeId)
 	
 	if(isNew) then
-		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", g_ClientSettings.user_panel_key, g_ClientSettings.stats_panel_key)
+		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", g_LocalSettings.user_panel_key, g_LocalSettings.stats_panel_key)
 	end
 end
 

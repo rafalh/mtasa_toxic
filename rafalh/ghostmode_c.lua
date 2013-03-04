@@ -1,5 +1,5 @@
 local function updateAlpha()
-	if(not g_ClientSettings.hideNearbyCars) then return end
+	if(not g_LocalSettings.hideNearbyCars) then return end
 	
 	local cameraPos = Vector.create(getCameraMatrix())
 	local target = getCameraTarget()

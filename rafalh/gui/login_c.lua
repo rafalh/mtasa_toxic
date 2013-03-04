@@ -97,10 +97,10 @@ end
 
 local function onFlagClick()
 	local localeId = g_GUI.flagTbl[source]
-	if(g_ClientSettings.locale == localeId) then return end
+	if(g_LocalSettings.locale == localeId) then return end
 	
 	triggerServerEvent("main.onSetLocaleReq", g_ResRoot, localeId)
-	g_ClientSettings.locale = localeId
+	g_LocalSettings.locale = localeId
 	saveSettings()
 	
 	for img, localeId in pairs(g_GUI.flagTbl) do
@@ -123,7 +123,7 @@ function openLoginWnd(loginFailed)
 	
 	g_GUI = GUI.create("loginWnd")
 	local langsCount = LocaleList.count()
-	local curLocale = g_ClientSettings.locale
+	local curLocale = g_LocalSettings.locale
 	
 	g_GUI.flagTbl = {}
 	local flagsW, flagsH = guiGetSize(g_GUI.flags, false)

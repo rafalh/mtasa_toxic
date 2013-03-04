@@ -146,7 +146,7 @@ local function UpShow()
 end
 
 local function UpInit()
-	bindKey(g_ClientSettings.user_panel_key, "up", UpToggle)
+	bindKey(g_LocalSettings.user_panel_key, "up", UpToggle)
 end
 
 ----------------------

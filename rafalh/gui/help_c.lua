@@ -41,11 +41,11 @@ local function HlpCreateGui ()
 	local y = 10
 	
 	local title = guiCreateLabel ( 10, y, w - 20, 15, "Controls", false, g_HelpTab )
-	guiSetFont ( title, "default-bold-small" )
-	guiCreateLabel ( 10, y + 1*15, w - 20, 15, MuiGetMsg ( "Press %s to show Statistics Panel." ):format ( g_ClientSettings.stats_panel_key ), false, g_HelpTab )
-	guiCreateLabel ( 10, y + 2*15, w - 20, 15, MuiGetMsg ( "Press %s to show User Panel." ):format ( g_ClientSettings.user_panel_key ), false, g_HelpTab )
-	guiCreateLabel ( 10, y + 3*15, w - 20, 15, MuiGetMsg ( "Press %s to show User Items." ):format ( "F3" ), false, g_HelpTab )
-	guiCreateLabel ( 10, y + 4*15, w - 20, 15, MuiGetMsg ( "Press %s to show Top Times." ):format ( "F5" ), false, g_HelpTab )
+	guiSetFont(title, "default-bold-small")
+	guiCreateLabel(10, y + 1*15, w - 20, 15, MuiGetMsg("Press %s to show Statistics Panel."):format(g_LocalSettings.stats_panel_key), false, g_HelpTab)
+	guiCreateLabel(10, y + 2*15, w - 20, 15, MuiGetMsg("Press %s to show User Panel."):format(g_LocalSettings.user_panel_key), false, g_HelpTab)
+	guiCreateLabel(10, y + 3*15, w - 20, 15, MuiGetMsg("Press %s to show User Items."):format("F3"), false, g_HelpTab)
+	guiCreateLabel(10, y + 4*15, w - 20, 15, MuiGetMsg("Press %s to show Top Times."):format("F5"), false, g_HelpTab)
 	y = y + 5*15 + 10
 	
 	local title = guiCreateLabel ( 10, y, w - 20, 15, "Commands", false, g_HelpTab )
