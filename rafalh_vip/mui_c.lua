@@ -130,11 +130,11 @@ function MuiSetLang ( lang )
 	end
 end
 
-local function MuiOnElementDestroy ()
-	if ( source ) then -- wtf?
+local function MuiOnElementDestroy()
+	if(source) then -- wtf?
 		g_Mui[source] = nil
 	end
 end
 
-addEventHandler ( "onClientLangChange", getResourceRootElement ( getThisResource () ), MuiSetLang )
-addEventHandler ( "onClientElementDestroy", getRootElement (), MuiOnElementDestroy )
+addEventHandler("onClientLangChange", getResourceRootElement(), MuiSetLang)
+addEventHandler("onClientElementDestroy", getResourceRootElement(), MuiOnElementDestroy)

@@ -7,7 +7,7 @@ local function GmSetEnabled(room, enabled)
 	
 	assert(type(map) == "table", type(map))
 	
-	if (map:getSetting("ghostmode")) then
+	--[[if (map:getSetting("ghostmode")) then
 		return false
 	end
 	
@@ -22,7 +22,15 @@ local function GmSetEnabled(room, enabled)
 		return true
 	end
 	
-	return false
+	return false]]
+	
+	local raceRes = getResourceFromName("race")
+	if(not raceRes or getResourceState(raceRes) ~= "running") then
+		return false
+	end
+	
+	call(raceRes, "setGhostmodeEnabled", enabled)
+	return true
 end
 
 local function GmOnPlayerQuit()
@@ -78,11 +86,13 @@ function GmIsEnabled(room)
 		return false
 	end
 	
-	local map = getCurrentMap(room)
+	return call(raceRes, "isGhostmodeEnabled")
+	
+	--[[local map = getCurrentMap(room)
 	if(not map) then return false end
 	
 	local ghostModeStr = map:getSetting("ghostmode") or get("*race.ghostmode")
-	return (ghostModeStr == "true")
+	return (ghostModeStr == "true")]]
 end
 
 addEventHandler("onPlayerQuit", g_Root, GmOnPlayerQuit)

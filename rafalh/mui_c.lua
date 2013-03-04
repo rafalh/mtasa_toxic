@@ -141,21 +141,20 @@ local function MuiUpdate ()
 end
 
 function MuiSetLang ( lang )
-	assert ( lang )
-	
-	if ( lang ~= g_Lang ) then
-		MuiLoad ( "lang/"..tostring ( lang ).."_c.xml" )
-		MuiUpdate ()
-		triggerEvent ( "onClientLangChanged", getResourceRootElement ( getThisResource () ) )
+	assert(lang)
+	if(lang ~= g_Lang) then
+		MuiLoad("lang/"..tostring (lang).."_c.xml")
+		MuiUpdate()
+		triggerEvent("onClientLangChanged", getResourceRootElement())
 		g_Lang = lang
 	end
 end
 
 local function MuiOnElementDestroy ()
-	if ( source ) then
+	if(source) then
 		g_Mui[source] = nil
 	end
 end
 
-addEventHandler ( "onClientLangChange", getResourceRootElement ( getThisResource () ), MuiSetLang )
-addEventHandler ( "onClientElementDestroy", getRootElement (), MuiOnElementDestroy )
+addEventHandler("onClientLangChange", getResourceRootElement(), MuiSetLang)
+addEventHandler("onClientElementDestroy", getResourceRootElement(), MuiOnElementDestroy)

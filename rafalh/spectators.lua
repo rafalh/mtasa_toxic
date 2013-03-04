@@ -22,7 +22,7 @@ local function updateSpectators()
 			local spectatorsStr = #spectators > 0 and table.concat(spectators, "#FFFFFF, ")
 			if(pdata.lastSpecList ~= spectatorsStr) then
 				pdata.lastSpecList = spectatorsStr
-				triggerClientEvent(player, "onClientSetSpectators", g_Root, spectatorsStr or "none")
+				triggerClientEvent(player, "onClientSetSpectators", g_Root, spectatorsStr)
 			end
 		else
 			--outputDebugString("no target", 3)

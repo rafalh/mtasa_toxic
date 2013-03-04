@@ -45,22 +45,6 @@ local function NbInit()
 		end
 		xmlUnloadFile(node)
 	end
-	
-	for player, pdata in pairs(g_Players) do
-		if(NbCheckName(getPlayerName(player))) then
-			local newName = NbGenerateUniqueName()
-			setPlayerName(player, newName)
-		end
-	end
 end
 
-local function NbOnPlayerJoin()
-	if(wasEventCancelled()) then return end
-	
-	if(NbCheckName(getPlayerName(source))) then
-		setPlayerName(source, "ToxicPlayer"..tostring(math.random(0, 9999)))
-	end
-end
-
-addEventHandler ( "onResourceStart", g_ResRoot, NbInit )
-addEventHandler ( "onPlayerJoin", g_Root, NbOnPlayerJoin )
+addEventHandler("onResourceStart", g_ResRoot, NbInit)

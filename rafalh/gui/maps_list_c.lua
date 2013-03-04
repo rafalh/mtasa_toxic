@@ -128,11 +128,13 @@ function MlstDisplay ( title, btn_name, callback )
 	return gui.wnd
 end
 
+local g_LastInvalidSourceWarn = 0
 local function MlstOnElementDestroy()
-	if(not source) then
-		outputDebugString("source == "..tostring(source).."...", 2)
-	else
+	if(source) then
 		g_GuiList[source] = nil
+	elseif(getTickCount() - g_LastInvalidSourceWarn > 100) then -- dont spam
+		outputDebugString("source == "..tostring(source).."...", 2)
+		g_LastInvalidSourceWarn = getTickCount()
 	end
 end
 
@@ -175,9 +177,9 @@ local function DisplayChangeMapGui ()
 	end )
 end
 
-addEventHandler ( "onClientMapList", g_ResRoot, MlstOnMapList )
-addEventHandler ( "onClientElementDestroy", g_Root, MlstOnElementDestroy )
-addEventHandler ( "onClientDisplayVotenextGuiReq", g_ResRoot, DisplayVotenextGui )
-addEventHandler ( "onClientDisplayNextMapGuiReq", g_ResRoot, DisplayNextMapGui )
-addEventHandler ( "onClientDisplayChangeMapGuiReq", g_ResRoot, DisplayChangeMapGui )
-addEventHandler ( "onClientMapStarting", g_Root, MlstOnMapStart )
+addEventHandler("onClientMapList", g_ResRoot, MlstOnMapList)
+addEventHandler("onClientElementDestroy", g_Root, MlstOnElementDestroy)
+addEventHandler("onClientDisplayVotenextGuiReq", g_ResRoot, DisplayVotenextGui)
+addEventHandler("onClientDisplayNextMapGuiReq", g_ResRoot, DisplayNextMapGui)
+addEventHandler("onClientDisplayChangeMapGuiReq", g_ResRoot, DisplayChangeMapGui)
+addEventHandler("onClientMapStarting", g_Root, MlstOnMapStart)

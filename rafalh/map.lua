@@ -229,9 +229,9 @@ function MapList:getCount()
 end
 
 function MapList:iterator(i)
-	i = i + 1
 	local map = self:get(i)
 	if(not map) then return end
+	i = i + 1
 	return i, map
 end
 

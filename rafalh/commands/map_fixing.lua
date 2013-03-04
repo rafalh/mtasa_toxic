@@ -460,7 +460,7 @@ local g_FixMapScriptsTimer = false
 
 local function FixAllMapsScripts (player)
 	local start = getTickCount ()
-	local dt, count, fails = 0, 0, 0
+	local dt, count = 0, 0
 	local maps = getMapsList()
 	local start2 = start
 	
@@ -476,13 +476,13 @@ local function FixAllMapsScripts (player)
 		
 		source = player
 		local status = FixMapScripts(map)
-		if (status) then
+		if(status) then
 			count = count + 1
 		end
 	end
 	
 	local dt = getTickCount () - start
-	privMsg (player, "Finished in %u ms: %u failures, %u/%u maps processed.", dt, fails, count, maps:getCount())
+	privMsg (player, "Finished in %u ms: %u/%u maps processed.", dt, count, maps:getCount())
 end
 
 local function CmdFixMapScripts (message, arg)
@@ -511,4 +511,110 @@ local function CmdFixMapScripts (message, arg)
 	end
 end
 
-CmdRegister ("fixmapscripts", CmdFixMapScripts, true)
+CmdRegister("fixmapscripts", CmdFixMapScripts, true)
+
+local function CountSpInMapFile(path)
+	local node = xmlLoadFile(path)
+	if(not node) then return false end
+	
+	local ret = 0
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local tag = xmlNodeGetName(subnode)
+		if(tag == "spawnpoint") then
+			ret = ret + 1
+		end
+	end
+	xmlUnloadFile(node)
+	return ret
+end
+
+local function CheckMapSpawnpointsCount(map, player)
+	if(map:getSetting("ghostmode") == "true") then return true end -- it's ok
+	
+	local mapPath = map:getPath()
+	local node = xmlLoadFile(mapPath.."/meta.xml")
+	if(not node) then
+		outputDebugString("Failed to open "..mapPath.."/meta.xml", 2)
+		return false
+	end
+	
+	local cnt = 0
+	local children = xmlNodeGetChildren(node)
+	for i, subnode in ipairs(children) do
+		local tag = xmlNodeGetName(subnode)
+		local attr = xmlNodeGetAttributes(subnode)
+		
+		if(tag == "map" and attr.src) then
+			local path = mapPath.."/"..attr.src
+			local curFileCnt = CountSpInMapFile(path)
+			if(curFileCnt) then
+				cnt = cnt + curFileCnt
+			else
+				outputDebugString("CountSpInMapFile failed for "..path, 2)
+			end
+		end
+	end
+	
+	if(cnt < 10) then
+		privMsg(player, "Map %s has only %u spawnpoints", map:getName(), cnt)
+	else
+		--privMsg(player, "Map %s has %u spawnpoints", map:getName(), cnt)
+	end
+	
+	xmlUnloadFile(node)
+	return true
+end
+
+local function CheckSpCountInAllMaps(player)
+	local start = getTickCount ()
+	local dt, count = 0, 0
+	local maps = getMapsList()
+	local start2 = start
+	
+	privMsg(player, "Started counting spawnpoints in all maps")
+	
+	for i, map in maps:ipairs() do
+		local dt = getTickCount () - start2
+		if(dt > 1000) then
+			privMsg (player, i.."/"..maps:getCount())
+			coroutine.yield ()
+			start2 = getTickCount ()
+		end
+		
+		source = player
+		local status = CheckMapSpawnpointsCount(map, source)
+		if(status) then
+			count = count + 1
+		end
+	end
+	
+	local dt = getTickCount () - start
+	privMsg(player, "Finished in %u ms: %u/%u maps processed.", dt, count, maps:getCount())
+end
+
+local g_CheckSpCountTimer = false
+local function CmdCheckSp(message, arg)
+	if(arg[2] == "all") then
+		if(g_CheckSpCountTimer) then return end
+		
+		local co = coroutine.create(CheckSpCountInAllMaps)
+		coroutine.resume(co, source)
+		if (coroutine.status(co) ~= "dead") then
+			g_CheckSpCountTimer = setTimer(function ()
+				coroutine.resume(co)
+				if (coroutine.status(co) == "dead") then
+					killTimer(g_CheckSpCountTimer)
+					g_CheckSpCountTimer = false
+				end
+			end, 100, 0)
+		end
+	else
+		local room = g_Players[source].room
+		local map = getCurrentMap(room)
+		if(map and not CheckMapSpawnpointsCount(map, source)) then
+			privMsg(source, "Nothing to do...")
+		end
+	end
+end
+
+CmdRegister("checksp", CmdCheckSp, true)
