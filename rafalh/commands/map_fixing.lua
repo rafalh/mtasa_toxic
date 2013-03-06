@@ -39,14 +39,6 @@ local function fileGetMd5 (path)
 	return md5 (buf)
 end
 
-local function isTableEmpty (tbl)
-	for k, v in pairs (tbl) do
-		return false
-	end
-	
-	return true
-end
-
 -----------
 -- MUSIC --
 -----------
@@ -337,7 +329,7 @@ local g_PumaMarkers2Plugin = {
 ------------
 
 local function CloudsPreprocess (ctx)
-	return not isTableEmpty (ctx.client_scripts)
+	return not table.empty (ctx.client_scripts)
 end
 
 local function CloudsFix (ctx)
@@ -528,8 +520,9 @@ local function CountSpInMapFile(path)
 	return ret
 end
 
-local function CheckMapSpawnpointsCount(map, player)
-	if(map:getSetting("ghostmode") == "true") then return true end -- it's ok
+local function CheckMapSpawnpointsCount(map, player, opts)
+	local gm = map:getSetting("ghostmode")
+	if(tobool(gm)) then return true end -- map has ghostmode, so low spawnpoints count is ok
 	
 	local mapPath = map:getPath()
 	local node = xmlLoadFile(mapPath.."/meta.xml")
@@ -537,6 +530,9 @@ local function CheckMapSpawnpointsCount(map, player)
 		outputDebugString("Failed to open "..mapPath.."/meta.xml", 2)
 		return false
 	end
+	
+	gm = getMetaSetting(node, "ghostmode") -- getSetting returns cached value so check real setting
+	if(tobool(gm)) then return true end -- if gamemode is enabled, exit
 	
 	local cnt = 0
 	local children = xmlNodeGetChildren(node)
@@ -555,8 +551,13 @@ local function CheckMapSpawnpointsCount(map, player)
 		end
 	end
 	
-	if(cnt < 10) then
+	if(cnt < 16) then
 		privMsg(player, "Map %s has only %u spawnpoints", map:getName(), cnt)
+		
+		if(opts == "enablegm") then
+			setMetaSetting(node, "ghostmode", "true")
+			xmlSaveFile(node)
+		end
 	else
 		--privMsg(player, "Map %s has %u spawnpoints", map:getName(), cnt)
 	end
@@ -565,26 +566,27 @@ local function CheckMapSpawnpointsCount(map, player)
 	return true
 end
 
-local function CheckSpCountInAllMaps(player)
-	local start = getTickCount ()
+local function CheckSpCountInMaps(player, pattern, opts)
+	local start = getTickCount()
 	local dt, count = 0, 0
 	local maps = getMapsList()
 	local start2 = start
 	
-	privMsg(player, "Started counting spawnpoints in all maps")
+	privMsg(player, "Started counting spawnpoints in maps")
 	
 	for i, map in maps:ipairs() do
-		local dt = getTickCount () - start2
-		if(dt > 1000) then
-			privMsg (player, i.."/"..maps:getCount())
-			coroutine.yield ()
-			start2 = getTickCount ()
-		end
-		
-		source = player
-		local status = CheckMapSpawnpointsCount(map, source)
-		if(status) then
-			count = count + 1
+		if(pattern == "*" or map:getName():find(pattern, 1, true)) then
+			local dt = getTickCount() - start2
+			if(dt > 1000) then
+				privMsg (player, i.."/"..maps:getCount())
+				coroutine.yield()
+				start2 = getTickCount()
+			end
+			
+			local status = CheckMapSpawnpointsCount(map, player, opts)
+			if(status) then
+				count = count + 1
+			end
 		end
 	end
 	
@@ -594,11 +596,19 @@ end
 
 local g_CheckSpCountTimer = false
 local function CmdCheckSp(message, arg)
-	if(arg[2] == "all") then
+	local pattern, opts
+	if(arg[2] == "enablegm") then
+		opts = arg[2]
+		pattern = message:sub(arg[1]:len() + 3 + arg[2]:len())
+	else
+		pattern = message:sub(arg[1]:len() + 2)
+	end
+	
+	if(pattern) then
 		if(g_CheckSpCountTimer) then return end
 		
-		local co = coroutine.create(CheckSpCountInAllMaps)
-		coroutine.resume(co, source)
+		local co = coroutine.create(CheckSpCountInMaps)
+		coroutine.resume(co, source, pattern, opts)
 		if (coroutine.status(co) ~= "dead") then
 			g_CheckSpCountTimer = setTimer(function ()
 				coroutine.resume(co)
@@ -611,8 +621,10 @@ local function CmdCheckSp(message, arg)
 	else
 		local room = g_Players[source].room
 		local map = getCurrentMap(room)
-		if(map and not CheckMapSpawnpointsCount(map, source)) then
+		if(map and not CheckMapSpawnpointsCount(map, source, opts)) then
 			privMsg(source, "Nothing to do...")
+		else
+			privMsg(source, "Checked current map: %s.", map:getName())
 		end
 	end
 end

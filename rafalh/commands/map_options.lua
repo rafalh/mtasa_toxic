@@ -414,7 +414,7 @@ local function DetectMapType(map)
 end
 
 local function CmdFixMapTags(msg, arg)
-	local fix =(arg[2] == "fix")
+	local fix = (arg[2] == "fix")
 	local count = 0
 	
 	local maps = getMapsList()
