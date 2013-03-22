@@ -139,7 +139,9 @@ local function onPlayerChat(message, messageType)
 	end
 	
 	local fine = 0
-	fine, message = CsProcessMsg(message)
+	if(CsProcessMsg) then
+		fine, message = CsProcessMsg(message)
+	end
 	
 	local recipients, type_str, prefix
 	local source_name = getPlayerName(source)
@@ -196,7 +198,7 @@ local function onPlayerChat(message, messageType)
 		privMsg(source, "Do not swear %s! %s taked from your cash.", getPlayerName(source), formatMoney(fine))
 	end
 	
-	if(AsProcessMsg(source)) then
+	if(AsProcessMsg and AsProcessMsg(source)) then
 		return -- if it is spam don't run commands
 	end
 	
@@ -227,7 +229,9 @@ local function onPlayerReady(localeId)
 	pdata.sync = true -- set sync to true just before init event
 	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new, localeId)
 	
-	BtSendMapInfo(pdata.room, pdata.new, client)
+	if(BtSendMapInfo) then
+		BtSendMapInfo(pdata.room, pdata.new, client)
+	end
 	
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd")) then

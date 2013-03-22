@@ -181,7 +181,9 @@ end
 function StatsPanel.onShow(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	StatsPanel.statsView = StatsView.create(g_MyId or g_Me, panel, 10, 10, w - 20, h - 20)
+	if(not StatsPanel.statsView) then
+		StatsPanel.statsView = StatsView.create(g_MyId or g_Me, panel, 10, 10, w - 20, h - 20)
+	end
 	StatsPanel.statsView:show()
 	
 	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)

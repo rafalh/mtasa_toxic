@@ -1,6 +1,6 @@
 <map_types>
-	<type name="Race" pattern="race" ghostmode="true" max_others_in_row="6" max_fps="60" />
-	<type name="DM" pattern="dm" ghostmode="true" max_others_in_row="10" winning_vehicles="520,425,464,447" max_fps="60" /> <!-- hunter, hydra, rc baron, seasparrow -->
-	<type name="DD" pattern="dd" ghostmode="false" max_others_in_row="10" max_fps="60" />
+	<type name="Race" pattern="%[race%]" ghostmode="true" max_others_in_row="6" max_fps="60" />
+	<type name="DM" pattern="%[dm%]" ghostmode="true" max_others_in_row="10" winning_vehicles="520,425,464,447" max_fps="60" /> <!-- hunter, hydra, rc baron, seasparrow -->
+	<type name="DD" pattern="%[dd%]" ghostmode="false" max_others_in_row="10" max_fps="60" />
 	<type name="Other" ghostmode="false" max_others_in_row="20" max_fps="60" />
 </map_types>

@@ -448,50 +448,34 @@ local function FixMapScripts (map)
 	return changed
 end
 
-local g_FixMapScriptsTimer = false
-
-local function FixAllMapsScripts (player)
-	local start = getTickCount ()
-	local dt, count = 0, 0
-	local maps = getMapsList()
-	local start2 = start
-	
-	privMsg (player, "Started fixing all maps")
-	
-	for i, map in maps:ipairs() do
-		local dt = getTickCount () - start2
-		if (dt > 1000) then
-			privMsg (player, i.."/"..maps:getCount())
-			coroutine.yield ()
-			start2 = getTickCount ()
-		end
-		
-		source = player
-		local status = FixMapScripts(map)
-		if(status) then
-			count = count + 1
-		end
+local function FixAllMapsScripts(worker)
+	local map = worker.ctx.maps:get(worker.index)	
+	local status = FixMapScripts(map)
+	if(status) then
+		worker.ctx.count = worker.ctx.count + 1
 	end
-	
-	local dt = getTickCount () - start
-	privMsg (player, "Finished in %u ms: %u/%u maps processed.", dt, count, maps:getCount())
 end
+
+local g_FixMapScriptsWorker = false
 
 local function CmdFixMapScripts (message, arg)
 	if (arg[2] == "all") then
-		if (g_FixMapScriptsTimer) then return end
+		if (g_FixMapScriptsWorker) then return end
 		
-		local co = coroutine.create (FixAllMapsScripts)
-		coroutine.resume (co, source)
-		if (coroutine.status (co) ~= "dead") then
-			g_FixMapScriptsTimer = setTimer (function ()
-				coroutine.resume (co)
-				if (coroutine.status (co) == "dead") then
-					killTimer (g_FixMapScriptsTimer)
-					g_FixMapScriptsTimer = false
-				end
-			end, 100, 0)
-		end
+		local maps = getMapsList()
+		g_FixMapScriptsWorker = Worker.create{
+			fnWork = FixAllMapsScripts,
+			player = source,
+			count = maps:getCount(),
+			fnFinish = function(worker, dt)
+				privMsg(worker.info.player, "Finished in %u ms: %u/%u maps processed.", dt, worker.ctx.count, worker.info.count)
+				g_FixMapScriptsWorker = false
+			end,
+		}
+		g_FixMapScriptsWorker.ctx.maps = maps
+		g_FixMapScriptsWorker.ctx.count = 0
+		privMsg(source, "Started fixing all maps...")
+		g_FixMapScriptsWorker:start()
 	else
 		local room = g_Players[source].room
 		local map = getCurrentMap(room)
@@ -551,12 +535,15 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 		end
 	end
 	
-	if(cnt < 16) then
+	if(cnt < 20) then
 		privMsg(player, "Map %s has only %u spawnpoints", map:getName(), cnt)
 		
 		if(opts == "enablegm") then
 			setMetaSetting(node, "ghostmode", "true")
 			xmlSaveFile(node)
+		elseif(opts == "moveres" and map.res) then
+			local resName = getResourceName(map.res)
+			renameResource(resName, resName, "[maps_to_fix]")
 		end
 	else
 		--privMsg(player, "Map %s has %u spawnpoints", map:getName(), cnt)
@@ -566,38 +553,21 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 	return true
 end
 
-local function CheckSpCountInMaps(player, pattern, opts)
-	local start = getTickCount()
-	local dt, count = 0, 0
-	local maps = getMapsList()
-	local start2 = start
-	
-	privMsg(player, "Started counting spawnpoints in maps")
-	
-	for i, map in maps:ipairs() do
-		if(pattern == "*" or map:getName():find(pattern, 1, true)) then
-			local dt = getTickCount() - start2
-			if(dt > 1000) then
-				privMsg (player, i.."/"..maps:getCount())
-				coroutine.yield()
-				start2 = getTickCount()
-			end
-			
-			local status = CheckMapSpawnpointsCount(map, player, opts)
-			if(status) then
-				count = count + 1
-			end
+local function CheckSpCountInMaps(worker)
+	local map = worker.ctx.maps:get(worker.index)	
+	if(worker.ctx.pattern == "*" or map:getName():find(worker.ctx.pattern, 1, true)) then
+		local status = CheckMapSpawnpointsCount(map, worker.info.player, worker.ctx.opts)
+		if(status) then
+			worker.ctx.count = worker.ctx.count + 1
 		end
 	end
-	
-	local dt = getTickCount () - start
-	privMsg(player, "Finished in %u ms: %u/%u maps processed.", dt, count, maps:getCount())
 end
 
-local g_CheckSpCountTimer = false
+local g_CheckSpWorker = false
+
 local function CmdCheckSp(message, arg)
 	local pattern, opts
-	if(arg[2] == "enablegm") then
+	if(arg[2] == "enablegm" or arg[2] == "moveres") then
 		opts = arg[2]
 		pattern = message:sub(arg[1]:len() + 3 + arg[2]:len())
 	else
@@ -605,19 +575,24 @@ local function CmdCheckSp(message, arg)
 	end
 	
 	if(pattern) then
-		if(g_CheckSpCountTimer) then return end
+		if(g_CheckSpWorker) then return end
 		
-		local co = coroutine.create(CheckSpCountInMaps)
-		coroutine.resume(co, source, pattern, opts)
-		if (coroutine.status(co) ~= "dead") then
-			g_CheckSpCountTimer = setTimer(function ()
-				coroutine.resume(co)
-				if (coroutine.status(co) == "dead") then
-					killTimer(g_CheckSpCountTimer)
-					g_CheckSpCountTimer = false
-				end
-			end, 100, 0)
-		end
+		local maps = getMapsList()
+		g_CheckSpWorker = Worker.create{
+			fnWork = CheckSpCountInMaps,
+			player = source,
+			count = maps:getCount(),
+			fnFinish = function(worker, dt)
+				privMsg(worker.info.player, "Finished in %u ms: %u/%u maps processed.", dt, worker.ctx.count, worker.info.count)
+				g_CheckSpWorker = false
+			end,
+		}
+		g_CheckSpWorker.ctx.maps = maps
+		g_CheckSpWorker.ctx.pattern = pattern
+		g_CheckSpWorker.ctx.opts = opts
+		g_CheckSpWorker.ctx.count = 0
+		privMsg(source, "Started counting spawnpoints...")
+		g_CheckSpWorker:start()
 	else
 		local room = g_Players[source].room
 		local map = getCurrentMap(room)

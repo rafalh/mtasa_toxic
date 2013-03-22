@@ -14,7 +14,6 @@ function setMetaSetting(node, setting, value)
 	
 	local found, success = false, false
 	local i = 0
-	local success = false
 	
 	while(true) do
 		local subnode2 = xmlFindChild(subnode, "setting", i)
@@ -45,6 +44,26 @@ function setMetaSetting(node, setting, value)
 	end
 	
 	return success
+end
+
+function getMetaSetting(node, setting)
+	local subnode = xmlFindChild(node, "settings", 0)
+	if(not subnode) then return nil end
+	
+	local i = 0
+	while(true) do
+		local subnode2 = xmlFindChild(subnode, "setting", i)
+		if(not subnode2) then break end
+		i = i + 1
+		
+		local name = xmlNodeGetAttribute(subnode2, "name")
+		if(name == setting or name == "#"..setting or name == "@"..setting or name == "*"..setting) then
+			local value = xmlNodeGetAttribute(subnode2, "value")
+			return fromJSON(value) or value
+		end
+	end
+	
+	return nil
 end
 
 function Map:getName()
