@@ -1,0 +1,9 @@
++Exporting of classes
++No order of resource starting problem
++Sharing functions
++Own events handling
+-Restart of resource restarts everything
+-One row in perfomance browser <- can test perfomance itself
+-Some errors are says nothing (too long execution) <- can detect it
+-One huge meta.xml <- preprocessor?
+-One error can stop all modules from proper execution <- not probable really

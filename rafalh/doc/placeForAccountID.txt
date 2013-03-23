@@ -1,0 +1,25 @@
+Account data:
+	+Easy extraction
+	+Unique ID
+	-Not saved in rafalh database (no backups)
+	-No autologin - can check all accounts to find that one (or client-side)
+
+rafalh_players:
+	+Backups
+	+Easy autologin
+	+Selecting of players without account
+	-Slightly worser access - not a problem
+	-Not unique ID (needs more queries) - hmm
+	-Passwords in database (only if autologin is serverside)
+	
+
+Autologin:
+	We need passwords because MTA is stupid so save it client-side (don't trust admins).
+	
+Now script needs to attach player id with each account
+Account data:
+	Saves variable name for each account (stupid).
+	
+rafalh_players:
+	Not unique
+	

@@ -21,7 +21,7 @@ local function AcCheckPlayer ( player )
 			if ( not SmGetBool ( "max_viel_kick" ) ) then
 				local show_msg = true
 				for player2, pdata2 in pairs ( g_Players ) do
-					if ( hasObjectPermissionTo ( player2, "resource.rafalh.ac_messages", false ) ) then
+					if ( hasObjectPermissionTo ( player2, "resource."..g_ResName..".ac_messages", false ) ) then
 						privMsg ( player2, "%s's speed in horizontal plane: %.1f km/h. He seems to cheat!", getPlayerName ( player ), speed )
 						show_msg = false
 					end
