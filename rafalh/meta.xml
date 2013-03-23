@@ -82,8 +82,8 @@
 	<export function="getPlayersStats" http="true" />
 	
 	<script src="achievements/main_s.lua" type="server" />
-	<script src="achievements/list_sc.lua" type="shared" />
 	<script src="achievements/gui_c.lua" type="client" />
+	<script src="achievements/list_sc.lua" type="shared" />
 	<file src="achievements/img/icon.png" />
 	<file src="achievements/img/locked.png" />
 	

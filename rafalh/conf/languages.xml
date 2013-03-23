@@ -1,4 +1,11 @@
 ﻿<languages>
+	<!-- Format:
+		<lang
+				name="Long name of language"
+				img="Flag image for this language">
+			Language ID
+		</lang>
+	-->
 	<lang name="English" img="img/flags/en.png">en</lang>
 	<lang name="Polski" img="img/flags/pl.png">pl</lang>
 	<lang name="Deutsch" img="img/flags/de.png">de</lang>

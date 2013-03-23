@@ -1,0 +1,39 @@
+<channels>
+	<!-- Format:
+		<channel
+				name="Radio channel name"
+				img="Path to image for this radio">
+			URL of radio chanel (for example .pls/.m3u/.mp3 file)
+		</channel>
+	-->
+	<channel name="RMF FM" img="rmffm.png">http://www.miastomuzyki.pl/n/rmffm.pls</channel>
+	<channel name="RMF MAXXX" img="rmf_maxxx.jpg">http://www.miastomuzyki.pl/n/rmfmaxxx.pls</channel>
+	<channel name="Eska Rock" img="eskarock.jpg">http://warszawa.radio.pionier.net.pl:8000/pl/eskarock.mp3</channel>
+	<channel name="Radio WaWa" img="wawa.jpg">http://www.radio.pionier.net.pl/stream.pls?radio=wawa</channel>
+	<channel name="Złote Przeboje" img="zloteprzeboje.jpg">http://www.radio.pionier.net.pl/stream.pls?radio=tuba9</channel>
+	<channel name="Radio Z" img="radiozet.jpg">http://nadaje.com/playlist/201/m3u/</channel>
+	<channel name="Polskie Radio Jedynka" img="jedynka.jpg">http://nadaje.com/playlist/12/m3u/</channel>
+	<channel name="Polskie Radio Dwójka" img="dwojka.jpg">http://nadaje.com/playlist/13/m3u/</channel>
+	<channel name="Polskie Radio Trójka" img="trojka.jpg">http://nadaje.com/playlist/212/m3u/</channel>
+	<channel name="Polskie Radio Czwórka" img="czworka.jpg">http://nadaje.com/playlist/10/m3u/</channel>
+	<channel name="TOK FM" img="tokfm.jpg">http://www.radio.pionier.net.pl/stream.pls?radio=radiotok</channel>
+	<channel name="Chilli ZET" img="chilliz.png">http://www.chillizet.pl/externals/chillizet-streams/chillizetmp3.pls</channel>
+	<channel name="radioparty.pl" img="radioparty.png">http://radioparty.pl/play/glowny_24aac.m3u</channel>
+	<channel name="Euro Dance">http://listen.di.fm/public2/eurodance.pls</channel>
+	<channel name="Eska" img="eska.jpg">http://poznan6.radio.pionier.net.pl:8000/eska-warszawa.mp3</channel>
+	<channel name="DiscoParty" img="DiscoParty.png">http://nadaje.com/playlist/1294/m3u/</channel>
+	<channel name="Polska Stacja" img="polskastacja.jpg">http://nadaje.com/playlist/494/m3u/</channel>
+	<channel name="Przeboje 80/90" img="przeboje80and90.png">http://nadaje.com/playlist/502/m3u/</channel>
+	<channel name="Bass Drive" img="bassdrive.png">http://nadaje.com/playlist/578/m3u/</channel>
+	<channel name="Dupstep FM" img="dubstepfm.jpg">http://nadaje.com/playlist/1225/m3u/</channel>
+	<channel name="Top 80">http://nadaje.com/playlist/705/m3u/</channel>
+	<channel name="Pulsstacja FM">http://pulsstacja.fm/pulsstacja.pls</channel>
+	<channel name="Disco Polo Classic (Open FM)" img="DiscoPoloClassicOpenFM.png">http://open.fm/49.m3u</channel>
+	<channel name="Dubstep (Open FM)" img="DupstepOpenFM.png">http://open.fm/68.m3u</channel>
+	<channel name="ClubMusic24" img="ClubMusic24.png">http://nadaje.com/playlist/1280/m3u/</channel>
+	<channel name="All4Music.pl" img="All4Music.png">http://sc5.24cast.pl:8014/listen.pls</channel>
+	<channel name="Equestria.FM" img="equestriafm.png">http://s1.slotex.pl:10026/</channel>
+	<channel name="Hip-Hop PL (Open FM)" img="HipHopPLOpenFM.png">http://open.fm/24.m3u</channel>
+	<channel name="Wesoły Hanys" img="WesolyHanys.png">http://wesolyhanys.pl/listen.m3u</channel>
+	<channel name="Radio Piekary" img="RadioPiekary.jpg">http://shot4.inten.pl:8412/listen.pls</channel>
+</channels>
