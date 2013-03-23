@@ -16,7 +16,7 @@ addEvent("main.onAccountChange", true)
 --------------------------------
 
 local function onClientThisResourceStart(res)
-	local raceRes = getResourceFromName("race")
+	--[[local raceRes = getResourceFromName("race")
 	if(raceRes and not triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")) then
 		setTimer(function()
 			local raceRes = getResourceFromName("race")
@@ -24,34 +24,34 @@ local function onClientThisResourceStart(res)
 				triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")
 			end
 		end, 1000, 1)
-	end
+	end]]
 	
 	loadSettings()
 	
-	if(not bindKey(g_LocalSettings.suicide_key, "down", suicide)) then
+	--[[if(not bindKey(g_LocalSettings.suicide_key, "down", suicide)) then
 		g_LocalSettings.suicide_key = "k"
 		bindKey("k", "down", suicide)
-	end
+	end]]
 	
 	triggerServerEvent("main.onPlayerReady", g_ResRoot, g_LocalSettings.locale)
 end
 
 local function onClientResourceStart(res)
-	if(getResourceName(res) == "race") then
+	--[[if(getResourceName(res) == "race") then
 		setTimer(function()
 			local raceRes = getResourceFromName("race")
 			if(raceRes) then
 				triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")
 			end
 		end, 1000, 1)
-	end
+	end]]
 end
 
 local function onClientThisResourceStop()
-	local raceRes = getResourceFromName("race")
+	--[[local raceRes = getResourceFromName("race")
 	if(raceRes) then
 		triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "bindKey", "k", "down", "kill")
-	end
+	end]]
 end
 
 local function onClientPlayerQuit(reason)

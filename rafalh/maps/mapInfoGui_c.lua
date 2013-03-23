@@ -226,4 +226,4 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler($(EV_CLIENT_INIT), MiInit)
+addEventHandler("onClientResourceStart", g_ResRoot, MiInit)

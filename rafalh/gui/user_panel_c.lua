@@ -180,6 +180,5 @@ end
 -- Events --
 ------------
 
---addInternalEventHandler($(EV_CLIENT_INIT), UpInit)
 addEventHandler("onClientResourceStart", g_ResRoot, UpInit)
 addEventHandler("main.onAccountChange", g_ResRoot, UpSetAccount)

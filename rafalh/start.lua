@@ -263,7 +263,20 @@ local function LoadMapTypes()
 	end
 end
 
-local function onResourceStart(resource)
+local function setupScoreboard()
+	local scoreboardRes = getResourceFromName("scoreboard")
+	if(scoreboardRes and getResourceState(scoreboardRes) == "running") then
+		call(scoreboardRes, "addScoreboardColumn", "country", g_Root, false, 50, "country_img")
+	end
+end
+
+local function onResStart(res)
+	if(getResourceName(res) == "scoreboard") then
+		setTimer(setupScoreboard, 1000, 1)
+	end
+end
+
+local function init()
 	math.randomseed(getTickCount())
 	createElement("TXC413b9d90", "TXC413b9d90")
 	
@@ -286,10 +299,8 @@ local function onResourceStart(resource)
 	LoadLanguages()
 	LoadMapTypes()
 	
-	local scoreboard_res = getResourceFromName("scoreboard")
-	if(scoreboard_res and getResourceState(scoreboard_res) == "running") then
-		call(scoreboard_res, "addScoreboardColumn", "country", g_Root, false, 50, "country_img")
-	end
+	setupScoreboard()
+	addEventHandler("onResourceStart", g_Root, onResStart)
 	
 	for i, playerEl in ipairs (getElementsByType("player")) do
 		if(NbCheckPlayerAndFix) then
@@ -321,7 +332,7 @@ function addInitFunc(func)
 	table.insert(g_InitFuncs, func)
 end
 
-addEventHandler("onResourceStart", g_ResRoot, onResourceStart)
+addEventHandler("onResourceStart", g_ResRoot, init)
 
 -- Disable addEventHandler for loading
 _addEventHandler = addEventHandler
