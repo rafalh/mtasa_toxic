@@ -153,25 +153,32 @@ local function setupACL()
 		return false
 	end
 	
+	local rightsToAdd = {}
 	local save = false
 	
 	for i, right in ipairs(CmdGetAclRights()) do
 		if(not aclGetRight(acl, right)) then
-			aclSetRight(acl, right, true)
-			save = true
+			table.insert(rightsToAdd, right)
 		end
 	end
 	
-	for i, right in ipairs(g_CustomRights) do
-		local right2 = "resource."..g_ResName.."."..right
-		if(not aclGetRight(acl, right2)) then
-			aclSetRight(acl, right2, true)
-			save = true
+	for i, name in ipairs(g_CustomRights) do
+		local right = "resource."..g_ResName.."."..name
+		if(not aclGetRight(acl, right)) then
+			table.insert(rightsToAdd, right)
 		end
 	end
 	
-	if(save) then
-		aclSave()
+	if(#rightsToAdd > 0) then
+		if(hasObjectPermissionTo(resource, "function.aclSetRight") and hasObjectPermissionTo(resource, "function.aclSave")) then
+			for i, right in ipairs(rightsToAdd) do
+				aclSetRight(acl, right, true)
+			end
+			aclSave()
+			outputDebugString("ACL has been updated", 3)
+		else
+			outputDebugString("Resource does not have right to change ACL. Add custom rights manually...", 2)
+		end
 	end
 	
 	return true

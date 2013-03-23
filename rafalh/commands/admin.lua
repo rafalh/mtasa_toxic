@@ -166,8 +166,10 @@ CmdRegister("kill", CmdKill, false, "Kills player", true)
 
 local function CmdIp (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	
-	scriptMsg ("%s's IP: %s.", getPlayerName (player), getPlayerIP (player))
+	local ip = getPlayerIP(player)
+	if(ip) then
+		scriptMsg("%s's IP: %s.", getPlayerName(player), ip)
+	end
 end
 
 CmdRegister("ip", CmdIp, "resource.rafalh.ip", "Shows player IP address")

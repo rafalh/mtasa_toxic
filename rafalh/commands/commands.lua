@@ -44,9 +44,9 @@ function CmdGetAclRights ()
 	return ret
 end
 
-local function onConsole (message)
-	if (getElementType (source) ~= "player") then
-		outputDebugString ("Console support is experimental!", 3)
+local function onConsole(message)
+	if (getElementType(source) ~= "player") then
+		outputDebugString("Console support is experimental!", 3)
 	elseif (isPlayerMuted (source)) then
 		return
 	end
@@ -75,8 +75,13 @@ local function CmdHasPlayerAccess (cmd, player)
 	end
 end
 
+function CmdDoesIgnoreChat(cmd)
+	local cmd_data = g_Commands[cmd]
+	return cmd_data and cmd_data.ignore_chat
+end
+
 -- exported
-function parseCommand (message, sender, recipients, chatPrefix, chatColor)
+function parseCommand(message, sender, recipients, chatPrefix, chatColor)
 	source = sender
 	local source_name = getPlayerName (source):gsub ("#%x%x%x%x%x%x", "")
 	

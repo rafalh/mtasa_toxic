@@ -275,28 +275,26 @@
 	<settings>
 		<setting group="Antispam" name="*spam_interval" accept="0-2000" value="500" desc="The minimal number of miliseconds between messages, which are not a spam." friendlyname="Spam interval" />
 		<setting group="Antispam" name="*spammer_kick" accept="false,true" value="false" desc="Set to true if script should kick spammers. If it is false, script mutes them for 60 seconds." friendlyname="Kicking for spam" />
+		<setting group="Antispam" name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." friendlyname="Minimum nick change delay" />
+		
+		<setting group="Antilag" name="*max_ping" accept="0-10000" value="500" desc="If not equal 0, script kick laggers with ping bigger than this value." friendlyname="Maximal ping" />
+		<setting group="Antilag" name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." friendlyname="Maximal ping time" />
+		<setting group="Antilag" name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS divisor" />
+		<setting group="Antilag" name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS" />
 		
 		<setting group="Ratings" name="*allow_rate_change" accept="false,true" value="true" desc="Allow changing rate for map by player." friendlyname="Allow rate change" />
 		
-		<setting group="General" name="*max_ping" accept="0-10000" value="500" desc="If not equal 0, script kick laggers with ping bigger than this value." friendlyname="Maximal ping" />
-		<setting group="General" name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." friendlyname="Maximal ping time" />
-		<setting group="General" name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS divisor" />
-		<setting group="General" name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS" />
 		<setting group="General" name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." friendlyname="Kill AFK players" />
-		<setting group="General" name="*upload_addr" accept="*" value="&quot;" desc="Address showed by !upload command." friendlyname="Maps upload address" />
-		<setting group="General" name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after !mute command. If it equals 0, mute stop working when player quit." friendlyname="Mute time" />
-		<setting group="General" name="*disable_fps_limit" accept="false,true" value="false" desc="If set to true script automatically disables FPS limit on maps without checkpoints." friendlyname="Disable FPS limit for not race maps" />
+		<setting group="General" name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after /mute command. If it equals 0, mute stop working when player quit." friendlyname="Mute time" />
 		<setting group="General" name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." friendlyname="Chat messages above players" />
 		<setting group="General" name="*breakable_glass" type="client" accept="false,true" value="true" desc="If set to true, script will show glass hole when your vehicle get big demage." friendlyname="Breakable glass" />
 		<setting group="General" name="*red_damage_screen" type="client" accept="false,true" value="true" desc="If set to true, script will change screen color to red for a moment when your vehicle get big demage." friendlyname="Red damage screen" />
 		<setting group="General" name="*max_warns" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." friendlyname="Maximum warnings" />
-		<setting group="General" name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." friendlyname="Minimum nick change delay" />
-		<setting group="General" name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." friendlyname="Stunt bonus" />
-		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag] or |tag|. Player with tags will have they own teams" friendlyname="Clan teams" />
-		<setting group="General" name="*win_events" accept="false,true" value="true" desc="If enabled random event will happen when player won DD match (for example gravity will be set to 0)" friendlyname="Win events" />
+		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Player with tags will have they own teams" friendlyname="Clan teams" />
 		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />
 		<setting group="General" name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" friendlyname="Login window" />
 		<setting group="General" name="*debug" accept="false,true" value="false" desc="Scripts debugging" friendlyname="Debugging" />
+		<!--setting group="General" name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." friendlyname="Stunt bonus" /-->
 		
 		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
 		<setting group="Maps" name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." friendlyname="Ghostmode OFF warning time" />
@@ -332,7 +330,7 @@
 		<setting group="Recording" name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." friendlyname="Record top times CPs" />
 		<setting group="Recording" name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." friendlyname="Show ghost" />
 		
-		<setting group="Database" name="*private_db" accept="false,true" value="false" desc="If enabled data is saved in db.sqlite private db instead of server registry" friendlyname="Private database" />
+		<setting group="Database" name="*private_db" accept="false,true" value="true" desc="If enabled data is saved in db.sqlite private db instead of server registry" friendlyname="Private database" />
 		<setting group="Database" name="*db_backup_int" accept="0-1000000" value="3" desc="Number of days when database backup is made. If set to 0 backups will not be generated. Only supported for private database." friendlyname="Database backup interval" />
 		<setting group="Database" name="*max_db_backups" accept="0-1000" value="10" desc="Maximal number of backups saved. Only supported for private database." friendlyname="Maximal database backups count" />
 		<setting group="Database" name="*auto_clean_db_interval" accept="0-100000" value="0" desc="Number of minutes between following database cleanings. Set to 0 to disable database autocleaning. To apply this setting you have to restart the script." friendlyname="Autoclean database interval" />
