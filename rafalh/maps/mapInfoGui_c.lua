@@ -206,7 +206,8 @@ end
 
 local function MiInit()
 	addCommandHandler("MapInfoGui", MiToggle, false, false)
-	bindKey("F5", "down", "MapInfoGui")
+	local key = getKeyBoundToCommand("MapInfoGui") or "F5"
+	bindKey(key, "down", "MapInfoGui")
 	
 	g_Textures.star = dxCreateTexture("img/star.png")
 	g_Textures.star_l = dxCreateTexture("img/star_l.png")

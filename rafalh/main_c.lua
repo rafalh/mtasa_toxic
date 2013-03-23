@@ -74,11 +74,11 @@ local function onClientInit(accountId, settings, isNew, localeId)
 	g_LocalSettings.locale = localeId
 	triggerEvent("onClientLangChange", g_Root, localeId)
 	
-	if(isNew) then
-		local userPanelKey = getKeyBoundToCommand("UserPanel")
-		local statsPanelKey = getKeyBoundToCommand("StatsPanel")
+	--if(isNew) then
+		local userPanelKey = getKeyBoundToCommand("UserPanel") or "-"
+		local statsPanelKey = getKeyBoundToCommand("StatsPanel") or "-"
 		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", userPanelKey, statsPanelKey)
-	end
+	--end
 end
 
 local function clearChat()

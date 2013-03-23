@@ -147,7 +147,8 @@ end
 
 local function UpInit()
 	addCommandHandler("UserPanel", UpToggle, false, false)
-	bindKey(g_LocalSettings.user_panel_key, "down", "UserPanel")
+	local key = getKeyBoundToCommand("UserPanel") or g_LocalSettings.user_panel_key
+	bindKey(key, "down", "UserPanel")
 end
 
 ----------------------
@@ -179,5 +180,6 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler($(EV_CLIENT_INIT), UpInit)
+--addInternalEventHandler($(EV_CLIENT_INIT), UpInit)
+addEventHandler("onClientResourceStart", g_ResRoot, UpInit)
 addEventHandler("main.onAccountChange", g_ResRoot, UpSetAccount)

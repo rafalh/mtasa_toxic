@@ -32,8 +32,8 @@ local function HlpUpdateList ()
 end
 
 local function HlpCmdList ( commands )
-	--g_Commands = commands
-	--HlpUpdateList ()
+	g_Commands = commands
+	HlpUpdateList ()
 end
 
 local function HlpCreateGui ()
@@ -63,12 +63,12 @@ local function HlpCreateGui ()
 end
 
 local function HlpTabShown ()
-	--[[if ( not g_CmdList ) then
+	if ( not g_CmdList ) then
 		HlpCreateGui ()
 	end
 	if ( not g_Commands ) then
 		triggerServerEvent ( "onCommandsListReq", g_Me )
-	end]]
+	end
 end
 
 local function HlpInit ()
@@ -82,9 +82,9 @@ local function HlpInit ()
 		if(not tabPanel) then outputDebugString("wtf", 2)
 		else guiGetSelectedTab(tabPanel) end
 		
-		--[[if(guiGetSelectedTab(tabPanel) == g_HelpTab) then
+		if(guiGetSelectedTab(tabPanel) == g_HelpTab) then
 			HlpTabShown()
-		end]]
+		end
 	end
 end
 

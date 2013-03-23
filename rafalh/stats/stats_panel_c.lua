@@ -27,7 +27,8 @@ end
 
 local function SpInit()
 	addCommandHandler("StatsPanel", SpToggle, false, false)
-	bindKey(g_LocalSettings.stats_panel_key, "down", "StatsPanel")
+	local key = getKeyBoundToCommand("StatsPanel") or g_LocalSettings.stats_panel_key
+	bindKey(key, "down", "StatsPanel")
 end
 
 local function onAccountChange()
@@ -67,5 +68,6 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler($(EV_CLIENT_INIT), SpInit)
+addEventHandler("onClientResourceStart", g_ResRoot, SpInit)
+--addInternalEventHandler($(EV_CLIENT_INIT), SpInit)
 addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)
