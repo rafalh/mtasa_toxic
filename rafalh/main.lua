@@ -140,7 +140,11 @@ local function onPlayerChat(message, messageType)
 	
 	local fine = 0
 	if(CsProcessMsg) then
-		fine, message = CsProcessMsg(message)
+		fine, message = CsProcessMsg(message, source)
+		if(not message) then
+			cancelEvent()
+			return
+		end
 	end
 	
 	local recipients, type_str, prefix

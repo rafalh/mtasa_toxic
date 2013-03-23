@@ -22,8 +22,8 @@ local function AcmpCheckPlayer(player)
 		return false
 	end
 	
-	local race_res = getResourceFromName("race")
-	if(race_res and getResourceState(race_res) == "running" and (call(race_res, "getTimePassed") or 0) <= 0) then
+	local raceRes = getResourceFromName("race")
+	if(raceRes and getResourceState(raceRes) == "running" and (call(raceRes, "getTimePassed") or 0) <= 0) then
 		AcmpClear(player)
 		return false
 	end

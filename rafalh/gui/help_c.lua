@@ -32,8 +32,8 @@ local function HlpUpdateList ()
 end
 
 local function HlpCmdList ( commands )
-	g_Commands = commands
-	HlpUpdateList ()
+	--g_Commands = commands
+	--HlpUpdateList ()
 end
 
 local function HlpCreateGui ()
@@ -42,10 +42,14 @@ local function HlpCreateGui ()
 	
 	local title = guiCreateLabel ( 10, y, w - 20, 15, "Controls", false, g_HelpTab )
 	guiSetFont(title, "default-bold-small")
-	guiCreateLabel(10, y + 1*15, w - 20, 15, MuiGetMsg("Press %s to show Statistics Panel."):format(g_LocalSettings.stats_panel_key), false, g_HelpTab)
-	guiCreateLabel(10, y + 2*15, w - 20, 15, MuiGetMsg("Press %s to show User Panel."):format(g_LocalSettings.user_panel_key), false, g_HelpTab)
-	guiCreateLabel(10, y + 3*15, w - 20, 15, MuiGetMsg("Press %s to show User Items."):format("F3"), false, g_HelpTab)
-	guiCreateLabel(10, y + 4*15, w - 20, 15, MuiGetMsg("Press %s to show Top Times."):format("F5"), false, g_HelpTab)
+	local userPanelKey = getKeyBoundToCommand("UserPanel")
+	local statsPanelKey = getKeyBoundToCommand("StatsPanel")
+	local invKey = getKeyBoundToCommand("UserInventory")
+	local mapInfoKey = getKeyBoundToCommand("MapInfoGui")
+	guiCreateLabel(10, y + 1*15, w - 20, 15, MuiGetMsg("Press %s to show Statistics Panel."):format(statsPanelKey), false, g_HelpTab)
+	guiCreateLabel(10, y + 2*15, w - 20, 15, MuiGetMsg("Press %s to show User Panel."):format(userPanelKey), false, g_HelpTab)
+	guiCreateLabel(10, y + 3*15, w - 20, 15, MuiGetMsg("Press %s to show User Items."):format(invKey), false, g_HelpTab)
+	guiCreateLabel(10, y + 4*15, w - 20, 15, MuiGetMsg("Press %s to show Map Info."):format(mapInfoKey), false, g_HelpTab)
 	y = y + 5*15 + 10
 	
 	local title = guiCreateLabel ( 10, y, w - 20, 15, "Commands", false, g_HelpTab )
@@ -59,25 +63,28 @@ local function HlpCreateGui ()
 end
 
 local function HlpTabShown ()
-	if ( not g_CmdList ) then
+	--[[if ( not g_CmdList ) then
 		HlpCreateGui ()
 	end
 	if ( not g_Commands ) then
 		triggerServerEvent ( "onCommandsListReq", g_Me )
-	end
+	end]]
 end
 
 local function HlpInit ()
 	local hlmmgr = getResourceFromName ( "helpmanager" )
-	if ( hlmmgr ) then
-		g_HelpTab = call ( hlmmgr, "addHelpTab", getThisResource (), true )
-		guiSetText ( g_HelpTab, "Rafalh Scripts System" )
+	if(hlmmgr) then
+		g_HelpTab = call(hlmmgr, "addHelpTab", getThisResource(), true)
+		guiSetText(g_HelpTab, "Rafalh Scripts System")
 		
-		addEventHandler ( "onClientGUITabSwitched", g_HelpTab, HlpTabShown )
-		local tabpanel = getElementParent ( g_HelpTab )
-		if ( guiGetSelectedTab ( tabpanel ) == g_HelpTab ) then
-			HlpTabShown ()
-		end
+		addEventHandler("onClientGUITabSwitched", g_HelpTab, HlpTabShown)
+		local tabPanel = getElementParent(g_HelpTab)
+		if(not tabPanel) then outputDebugString("wtf", 2)
+		else guiGetSelectedTab(tabPanel) end
+		
+		--[[if(guiGetSelectedTab(tabPanel) == g_HelpTab) then
+			HlpTabShown()
+		end]]
 	end
 end
 

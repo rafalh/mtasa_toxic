@@ -10,7 +10,7 @@ local g_Channels = false
 
 local RadioPanel = {
 	name = "Radio",
-	img = "radio/icon.png",
+	img = "radio/img/icon.png",
 	tooltip = "Listen to internet radio",
 }
 

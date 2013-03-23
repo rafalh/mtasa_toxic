@@ -146,7 +146,8 @@ local function UpShow()
 end
 
 local function UpInit()
-	bindKey(g_LocalSettings.user_panel_key, "up", UpToggle)
+	addCommandHandler("UserPanel", UpToggle, false, false)
+	bindKey(g_LocalSettings.user_panel_key, "down", "UserPanel")
 end
 
 ----------------------

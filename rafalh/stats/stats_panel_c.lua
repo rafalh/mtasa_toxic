@@ -26,7 +26,8 @@ local function SpInitGui()
 end
 
 local function SpInit()
-	bindKey(g_LocalSettings.stats_panel_key, "up", openStatsPanel)
+	addCommandHandler("StatsPanel", SpToggle, false, false)
+	bindKey(g_LocalSettings.stats_panel_key, "down", "StatsPanel")
 end
 
 local function onAccountChange()
@@ -39,7 +40,7 @@ end
 -- Global functions --
 ----------------------
 
-function openStatsPanel()
+function SpToggle()
 	if(not g_Wnd) then
 		SpInitGui()
 	end

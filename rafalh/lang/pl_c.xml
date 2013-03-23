@@ -170,7 +170,7 @@
 	<msg id="Press %s to show Statistics Panel.">Naciśnij %s aby pokazać Panel Statystyk.</msg>
 	<msg id="Press %s to show User Panel.">Naciśnij %s aby pokazać Panel Użytkownika.</msg>
 	<msg id="Press %s to show User Items.">Naciśnij %s aby pokazać Przedmioty Użytkownika.</msg>
-	<msg id="Press %s to show Top Times.">Naciśnij %s aby pokazać Najlepsze Czasy.</msg>
+	<msg id="Press %s to show Map Info.">Naciśnij %s aby pokazać Informacje o Mapie.</msg>
 	<msg id="Commands">Komendy</msg>
 	<msg id="Search:">Szukaj:</msg>
 	<msg id="Command">Komenda</msg>

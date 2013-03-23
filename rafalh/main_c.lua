@@ -75,7 +75,9 @@ local function onClientInit(accountId, settings, isNew, localeId)
 	triggerEvent("onClientLangChange", g_Root, localeId)
 	
 	if(isNew) then
-		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", g_LocalSettings.user_panel_key, g_LocalSettings.stats_panel_key)
+		local userPanelKey = getKeyBoundToCommand("UserPanel")
+		local statsPanelKey = getKeyBoundToCommand("StatsPanel")
+		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", userPanelKey, statsPanelKey)
 	end
 end
 

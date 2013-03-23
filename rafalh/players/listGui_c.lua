@@ -23,7 +23,7 @@ local g_RefreshTimer
 
 local PlayersPanel = {
 	name = "Players list",
-	img = "img/userpanel/users.png",
+	img = "players/img/icon.png",
 	tooltip = "Read more about other players",
 	width = 620,
 }
@@ -93,7 +93,7 @@ local function initGui(panel)
 	
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 32, 32, "img/userpanel/users.png", false, panel)
+	guiCreateStaticImage(10, 10, 32, 32, "players/img/icon.png", false, panel)
 	
 	g_SearchBox = guiCreateEdit(50, 10, 150, 25, MuiGetMsg("Search..."), false, panel)
 	addEventHandler("onClientGUIFocus", g_SearchBox, onFilterFocus, false)

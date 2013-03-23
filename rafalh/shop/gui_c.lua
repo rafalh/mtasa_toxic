@@ -415,7 +415,8 @@ function ShpToggleItems ()
 end
 
 local function ShpInit()
-	bindKey("F3", "up", ShpToggleItems)
+	addCommandHandler("UserInventory", ShpToggleItems, false, false)
+	bindKey("F3", "down", "UserInventory")
 end
 
 local function ShpOnInventory(inventory, isVip)

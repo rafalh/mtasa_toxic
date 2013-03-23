@@ -18,7 +18,7 @@ local g_Tab = nil
 
 local SettingsPanel = {
 	name = "Settings",
-	img = "img/userpanel/options.png",
+	img = "settings/icon.png",
 	tooltip = "Adjust settings to your needs",
 	height = 420,
 }
@@ -43,22 +43,6 @@ local function onSaveClick ()
 		g_LocalSettings.suicide_key = suicide_key
 	else
 		guiSetText ( g_SuicideKeyEdit, g_LocalSettings.suicide_key )
-	end
-	
-	local stats_panel_key = guiGetText ( g_StatsPanelKeyEdit )
-	if ( stats_panel_key ~= g_LocalSettings.stats_panel_key and bindKey ( stats_panel_key, "up", openStatsPanel ) ) then
-		unbindKey ( g_LocalSettings.stats_panel_key, "up", openStatsPanel )
-		g_LocalSettings.stats_panel_key = stats_panel_key
-	else
-		guiSetText ( g_StatsPanelKeyEdit, g_LocalSettings.stats_panel_key )
-	end
-	
-	local user_panel_key = guiGetText ( g_UserPanelKeyEdit )
-	if ( user_panel_key ~= g_LocalSettings.user_panel_key and bindKey ( user_panel_key, "up", UpToggle ) ) then
-		unbindKey ( g_LocalSettings.user_panel_key, "up", UpToggle )
-		g_LocalSettings.user_panel_key = user_panel_key
-	else
-		guiSetText ( g_UserPanelKeyEdit, g_LocalSettings.user_panel_key )
 	end
 	
 	g_LocalSettings.carHide = guiCheckBoxGetSelected(g_CarHideCb)
@@ -135,19 +119,13 @@ local function createGui(panel)
 	guiCreateLabel ( 10, y + 25, 170, 20, "Suicide key:", false, panel )
 	g_SuicideKeyEdit = guiCreateEdit ( 180, y+25, 40, 20, g_LocalSettings.suicide_key, false, panel )
 	
-	guiCreateLabel ( 10, y + 45, 170, 20, "Statistics Panel key:", false, panel )
-	g_StatsPanelKeyEdit = guiCreateEdit ( 180, y+45, 40, 20, g_LocalSettings.stats_panel_key, false, panel )
+	g_CarHideCb = guiCreateCheckBox ( 10, y + 45, 300, 20, "Hide other cars when GM is enabled", g_LocalSettings.carHide, false, panel )
 	
-	guiCreateLabel ( 10, y + 65, 170, 20, "User Panel key:", false, panel )
-	g_UserPanelKeyEdit = guiCreateEdit ( 180, y + 65, 40, 20, g_LocalSettings.user_panel_key, false, panel )
+	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y + 65, 300, 20, "Hide nearby cars", g_LocalSettings.hideNearbyCars, false, panel )
 	
-	g_CarHideCb = guiCreateCheckBox ( 10, y + 85, 300, 20, "Hide other cars when GM is enabled", g_LocalSettings.carHide, false, panel )
+	g_WinnerAnimCb = guiCreateCheckBox(10, y + 85, 300, 20, "Show stars animation above winner car", g_LocalSettings.winAnim, false, panel)
 	
-	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y + 105, 300, 20, "Hide nearby cars", g_LocalSettings.hideNearbyCars, false, panel )
-	
-	g_WinnerAnimCb = guiCreateCheckBox(10, y + 125, 300, 20, "Show stars animation above winner car", g_LocalSettings.winAnim, false, panel)
-	
-	y = y + 145
+	y = y + 105
 	guiCreateLabel(10, y, 160, 20, "Effects", false, panel)
 	local effects_h = math.min(h - y - 60, g_EffectsCount * 20)
 	local effects_pane = guiCreateScrollPane(10, y + 20, w - 20, effects_h, false, panel)

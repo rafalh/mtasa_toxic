@@ -188,14 +188,6 @@ local function MiToggle()
 	end
 end
 
-local function MiInit()
-	bindKey("f5", "up", MiToggle)
-	
-	g_Textures.star = dxCreateTexture("img/star.png")
-	g_Textures.star_l = dxCreateTexture("img/star_l.png")
-	g_Textures.star_r = dxCreateTexture("img/star_r.png")
-end
-
 local function MiOnMapInfo(show, mapInfo, topTimes, myBestTime)
 	g_MapInfo, g_TopTimes = mapInfo, topTimes
 	g_MyBestTime = myBestTime and myBestTime.pos > #g_TopTimes and myBestTime
@@ -212,10 +204,25 @@ local function MiOnMapInfo(show, mapInfo, topTimes, myBestTime)
 	end
 end
 
+local function MiInit()
+	addCommandHandler("MapInfoGui", MiToggle, false, false)
+	bindKey("F5", "down", "MapInfoGui")
+	
+	g_Textures.star = dxCreateTexture("img/star.png")
+	g_Textures.star_l = dxCreateTexture("img/star_l.png")
+	g_Textures.star_r = dxCreateTexture("img/star_r.png")
+	
+	if(not g_Textures.star or not g_Textures.star_l or not g_Textures.star_r) then
+		outputDebugString("Failed to load textures", 1)
+		return
+	end
+	
+	addEventHandler("onClientRestore", g_Root, MiRestore)
+	addInternalEventHandler($(EV_CLIENT_MAP_INFO), MiOnMapInfo)
+end
+
 ------------
 -- Events --
 ------------
 
-addEventHandler("onClientRestore", g_Root, MiRestore)
 addInternalEventHandler($(EV_CLIENT_INIT), MiInit)
-addInternalEventHandler($(EV_CLIENT_MAP_INFO), MiOnMapInfo)
