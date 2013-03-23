@@ -1,0 +1,10 @@
+<meta>
+	<info name="Nitro Shader" author="NeXTreme" version="1.0.0" type="misc" />
+	
+	<script src="client.lua" type="client" />
+	<file src="nitro.fx" />
+	
+	<script src="c_effect.lua" type="client" />
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+</meta>
