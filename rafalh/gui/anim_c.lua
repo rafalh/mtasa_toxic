@@ -1,7 +1,10 @@
 local g_WndData = {}
 local g_WndCount = 0
 
-local function GaUpdate ( dt )
+local GaUpdate
+local GaOnElementDestroy
+
+GaUpdate = function ( dt )
 	for wnd, data in pairs ( g_WndData ) do
 		local fade = data.fade
 		if ( fade ) then
@@ -38,9 +41,21 @@ local function GaUpdate ( dt )
 		if ( data.c <= 0 ) then
 			g_WndData[wnd] = nil
 			g_WndCount = g_WndCount - 1
-			if ( g_WndCount <= 0 ) then
-				removeEventHandler ( "onClientPreRender", g_Root, GaUpdate )
+			removeEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy)
+			
+			if(g_WndCount <= 0) then
+				removeEventHandler("onClientPreRender", g_Root, GaUpdate)
 			end
+		end
+	end
+end
+
+GaOnElementDestroy = function ()
+	if ( g_WndData[source] ) then
+		g_WndData[source] = nil
+		g_WndCount = g_WndCount - 1
+		if ( g_WndCount <= 0 ) then
+			removeEventHandler ( "onClientPreRender", g_Root, GaUpdate )
 		end
 	end
 end
@@ -51,10 +66,11 @@ local function GaFade ( wnd, delay, target_alpha )
 	
 	if ( not g_WndData[wnd] ) then
 		if ( g_WndCount == 0 ) then
-			addEventHandler ( "onClientPreRender", g_Root, GaUpdate )
+			addEventHandler ( "onClientPreRender", g_Root, GaUpdate, false )
 		end
 		g_WndCount = g_WndCount + 1
 		g_WndData[wnd] = { c = 0 }
+		addEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy, false)
 	end
 	
 	local data = g_WndData[wnd]
@@ -81,39 +97,3 @@ function GaFadeOut ( wnd, delay, target_alpha )
 	--outputDebugString ( "GaFadeOut "..g_WndCount.." "..guiGetAlpha ( wnd ).."-"..target_alpha, 2 )
 	GaFade ( wnd, delay, target_alpha )
 end
-
-function GaResize ( wnd, delay, target_w, target_h )
-	local w, h = guiGetSize ( wnd, false )
-	local x, y = guiGetPosition ( wnd, false )
-	
-	if ( w == target_w and h == target_h ) then return end
-	
-	if ( not g_WndData[wnd] ) then
-		if ( g_WndCount == 0 ) then
-			addEventHandler ( "onClientPreRender", g_Root, GaUpdate )
-		end
-		g_WndCount = g_WndCount + 1
-		g_WndData[wnd] = { c = 0 }
-	end
-	
-	local data = g_WndData[wnd]
-	if ( not data.resize ) then
-		data.c = data.c + 1
-	end
-	
-	x = x + w / 2
-	y = y + h / 2
-	data.resize = { t1 = 0, t2 = delay, w1 = w, w2 = target_w, h1 = h, h2 = target_h, x = x, y = y }
-end
-
-local function GaOnElementDestroy ()
-	if ( g_WndData[source] ) then
-		g_WndData[source] = nil
-		g_WndCount = g_WndCount - 1
-		if ( g_WndCount <= 0 ) then
-			removeEventHandler ( "onClientPreRender", g_Root, GaUpdate )
-		end
-	end
-end
-
-addEventHandler ( "onClientElementDestroy", g_Root, GaOnElementDestroy )

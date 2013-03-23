@@ -46,8 +46,8 @@ local function ChVehEnter(player)
 	if(g_KnownVehicles[source]) then return end
 	
 	g_KnownVehicles[source] = true
-	addEventHandler("onClientElementDataChange", source, ChVehDataChange)
-	addEventHandler("onClientElementDestroy", source, ChVehDestroy)
+	addEventHandler("onClientElementDataChange", source, ChVehDataChange, false)
+	addEventHandler("onClientElementDestroy", source, ChVehDestroy, false)
 	
 	ChUpdatePlayer(player)
 end
@@ -61,8 +61,8 @@ local function ChEnable()
 		local veh = getPedOccupiedVehicle(player)
 		if(veh) then
 			g_KnownVehicles[veh] = true
-			addEventHandler("onClientElementDataChange", veh, ChVehDataChange)
-			addEventHandler("onClientElementDestroy", veh, ChVehDestroy)
+			addEventHandler("onClientElementDataChange", veh, ChVehDataChange, false)
+			addEventHandler("onClientElementDestroy", veh, ChVehDestroy, false)
 		end
 	end
 	ChUpdateAllPlayers()

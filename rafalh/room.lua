@@ -14,11 +14,13 @@ function Room.create(el)
 	local self = setmetatable({}, Room.__mt)
 	self.el = el
 	Room.elMap[self.el] = self
+	
+	addEventHandler("onElementDestroy", self.el, Room.onDestroy, false)
+	
 	return self
 end
 
-addEventHandler("onElementDestroy", g_Root, function()
-	local room = Room.elMap[source]
-	if(not room) then return end
-	room:destroy()
-end)
+function Room.onDestroy()
+	local self = Room.elMap[source]
+	self:destroy()
+end
