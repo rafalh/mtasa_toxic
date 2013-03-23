@@ -86,13 +86,15 @@ function Player:setAccount(account)
 	self.accountData:set("name", fullName, true)
 end
 
-function Player:onRoomChange(room)
+function Player.onRoomChange(roomEl)
+	local self = g_Players[source]
+	local room = Room.create(roomEl)
 	self.room = room
-	
 	BtSendMapInfo(self.room, self.new, self.el)
 end
 
-function Player:onTeamChange(team)
+function Player.onTeamChange(team)
+	local self = g_Players[source]
 	local fullName = self:getName(true)
 	self.accountData:set("name", fullName)
 end
@@ -163,17 +165,7 @@ function Player.create(el)
 	return self
 end
 
-addEventHandler("onPlayerChangeRoom", g_Root, function(room)
-	local player = g_Players[source]
-	if(player) then
-		local room = Room.create(room)
-		player:onRoomChange(room)
-	end
-end)
-
-addEventHandler("onPlayerChangeTeam", g_Root, function(team)
-	local player = g_Players[source]
-	if(player) then
-		player:onTeamChange(team)
-	end
+addInitFunc(function()
+	addEventHandler("onPlayerChangeRoom", g_Root, Player.onRoomChange)
+	addEventHandler("onPlayerChangeTeam", g_Root, Player.onTeamChange)
 end)

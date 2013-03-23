@@ -15,7 +15,6 @@
 --------------------------------
 
 local function RcOnPlayerReachCheckpoint(checkpoint, time)
-	if(g_UpdateInProgress) then return end
 	local pdata = g_Players[source]
 	if(pdata.cp_times) then
 		table.insert(pdata.cp_times, time)
@@ -150,8 +149,6 @@ function RcDecodeTraceOld(data)
 end
 
 local function RcOnRecording(map_id, recording)
-	if(g_UpdateInProgress) then return end
-	
 	map_id = touint(map_id, 0)
 	local pdata = g_Players[client]
 	
@@ -195,7 +192,6 @@ end
 ---------------------------------
 
 function RcStartRecording(room, map_id)
-	if(g_UpdateInProgress) then return end
 	--outputDebugString("Recording started...", 3)
 	
 	for player, pdata in pairs(g_Players) do
@@ -220,7 +216,6 @@ function RcStartRecording(room, map_id)
 end
 
 function RcStopRecording(room)
-	if(g_UpdateInProgress) then return end
 	--outputDebugString ( "recording stoped", 3 )
 	
 	for player, pdata in pairs(g_Players) do
@@ -233,8 +228,6 @@ function RcStopRecording(room)
 end
 
 function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
-	if(g_UpdateInProgress) then return end
-	
 	local pdata = g_Players[player]
 	assert(pdata and map_id)
 	
@@ -302,5 +295,7 @@ end
 -- Events --
 ------------
 
-addEventHandler("onPlayerReachCheckpoint", g_Root, RcOnPlayerReachCheckpoint)
-addInternalEventHandler($(EV_RECORDING), RcOnRecording)
+addInitFunc(function()
+	addEventHandler("onPlayerReachCheckpoint", g_Root, RcOnPlayerReachCheckpoint)
+	addInternalEventHandler($(EV_RECORDING), RcOnRecording)
+end)

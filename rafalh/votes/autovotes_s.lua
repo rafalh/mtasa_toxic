@@ -31,19 +31,20 @@ local function AvOnPlayerLogout()
 	end
 end
 
-local function AvInit()
-	for player, pdata in pairs(g_Players) do
-		AvCheckPlayer(player)
-	end
-end
-
 local function AvOnPlayerLogin()
 	if(wasEventCancelled()) then return end
 	
 	AvCheckPlayer(source)
 end
 
-addEventHandler("onResourceStart", g_ResRoot, AvInit)
-addEventHandler("onPlayerLogin", g_Root, AvOnPlayerLogin)
-addEventHandler("onPlayerLogout", g_Root, AvOnPlayerLogout)
-addEventHandler("onPlayerQuit", g_Root, AvOnPlayerLogout)
+local function AvInit()
+	for player, pdata in pairs(g_Players) do
+		AvCheckPlayer(player)
+	end
+	
+	addEventHandler("onPlayerLogin", g_Root, AvOnPlayerLogin)
+	addEventHandler("onPlayerLogout", g_Root, AvOnPlayerLogout)
+	addEventHandler("onPlayerQuit", g_Root, AvOnPlayerLogout)
+end
+
+addInitFunc(AvInit)

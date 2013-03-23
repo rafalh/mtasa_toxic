@@ -91,6 +91,8 @@ local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
 	xmlUnloadFile(node)
 end
 
-addEventHandler("main.onTransPanelReq", g_ResRoot, onTransPanelReq)
-addEventHandler("main.onLocaleDataReq", g_ResRoot, onLocaleDataReq)
-addEventHandler("main.onChangeLocaleReq", g_ResRoot, onChangeLocaleReq)
+addInitFunc(function()
+	addEventHandler("main.onTransPanelReq", g_ResRoot, onTransPanelReq)
+	addEventHandler("main.onLocaleDataReq", g_ResRoot, onLocaleDataReq)
+	addEventHandler("main.onChangeLocaleReq", g_ResRoot, onChangeLocaleReq)
+end)

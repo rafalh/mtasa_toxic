@@ -128,4 +128,4 @@ end
 
 CmdRegister("maxping", CmdMaxPing, false)
 
-addEventHandler("onResourceStart", g_ResRoot, AlInit)
+addInitFunc(AlInit)

@@ -77,5 +77,7 @@ local function onVotenextReq(map_res_name)
 	VtnStart(map_res_name, client)
 end
 
-addEventHandler("onRafalhVotenextResult", g_ResRoot, onRafalhVotenextResult)
-addEventHandler("onVotenextReq", g_ResRoot, onVotenextReq)
+addInitFunc(function()
+	addEventHandler("onRafalhVotenextResult", g_ResRoot, onRafalhVotenextResult)
+	addEventHandler("onVotenextReq", g_ResRoot, onVotenextReq)
+end)

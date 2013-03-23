@@ -16,5 +16,7 @@ local function onPlayerQuit ()
 	player:destroy()
 end
 
-addEventHandler ( "onResourceStop", g_ResRoot, onResourceStop )
-addEventHandler ( "onPlayerQuit", g_Root, onPlayerQuit )
+addInitFunc(function()
+	addEventHandler ( "onResourceStop", g_ResRoot, onResourceStop )
+	addEventHandler ( "onPlayerQuit", g_Root, onPlayerQuit )
+end)

@@ -70,30 +70,22 @@ local function StPlayerStatsSyncCallback(idOrPlayer)
 	return data
 end
 
-local function StInit ()
+local function StLoadRanks()
 	local node, i = xmlLoadFile("conf/ranks.xml"), 0
-	if(node) then
-		while(true) do
-			local subnode = xmlFindChild(node, "rank", i)
-			if(not subnode) then break end
-			i = i + 1
-			
-			local pts = touint(xmlNodeGetAttribute(subnode, "points" ), 0)
-			local name = xmlNodeGetAttribute(subnode, "name")
-			assert(name)
-			g_Ranks[pts] = name
-		end
-		xmlUnloadFile(node)
-	end
+	if(not node) then return false end
 	
-	for player, pdata in pairs(g_Players) do
-		local pts = pdata.accountData:get("points")
-		if(not pdata.is_console) then
-			setPlayerAnnounceValue(player, "score", tostring(pts))
-		end
+	while(true) do
+		local subnode = xmlFindChild(node, "rank", i)
+		if(not subnode) then break end
+		i = i + 1
+		
+		local pts = touint(xmlNodeGetAttribute(subnode, "points" ), 0)
+		local name = xmlNodeGetAttribute(subnode, "name")
+		assert(name)
+		g_Ranks[pts] = name
 	end
-	
-	addSyncer("stats", StPlayerStatsSyncCallback)
+	xmlUnloadFile(node)
+	return true
 end
 
 local function StOnPlayerConnect(playerNick, playerIP, playerUsername, playerSerial)
@@ -133,9 +125,23 @@ local function StOnVehicleExplode()
 	end
 end
 
-addEventHandler("onResourceStart", g_ResRoot, StInit)
-addEventHandler("onPlayerConnect", g_Root, StOnPlayerConnect)
-addEventHandler("onPlayerJoin", g_Root, StOnPlayerJoin)
-addEventHandler("onPlayerWasted", g_Root, StOnPlayerWasted)
-addEventHandler("onVehicleExplode", g_Root, StOnVehicleExplode)
-table.insert(PlayerAccountData.onChangeHandlers, StAccountDataChange)
+local function StInit()
+	StLoadRanks()
+	
+	for player, pdata in pairs(g_Players) do
+		local pts = pdata.accountData:get("points")
+		if(not pdata.is_console) then
+			setPlayerAnnounceValue(player, "score", tostring(pts))
+		end
+	end
+	
+	addSyncer("stats", StPlayerStatsSyncCallback)
+	
+	addEventHandler("onPlayerConnect", g_Root, StOnPlayerConnect)
+	addEventHandler("onPlayerJoin", g_Root, StOnPlayerJoin)
+	addEventHandler("onPlayerWasted", g_Root, StOnPlayerWasted)
+	addEventHandler("onVehicleExplode", g_Root, StOnVehicleExplode)
+	table.insert(PlayerAccountData.onChangeHandlers, StAccountDataChange)
+end
+
+addInitFunc(StInit)

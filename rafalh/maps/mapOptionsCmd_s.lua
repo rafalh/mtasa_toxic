@@ -457,4 +457,6 @@ local function MocCleanup()
 	end
 end
 
-addEventHandler("onResourceStop", g_ResRoot, MocCleanup)
+addInitFunc(function()
+	addEventHandler("onResourceStop", g_ResRoot, MocCleanup)
+end)

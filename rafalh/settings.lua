@@ -86,21 +86,22 @@ function SmSet ( name, value )
 end
 
 local function SmOnSettingChange ( name, old_val, new_val )
-	local ch1 = name:sub ( 1, 1 )
-	if ( ch1 == "*" or ch1 == "@" ) then
-		name = name:sub ( 2 )
+	local ch1 = name:sub(1, 1)
+	if(ch1 == "*" or ch1 == "@") then
+		name = name:sub(2)
 	end
 	
-	local res_name = getResourceName ( getThisResource () )
-	if ( name:sub ( 1, res_name:len () + 1 ) == res_name.."." ) then
-		name = name:sub ( res_name:len () + 2 )
+	if(name:sub(1, g_ResName:len () + 1) == g_ResName.."." ) then
+		name = name:sub(g_ResName:len() + 2)
 	end
 	
-	if ( g_Settings[name] ~= nil and g_PrivateSettings[name] == nil ) then
-		new_val = fromJSON ( new_val )
+	if(g_Settings[name] ~= nil and g_PrivateSettings[name] == nil) then
+		new_val = fromJSON(new_val)
 		g_Settings[name] = nil--new_val
 		--outputDebugString ( "Cached value changed "..name.." "..new_val, 2 )
 	end
 end
 
-addEventHandler ( "onSettingChange", g_Root, SmOnSettingChange )
+addInitFunc(function()
+	addEventHandler("onSettingChange", g_Root, SmOnSettingChange)
+end)

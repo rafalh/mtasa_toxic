@@ -2,7 +2,8 @@
 -- Local function definitions --
 --------------------------------
 
-g_UpdateInProgress = false
+local g_InitFuncs = {}
+local _addEventHandler
 
 local function setupDatabase()
 	DbInit()
@@ -266,6 +267,9 @@ local function onResourceStart(resource)
 	math.randomseed(getTickCount())
 	createElement("TXC413b9d90", "TXC413b9d90")
 	
+	-- Enable addEventHandler function
+	addEventHandler = _addEventHandler
+	
 	if(not setupDatabase() or not setupACL()) then
 		cancelEvent()
 		return
@@ -305,11 +309,24 @@ local function onResourceStart(resource)
 		setTimer(DbQuery, auto_clean_db_interval * 1000 * 60, 0, "VACUUM")
 	end
 	
+	for i, func in ipairs(g_InitFuncs) do
+		func()
+	end
+	
 	outputDebugString("rafalh script has started!", 3)
 end
 
-------------
--- Events --
-------------
+function addInitFunc(func)
+	assert(func)
+	table.insert(g_InitFuncs, func)
+end
 
 addEventHandler("onResourceStart", g_ResRoot, onResourceStart)
+
+-- Disable addEventHandler for loading
+_addEventHandler = addEventHandler
+function addEventHandler(...)
+	outputDebugString("addEventHandler is not recommended at startup! Use addInitFunc instead.", 2)
+	DbgTraceBack()
+	_addEventHandler(...)
+end

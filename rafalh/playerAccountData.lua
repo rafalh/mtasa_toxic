@@ -209,4 +209,4 @@ function PlayerAccountData.getDbTableFields()
 	return table.concat(fields, ", ")
 end
 
-init()
+init() -- Do it now (don't use addInitFunc)

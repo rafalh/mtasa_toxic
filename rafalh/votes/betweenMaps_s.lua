@@ -129,4 +129,6 @@ end
 -- Events --
 ------------
 
-addEventHandler( "onPollStarting", g_Root, onPollStarting )
+addInitFunc(function()
+	addEventHandler( "onPollStarting", g_Root, onPollStarting )
+end)

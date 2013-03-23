@@ -18,5 +18,5 @@ local function AvpInit()
 	setTimer(AvpTimerProc, 60000, 0)
 end
 
-addEventHandler("onResourceStart", g_ResRoot, AvpInit)
 CmdRegister("avgplayers", CmdAvgPlayers, false, "Shows avarange players count")
+addInitFunc(AvpInit)

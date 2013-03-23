@@ -9,12 +9,6 @@ local function AlAddPlayerAlias(player, name)
 	end
 end
 
-local function AlInit()
-	for player, pdata in pairs(g_Players) do
-		AlAddPlayerAlias(player, getPlayerName(player))
-	end
-end
-
 local function AlOnPlayerChangeNick(oldNick, newNick)
 	if(wasEventCancelled()) then return end
 	
@@ -27,6 +21,13 @@ local function AlOnPlayerJoin()
 	AlAddPlayerAlias(source, getPlayerName(source))
 end
 
-addEventHandler("onResourceStart", g_ResRoot, AlInit)
-addEventHandler("onPlayerJoin", g_Root, AlOnPlayerJoin)
-addEventHandler("onPlayerChangeNick", g_Root, AlOnPlayerChangeNick)
+local function AlInit()
+	for player, pdata in pairs(g_Players) do
+		AlAddPlayerAlias(player, getPlayerName(player))
+	end
+	
+	addEventHandler("onPlayerJoin", g_Root, AlOnPlayerJoin)
+	addEventHandler("onPlayerChangeNick", g_Root, AlOnPlayerChangeNick)
+end
+
+addInitFunc(AlInit)

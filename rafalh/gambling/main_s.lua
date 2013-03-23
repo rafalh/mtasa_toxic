@@ -183,13 +183,6 @@ local function GbRemoveBetsPlayer(player, return_cash)
 	end
 end
 
-local function GbInit()
-	local fund_inc_interval = SmGetUInt("fund_inc_interval", 0)
-	if(fund_inc_interval > 0) then
-		setTimer(GbLotteryFundInc, fund_inc_interval * 1000, 0)
-	end
-end
-
 local function GbCleanup()
 	GbCancelBets()
 	GbCancelLottery()
@@ -197,6 +190,24 @@ end
 
 local function GbOnPlayerQuit()
 	GbRemoveBetsPlayer(source, quitType ~= "Quit") -- return cash to betters if he quits normally
+end
+
+local function GbOnMapStop()
+	if(g_BetsTimer) then
+		killTimer(g_BetsTimer)
+		g_BetsTimer = false
+	end
+end
+
+local function GbInit()
+	local fund_inc_interval = SmGetUInt("fund_inc_interval", 0)
+	if(fund_inc_interval > 0) then
+		setTimer(GbLotteryFundInc, fund_inc_interval * 1000, 0)
+	end
+	
+	addEventHandler("onResourceStop", g_ResRoot, GbCleanup)
+	addEventHandler("onPlayerQuit", g_Root, GbOnPlayerQuit)
+	addEventHandler("onGamemodeMapStop", g_Root, GbOnMapStop)
 end
 
 function GbRoll(player)
@@ -271,14 +282,4 @@ function GbAreBetsPlaced()
 	return true
 end
 
-local function GbOnMapStop()
-	if(g_BetsTimer) then
-		killTimer(g_BetsTimer)
-		g_BetsTimer = false
-	end
-end
-
-addEventHandler("onResourceStart", g_ResRoot, GbInit)
-addEventHandler("onResourceStop", g_ResRoot, GbCleanup)
-addEventHandler("onPlayerQuit", g_ResRoot, GbOnPlayerQuit)
-addEventHandler("onGamemodeMapStop", g_Root, GbOnMapStop)
+addInitFunc(GbInit)

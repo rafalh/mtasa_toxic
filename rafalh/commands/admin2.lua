@@ -57,7 +57,7 @@ local function onCommand (message, arg)
 	end
 end
 
-local function onResourceStart ()
+local function init()
 	local node = xmlLoadFile ("conf\\commands.xml")
 	local types = { "player", "team", "vehicle", "resource", "bans", "server", "admin" }
 	
@@ -95,4 +95,4 @@ end
 -- Events --
 ------------
 
-addEventHandler ("onResourceStart", g_ResRoot, onResourceStart)
+addInitFunc(init)

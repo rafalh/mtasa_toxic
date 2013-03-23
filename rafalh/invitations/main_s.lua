@@ -23,15 +23,16 @@ local function IvNewPlayer(player)
 	end
 end
 
-local function IvInit()
-	for player, pdata in pairs(g_Players) do
-		IvNewPlayer(player)
-	end
-end
-
 local function IvOnPlayerJoin()
 	IvNewPlayer(source)
 end
 
-addEventHandler("onResourceStart", g_ResRoot, IvInit)
-addEventHandler("onPlayerJoin", g_Root, IvOnPlayerJoin)
+local function IvInit()
+	for player, pdata in pairs(g_Players) do
+		IvNewPlayer(player)
+	end
+	
+	addEventHandler("onPlayerJoin", g_Root, IvOnPlayerJoin)
+end
+
+addInitFunc(IvInit)

@@ -44,4 +44,4 @@ local function PfcInit ()
 	end
 end
 
-addEventHandler ("onResourceStart", g_ResRoot, PfcInit)
+addInitFunc(PfcInit)

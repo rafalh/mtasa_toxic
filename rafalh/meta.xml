@@ -202,6 +202,7 @@
 	<script src="trans_admin/main_s.lua" type="server" />
 	<script src="trans_admin/gui_c.lua" type="client" />
 	
+	<script src="translator/main_s.lua" type="server" />
 	<script src="translator/cmd_s.lua" type="server" />
 	<script src="translator/gui_c.lua" type="client" />
 	<file src="translator/icon.png" />
@@ -213,7 +214,6 @@
 	<script src="votes/autovotes_s.lua" type="server" />
 	<script src="votes/betweenMaps_s.lua" type="server" />
 	<script src="votes/cmd_s.lua" type="server" />
-	<script src="votes/poll_s.lua" type="server" />
 	<script src="votes/votenext_s.lua" type="server" />
 	
 	<script src="about/gui_c.lua" type="client" />

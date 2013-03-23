@@ -249,10 +249,12 @@ end
 -- Events --
 ------------
 
-addEventHandler("onPlayerJoin", g_Root, onPlayerJoin)
-addEventHandler("onPlayerPrivateMessage", g_Root, onPlayerPrivateMessage)
-addEventHandler("onPlayerChangeNick", g_Root, onPlayerChangeNick)
-addEventHandler("onPlayerChat", g_Root, onPlayerChat)
-addEventHandler("main.onPlayerReady", g_ResRoot, onPlayerReady)
-addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
-addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)
+addInitFunc(function()
+	addEventHandler("onPlayerJoin", g_Root, onPlayerJoin)
+	addEventHandler("onPlayerPrivateMessage", g_Root, onPlayerPrivateMessage)
+	addEventHandler("onPlayerChangeNick", g_Root, onPlayerChangeNick)
+	addEventHandler("onPlayerChat", g_Root, onPlayerChat)
+	addEventHandler("main.onPlayerReady", g_ResRoot, onPlayerReady)
+	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
+	addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)
+end)

@@ -5,10 +5,6 @@ addEvent("main.onLogoutReq", true)
 
 local g_RegTimeStamp = 0
 
---------------------------------
--- Local function definitions --
---------------------------------
-
 local function onPlayerLogin(prevAccount, account, autoLogin)
 	local self = g_Players[source]
 	if(not self) then return end
@@ -91,14 +87,11 @@ local function onLogoutReq()
 	logOut(client)
 end
 
-------------
--- Events --
-------------
-
-addEventHandler("onPlayerLogin", g_Root, onPlayerLogin)
-addEventHandler("onPlayerLogout", g_Root, onPlayerLogout)
-addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
-addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
-addEventHandler("main.onChgPwReq", g_ResRoot, onChgPwReq)
-addEventHandler("main.onLogoutReq", g_ResRoot, onLogoutReq)
-
+addInitFunc(function()
+	addEventHandler("onPlayerLogin", g_Root, onPlayerLogin)
+	addEventHandler("onPlayerLogout", g_Root, onPlayerLogout)
+	addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
+	addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
+	addEventHandler("main.onChgPwReq", g_ResRoot, onChgPwReq)
+	addEventHandler("main.onLogoutReq", g_ResRoot, onLogoutReq)
+end)

@@ -129,9 +129,6 @@ local function onSetNextMap (mapName)
 	end
 end
 
-addEvent ("setNextMap_s", true)
-addEventHandler ("setNextMap_s", g_Root, onSetNextMap)
-
 local function CmdCancelNextMap (message, arg)
 	local room = g_Players[source].room
 	local map = MqRemove(room)
@@ -159,3 +156,8 @@ local function CmdRedo (message, arg)
 end
 
 CmdRegister("redo", CmdRedo, "command.setmap", "Restarts current map")
+
+addInitFunc(function()
+	addEvent("setNextMap_s", true)
+	addEventHandler("setNextMap_s", g_Root, onSetNextMap)
+end)

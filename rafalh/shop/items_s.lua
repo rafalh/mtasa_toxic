@@ -466,6 +466,8 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler ( $(EV_SET_JOIN_MSG_REQUEST), ShpSetJoinMsgRequest )
-addEventHandler ( "onGamemodeMapStop", g_Root, ShpMapStop )
-addEventHandler ( "onBuyNextMapReq", g_Root, ShpBuyNextMap )
+addInitFunc(function()
+	addInternalEventHandler ( $(EV_SET_JOIN_MSG_REQUEST), ShpSetJoinMsgRequest )
+	addEventHandler ( "onGamemodeMapStop", g_Root, ShpMapStop )
+	addEventHandler ( "onBuyNextMapReq", g_Root, ShpBuyNextMap )
+end)

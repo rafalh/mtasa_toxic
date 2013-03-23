@@ -1,8 +1,4 @@
-g_RootRoom = Room.create(g_Root)
-
--------------------
--- Custom events --
--------------------
+g_RootRoom = false
 
 addEvent("onPlayerFinish")
 addEvent("onPlayerWinDD")
@@ -15,10 +11,6 @@ addEvent("onClientSetNextMap", true)
 addEvent("onClientMapList", true)
 addEvent("onMapListReq", true)
 addEvent("onChangeMapReq", true)
-
----------------
--- Functions --
----------------
 
 function initRoomMaps(room)
 	if(room.mapsInit) then return end
@@ -522,24 +514,28 @@ function getMapsList()
 	return false
 end
 
-addEventHandler("onRoomMapStart", g_Root, function(mapPath)
-	local map = Map.create(mapPath)
-	local room = Room.create(source)
-	onMapStart(map, room)
+addInitFunc(function()
+	g_RootRoom = Room.create(g_Root)
+	
+	addEventHandler("onRoomMapStart", g_Root, function(mapPath)
+		local map = Map.create(mapPath)
+		local room = Room.create(source)
+		onMapStart(map, room)
+	end)
+	addEventHandler("onRoomMapStop", g_Root, function()
+		local room = Room.create(source)
+		onMapStop(room)
+	end)
+	addEventHandler("onGamemodeMapStart", g_Root, function(mapRes)
+		local map = Map.create(mapRes)
+		onMapStart(map, g_RootRoom)
+	end)
+	addEventHandler("onGamemodeMapStop", g_Root, function()
+		onMapStop(g_RootRoom)
+	end)
+	addEventHandler ("onPlayerFinish", g_Root, onPlayerFinish)
+	addEventHandler ("onPlayerWinDD", g_Root, onPlayerWinDD)
+	addEventHandler ("onPlayerPickUpRacePickup", g_Root, onPlayerPickUpRacePickup)
+	addEventHandler ("onMapListReq", g_ResRoot, onMapListReq)
+	addEventHandler ("onChangeMapReq", g_ResRoot, onChangeMapReq)
 end)
-addEventHandler("onRoomMapStop", g_Root, function()
-	local room = Room.create(source)
-	onMapStop(room)
-end)
-addEventHandler("onGamemodeMapStart", g_Root, function(mapRes)
-	local map = Map.create(mapRes)
-	onMapStart(map, g_RootRoom)
-end)
-addEventHandler("onGamemodeMapStop", g_Root, function()
-	onMapStop(g_RootRoom)
-end)
-addEventHandler ("onPlayerFinish", g_Root, onPlayerFinish)
-addEventHandler ("onPlayerWinDD", g_Root, onPlayerWinDD)
-addEventHandler ("onPlayerPickUpRacePickup", g_Root, onPlayerPickUpRacePickup)
-addEventHandler ("onMapListReq", g_ResRoot, onMapListReq)
-addEventHandler ("onChangeMapReq", g_ResRoot, onChangeMapReq)

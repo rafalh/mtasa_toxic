@@ -156,7 +156,7 @@ end
 
 CmdRegister ("editcom", CmdEditCom, "resource.rafalh.addcom", "Changes custom command message")
 
-function McInit ()
+local function McInit ()
 	local node, i = xmlLoadFile ("conf/msg_cmd.xml"), 0
 	if (node) then
 		while (true) do
@@ -174,4 +174,4 @@ function McInit ()
 	end
 end
 
-addEventHandler ("onResourceStart", g_ResRoot, McInit)
+addInitFunc(McInit)

@@ -67,4 +67,4 @@ local function AcmpInit ()
 	setTimer(AcmpCheckAllPlayers, 1000, 0)
 end
 
-addEventHandler("onResourceStart", g_ResRoot, AcmpInit)
+addInitFunc(AcmpInit)

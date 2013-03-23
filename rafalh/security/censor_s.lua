@@ -53,4 +53,4 @@ local function CsInit()
 	end
 end
 
-addEventHandler("onResourceStart", g_ResRoot, CsInit)
+addInitFunc(CsInit)

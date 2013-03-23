@@ -18,5 +18,6 @@ local function LngOnSetLocaleRequest(localeId)
 	pdata:setLocale(localeId)
 end
 
-addEventHandler("main.onSetLocaleReq", g_ResRoot, LngOnSetLocaleRequest)
-
+addInitFunc(function()
+	addEventHandler("main.onSetLocaleReq", g_ResRoot, LngOnSetLocaleRequest)
+end)

@@ -154,4 +154,4 @@ local function PfInit()
 	addEventHandler("main_onPlayerProfileReq", g_ResRoot, PfOnGetProfileReq)
 end
 
-addEventHandler("onResourceStart", g_ResRoot, PfInit)
+addInitFunc(PfInit)

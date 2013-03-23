@@ -107,4 +107,6 @@ local function MqOnAddReq(mapResName)
 	end
 end
 
-addEventHandler("onAddMapToQueueReq", g_ResRoot, MqOnAddReq)
+addInitFunc(function()
+	addEventHandler("onAddMapToQueueReq", g_ResRoot, MqOnAddReq)
+end)

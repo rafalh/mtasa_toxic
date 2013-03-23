@@ -71,6 +71,8 @@ local function RtPoolStarting()
 	g_Poll = true
 end
 
-addEventHandler("onGamemodeMapStart", g_Root, RtMapStart) -- FIXME
-addEventHandler("onPlayerRate", g_Root, RtPlayerRate)
-addEventHandler("onPollStarting", g_Root, RtPoolStarting)
+addInitFunc(function()
+	addEventHandler("onGamemodeMapStart", g_Root, RtMapStart) -- FIXME
+	addEventHandler("onPlayerRate", g_Root, RtPlayerRate)
+	addEventHandler("onPollStarting", g_Root, RtPoolStarting)
+end)

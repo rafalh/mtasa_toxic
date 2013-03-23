@@ -153,8 +153,10 @@ end
 -- Events --
 ------------
 
-addEventHandler ( "onPlayerQuit", g_Root, onPlayerQuit )
-addInternalEventHandler ( $(EV_START_SYNC_REQUEST), function ( tbl, force ) startSync ( client, tbl, force ) end )
-addInternalEventHandler ( $(EV_STOP_SYNC_REQUEST), function ( tbl ) stopSync ( client, tbl ) end )
-addInternalEventHandler ( $(EV_PAUSE_SYNC_REQUEST), function ( tbl ) pauseSync ( client, tbl ) end )
-addInternalEventHandler ( $(EV_SYNC_ONCE_REQUEST), function ( tbl, force ) syncOnce ( client, tbl, force ) end )
+addInitFunc(function()
+	addEventHandler ( "onPlayerQuit", g_Root, onPlayerQuit )
+	addInternalEventHandler ( $(EV_START_SYNC_REQUEST), function ( tbl, force ) startSync ( client, tbl, force ) end )
+	addInternalEventHandler ( $(EV_STOP_SYNC_REQUEST), function ( tbl ) stopSync ( client, tbl ) end )
+	addInternalEventHandler ( $(EV_PAUSE_SYNC_REQUEST), function ( tbl ) pauseSync ( client, tbl ) end )
+	addInternalEventHandler ( $(EV_SYNC_ONCE_REQUEST), function ( tbl, force ) syncOnce ( client, tbl, force ) end )
+end)

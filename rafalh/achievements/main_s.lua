@@ -146,16 +146,16 @@ local function AchvListReq()
 end
 
 local function AchvInit()
+	for player, pdata in pairs(g_Players) do
+		AchvInitAccount(player)
+	end
+	
 	addEventHandler("onPlayerLogin", g_Root, AchvPlayerLoginLogout)
 	addEventHandler("onPlayerLogout", g_Root, AchvPlayerLoginLogout)
 	addEventHandler("onPlayerJoin", g_Root, AchvPlayerJoin)
 	addEventHandler("main.onAchvActivate", g_ResRoot, AchvClientActivate)
 	--addEventHandler("main.onAchvListReq", g_ResRoot, AchvListReq)
 	addEventHandler("main.onPlayerReady", g_ResRoot, AchvListReq) -- hmm
-	
-	for player, pdata in pairs(g_Players) do
-		AchvInitAccount(player)
-	end
 end
 
-addEventHandler("onResourceStart", g_ResRoot, AchvInit)
+addInitFunc(AchvInit)

@@ -95,9 +95,12 @@ function GmIsEnabled(room)
 	return (ghostModeStr == "true")]]
 end
 
-addEventHandler("onPlayerQuit", g_Root, GmOnPlayerQuit)
-
-CmdRegister("testgm", function()
+CmdRegister("checkgm", function()
 	local pdata = g_Players[source]
-	outputChatBox("TEST GM: "..tostring(GmIsEnabled(pdata.room)))
+	local gm = GmIsEnabled(pdata.room)
+	scriptMsg("Ghostmode is "..(gm and "enabled" or "disabled"))
 end, true)
+
+addInitFunc(function()
+	addEventHandler("onPlayerQuit", g_Root, GmOnPlayerQuit)
+end)

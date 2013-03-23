@@ -64,4 +64,6 @@ local function TrcOnPlayerQuit ()
 	end
 end
 
-addEventHandler("onPlayerQuit", g_ResRoot, TrcOnPlayerQuit)
+addInitFunc(function()
+	addEventHandler("onPlayerQuit", g_Root, TrcOnPlayerQuit)
+end)

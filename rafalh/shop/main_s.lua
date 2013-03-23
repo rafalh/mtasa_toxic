@@ -126,7 +126,9 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler ( $(EV_BUY_SHOP_ITEM_REQUEST), ShpBuyShopItemRequest )
-addInternalEventHandler ( $(EV_SELL_SHOP_ITEM_REQUEST), ShpSellShopItemRequest )
-addInternalEventHandler ( $(EV_USE_SHOP_ITEM_REQUEST), ShpUseShopItemRequest )
-addInternalEventHandler ( $(EV_GET_INVENTORY_REQUEST), ShpGetInventoryRequest )
+addInitFunc(function()
+	addInternalEventHandler ( $(EV_BUY_SHOP_ITEM_REQUEST), ShpBuyShopItemRequest )
+	addInternalEventHandler ( $(EV_SELL_SHOP_ITEM_REQUEST), ShpSellShopItemRequest )
+	addInternalEventHandler ( $(EV_USE_SHOP_ITEM_REQUEST), ShpUseShopItemRequest )
+	addInternalEventHandler ( $(EV_GET_INVENTORY_REQUEST), ShpGetInventoryRequest )
+end)

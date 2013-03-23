@@ -54,8 +54,11 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	return rows, players_count
 end
 
-addEvent("main_onPlayersListReq", true)
-addEventHandler("main_onPlayersListReq", g_ResRoot, function(...)
-	local rows, cnt = getPlayersStats(...)
-	triggerClientEvent(client, "main_onPlayersList", g_ResRoot, rows, cnt)
+addInitFunc(function()
+	addEvent("main_onPlayersListReq", true)
+	
+	addEventHandler("main_onPlayersListReq", g_ResRoot, function(...)
+		local rows, cnt = getPlayersStats(...)
+		triggerClientEvent(client, "main_onPlayersList", g_ResRoot, rows, cnt)
+	end)
 end)

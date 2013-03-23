@@ -34,4 +34,4 @@ local function init()
 	setTimer(updateSpectators, 1000, 0)
 end
 
-addEventHandler ( "onResourceStart", g_ResRoot, init )
+addInitFunc(init)

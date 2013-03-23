@@ -8,8 +8,6 @@ local g_TopTimes = false
 local g_PlayerTimes = {}
 
 function addPlayerTime(player_id, map_id, time)
-	if(g_UpdateInProgress) then return end
-	
 	local wasInTop = false
 	local now = getRealTime().timestamp
 	
@@ -153,8 +151,6 @@ end
 
 -- race_delay_indicator uses it
 function getTopTime(map_res, cp_times)
-	if(g_UpdateInProgress) then return {} end
-	
 	assert(map_res and cp_times)
 	local map = Map.create(map_res)
 	local map_id = map:getId()
@@ -194,4 +190,6 @@ function BtPrintTimes(room, map_id)
 	end
 end
 
-addEventHandler("onGamemodeMapStop", g_Root, BtGamemodeMapStop)
+addInitFunc(function()
+	addEventHandler("onGamemodeMapStop", g_Root, BtGamemodeMapStop)
+end)

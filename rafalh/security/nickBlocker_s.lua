@@ -47,4 +47,4 @@ local function NbInit()
 	end
 end
 
-addEventHandler("onResourceStart", g_ResRoot, NbInit)
+addInitFunc(NbInit)

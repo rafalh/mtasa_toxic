@@ -12,7 +12,7 @@ function CmdRegister (name, func, access, description, ignore_console, ignore_ch
 end
 
 function CmdRegisterAlias (alias_name, cmd_name, ignore_console, ignore_chat)
-	assert (alias_name and cmd_name and not g_Commands[alias_name] and g_Commands[cmd_name])
+	assert(alias_name and cmd_name and not g_Commands[alias_name] and g_Commands[cmd_name], "Failed to add command "..tostring(cmd_name))
 	
 	g_Commands[alias_name] = table.copy(g_Commands[cmd_name])
 	local cmd_data = g_Commands[alias_name]
@@ -132,5 +132,7 @@ local function onCommandsListReq ()
 	triggerClientEvent (client, "onClientCommandsList", g_Root, commmands)
 end
 
-addEventHandler ("onCommandsListReq", g_Root, onCommandsListReq)
-addEventHandler ("onConsole", g_Root, onConsole)
+addInitFunc(function()
+	addEventHandler ("onCommandsListReq", g_Root, onCommandsListReq)
+	addEventHandler ("onConsole", g_Root, onConsole)
+end)
