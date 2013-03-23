@@ -2,10 +2,15 @@
 -- Global variables --
 ----------------------
 
-g_Root = getRootElement ()
-g_ResRoot = getResourceRootElement ()
+g_Root = getRootElement()
+g_ResRoot = getResourceRootElement()
+g_Res = getThisResource()
+g_ResName = getResourceName(g_Res)
+
 g_Players = {}
 g_PlayersCount = 0
+g_IdToPlayer = {}
+
 g_ScriptMsgState = { recipients = { g_Root }, prefix = "", color = false }
 g_InternalEventHandlers = {}
 g_OldVehicleWeapons = nil
@@ -13,20 +18,12 @@ g_Countries = {}
 g_IsoLangs = {}
 g_MapTypes = {}
 g_CustomRights = {}
-g_IdToPlayer = {}
-
----------------------
--- Local variables --
----------------------
-
-local g_ThisRes = getThisResource ()
-local g_ThisResName = getResourceName ( g_ThisRes )
 
 -------------------
 -- Custom events --
 -------------------
 
-addEvent ( "onEvent_"..g_ThisResName, true )
+addEvent("onEvent_"..g_ResName, true)
 
 --------------------------------
 -- Local function definitions --
@@ -34,7 +31,7 @@ addEvent ( "onEvent_"..g_ThisResName, true )
 
 local function onEventHandler ( event, ... )
 	--outputChatBox("'"..getResourceName ( sourceResource ).."' "..tostring(event))
-	if ( g_InternalEventHandlers[event or false] and ( sourceResource == g_ThisRes or getResourceName ( sourceResource ):sub ( 1, 6 ) == "rafalh" ) ) then
+	if ( g_InternalEventHandlers[event or false] and ( sourceResource == g_Res or getResourceName ( sourceResource ):sub ( 1, 6 ) == "rafalh" ) ) then
 		for _, handler in ipairs ( g_InternalEventHandlers[event] ) do
 			-- Note: unpack must be last arg
 			handler ( unpack ( { ... } ) )
@@ -276,7 +273,7 @@ function triggerClientInternalEvent ( player, eventtype, source, ... )
 	for i, player in ipairs(players) do
 		local pdata = g_Players[player]
 		if(pdata and pdata.sync) then
-			triggerClientEvent(player, "onEvent_"..g_ThisResName, source, eventtype, ...)
+			triggerClientEvent(player, "onEvent_"..g_ResName, source, eventtype, ...)
 		end
 	end
 end
@@ -285,4 +282,4 @@ end
 -- Events --
 ------------
 
-addEventHandler ( "onEvent_"..g_ThisResName, g_Root, onEventHandler )
+addEventHandler ( "onEvent_"..g_ResName, g_Root, onEventHandler )
