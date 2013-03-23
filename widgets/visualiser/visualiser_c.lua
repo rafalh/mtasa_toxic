@@ -133,23 +133,34 @@ local function render()
 		particles.prev = peak
 	end
 	
+	--[[if(not DBG_TICKS or getTickCount() - DBG_TICKS > 1000) then
+		for k, v in pairs(metaTags) do
+			outputChatBox(tostring(k).." = "..tostring(v))
+		end
+		DBG_TICKS = getTickCount()
+	end]]
+	
+	local title = metaTags.title or metaTags.stream_title
+	local subtitle = metaTags.artist or metaTags.album or metaTags.stream_name
+	if(not title) then
+		title = subtitle
+		subtitle = false
+	end
 	
 	-- render title
-	local title = metaTags.title or metaTags.stream_name or "Unknown"
 	local left, top = g_Pos[1] + 10, g_Pos[2] + 10
 	local right, bottom = g_Pos[1] + g_Size[1], g_Pos[2] + math.min(g_Size[2], 40)
 	if(soundLen > 0) then
 		-- make place for time
 		right = right - 90
 	end
-	dxDrawText(title, left, top, right, bottom, TEXT_COLOR, 2, FONT, "left", "top", true)
+	dxDrawText(title or "Unknown", left, top, right, bottom, TEXT_COLOR, 2, FONT, "left", "top", true)
 	
-	-- render author
-	local author = metaTags.artist or metaTags.album --(metaTags.artist and metaTags.artist..", " or "").."BPM: "..math.floor(bpm)
-	if(author) then
+	-- render subtitle
+	if(subtitle) then
 		local left, top = g_Pos[1] + 10, g_Pos[2] + 35
 		local right, bottom = g_Pos[1] + g_Size[1], g_Pos[2] + g_Size[2]
-		dxDrawText(author, left, top, right, bottom, TEXT_COLOR, 1.5, FONT, "left", "top", true)
+		dxDrawText(subtitle, left, top, right, bottom, TEXT_COLOR, 1.5, FONT, "left", "top", true)
 	end
 	
 	-- render time
