@@ -1,4 +1,5 @@
 local g_TracedPlayers = {}
+local TRACE_URL = "http://toxic.no-ip.eu/scripts/trace2.php"
 
 local function onTraceResult (data, player_name, player_id)
 	if (not g_TracedPlayers[player_id]) then return end
@@ -42,7 +43,7 @@ local function CmdTrace (message, arg)
 	
 	local shared_res = getResourceFromName ("rafalh_shared")
 	if (shared_res and getResourceState (shared_res) == "running") then
-		local url = "http://toxic.no-ip.eu/scripts/trace2.php?ip="..getPlayerIP (player)
+		local url = TRACE_URL.."?ip="..getPlayerIP (player)
 		local req = call (shared_res, "HttpSendRequest", url, false, "GET", false, getPlayerName(player), pdata.id)
 		if (req) then
 			addEventHandler ("onHttpResult", req, onTraceResult)
@@ -54,7 +55,7 @@ local function CmdTrace (message, arg)
 	end
 end
 
-CmdRegister ("trace", CmdTrace, false, "Checks where player live")
+CmdRegister ("trace", CmdTrace, false, "Checks where the player lives")
 
 local function TrcOnPlayerQuit ()
 	local pdata = g_Players[source]
@@ -63,4 +64,4 @@ local function TrcOnPlayerQuit ()
 	end
 end
 
-addEventHandler ("onPlayerQuit", g_ResRoot, TrcOnPlayerQuit)
+addEventHandler("onPlayerQuit", g_ResRoot, TrcOnPlayerQuit)

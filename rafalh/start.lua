@@ -5,7 +5,6 @@
 g_UpdateInProgress = false
 
 local function setupDatabase()
-	--g_Db = Database:create()
 	DbInit()
 	local err = false
 	
@@ -164,7 +163,7 @@ local function setupACL()
 	end
 	
 	for i, right in ipairs(g_CustomRights) do
-		local right2 = "resource.rafalh."..right
+		local right2 = "resource."..g_ResName.."."..right
 		if(not aclGetRight(acl, right2)) then
 			aclSetRight(acl, right2, true)
 			save = true

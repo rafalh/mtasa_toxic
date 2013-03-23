@@ -11,7 +11,7 @@
 	</window>
 	
 	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-133" w="300" h="290" sizeable="false">
-		<image rx="50" x="-32" y="30" w="64" h="64" src="img/login.png" />
+		<image rx="50" x="-32" y="30" w="64" h="64" src="login/img/login.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Please login to save your statistics" align="center" />
 		
@@ -31,7 +31,7 @@
 	</window>
 	
 	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false">
-		<image rx="50" x="-32" y="25" w="64" h="64" src="img/register.png" />
+		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/register.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Register new account" align="center" />
 		
@@ -55,7 +55,7 @@
 	</window>
 	
 	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false">
-		<image rx="50" x="-32" y="25" w="64" h="64" src="img/chgPw.png" />
+		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/chgPw.png" />
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Change password for your account" align="center" />
 		
 		<label x="10" y="125" w="120" h="20" text="Old password:" />

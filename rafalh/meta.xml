@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.47" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.50" description="Rafalh Scripts System"   />
 	
 	<!--script src="debug.lua" type="client" /-->
 	
 	<script src="utils/common.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
-	<script src="utils/common_sc.lua" type="server" />
-	<script src="utils/common_sc.lua" type="client" />
+	<script src="utils/common_sc.lua" type="shared" />
 	<script src="utils/vector_c.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />
 	<script src="utils/timers.lua" type="server" />
@@ -26,123 +25,212 @@
 	<script src="accounts.lua" type="server" />
 	
 	<script src="commands/commands.lua" type="server" />
-	<script src="mui.lua" type="server" />
-	<script src="mui_c.lua" type="client" />
-	<script src="achievements.lua" type="server" />
-	<script src="anticheat.lua" type="server" />
-	<script src="antilag.lua" type="server" />
-	<script src="anticamp.lua" type="server" />
-	<script src="antispam.lua" type="server" />
-	<script src="alias.lua" type="server" />
 	<script src="avg_players.lua" type="server" />
-	<script src="besttimes.lua" type="server" />
-	<script src="carhide_c.lua" type="client" />
-	<script src="censor.lua" type="server" />
-	<script src="chat.lua" type="server" />
-	<script src="chat_c.lua" type="client" />
-	<script src="effects_c.lua" type="client" />
-	<script src="gambling.lua" type="server" />
 	<script src="ghostmode.lua" type="server" />
-	<script src="ghostmode_c.lua" type="client" />
-	<script src="glass_c.lua" type="client" />
-	<script src="http.lua" type="server" />
-	<script src="langs.lua" type="server" />
-	<script src="localeList.lua" type="server" />
-	<script src="localeList.lua" type="client" />
 	<script src="room.lua" type="server" />
-	<script src="map.lua" type="server" />
-	<script src="maps.lua" type="server" />
-	<script src="map_queue.lua" type="server" />
-	<script src="nickblocker.lua" type="server" />
-	<script src="profiles.lua" type="server" />
-	<script src="shop.lua" type="server" />
-	<script src="shop_items.lua" type="server" />
-	<script src="shop_items_c.lua" type="client" />
-	<script src="stats.lua" type="server" />
-	<script src="stunt.lua" type="server" />
 	<script src="sync.lua" type="server" />
 	<script src="spectators.lua" type="server" />
 	<script src="teams.lua" type="server" />
-	<script src="transPanel.lua" type="server" />
-	<script src="rate.lua" type="server" />
-	<script src="rec.lua" type="server" />
-	<script src="rec_c.lua" type="client" />
-	<script src="votes.lua" type="server" />
-	<script src="win_anim_c.lua"  type="client" />
 	<script src="water_fix_c.lua" type="client" />
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />
 	<script src="commands/admin2.lua" />
-	<script src="commands/alias.lua" />
-	<script src="commands/besttimes.lua" />
-	<script src="commands/bets.lua" />
 	<script src="commands/clean_db.lua" />
-	<script src="commands/gambling.lua" />
 	<script src="commands/general.lua" />
-	<script src="commands/invited.lua" />
-	<script src="commands/map_options.lua" />
-	<script src="commands/map_fixing.lua" />
 	<script src="commands/msg_cmd.lua" />
-	<script src="commands/poll.lua" />
-	<script src="commands/profiles.lua" />
-	<script src="commands/shop.lua" />
-	<script src="commands/stats.lua" />
-	<script src="commands/votenext.lua" />
-	<script src="commands/votes.lua" />
 	<script src="commands/trace.lua" />
-	<script src="commands/translate.lua" />
 	
 	<script src="gui/gui_c.lua" type="client" />
 	<script src="gui/input_c.lua" type="client" />
 	<script src="gui/anim_c.lua" type="client" />
-	<script src="gui/map_info_c.lua" type="client" />
-	<script src="gui/maps_list_c.lua" type="client" />
-	<script src="gui/rate_c.lua" type="client" />
 	<script src="gui/pm_c.lua" type="client" />
 	<script src="gui/help_c.lua" type="client" />
-	<script src="gui/stats_panel_c.lua" type="client" />
 	<script src="gui/user_panel_c.lua" type="client" />
-	<script src="gui/stats_c.lua" type="client" />
-	<script src="gui/edit_profile_c.lua" type="client" />
 	<script src="gui/playersList_c.lua" type="client" />
-	<script src="gui/playerProfile_c.lua" type="client" />
-	<script src="gui/shop_c.lua" type="client" />
-	<script src="gui/achievements_c.lua" type="client" />
-	<script src="gui/translate_c.lua" type="client" />
-	<script src="gui/radio_c.lua" type="client" />
 	<script src="gui/settings_c.lua" type="client" />
-	<script src="gui/about_c.lua" type="client" />
-	<script src="gui/vipSupport_c.lua" type="client" />
 	<script src="gui/advert_c.lua" type="client" />
 	<script src="gui/listView_c.lua" type="client" />
-	<script src="gui/login_c.lua" type="client" />
-	<script src="gui/register_c.lua" type="client" />
 	<script src="gui/tooltip_c.lua" type="client" />
-	<script src="gui/admin/transPanel_c.lua" type="client" />
 	
-	<script src="achievementsList_sc.lua" type="server" />
-	<script src="achievementsList_sc.lua" type="client" />
+	<!-- MODULES -->
+	<script src="maps/maps_s.lua" type="server" />
+	<script src="maps/map_s.lua" type="server" />
+	<script src="maps/mapQueue_s.lua" type="server" />
+	<script src="maps/adminCmd_s.lua" type="server" />
+	<script src="maps/mapOptionsCmd_s.lua" type="server" />
+	<script src="maps/mapFixingCmd_s.lua" type="server" />
+	<script src="maps/mapInfoCmd_s.lua" type="server" />
+	<script src="maps/mapInfoGui_c.lua" type="client" />
+	<script src="maps/mapsListGui_c.lua" type="client" />
+	<script src="maps/http_s.lua" type="server" />
+	<config src="conf/map_types.xml" type="server" />
+	<export function="getMaps" http="true" />
+	<export function="getMapInfo" http="true" />
+	
+	<script src="alias/alias_s.lua" type="server" />
+	<script src="alias/cmd_s.lua" type="server" />
+	
+	<script src="stats/stats_s.lua" type="server" />
+	<script src="stats/cmd_s.lua" type="server" />
+	<script src="stats/adminCmd_s.lua" type="server" />
+	<script src="stats/gui_c.lua" type="client" />
+	<script src="stats/stats_panel_c.lua" type="client" />
+	<script src="stats/http_s.lua" type="server" />
+	<file src="stats/icon.png" />
+	<config src="conf/ranks.xml" />
+	<export function="getPlayersStats" http="true" />
+	
+	<script src="achievements/main_s.lua" type="server" />
+	<script src="achievements/list_sc.lua" type="shared" />
+	<script src="achievements/gui_c.lua" type="client" />
+	<file src="achievements/img/icon.png" />
+	<file src="achievements/img/locked.png" />
+	
+	<script src="best_times/main_s.lua" type="server" />
+	<script src="best_times/cmd_s.lua" type="server" />
+	<script src="best_times/adminCmd_s.lua" type="server" />
+	<script src="best_times/rec_s.lua" type="server" />
+	<script src="best_times/rec_c.lua" type="client" />
+	<export function="getTopTime" />
+	
+	<script src="chat_icon/chat_s.lua" type="server" />
+	<script src="chat_icon/chat_c.lua" type="client" />
+	<file src="chat_icon/chat.png" />
+	
+	<script src="effects/carhide_c.lua" type="client" />
+	<script src="effects/effects_c.lua" type="client" />
+	<script src="effects/ghostAlpha_c.lua" type="client" />
+	<script src="effects/glass_c.lua" type="client" />
+	<script src="effects/winAnim_c.lua" type="client" />
+	<file src="effects/broken_glass.png" />
+	
+	<script src="gambling/main_s.lua" type="server" />
+	<script src="gambling/bets_cmd_s.lua" type="server" />
+	<script src="gambling/cmd_s.lua" type="server" />
+	
+	<script src="invitations/main_s.lua" type="server" />
+	<script src="invitations/cmd_s.lua" type="server" />
+	
+	<script src="login/login_c.lua" type="client" />
+	<script src="login/register_c.lua" type="client" />
+	<script src="login/changePw_c.lua" type="client" />
+	<file src="login/img/login.png" />
+	<file src="login/img/register.png" />
+	<file src="login/img/chgPw.png" />
+	
+	<script src="map_rating/rate_s.lua" type="server" />
+	<script src="map_rating/cmd_s.lua" type="server" />
+	<script src="map_rating/gui_c.lua" type="client" />
+	
+	<script src="mui/mui_s.lua" type="server" />
+	<script src="mui/mui_c.lua" type="client" />
+	<script src="mui/langs_s.lua" type="server" />
+	<script src="mui/localeList_sc.lua" type="shared" />
+	<config src="conf/languages.xml" type="server" />
+	<config src="conf/languages.xml" type="client" />
+	
+	<script src="profile/main_s.lua" type="server" />
+	<script src="profile/cmd_s.lua" type="server" />
+	<script src="profile/editProfile_c.lua" type="client" />
+	<script src="profile/viewProfile_c.lua" type="client" />
+	<file src="profile/icon.png" />
+	<config src="conf/profile_fields.xml" />
+	<export function="getPlayerProfile" http="true" />
+	
+	<script src="radio/gui_c.lua" type="client" />
+	<file src="radio/img/icon.png" />
+	<file src="radio/img/volume.png" />
+	<file src="radio/img/muted.png" />
+	<file src="radio/img/channels/rmffm.png" />
+	<file src="radio/img/channels/rmf_maxxx.jpg" />
+	<file src="radio/img/channels/eskarock.jpg" />
+	<file src="radio/img/channels/wawa.jpg" />
+	<file src="radio/img/channels/zloteprzeboje.jpg" />
+	<file src="radio/img/channels/radiozet.jpg" />
+	<file src="radio/img/channels/jedynka.jpg" />
+	<file src="radio/img/channels/dwojka.jpg" />
+	<file src="radio/img/channels/trojka.jpg" />
+	<file src="radio/img/channels/czworka.jpg" />
+	<file src="radio/img/channels/tokfm.jpg" />
+	<file src="radio/img/channels/chilliz.png" />
+	<file src="radio/img/channels/radioparty.png" />
+	<file src="radio/img/channels/eska.jpg" />
+	<file src="radio/img/channels/DiscoParty.png" />
+	<file src="radio/img/channels/polskastacja.jpg" />
+	<file src="radio/img/channels/przeboje80and90.png" />
+	<file src="radio/img/channels/bassdrive.png" />
+	<file src="radio/img/channels/dubstepfm.jpg" />
+	<file src="radio/img/channels/DiscoPoloClassicOpenFM.png" />
+	<file src="radio/img/channels/DupstepOpenFM.png" />
+	<file src="radio/img/channels/ClubMusic24.png" />
+	<file src="radio/img/channels/All4Music.png" />
+	<file src="radio/img/channels/equestriafm.png" />
+	<file src="radio/img/channels/HipHopPLOpenFM.png" />
+	<file src="radio/img/channels/WesolyHanys.png" />
+	<file src="radio/img/channels/RadioPiekary.jpg" />
+	<config src="conf/radio.xml" type="client" />
+	
+	<script src="security/anticamp_s.lua" type="server" />
+	<script src="security/anticheat_s.lua" type="server" />
+	<script src="security/antilag_s.lua" type="server" />
+	<script src="security/antispam_s.lua" type="server" />
+	<script src="security/censor_s.lua" type="server" />
+	<script src="security/nickBlocker_s.lua" type="server" />
+	<config src="conf/banned_names.xml" />
+	
+	<script src="shop/main_s.lua" type="server" />
+	<script src="shop/cmd_s.lua" type="server" />
+	<script src="shop/items_s.lua" type="server" />
+	<script src="shop/items_c.lua" type="client" />
+	<script src="shop/gui_c.lua" type="client" />
+	<file src="shop/img/icon.png" />
+	<file src="shop/img/coins.png" />
+	<file src="shop/img/beer.png" />
+	<file src="shop/img/repair.png" />
+	<file src="shop/img/mine.png" />
+	<file src="shop/img/oil.png" />
+	<file src="shop/img/joinmsg.png" />
+	<file src="shop/img/flip.png" />
+	<file src="shop/img/thunder.png" />
+	<file src="shop/img/ghost.png" />
+	<file src="shop/img/selfdestr.png" />
+	<file src="shop/img/godmode.png" />
+	<file src="shop/img/smoke.png" />
+	<file src="shop/img/nextmap.png" />
+	
+	<script src="trans_admin/main_s.lua" type="server" />
+	<script src="trans_admin/gui_c.lua" type="client" />
+	
+	<script src="translator/cmd_s.lua" type="server" />
+	<script src="translator/gui_c.lua" type="client" />
+	<file src="translator/icon.png" />
+	
+	<script src="vip/gui_c.lua" type="client" />
+	<file src="vip/enabled.png" />
+	<file src="vip/disabled.png" />
+	
+	<script src="votes/autovotes_s.lua" type="server" />
+	<script src="votes/betweenMaps_s.lua" type="server" />
+	<script src="votes/cmd_s.lua" type="server" />
+	<script src="votes/poll_s.lua" type="server" />
+	<script src="votes/votenext_s.lua" type="server" />
+	
+	<script src="about/gui_c.lua" type="client" />
+	<file src="about/icon.png" />
+	<config src="conf/about.xml" type="client" />
+	<!-- MODULES END -->
 	
 	<script src="stop.lua" type="server" />
 	
 	<config src="conf/censor.xml" />
 	<config src="conf/commands.xml" />
 	<config src="conf/msg_cmd.xml" />
-	<config src="conf/profile_fields.xml" />
-	<config src="conf/ranks.xml" />
 	<config src="conf/teams.xml" />
-	<config src="conf/banned_names.xml" />
 	<config src="conf/countries.xml" />
-	<config src="conf/map_types.xml" />
-	<config src="conf/languages.xml" />
 	<config src="conf/iso_langs.xml" />
-	
-	<config src="conf/about.xml" type="client" />
 	<config src="conf/adverts.xml" type="client" />
-	<config src="conf/languages.xml" type="client" />
 	<config src="conf/iso_langs.xml" type="client" />
-	<config src="conf/radio.xml" type="client" />
 	<config src="gui/gui.xml" type="client" />
 	
 	<config src="lang/pl.xml" type="server" />
@@ -158,48 +246,17 @@
 	<config src="lang/lt.xml" type="server" />
 	<config src="lang/lt_c.xml" type="client" />
 	
-	<file src="img/chat.png" />
 	<file src="img/pm.png" />
-	<file src="img/broken_glass.png" />
 	<file src="img/star.png" />
 	<file src="img/star_l.png" />
 	<file src="img/star_r.png" />
-	<file src="img/volume.png" />
-	<file src="img/muted.png" />
 	<file src="img/empty.png" />
 	<file src="img/white.png" />
 	<file src="img/no_img.png" />
-	<file src="img/login.png" />
-	<file src="img/register.png" />
-	<file src="img/chgPw.png" />
-	<file src="img/locked.png" />
 	<file src="img/beta.png" />
 	
-	<file src="img/userpanel/stats.png" />
-	<file src="img/userpanel/profile.png" />
 	<file src="img/userpanel/users.png" />
-	<file src="img/userpanel/shop.png" />
-	<file src="img/userpanel/achievements.png" />
-	<file src="img/userpanel/translator.png" />
-	<file src="img/userpanel/music.png" />
 	<file src="img/userpanel/options.png" />
-	<file src="img/userpanel/about.png" />
-	<file src="img/userpanel/vip.png" />
-	<file src="img/userpanel/vip2.png" />
-	
-	<file src="img/shop/coins.png" />
-	<file src="img/shop/beer.png" />
-	<file src="img/shop/repair.png" />
-	<file src="img/shop/mine.png" />
-	<file src="img/shop/oil.png" />
-	<file src="img/shop/joinmsg.png" />
-	<file src="img/shop/flip.png" />
-	<file src="img/shop/thunder.png" />
-	<file src="img/shop/ghost.png" />
-	<file src="img/shop/selfdestr.png" />
-	<file src="img/shop/godmode.png" />
-	<file src="img/shop/smoke.png" />
-	<file src="img/shop/nextmap.png" />
 	
 	<file src="img/flags/en.png" />
 	<file src="img/flags/pl.png" />
@@ -209,40 +266,7 @@
 	<file src="img/flags/ru.png" />
 	<file src="img/flags/lt.png" />
 	
-	<file src="img/radio/rmffm.png" />
-	<file src="img/radio/rmf_maxxx.jpg" />
-	<file src="img/radio/eskarock.jpg" />
-	<file src="img/radio/wawa.jpg" />
-	<file src="img/radio/zloteprzeboje.jpg" />
-	<file src="img/radio/radiozet.jpg" />
-	<file src="img/radio/jedynka.jpg" />
-	<file src="img/radio/dwojka.jpg" />
-	<file src="img/radio/trojka.jpg" />
-	<file src="img/radio/czworka.jpg" />
-	<file src="img/radio/tokfm.jpg" />
-	<file src="img/radio/chilliz.png" />
-	<file src="img/radio/radioparty.png" />
-	<file src="img/radio/eska.jpg" />
-	<file src="img/radio/DiscoParty.png" />
-	<file src="img/radio/polskastacja.jpg" />
-	<file src="img/radio/przeboje80and90.png" />
-	<file src="img/radio/bassdrive.png" />
-	<file src="img/radio/dubstepfm.jpg" />
-	<file src="img/radio/DiscoPoloClassicOpenFM.png" />
-	<file src="img/radio/DupstepOpenFM.png" />
-	<file src="img/radio/ClubMusic24.png" />
-	<file src="img/radio/All4Music.png" />
-	<file src="img/radio/equestriafm.png" />
-	<file src="img/radio/HipHopPLOpenFM.png" />
-	<file src="img/radio/WesolyHanys.png" />
-	<file src="img/radio/RadioPiekary.jpg" />
-	
-	<export function="getPlayersStats" http="true" />
-	<export function="getPlayerProfile" http="true" />
-	<export function="getMaps" http="true" />
-	<export function="getMapInfo" http="true" />
 	<export function="parseCommand" />
-	<export function="getTopTime" />
 	
 	<include resource="rafalh_shared" />
 	
@@ -263,8 +287,8 @@
 		<setting group="General" name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after !mute command. If it equals 0, mute stop working when player quit." friendlyname="Mute time" />
 		<setting group="General" name="*disable_fps_limit" accept="false,true" value="false" desc="If set to true script automatically disables FPS limit on maps without checkpoints." friendlyname="Disable FPS limit for not race maps" />
 		<setting group="General" name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." friendlyname="Chat messages above players" />
-		<setting group="General" name="*breakable_glass" accept="false,true" value="true" desc="If set to true, script will show glass hole when your vehicle get big demage." friendlyname="Breakable glass" />
-		<setting group="General" name="*red_damage_screen" accept="false,true" value="true" desc="If set to true, script will change screen color to red for a moment when your vehicle get big demage." friendlyname="Red damage screen" />
+		<setting group="General" name="*breakable_glass" type="client" accept="false,true" value="true" desc="If set to true, script will show glass hole when your vehicle get big demage." friendlyname="Breakable glass" />
+		<setting group="General" name="*red_damage_screen" type="client" accept="false,true" value="true" desc="If set to true, script will change screen color to red for a moment when your vehicle get big demage." friendlyname="Red damage screen" />
 		<setting group="General" name="*max_warns" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." friendlyname="Maximum warnings" />
 		<setting group="General" name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." friendlyname="Minimum nick change delay" />
 		<setting group="General" name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." friendlyname="Stunt bonus" />
