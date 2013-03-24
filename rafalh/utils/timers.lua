@@ -1,7 +1,7 @@
 local g_MapTimers = {}
 
 local function TmPlayerTimerProc ( timer_id, player, ... )
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	assert ( pdata )
 	
 	local func = pdata.timers[timer_id].f
@@ -10,11 +10,11 @@ local function TmPlayerTimerProc ( timer_id, player, ... )
 end
 
 function setPlayerTimer ( func, interval, timesToExecute, player, ... )
-	local timer_id = #g_Players[player].timers + 1
+	local timer_id = #Player.fromEl(player).timers + 1
 	assert ( func and player )
 	local timer = setTimer ( TmPlayerTimerProc, interval, timesToExecute, timer_id, player, ... )
 	if ( timer ) then
-		g_Players[player].timers[timer_id] = { t = timer, f = func }
+		Player.fromEl(player).timers[timer_id] = { t = timer, f = func }
 	end
 	return timer
 end
@@ -37,7 +37,7 @@ function setMapTimer ( func, interval, timesToExecute, room, ... )
 end
 
 local function TmPlayerQuit ()
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	assert ( pdata )
 	
 	for id, data in pairs ( pdata.timers ) do -- ipair is wrong here

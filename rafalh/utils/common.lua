@@ -7,9 +7,7 @@ g_ResRoot = getResourceRootElement()
 g_Res = getThisResource()
 g_ResName = getResourceName(g_Res)
 
-g_Players = {}
 g_PlayersCount = 0
-g_IdToPlayer = {}
 
 g_ScriptMsgState = { recipients = { g_Root }, prefix = "", color = false }
 g_InternalEventHandlers = {}
@@ -155,7 +153,7 @@ function findPlayer ( str )
 	end
 	
 	local player = getPlayerFromName ( str ) -- returns player or false
-	if ( g_Players[player] ) then
+	if ( Player.fromEl(player) ) then
 		return player
 	end
 	
@@ -189,7 +187,7 @@ function addScreenMsg ( text, player, ms, r, g, b )
 	local textitem
 	
 	for i, player in ipairs ( players ) do
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		
 		if ( not pdata.display ) then
 			pdata.display = textCreateDisplay ()
@@ -211,7 +209,7 @@ end
 
 function removeScreenMsg ( msgItem, player )
 	local index = false
-	for i, textItem in ipairs ( g_Players[player].scrMsgs ) do
+	for i, textItem in ipairs ( Player.fromEl(player).scrMsgs ) do
 		if ( index ) then -- msgs under textItem
 			local x, y = textItemGetPosition ( textItem )
 			textItemSetPosition ( textItem, x, y - 0.05 )
@@ -220,7 +218,7 @@ function removeScreenMsg ( msgItem, player )
 		end
 	end
 	assert ( index )
-	table.remove ( g_Players[player].scrMsgs, index )
+	table.remove ( Player.fromEl(player).scrMsgs, index )
 	textDestroyTextItem ( msgItem )
 end
 
@@ -271,7 +269,7 @@ function triggerClientInternalEvent ( player, eventtype, source, ... )
 	
 	local players = getElementsByType("player", player)
 	for i, player in ipairs(players) do
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		if(pdata and pdata.sync) then
 			triggerClientEvent(player, "onEvent_"..g_ResName, source, eventtype, ...)
 		end

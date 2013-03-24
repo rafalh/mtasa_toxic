@@ -149,7 +149,7 @@ end
 
 local _isPedDead = isPedDead
 function isPedDead ( player )
-	if ( g_Players and g_Players[player] and g_Players[player].is_console ) then
+	if ( Player and Player.fromEl(player) and Player.fromEl(player).is_console ) then
 		return false -- console
 	end
 	local state = getElementData ( player, "state" )

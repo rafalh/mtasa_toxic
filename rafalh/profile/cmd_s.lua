@@ -14,7 +14,7 @@ local function CmdProfileGet (message, arg)
 	if (not player) then
 		player = source
 	end
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	local rows = pdata.id and DbQuery("SELECT value FROM rafalh_profiles WHERE player=? AND field=? LIMIT 1", pdata.id, field)
 	if (rows and rows[1]) then
@@ -26,7 +26,7 @@ end
 
 local function CmdProfileSet(message, arg)
 	local field = arg[1]:sub(5)
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	if(pdata.id) then
 		local data = setPlayerProfile (pdata.id, { [field] = message:sub (6 + field:len ()) })
 		if (data[field]) then

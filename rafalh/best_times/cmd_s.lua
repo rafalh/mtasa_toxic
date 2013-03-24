@@ -1,6 +1,6 @@
 local function CmdBestTime (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local map_id = getCurrentMap(pdata.room):getId()
 	local rows = pdata.id and DbQuery("SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
 	
@@ -14,7 +14,7 @@ end
 CmdRegister ("besttime", CmdBestTime, false, "Shows player best time on current map")
 
 function BtPrintTopTimes ()
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map_id = getCurrentMap(room):getId()
 	local rows = DbQuery("SELECT bt.player, bt.time, p.name FROM rafalh_besttimes bt, rafalh_players p WHERE map=? AND bt.player=p.player ORDER BY time LIMIT 3", map_id)
 	

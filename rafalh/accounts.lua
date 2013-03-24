@@ -6,7 +6,7 @@ addEvent("main.onLogoutReq", true)
 local g_RegTimeStamp = 0
 
 local function onPlayerLogin(prevAccount, account, autoLogin)
-	local self = g_Players[source]
+	local self = Player.fromEl(source)
 	if(not self) then return end
 	
 	if(isGuestAccount(account)) then
@@ -23,7 +23,7 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 end
 
 local function onPlayerLogout()
-	local self = g_Players[source]
+	local self = Player.fromEl(source)
 	if(not self) then return end
 	
 	if(self.guest) then
@@ -35,7 +35,7 @@ local function onPlayerLogout()
 end
 
 local function onLoginReq(name, passwd)
-	local self = g_Players[client]
+	local self = Player.fromEl(client)
 	if(name) then
 		local account = getAccount(name, passwd)
 		local success = false
@@ -57,7 +57,7 @@ end
 local function onRegisterReq(name, passwd, email)
 	if(not name or name:len() < 3 or not passwd or passwd:len() < 3 or not email) then return end
 	
-	local self = g_Players[client]
+	local self = Player.fromEl(client)
 	local account = false
 	local ticks = getTickCount()
 	if(ticks - g_RegTimeStamp >= 1000) then

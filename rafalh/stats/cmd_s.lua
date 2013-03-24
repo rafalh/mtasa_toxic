@@ -86,7 +86,7 @@ CmdRegister ("gtop", CmdGlobalTop, false, "Shows global top of given type")
 
 local function CmdCash (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local stats = pdata.accountData:getTbl()
 	scriptMsg ("%s's cash: %s - Bidlevel: %u.", getPlayerName (player), formatMoney (stats.cash), stats.bidlvl)
 end
@@ -96,7 +96,7 @@ CmdRegisterAlias ("money", "cash")
 
 local function CmdPoints (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local pts = pdata.accountData.points
 	scriptMsg ("%s's points: %s.", getPlayerName(player), formatNumber(pts))
 end
@@ -105,7 +105,7 @@ CmdRegister ("points", CmdPoints, false, "Shows player points count")
 
 local function CmdRank (message, arg)
 	local player = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local pts = pdata.accountData.points
 	scriptMsg ("%s's rank: %s.", getPlayerName(player), StRankFromPoints(pts))
 end
@@ -114,7 +114,7 @@ CmdRegister ("rank", CmdRank, false, "Shows player rank title")
 
 local function CmdBidLevel (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local player = g_Players[playerEl]
+	local player = Player.fromEl(playerEl)
 	
 	scriptMsg("%s's bidlevel: %u.", getPlayerName(player.el), player.accountData.bidlvl)
 end
@@ -124,8 +124,8 @@ CmdRegister ("bidlevel", CmdBidLevel, false, "Shows player bidlevel")
 local function CmdGiveMoney (message, arg)
 	local amount = touint (arg[3])
 	local dstEl = arg[2] and findPlayer (arg[2])
-	local srcPlayer = g_Players[source]
-	local dstPlayer = dstEl and g_Players[dstEl]
+	local srcPlayer = Player.fromEl(source)
+	local dstPlayer = dstEl and Player.fromEl(dstEl)
 	
 	if (amount and dstPlayer) then
 		if (srcPlayer.accountData.cash >= amount) then
@@ -144,7 +144,7 @@ CmdRegisterAlias ("transfer", "givemoney")
 
 local function CmdSeen (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local tm = getRealTime (g_Players[player].join_time)
+	local tm = getRealTime (Player.fromEl(player).join_time)
 	
 	scriptMsg ("%s seen since %d:%02u:%02u.", getPlayerName (player), tm.hour, tm.minute, tm.second)
 end
@@ -153,7 +153,7 @@ CmdRegister ("seen", CmdSeen, false, "Shows when player joined the game")
 
 local function CmdPlayTime (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local player = g_Players[playerEl]
+	local player = Player.fromEl(playerEl)
 	local playtime = player:getPlayTime()
 	scriptMsg("%s's time here: %s.", getPlayerName(player.el), formatTimePeriod(playtime, 0))
 end
@@ -163,7 +163,7 @@ CmdRegisterAlias("timehere", "playtime")
 
 local function CmdStats(msg, arg)
 	local player = (#arg >= 2 and findPlayer(msg:sub (arg[1]:len() + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local stats = pdata.accountData:getTbl()
 	
 	local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
@@ -185,7 +185,7 @@ CmdRegisterAlias ("st", "stats")
 
 local function CmdStatsOld(message, arg)
 	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local player = g_Players[playerEl]
+	local player = Player.fromEl(playerEl)
 	local oldStats = player.accountData:getTbl()
 	if(oldStats) then
 		local dm_ratio = 0

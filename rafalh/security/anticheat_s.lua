@@ -39,7 +39,7 @@ local function AcCheckPlayer ( player )
 	
 	-- fps anticheat
 	if ( SmGetBool ( "fps_anticheat" ) ) then
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		local fps = tonumber ( getElementData ( player, "fps" ) )
 		local fps_limit = getFPSLimit ()
 		if ( fps and fps_limit > 0 and fps > fps_limit + 5 ) then

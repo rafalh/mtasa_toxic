@@ -1,10 +1,10 @@
 local function CmdBet(message, arg)
-	local sourcePlayer = g_Players[source]
+	local sourcePlayer = Player.fromEl(source)
 	local cash, targetPlayer
 	if (#arg >= 3) then
 		cash = touint(arg[3])
 		local el = findPlayer(arg[2])
-		targetPlayer = el and g_Players[el]
+		targetPlayer = el and Player.fromEl(el)
 	else
 		cash = touint(arg[2])
 		targetPlayer = sourcePlayer

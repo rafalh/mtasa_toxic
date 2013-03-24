@@ -12,7 +12,7 @@ local function onResourceStop ()
 end
 
 local function onPlayerQuit ()
-	local player = g_Players[source]
+	local player = Player.fromEl(source)
 	player:destroy()
 end
 

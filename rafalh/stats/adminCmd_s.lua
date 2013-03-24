@@ -1,6 +1,6 @@
 local function CmdSetAddCash (message, arg)
 	local playerEl = (#arg >= 3 and findPlayer (arg[2])) or source
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	local cash = toint ((#arg >= 3 and arg[3]) or arg[2])
 	
 	if (cash) then
@@ -18,7 +18,7 @@ CmdRegisterAlias ("addcash", "setcash")
 
 local function CmdSetPoints (message, arg)
 	local playerEl = (#arg >= 3 and findPlayer (arg[2])) or source
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	local pts = toint ((#arg >= 3 and arg[3]) or arg[2])
 	
 	if (pts) then
@@ -31,7 +31,7 @@ CmdRegister("setpoints", CmdSetPoints, "resource.rafalh.setpoints", "Sets player
 
 local function CmdSetBidLevel (message, arg)
 	local playerEl = (#arg >= 3 and findPlayer (arg[2])) or source
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	local bidlvl = touint ((#arg >= 3 and arg[3]) or arg[2])
 	
 	if (bidlvl) then
@@ -44,7 +44,7 @@ CmdRegister("setbidlevel", CmdSetBidLevel, "resource.rafalh.setbidlevel", "Sets 
 
 local function CmdResetStats(message, arg)
 	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))
-	local pdata = player and g_Players[player]
+	local pdata = player and Player.fromEl(player)
 	if(pdata and pdata.id) then
 		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", pdata.id)
 		local stats = {

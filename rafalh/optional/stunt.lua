@@ -26,7 +26,7 @@ addEventHandler("onPlayerStuntComplete", g_Root, function(stuntType, vehicle, ti
 			outputDebugString ( "Unknown stunt type: "..tostring ( stuntType ), 2 )
 		end
 		if(addcash) then
-			local pdata = g_Players[source]
+			local pdata = Player.fromEl(source)
 			pdata.accountData:add("cash", addcash)
 			privMsg(source, "You get %s for your stunt!", formatMoney(addcash))
 		end

@@ -1,5 +1,5 @@
 local function CmdRespawn(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	if(#arg >= 2) then
 		map = findMap(message:sub(arg[1]:len() + 2))
@@ -26,7 +26,7 @@ local function CmdMapInfo(message, arg)
 	if(#arg >= 2) then
 		map = findMap(message:sub(arg[1]:len() + 2))
 	else
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		map = getCurrentMap(room)
 	end
 	
@@ -46,7 +46,7 @@ end
 CmdRegister("mapinfo", CmdMapInfo, false, "Displays information about current map")
 
 local function CmdRace(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	
 	if(map) then
@@ -117,7 +117,7 @@ end
 CmdRegister("mapstats", CmdMapStats, false, "Shows statistics for each map type")
 
 local function CmdPlayed(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	
 	if(map) then
@@ -171,7 +171,7 @@ CmdRegisterAlias("check", "checkmap")
 
 local function CmdNextMapQueue(message, arg)
 	local queue = ""
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	if(room.mapQueue and #room.mapQueue > 0) then
 		for i, map in ipairs(room.mapQueue) do
 			local mapName = map:getName()
@@ -189,7 +189,7 @@ CmdRegisterAlias("nextmapqueue", "mapqueue")
 CmdRegisterAlias("queue", "mapqueue")
 
 local function CmdMapId(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	scriptMsg("Map ID: %u", map:getId())
 end

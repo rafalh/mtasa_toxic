@@ -1,7 +1,7 @@
 function NlCheckPlayer(player, name, change)
 	name = name:lower():gsub("#%x%x%x%x%x%x", "") -- FIXME
 	
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	if(pdata.accountData:get("locked_nick") == 1 and name ~= pdata.accountData:get("name")) then
 		privMsg(player, "Your name is locked!")

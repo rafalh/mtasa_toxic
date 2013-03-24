@@ -12,11 +12,11 @@ local JoinMsgItem = {
 }
 
 function JoinMsgItem.onBuy(player, val)
-	return not val and g_Players[player].accountData:set("joinmsg", "")
+	return not val and Player.fromEl(player).accountData:set("joinmsg", "")
 end
 
 function JoinMsgItem.onSell ( player, val )
-	return val and g_Players[player].accountData:set("joinmsg", nil)
+	return val and Player.fromEl(player).accountData:set("joinmsg", nil)
 end
 
 ShpRegisterItem(JoinMsgItem)
@@ -33,7 +33,7 @@ local HealthItem = {
 	cost = 100000,
 	field = "health100",
 	onBuy = function ( player, val )
-		return g_Players[player].accountData:add("health100", 1)
+		return Player.fromEl(player).accountData:add("health100", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -42,11 +42,11 @@ local HealthItem = {
 		end
 		
 		fixVehicle ( veh )
-		g_Players[player].accountData:add("health100", -1)
+		Player.fromEl(player).accountData:add("health100", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("health100", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("health100", -1)
 	end
 }
 
@@ -57,7 +57,7 @@ local FlipItem = {
 	cost = 50000,
 	field = "flips",
 	onBuy = function ( player, val )
-		return g_Players[player].accountData:add("flips", 1)
+		return Player.fromEl(player).accountData:add("flips", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -66,13 +66,13 @@ local FlipItem = {
 		local rx, ry, rz = getElementRotation ( veh )
 		if ( val > 0 and not isPedDead ( player ) and ( ( rx > 90 and rx < 270 ) or ( ry > 90 and ry < 270 ) ) ) then
 			setElementRotation ( veh, 0, 0, rz + 180 )
-			g_Players[player].accountData:add("flips", -1)
+			Player.fromEl(player).accountData:add("flips", -1)
 			return true
 		end
 		return false
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("flips", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("flips", -1)
 	end
 }
 
@@ -84,7 +84,7 @@ local SelfDestrItem = {
 	field = "selfdestr",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("selfdestr", 1)
+		return Player.fromEl(player).accountData:add("selfdestr", 1)
 	end,
 	onUse = function ( player, val )
 		local res = getResourceFromName ( "race" )
@@ -96,13 +96,13 @@ local SelfDestrItem = {
 					createExplosion ( x, y, z, 7 )
 				end
 			end, 3000, 1, player )
-			g_Players[player].accountData:add("selfdestr", -1)
+			Player.fromEl(player).accountData:add("selfdestr", -1)
 			return true
 		end
 		return false
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("selfdestr", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("selfdestr", -1)
 	end
 }
 
@@ -114,7 +114,7 @@ local MineItem = {
 	field = "mines",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("mines", 1)
+		return Player.fromEl(player).accountData:add("mines", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 or isPedDead ( player ) ) then
@@ -131,11 +131,11 @@ local MineItem = {
 			local room = g_RootRoom
 			table.insert ( room.tempElements, createObject ( 1225, x, y, z ) )
 		end, math.max ( 60/v, 50 ), 1, x, y, z, createMarker ( x, y, z, "cylinder", 1, 255, 0, 0, 128 ) )
-		g_Players[player].accountData:add("mines", -1)
+		Player.fromEl(player).accountData:add("mines", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("mines", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("mines", -1)
 	end
 }
 
@@ -158,7 +158,7 @@ local OilItem = {
 	field = "oil",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("oil", 1)
+		return Player.fromEl(player).accountData:add("oil", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 or isPedDead ( player ) ) then
@@ -177,11 +177,11 @@ local OilItem = {
 				addEventHandler("onMarkerHit", marker, ShpOnOilHit, false)
 			end
 		end, math.max ( 60/v, 50 ), 1, marker)
-		g_Players[player].accountData:add("oil", -1)
+		Player.fromEl(player).accountData:add("oil", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("oil", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("oil", -1)
 	end
 }
 
@@ -192,7 +192,7 @@ local BeerItem = {
 	cost = 2,
 	field = "beers",
 	onBuy = function ( player, val )
-		return g_Players[player].accountData:add("beers", 1)
+		return Player.fromEl(player).accountData:add("beers", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 ) then
@@ -200,11 +200,11 @@ local BeerItem = {
 		end
 		
 		triggerClientInternalEvent ( player, $(EV_CLIENT_DRUNK_EFFECT), player )
-		g_Players[player].accountData:add("beers", -1)
+		Player.fromEl(player).accountData:add("beers", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("beers", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("beers", -1)
 	end
 }
 
@@ -216,10 +216,10 @@ local InvisibilityItem = {
 	field = "invisibility",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("invisibility", 1)
+		return Player.fromEl(player).accountData:add("invisibility", 1)
 	end,
 	onUse = function ( player, val )
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		if ( pdata.invisible or val <= 0 or isPedDead ( player ) ) then
 			return false
 		end
@@ -234,12 +234,12 @@ local InvisibilityItem = {
 			local a = ( player2 == player ) and 102 or 0
 			triggerClientEvent ( player2, "onSetPlayerAlphaReq", player, a )
 		end
-		g_Players[player].accountData:add("invisibility", -1)
+		Player.fromEl(player).accountData:add("invisibility", -1)
 		pdata.invisible = true
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("invisibility", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("invisibility", -1)
 	end
 }
 
@@ -257,7 +257,7 @@ local GodmodeItem = {
 	field = "godmodes30",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("godmodes30", 1)
+		return Player.fromEl(player).accountData:add("godmodes30", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -272,11 +272,11 @@ local GodmodeItem = {
 				removeEventHandler ( "onVehicleDamage", veh, ShpGodmodeVehicleDamage )
 			end
 		end, 60000, 1, veh )
-		g_Players[player].accountData:add("godmodes30", -1)
+		Player.fromEl(player).accountData:add("godmodes30", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("godmodes30", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("godmodes30", -1)
 	end
 }
 
@@ -288,7 +288,7 @@ local ThunderItem = {
 	field = "thunders",
 	onBuy = function ( player, val )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("thunders", 1)
+		return Player.fromEl(player).accountData:add("thunders", 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 ) then
@@ -323,11 +323,11 @@ local ThunderItem = {
 		
 		addEvent ( "onThunderEffect", true )
 		triggerClientEvent ( g_Root, "onThunderEffect", player, bestplayer )
-		g_Players[player].accountData:add("thunders", -1)
+		Player.fromEl(player).accountData:add("thunders", -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and g_Players[player].accountData:add("thunders", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("thunders", -1)
 	end
 }
 
@@ -339,7 +339,7 @@ local SmokeItem = {
 	field = "smoke",
 	onBuy = function ( player )
 		AchvActivate(player, "Buy a weapon")
-		return g_Players[player].accountData:add("smoke", 1)
+		return Player.fromEl(player).accountData:add("smoke", 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -352,11 +352,11 @@ local SmokeItem = {
 		attachElements ( obj, veh, 0, -2, 0 )
 		setTimer ( destroyElement, 15000, 1, obj )
 		
-		g_Players[player].accountData:add("smoke", -1)
+		Player.fromEl(player).accountData:add("smoke", -1)
 		return true
 	end,
 	onSell = function(player, val)
-		return val > 0 and g_Players[player].accountData:add("smoke", -1)
+		return val > 0 and Player.fromEl(player).accountData:add("smoke", -1)
 	end
 }
 
@@ -393,7 +393,7 @@ ShpRegisterItem(VipItem)
 --------------------------------
 
 local function ShpSetJoinMsgRequest(str)
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	local joinMsg = pdata.accountData:get("joinmsg")
 	if(joinMsg) then
 		pdata.accountData:set("joinmsg", str:sub(1, 128))
@@ -407,7 +407,7 @@ local function ShpMapStop ()
 end
 
 local function ShpBuyNextMap(mapResName)
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	local now = getRealTime().timestamp
 	
 	local price = ShpGetItemPrice("nextmap", client)

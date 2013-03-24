@@ -29,7 +29,7 @@ end
 
 local function CmdTrace (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	if(not pdata.id) then
 		privMsg(source, "Guests cannot use this command")
@@ -58,7 +58,7 @@ end
 CmdRegister ("trace", CmdTrace, false, "Checks where the player lives")
 
 local function TrcOnPlayerQuit ()
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	if(pdata.id) then
 		g_TracedPlayers[pdata.id] = nil
 	end

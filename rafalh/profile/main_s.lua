@@ -138,7 +138,7 @@ local function PfOnGetProfileReq(id)
 end
 
 local function PfOnSetProfileRequest(data)
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	if(data and type(data) == "table" and pdata.id) then
 		setPlayerProfile(pdata.id, data)
 	end

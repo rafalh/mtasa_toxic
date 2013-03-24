@@ -20,7 +20,7 @@ end
 
 local function GbRollTimer(player)
 	local n = math.random(1, 6)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	if(n == 1) then
 		local cashsub = math.min(math.random(1000, 9000), pdata.accountData.cash)
@@ -50,7 +50,7 @@ end
 local function GbSpinTimer(player, n, cash)
 	local n2 = math.random(1, 65)
 	if(n == n2) then
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		pdata.accountData:add("cash", cash * 101)
 		privMsg(player, "You spinned %u and won %s.", n2, formatMoney(cash*100))
 	else
@@ -104,8 +104,9 @@ end
 function GbCancelLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
 		PlayerAccountData.create(id):add("cash", tickets)
-		if(g_IdToPlayer[id]) then
-			privMsg(g_IdToPlayer[id], "Lottery is canceled! You get your money (%s) back.", formatMoney(tickets))
+		local player = Player.fromId(id)
+		if(player) then
+			privMsg(player.el, "Lottery is canceled! You get your money (%s) back.", formatMoney(tickets))
 		end
 	end
 end
@@ -115,7 +116,7 @@ function GbGetLotteryFund()
 end
 
 function GbAddLotteryTickets(player, tickets_count)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(not pdata.id) then
 		privMsg(player, "Guests cannot take part in lottery!")
 		return false
@@ -211,7 +212,7 @@ local function GbInit()
 end
 
 function GbRoll(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(not pdata.last_roll or (getTickCount() - pdata.last_roll) > 30000) then
 		pdata.last_roll = getTickCount()
 		setPlayerTimer(GbRollTimer, 5000, 1, player)
@@ -222,7 +223,7 @@ function GbRoll(player)
 end
 
 function GbSpin(player, number, cash)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(pdata.last_spin and (getTickCount() - pdata.last_spin) < 30000) then
 		privMsg(player, "You cannot spin so often!")
 		return false
@@ -242,7 +243,7 @@ function GbSpin(player, number, cash)
 end
 
 function GbBet(player, player2, cash)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	pdata.accountData:add("cash", -cash)
 	pdata.bet = player2
 	pdata.betcash = cash
@@ -250,7 +251,7 @@ function GbBet(player, player2, cash)
 end
 
 function GbUnbet(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(not pdata.bet) then
 		return false
 	end

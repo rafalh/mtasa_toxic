@@ -96,7 +96,7 @@ function GmIsEnabled(room)
 end
 
 CmdRegister("checkgm", function()
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	local gm = GmIsEnabled(pdata.room)
 	scriptMsg("Ghostmode is "..(gm and "enabled" or "disabled"))
 end, true)

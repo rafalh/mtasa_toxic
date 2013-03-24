@@ -477,7 +477,7 @@ local function CmdFixMapScripts (message, arg)
 		privMsg(source, "Started fixing all maps...")
 		g_FixMapScriptsWorker:start()
 	else
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		if (map and FixMapScripts(map)) then
 			privMsg (source, "Fixed map scripts.")
@@ -594,7 +594,7 @@ local function CmdCheckSp(message, arg)
 		privMsg(source, "Started counting spawnpoints...")
 		g_CheckSpWorker:start()
 	else
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		if(map and not CheckMapSpawnpointsCount(map, source, opts)) then
 			privMsg(source, "Nothing to do...")

@@ -5,7 +5,7 @@ addEvent("onPlayerRate", true)
 addEvent("onClientSetRateGuiVisibleReq", true)
 
 function RtPlayerRate(rate)
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	local room = pdata.room
 	local map = getCurrentMap(room)
 	
@@ -41,7 +41,7 @@ function RtPlayerRate(rate)
 end
 
 local function RtShowGuiForPlayer(player, map_id)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(not pdata.id) then return end
 	
 	local rows = DbQuery("SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)

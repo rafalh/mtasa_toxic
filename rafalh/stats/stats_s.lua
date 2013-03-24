@@ -11,20 +11,20 @@ local g_Stats = {
 local function StAccountDataChange(accountData, name, newValue)
 	if(not table.find(g_Stats, name)) then return end -- not a stat
 	
-	local player = g_IdToPlayer[accountData.id]
+	local player = Player.fromId(accountData.id)
 	
 	if(player and name == "points") then
-		setPlayerAnnounceValue(player, "score", tostring(newValue))
+		setPlayerAnnounceValue(player.el, "score", tostring(newValue))
 		
 		local oldRank = StRankFromPoints(accountData:get("points"))
 		local newRank = StRankFromPoints(newValue)
 		if(newRank ~= oldRank) then
-			customMsg(255, 255, 255, "%s has new rank: %s!", getPlayerName(player), newRank)
+			customMsg(255, 255, 255, "%s has new rank: %s!", player:getName(), newRank)
 		end
 	end
 	
 	if(player) then
-		AchvCheckPlayer(player)
+		AchvCheckPlayer(player.el)
 	end
 	
 	notifySyncerChange("stats", accountData.id)
@@ -46,12 +46,11 @@ end
 
 local function StPlayerStatsSyncCallback(idOrPlayer)
 	local id = touint(idOrPlayer)
-	local player = g_IdToPlayer[id] or idOrPlayer
-	local pdata = g_Players[player]
+	local player = Player.fromId(id) or Player.fromEl(idOrPlayer)
 	
 	local accountData
-	if(pdata) then
-		accountData = pdata.accountData
+	if(player) then
+		accountData = player.accountData
 	elseif(id) then
 		accountData = PlayerAccountData.create(id)
 	else
@@ -62,9 +61,9 @@ local function StPlayerStatsSyncCallback(idOrPlayer)
 	if(not data) then return false end
 	
 	data._rank = StRankFromPoints(data.points)
-	if(pdata) then
+	if(player) then
 		-- send timestamp as string, because MTA converts all number to float (low precision)
-		data._loginTimestamp = tostring(pdata.loginTimestamp)
+		data._loginTimestamp = tostring(player.loginTimestamp)
 	end
 	data.name = data.name:gsub("#%x%x%x%x%x%x", "")
 	return data
@@ -100,13 +99,13 @@ local function StOnPlayerConnect(playerNick, playerIP, playerUsername, playerSer
 end
 
 local function StOnPlayerJoin()
-	local player = g_Players[source]
+	local player = Player.fromEl(source)
 	local pts = player.accountData:get("points")
 	setPlayerAnnounceValue(source, "score", tostring(pts))
 end
 
 local function StOnPlayerWasted(totalAmmo, killer, weapon)
-	local player = g_Players[source]
+	local player = Player.fromEl(source)
 	if(wasEventCancelled() or not player) then return end
 	
 	if(weapon == 53) then -- drowned
@@ -116,7 +115,7 @@ end
 
 local function StOnVehicleExplode()
 	local playerEl = getVehicleOccupant(source)
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	if(wasEventCancelled() or not player) then return end
 	
 	-- Note: Blow in Admin Panel generates two onVehicleExplode but only one has health > 0

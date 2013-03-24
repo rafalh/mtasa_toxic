@@ -1,7 +1,7 @@
 local g_LastRedo = 0
 
 local function CmdRemMap (message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	if (not map) then return end
 	
@@ -45,7 +45,7 @@ CmdRegister("restoremap", CmdRestoreMap, "resource.rafalh.restoremap", "Restores
 
 local function CmdMap (message, arg)
 	local mapName = message:sub (arg[1]:len () + 2)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	
 	if (mapName:len () > 1) then
 		local map
@@ -92,7 +92,7 @@ end
 local function CmdNextMap (message, arg)
 	local mapName = message:sub (arg[1]:len () + 2)
 	if (mapName:len () > 1) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		assert(type(room) == "table")
 		
 		local map
@@ -123,14 +123,14 @@ local function onSetNextMap (mapName)
 	if (hasObjectPermissionTo(client, "resource.rafalh.nextmap", false)) then
 		local map = findMap(mapName, false)
 		if(map) then
-			local pdata = g_Players[client]
+			local pdata = Player.fromEl(client)
 			AddMapToQueue(pdata.room, map)
 		end
 	end
 end
 
 local function CmdCancelNextMap (message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = MqRemove(room)
 	if(map) then
 		local mapName = map:getName()
@@ -144,7 +144,7 @@ CmdRegister("cancelnext", CmdCancelNextMap, "resource.rafalh.nextmap", "Removes 
 
 local function CmdRedo (message, arg)
 	local now = getRealTime ().timestamp
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	if (map and now - g_LastRedo > 10) then
 		GbCancelBets ()

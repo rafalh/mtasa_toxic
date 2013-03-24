@@ -4,7 +4,7 @@
 
 local function CmdBuy (message, arg)
 	if (#arg >= 2) then
-		local pdata = g_Players[source]
+		local pdata = Player.fromEl(source)
 		local item = arg[2]:lower()
 		
 		if(g_ShopItems[item]) then
@@ -48,7 +48,7 @@ local function CmdCost (message, arg)
 		elseif(item == "lottery" or item == "lotto" or item == "lotteryticket") then
 			privMsg(source, "1 lottery ticket costs %s.", formatMoney(1))
 		elseif(item == "bidlevel") then
-			local pdata = g_Players[source]
+			local pdata = Player.fromEl(source)
 			local bidlvl = pdata.accountData.bidlvl
 			local price = bidlvl * SmGetUInt("bidlvl_price", 1000)
 			privMsg(source, "Bidlevel costs %s.", formatMoney(price))
@@ -86,7 +86,7 @@ end
 CmdRegister ("use", CmdUse, false, "Uses shop item")
 
 local function CmdSetJoinMsg(message, arg)
-	local sourcePlayer = g_Players[source]
+	local sourcePlayer = Player.fromEl(source)
 	if (sourcePlayer.accountData:get("joinmsg")) then
 		local newMsg = message:sub(arg[1]:len () + 2)
 		sourcePlayer.accountData:set("joinmsg", newMsg)

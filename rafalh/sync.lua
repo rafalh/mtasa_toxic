@@ -62,7 +62,7 @@ function notifySyncerChange ( name, arg, val )
 end
 
 function startSync ( player, tbl, force )
-	assert ( g_Players[player] and tbl )
+	assert ( Player.fromEl(player) and tbl )
 	local sync_tbl = {}
 	
 	for name, arg in pairs ( tbl ) do
@@ -107,7 +107,7 @@ function stopSync ( player, tbl )
 end
 
 function pauseSync ( player, tbl )
-	assert ( g_Players[player] and tbl )
+	assert ( Player.fromEl(player) and tbl )
 	
 	for name, arg in pairs ( tbl ) do
 		--outputDebugString ( "pauseSync - "..name )
@@ -120,7 +120,7 @@ function pauseSync ( player, tbl )
 end
 
 function syncOnce ( player, tbl, force )
-	assert ( g_Players[player] and tbl )
+	assert ( Player.fromEl(player) and tbl )
 	local sync_tbl = {}
 	
 	for name, arg in pairs ( tbl ) do

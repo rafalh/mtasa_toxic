@@ -10,14 +10,14 @@ end
 
 -- called from mergeaccounts command handler
 function AchvInvalidateCache(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local achvList, achvSet = AchvGetActive(player)
 	pdata.accountData:set("achvCount", #achvList)
 	pdata.achvSet = achvSet
 end
 
 function AchvGetActive(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	local achvStr = pdata.accountData:get("achievements")
 	local activeList = {string.byte(achvStr, 1, achvStr:len())}
@@ -39,7 +39,7 @@ function AchvGetActive(player)
 end
 
 function AchvCheckPlayer(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	assert(pdata.achvSet)
 	
 	local activeList, activeSet = AchvGetActive(player)
@@ -68,7 +68,7 @@ function AchvRegister(achv)
 end
 
 function AchvActivate(player, names)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	assert(pdata and names)
 	if(type(names) ~= "table") then
 		names = {names}
@@ -113,7 +113,7 @@ end
 local function AchvInitAccount(player)
 	AchvInvalidateCache(player)
 	
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(pdata.achvReq) then
 		local achvList = AchvGetActive(player)
 		triggerClientEvent(player, "main.onAchvList", g_ResRoot, achvList)
@@ -141,7 +141,7 @@ end
 local function AchvListReq()
 	local achvList = AchvGetActive(client)
 	triggerClientEvent(client, "main.onAchvList", g_ResRoot, achvList)
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	pdata.achvReq = true
 end
 

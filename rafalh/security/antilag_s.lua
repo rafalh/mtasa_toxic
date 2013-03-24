@@ -20,7 +20,7 @@ local function AlCalcMinFps()
 end
 
 local function AlCheckPlayer(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local bGhostmode = GmIsEnabled(pdata.room)
 	
 	-- max ping

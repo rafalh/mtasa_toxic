@@ -266,7 +266,7 @@ local function onMapStop(room)
 end
 
 local function handlePlayerTime(player, ms)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(not pdata.id) then return 0 end
 	
 	local map = getCurrentMap(pdata.room)
@@ -300,7 +300,7 @@ local function handlePlayerTime(player, ms)
 end
 
 local function handlePlayerWin(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local room = pdata.room
 	scriptMsg("%s is the winner!", getPlayerName(player))
 	
@@ -341,7 +341,7 @@ end
 local function setPlayerFinalRank(player, rank)
 	local cashadd = math.floor (1000 * g_PlayersCount / rank)
 	local pointsadd = math.floor (g_PlayersCount / rank)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	local stats = {}
 	stats.cash = pdata.accountData.cash + cashadd
@@ -356,7 +356,7 @@ local function setPlayerFinalRank(player, rank)
 end
 
 local function onPlayerFinish(rank, ms)
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	local map = getCurrentMap(pdata.room)
 	local map_id = map:getId()
 	
@@ -376,7 +376,7 @@ local function onPlayerFinish(rank, ms)
 end
 
 local function onPlayerWinDD()
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	pdata.accountData:add("dm_wins", 1)
 	
 	--local game_weight = 0.007 * g_PlayersCount / 32
@@ -395,7 +395,7 @@ local function onPlayerWinDD()
 end
 
 local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	local room = pdata.room
 	local map = getCurrentMap(room)
 	local mapType = map and map:getType()
@@ -461,7 +461,7 @@ local function onChangeMapReq(mapResName)
 	
 	if (map) then
 		GbCancelBets ()
-		local room = g_Players[client].room
+		local room = Player.fromEl(client).room
 		map:start(room)
 	else
 		outputDebugString("getResourceFromName failed", 2)

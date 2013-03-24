@@ -14,7 +14,7 @@ end
 local function LngOnSetLocaleRequest(localeId)
 	if(not localeId or not LocaleList.exists(localeId)) then return end
 	
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	pdata:setLocale(localeId)
 end
 

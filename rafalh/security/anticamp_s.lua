@@ -1,5 +1,5 @@
 local function AcmpClear(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	if(pdata.camp) then
 		if(pdata.camp[2]) then
 			removeScreenMsg(pdata.camp[2], player)
@@ -10,7 +10,7 @@ end
 
 local function AcmpCheckPlayer(player)
 	local kill_afk = SmGetUInt("kill_afk", 0)
-	local room = g_Players[player].room
+	local room = Player.fromEl(player).room
 	local currentMap = getCurrentMap(room)
 	if(kill_afk == 0 or currentMap and currentMap:getRespawn()) then
 		AcmpClear(player)
@@ -28,7 +28,7 @@ local function AcmpCheckPlayer(player)
 		return false
 	end
 	
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local camp = pdata.camp
 	local old_pos = pdata.camp_pos
 	local pos = {getElementPosition(player)}

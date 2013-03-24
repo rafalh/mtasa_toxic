@@ -1,5 +1,5 @@
 local function CmdRemTopTime(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local n = touint(arg[2], 0)
 	if (n >= 1 and n <= 8) then
 		local map = getCurrentMap(room)

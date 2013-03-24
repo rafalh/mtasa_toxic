@@ -91,7 +91,7 @@ CmdRegister("mute", CmdMute, "command.mute", "Mutes player on chat and voice-cha
 
 local function CmdPMute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	
 	if (player) then
 		player.accountData:set("pmuted", 1)
@@ -103,7 +103,7 @@ CmdRegister("pmute", CmdPMute, "resource.rafalh.pmute", "Mutes player for ever")
 
 local function CmdUnmute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	
 	if(player) then
 		player.accountData:set("pmuted", 0)
@@ -117,7 +117,7 @@ CmdRegister("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and v
 
 local function CmdWarn(message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	
 	if (player) then
 		local warns = player.accountData:get("warnings") + 1
@@ -139,7 +139,7 @@ CmdRegister("warn", CmdWarn, "resource.rafalh.warn", "Adds player warning and ba
 
 local function CmdUnwarn (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
-	local player = playerEl and g_Players[playerEl]
+	local player = playerEl and Player.fromEl(playerEl)
 	
 	if (player) then
 		local warns = player.accountData:get("warnings")
@@ -176,7 +176,7 @@ CmdRegister("ip", CmdIp, "resource.rafalh.ip", "Shows player IP address")
 
 local function CmdAccount(message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	
 	scriptMsg(getPlayerName(player).."'s account ID: "..(pdata.id or "none")..".")
 end
@@ -220,7 +220,7 @@ CmdRegisterAlias ("descra", "describeaccount")
 
 local function CmdMergeAccounts(message, arg)
 	local player = findPlayer(arg[2])
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local id = touint(arg[3])
 	
 	if(player and id and pdata.id) then
@@ -369,7 +369,7 @@ CmdRegisterAlias ("mergeacc", "mergeaccounts")
 local function CmdDelAcc(message, arg)
 	local playerId = touint(arg[2])
 	if(playerId) then
-		if(g_IdToPlayer[playerId]) then
+		if(Player.fromId(playerId)) then -- Note: fromId returns only online
 			scriptMsg("You cannot remove online players")
 			return
 		end

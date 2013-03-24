@@ -1,7 +1,7 @@
 local function CmdInvitedBy(message, arg)
-	local sourcePlayer = g_Players[source]
+	local sourcePlayer = Player.fromEl(source)
 	local targetEl = #arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))
-	local targetPlayer = targetEl and g_Players[targetEl]
+	local targetPlayer = targetEl and Player.fromEl(targetEl)
 	
 	if(targetPlayer and sourcePlayer.id and targetPlayer.id) then
 		if(sourcePlayer:getPlayTime() > 3600) then

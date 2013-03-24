@@ -87,7 +87,7 @@ end
 local function MqOnAddReq(mapResName)
 	if (not hasObjectPermissionTo(client, "resource.rafalh.nextmap", false)) then return end
 	
-	local room = g_Players[client].room
+	local room = Player.fromEl(client).room
 	local map = false
 	
 	local mapRes = getResourceFromName(mapResName)

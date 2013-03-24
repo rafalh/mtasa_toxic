@@ -5,7 +5,7 @@ end
 CmdRegister("new", CmdNew, false, false, true)
 
 local function CmdVoteMap(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local mapName = message:sub (arg[1]:len () + 2)
 	local map = findMap (mapName)
 	if (map) then

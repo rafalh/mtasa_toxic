@@ -1,5 +1,8 @@
 Player = {}
 Player.__mt = {__index = Player}
+Player.idMap = {}
+Player.elMap = {}
+g_Players = Player.elMap -- FIXME
 
 addEvent("onPlayerChangeRoom")
 addEvent("onPlayerChangeTeam")
@@ -21,14 +24,20 @@ function Player:getIP()
 	end
 end
 
-function Player:getName(teamColor)
+function Player:getName(colorCodes)
 	local name = getPlayerName(self.el)
-	if(teamColor and not self.is_console) then
+	
+	if(not colorCodes) then
+		-- Remove color codes
+		return name:gsub("#%x%x%x%x%x%x", "")
+	elseif(not self.is_console) then
+		-- Add team color
 		local r, g, b = getPlayerNametagColor(self.el)
 		if(r ~= 255 or g ~= 255 or b ~= 255) then
 			return ("#%02X%02X%02X"):format(r, g, b)..name
 		end
 	end
+	
 	return name
 end
 
@@ -45,7 +54,7 @@ function Player:disconnectFromAccount()
 	self.accountData:set("last_visit", now)
 	
 	if(self.id) then
-		g_IdToPlayer[self.id] = nil
+		Player.idMap[self.id] = nil
 	end
 end
 
@@ -72,7 +81,7 @@ function Player:setAccount(account)
 		end
 		
 		assert(self.id)
-		g_IdToPlayer[self.id] = self.el
+		Player.idMap[self.id] = self
 	end
 	self.guest = not self.id
 	self.loginTimestamp = now
@@ -87,14 +96,14 @@ function Player:setAccount(account)
 end
 
 function Player.onRoomChange(roomEl)
-	local self = g_Players[source]
+	local self = Player.fromEl(source)
 	local room = Room.create(roomEl)
 	self.room = room
 	BtSendMapInfo(self.room, self.new, self.el)
 end
 
 function Player.onTeamChange(team)
-	local self = g_Players[source]
+	local self = Player.fromEl(source)
 	local fullName = self:getName(true)
 	self.accountData:set("name", fullName)
 end
@@ -102,7 +111,7 @@ end
 function Player:destroy()
 	self:disconnectFromAccount()
 	
-	g_Players[self.el] = nil
+	Player.elMap[self.el] = nil
 	
 	if(not self.is_console) then
 		g_PlayersCount = g_PlayersCount - 1
@@ -141,7 +150,7 @@ function Player.create(el)
 	local account = getPlayerAccount(self.el)
 	self:setAccount(account)
 	
-	g_Players[self.el] = self
+	Player.elMap[self.el] = self
 	
 	self.lang = "en"
 	setElementData(self.el, "lang", self.lang)
@@ -163,6 +172,14 @@ function Player.create(el)
 	end
 	
 	return self
+end
+
+function Player.fromId(id)
+	return Player.idMap[id]
+end
+
+function Player.fromEl(el)
+	return Player.elMap[el]
 end
 
 addInitFunc(function()

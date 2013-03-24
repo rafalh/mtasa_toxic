@@ -1,5 +1,5 @@
 function AsProcessMsg(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local spamInterval = SmGetUInt("spam_interval", 500)
 	local ticks = getTickCount()
 	
@@ -32,7 +32,7 @@ function AsCanPlayerChangeNick(player, newNick, oldNick)
 	newNick = newNick:gsub("#%x%x%x%x%x%x", "")
 	
 	if(oldNick ~= newNick) then
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		local minDelay = SmGetUInt("min_nick_change_delay", 0)
 		local ticks = getTickCount()
 		
@@ -46,6 +46,6 @@ function AsCanPlayerChangeNick(player, newNick, oldNick)
 end
 
 function AsNotifyOfNickChange(player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	pdata.lastNickChange = getTickCount()
 end

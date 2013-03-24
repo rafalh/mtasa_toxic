@@ -11,7 +11,7 @@ end
 CmdRegister("rate", CmdRate, false, "Rates current map")
 
 local function CmdRating(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	
 	if(map) then

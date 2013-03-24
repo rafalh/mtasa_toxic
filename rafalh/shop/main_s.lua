@@ -19,7 +19,7 @@ g_ShopItems = {}
 
 local function ShpGetInventoryRequest ()
 	local inventory = {}
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	
 	for item_id, item in pairs ( g_ShopItems ) do
 		if(item.field) then
@@ -46,7 +46,7 @@ local function ShpSellShopItemRequest ( item_id )
 	local item = item_id and g_ShopItems[item_id]
 	if(not item) then return end
 	
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	local val = item.field and pdata.accountData:get(item.field)
 	
 	if(item.onSell(client, val)) then
@@ -70,7 +70,7 @@ end
 
 function ShpBuyItem(item_id, player)
 	local item = g_ShopItems[item_id]
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	assert(item and item.onBuy)
 	
 	local price = ShpGetItemPrice(item_id, player)
@@ -92,7 +92,7 @@ function ShpBuyItem(item_id, player)
 end
 
 function ShpUseItem(item_id, player)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	local item = g_ShopItems[item_id]
 	assert(item)
 	

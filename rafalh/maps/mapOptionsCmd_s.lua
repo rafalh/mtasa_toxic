@@ -2,7 +2,7 @@ g_OldVehicleWeapons = nil
 
 local function CmdSetMapName(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -25,7 +25,7 @@ local function CmdSetMapType(message, arg)
 	local new_map_type = arg[2] and map_types[arg[2]:lower()]
 	
 	if(new_map_type) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -46,7 +46,7 @@ CmdRegisterAlias("smt", "setmaptype")
 
 local function CmdSetMapCreator(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -66,7 +66,7 @@ CmdRegisterAlias("sc", "setmapcreator")
 
 local function CmdSetMapRespawn(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -100,7 +100,7 @@ CmdRegister("setrs", CmdSetMapRespawn, "resource.rafalh.setrs")
 
 local function CmdSetMapGhostmode(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -150,7 +150,7 @@ CmdRegisterAlias("settimelimit", "setmaptimelimit")
 
 local function CmdSetMapVehicleWeapons(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -173,7 +173,7 @@ CmdRegisterAlias("smvehwep", "setmapvehwep")
 
 local function CmdSetMapHunterMinigun(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -197,7 +197,7 @@ CmdRegisterAlias("smhuntmg", "setmaphuntermg")
 
 local function CmdSetMapWaveHeight(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -240,7 +240,7 @@ CmdRegisterAlias("vehwep", "vehicleweapons")
 
 local function CmdSetMapCompMode(message, arg)
 	if(#arg >= 2) then
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = getCurrentMap(room)
 		
 		if(map) then
@@ -259,7 +259,7 @@ CmdRegister("setcompmode", CmdSetMapCompMode, "resource.rafalh.setcompmode")
 CmdRegisterAlias("setcmode", "setcompmode")
 
 local function CmdSetMapMaxSpeed(message, arg)
-	local room = g_Players[source].room
+	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
 	local max_speed = touint(arg[2])
 	if(map and (max_speed or arg[2] == "false")) then
@@ -359,7 +359,7 @@ local function CmdFixMapResName(msg, arg)
 			end, 100, 0)
 		end
 	else
-		local room = g_Players[source].room
+		local room = Player.fromEl(source).room
 		local map = arg[2] and findMap(msg:sub(arg[1]:len() + 2)) or getCurrentMap(room)
 		if(not map) then return end
 		

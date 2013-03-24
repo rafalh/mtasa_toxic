@@ -78,7 +78,7 @@ local function onPlayerPrivateMessage(msg, recipient)
 end
 
 local function onPlayerChangeNick(oldNick, newNick)
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	if(not pdata) then return end
 	
 	local oldNickPlain = oldNick:gsub("#%x%x%x%x%x%x", "")
@@ -186,7 +186,7 @@ local function onPlayerChat(message, messageType)
 		end
 		if(SmGetBool("msgs_above_players")) then
 			local x2, y2, z2 = getElementPosition(player)
-			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and g_Players[player]) then
+			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and Player.fromEl(player)) then
 				triggerClientInternalEvent(player, $(EV_CLIENT_PLAYER_CHAT), source, message2)
 			end
 		end
@@ -197,7 +197,7 @@ local function onPlayerChat(message, messageType)
 	cancelEvent() -- cancel event to disallow printing message twice
 	
 	if(fine > 0) then
-		local pdata = g_Players[source]
+		local pdata = Player.fromEl(source)
 		pdata.accountData:add("cash", -fine)
 		privMsg(source, "Do not swear %s! %s taked from your cash.", getPlayerName(source), formatMoney(fine))
 	end
@@ -213,7 +213,7 @@ local function onPlayerChat(message, messageType)
 end
 
 local function onPlayerReady(localeId)
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	
 	if(not LocaleList.exists(localeId)) then
 		localeId = pdata.country and pdata.country:lower()

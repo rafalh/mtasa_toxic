@@ -30,7 +30,7 @@ function VtnStart (pattern, player)
 		return
 	end
 	
-	local room = g_Players[player].room
+	local room = Player.fromEl(player).room
 	local map = findMap (pattern)
 	if(not map) then
 		privMsg(player, "Cannot find map \"%s\"!", pattern)

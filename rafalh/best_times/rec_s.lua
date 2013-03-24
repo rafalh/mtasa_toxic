@@ -15,7 +15,7 @@
 --------------------------------
 
 local function RcOnPlayerReachCheckpoint(checkpoint, time)
-	local pdata = g_Players[source]
+	local pdata = Player.fromEl(source)
 	if(pdata.cp_times) then
 		table.insert(pdata.cp_times, time)
 	end
@@ -150,7 +150,7 @@ end
 
 local function RcOnRecording(map_id, recording)
 	map_id = touint(map_id, 0)
-	local pdata = g_Players[client]
+	local pdata = Player.fromEl(client)
 	
 	if(map_id <= 0 or not pdata or type(recording) ~= "table" or #recording <= 2 or not pdata.id) then
 		outputDebugString("Invalid parameters in RcOnRecording", 2)
@@ -228,7 +228,7 @@ function RcStopRecording(room)
 end
 
 function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
-	local pdata = g_Players[player]
+	local pdata = Player.fromEl(player)
 	assert(pdata and map_id)
 	
 	if(not improvedBestTime) then

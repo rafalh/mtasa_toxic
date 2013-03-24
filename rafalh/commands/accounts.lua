@@ -5,7 +5,7 @@ local function CmdChangeLogin(message, arg)
 		return
 	end
 	
-	local player = g_Players[source]
+	local player = Player.fromEl(source)
 	local oldAccName = getAccountName(oldAccount)
 	local newAccName, passwd = arg[2], arg[3]
 	if(newAccName and passwd and getAccount(oldAccName, passwd)) then

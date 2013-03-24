@@ -8,7 +8,7 @@ local function CmdAlias(message, arg)
 			privMsg(source,  "Aliases for %s:", getPlayerName (player))
 		end
 		
-		local pdata = g_Players[player]
+		local pdata = Player.fromEl(player)
 		local aliases = ""
 		if(pdata.id) then
 			local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", pdata.id)
