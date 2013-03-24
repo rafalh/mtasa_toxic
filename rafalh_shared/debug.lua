@@ -1,10 +1,22 @@
 local DEBUG = false
+local LOG_PATH = false -- "log.txt"
 local PERF_DEBUG = false
 local g_DbgPerfData = {}
 
 if ( DEBUG ) then
 	function DbgPrint ( fmt, ... )
 		outputDebugString ( fmt:format ( ... ), 3 )
+		
+		if(LOG_PATH) then
+			local file = fileExists ( LOG_PATH ) and fileOpen ( LOG_PATH ) or fileCreate ( LOG_PATH )
+			if ( file ) then
+				fileSetPos ( file, fileGetSize ( file ) )
+				fileWrite ( file, fmt:format ( ... ) )
+				fileClose ( file )
+			else
+				outputDebugString ( "Failed to open "..LOG_PATH, 2 )
+			end
+		end
 	end
 
 	function DbgDump ( str, title )

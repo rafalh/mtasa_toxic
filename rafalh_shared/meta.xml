@@ -4,22 +4,18 @@
 	<script src="main.lua" />
 	<script src="main_c.lua" type="client" />
 	<script src="color_dlg_c.lua" type="client" />
-	<script src="veh_color_dlg_c.lua" type="client" />
 	<script src="animated_bar_c.lua" type="client" />
 	<script src="http.lua" />
 	<script src="debug.lua" type="client" />
 	<script src="gif_c.lua" type="client" />
 	
 	<file src="img/palette.jpg" />
-	<file src="img/veh_colors.png" />
 	<file src="img/bar_fg.png" />
 	<file src="img/bar_bg.png" />
 	
 	<export function="verify" type="client" />
 	
 	<export function="createColorDlg" type="client" />
-	
-	<export function="createVehicleColorDlg" type="client" />
 	
 	<export function="createAnimatedProgressBar" type="client" />
 	<export function="setAnimatedProgressBarProgress" type="client" />

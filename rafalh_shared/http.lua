@@ -2,22 +2,6 @@ local g_Requests = {}
 
 addEvent ( "onHttpResult" )
 
---[[local function DbgPrint ( fmt, ... )
-	local path = "log.txt"
-	local file = fileExists ( path ) and fileOpen ( path ) or fileCreate ( path )
-	if ( file ) then
-		fileSetPos ( file, fileGetSize ( file ) )
-		fileWrite ( file, fmt:format ( ... ) )
-		fileClose ( file )
-	else
-		outputDebugString ( "Failed to open "..path, 2 )
-	end
-end]]
-
---[[local function DbgPrint ( fmt, ... )
-	outputDebugString ( fmt:format ( ... ), 3 )
-end]]
-
 local function HttpParseHeader ( header )
 	local status_line_end = header:find ( "\r\n" ) or header:len ()
 	

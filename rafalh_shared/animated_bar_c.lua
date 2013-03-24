@@ -27,31 +27,11 @@ local g_BarsCount = 0
 local g_Verified = false
 local DEBUG = false
 
----------------------------------
--- Local function declarations --
----------------------------------
-
-local onClientPreRender
-local onClientResourceStop
-local getAnimatedBarDinamicW
-
 --------------------------------
 -- Local function definitions --
 --------------------------------
 
-onClientPreRender = function ()
-	for bar, data in pairs ( g_Bars ) do
-		if ( data[$(B_RESIZE_START)] ) then
-			local progress = getAnimatedProgressBarDinamicProgress ( bar )
-			guiSetSize ( data[$(B_IMG)], progress/100, 1, true )
-			if(data[$(B_LABEL)]) then
-				guiSetText ( data[$(B_LABEL)], math.floor ( progress ).."%" )
-			end
-		end
-	end
-end
-
-getAnimatedProgressBarDinamicProgress = function ( bar )
+local function getAnimatedProgressBarDinamicProgress ( bar )
 	local data = g_Bars[bar]
 	if ( data[$(B_RESIZE_START)] ) then
 		local ticks = getTickCount ()
@@ -63,6 +43,18 @@ getAnimatedProgressBarDinamicProgress = function ( bar )
 		end
 	else
 		return data[$(B_PROGRESS)]
+	end
+end
+
+local function onClientPreRender ()
+	for bar, data in pairs ( g_Bars ) do
+		if ( data[$(B_RESIZE_START)] ) then
+			local progress = getAnimatedProgressBarDinamicProgress ( bar )
+			guiSetSize ( data[$(B_IMG)], progress/100, 1, true )
+			if(data[$(B_LABEL)]) then
+				guiSetText ( data[$(B_LABEL)], math.floor ( progress ).."%" )
+			end
+		end
 	end
 end
 
@@ -143,8 +135,8 @@ end
 
 #VERIFY_SERVER_BEGIN ( "62443A6D1AA2D8A266064C951C92E266" )
 	g_Verified = true
-	if(DEBUG) then
+	--[[if(DEBUG) then
 		local bar = createAnimatedProgressBar(100, 100, 200, 10, false, false, false)
 		setAnimatedProgressBarProgress(bar, 34)
-	end
+	end]]
 #VERIFY_SERVER_END ()

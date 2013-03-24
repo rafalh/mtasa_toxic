@@ -176,10 +176,34 @@ local function onClientClick ( btn, state )
 	end
 end
 
-local function onClientResourceStop ()
-	for wnd, wnd_data in pairs ( g_Windows ) do
-		triggerEvent ( wnd_data[$(WND_EVENT)], wnd, false )
+local function onResStop()
+	for wnd, wnd_data in pairs(g_Windows) do
+		triggerEvent(wnd_data[$(WND_EVENT)], wnd, false)
 	end
+end
+
+local function onOkClick()
+	local wnd = getElementParent ( source )
+	local wnd_data = g_Windows[wnd]
+	local r, g, b = hslToRgb ( wnd_data[$(WND_HUE)], wnd_data[$(WND_SAT)], wnd_data[$(WND_LUM)] )
+	
+	triggerEvent ( wnd_data[$(WND_EVENT)], wnd, r, g, b )
+	destroyElement ( wnd )
+end
+
+local function onCancelClick()
+	local wnd = getElementParent ( source )
+	triggerEvent ( g_Windows[wnd][$(WND_EVENT)], wnd, false )
+	destroyElement ( wnd )
+end
+
+local function onWndDestroy()
+	g_WindowsCount = g_WindowsCount - 1
+	if ( g_WindowsCount == 0 ) then
+		removeEventHandler ( "onClientClick", g_Root, onClientClick )
+		removeEventHandler ( "onClientRender", g_Root, onClientRender )
+	end
+	g_Windows[source] = nil
 end
 
 ---------------------------------
@@ -207,20 +231,9 @@ function createColorDlg ( event_name, r, g, b )
 	guiWindowSetSizable ( wnd, false )
 	
 	local btn = guiCreateButton ( $(PALETTE_W)-90, $(PALETTE_H)+30, 60, 20, "OK", false, wnd )
-	addEventHandler ( "onClientGUIClick", btn, function ()
-		local wnd = getElementParent ( source )
-		local wnd_data = g_Windows[wnd]
-		local r, g, b = hslToRgb ( wnd_data[$(WND_HUE)], wnd_data[$(WND_SAT)], wnd_data[$(WND_LUM)] )
-		
-		triggerEvent ( wnd_data[$(WND_EVENT)], wnd, r, g, b )
-		destroyElement ( wnd )
-	end, false )
+	addEventHandler ( "onClientGUIClick", btn, onOkClick, false )
 	btn = guiCreateButton ( $(PALETTE_W)-20, $(PALETTE_H)+30, 60, 20, "Cancel", false, wnd )
-	addEventHandler ( "onClientGUIClick", btn, function ()
-		local wnd = getElementParent ( source )
-		triggerEvent ( g_Windows[wnd][$(WND_EVENT)], wnd, false )
-		destroyElement ( wnd )
-	end, false )
+	addEventHandler ( "onClientGUIClick", btn, onCancelClick, false )
 	
 	guiCreateStaticImage ( 10, 20, $(PALETTE_W), $(PALETTE_H), "img/palette.jpg", false, wnd )
 	
@@ -230,14 +243,7 @@ function createColorDlg ( event_name, r, g, b )
 		addEventHandler ( "onClientClick", g_Root, onClientClick )
 		addEventHandler ( "onClientRender", g_Root, onClientRender )
 	end
-	addEventHandler ( "onClientElementDestroy", wnd, function ()
-		g_WindowsCount = g_WindowsCount - 1
-		if ( g_WindowsCount == 0 ) then
-			removeEventHandler ( "onClientClick", g_Root, onClientClick )
-			removeEventHandler ( "onClientRender", g_Root, onClientRender )
-		end
-		g_Windows[source] = nil
-	end, false )
+	addEventHandler ( "onClientElementDestroy", wnd, onWndDestroy, false )
 	
 	g_WindowsCount = g_WindowsCount + 1
 	
@@ -250,5 +256,5 @@ end
 
 #VERIFY_SERVER_BEGIN ( "62443A6D1AA2D8A266064C951C92E266" )
 	g_Verified = true
-	addEventHandler ( "onClientResourceStop", getResourceRootElement (), onClientResourceStop )
+	addEventHandler ( "onClientResourceStop", getResourceRootElement(), onResStop )
 #VERIFY_SERVER_END ()
