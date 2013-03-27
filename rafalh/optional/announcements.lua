@@ -6,7 +6,7 @@ local function AnPrintNext ()
 	if ( not g_Announcements[g_AnnouncementIndex] ) then
 		g_AnnouncementIndex = 1
 	end
-	customMsg ( 255, 255, 0, g_Announcements[g_AnnouncementIndex] )
+	outputMsg(g_Root, "#FFFF00", g_Announcements[g_AnnouncementIndex] )
 end
 
 local function AnInit ()

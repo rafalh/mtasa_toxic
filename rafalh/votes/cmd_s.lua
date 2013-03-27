@@ -31,7 +31,7 @@ CmdRegister("voteredo", CmdVoteRedo, false, false, true)
 local function CmdCancel (message, arg)
 	local voteMgrRes = getResourceFromName ("votemanager")
 	if (voteMgrRes and getResourceState (voteMgrRes) == "running" and call (voteMgrRes, "stopPoll")) then
-		customMsg (255, 0, 0, "Vote cancelled by %s!", getPlayerName (source))
+		outputMsg(g_Root, Styles.red, "Vote cancelled by %s!", getPlayerName (source))
 	else
 		privMsg (source, "No vote in progress!")
 	end
@@ -61,7 +61,7 @@ local function CmdPoll(message, arg)
 			[2] = { "No" },
 		})
 		if (pollDidStart) then
-			customMsg (128, 255, 196, "%s started a poll: %s", getPlayerName (source), title)
+			outputMsg(g_Root, Styles.poll, "%s started a poll: %s", getPlayerName (source), title)
 		else
 			privMsg (source, "Error! Poll did not start.")
 		end

@@ -105,7 +105,7 @@ local function PmCmdHandler(command, nick, ...)
 	local player = findPlayer(nick)
 	
 	if(not player) then
-		customMsg(255, 96, 96, "PM: Usage: %s", command.." <nick> [<message>]")
+		outputMsg(Styles.pm, "PM: Usage: %s", command.." <nick> [<message>]")
 		return
 	end
 	
@@ -119,7 +119,7 @@ local function PmCmdHandler(command, nick, ...)
 		
 		triggerServerInternalEvent($(EV_PLAYER_PM_REQUEST), g_Me, msg, player)
 		local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
-		customMsg(255, 96, 96, "You have sent PM to %s: %s", playerName, msg)
+		outputMsg(Styles.pm, "You have sent PM to %s: %s", playerName, msg)
 	elseif(g_Chats[player]) then
 		PmRestore(player)
 	else

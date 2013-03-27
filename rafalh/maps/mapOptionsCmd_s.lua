@@ -225,10 +225,10 @@ local function CmdVehicleWeapons(message, arg)
 		end
 		if(old_enabled == "false") then
 			enabled = "true"
-			customMsg(0, 255, 0, "Vehicle weapons enabled by %s!", getPlayerName(source))
+			outputMsg(g_Root, Styles.green, "Vehicle weapons enabled by %s!", getPlayerName(source))
 		else
 			enabled = "false"
-			customMsg(255, 0, 0, "Vehicle weapons disabled by %s!", getPlayerName(source))
+			outputMsg(g_Root, Styles.red, "Vehicle weapons disabled by %s!", getPlayerName(source))
 		end
 		set("*race.vehicleweapons", enabled)
 		triggerEvent("onSettingChange", getResourceRootElement(res), "vehicleweapons", g_OldVehicleWeapons, enabled)

@@ -19,7 +19,7 @@ local function StAccountDataChange(accountData, name, newValue)
 		local oldRank = StRankFromPoints(accountData:get("points"))
 		local newRank = StRankFromPoints(newValue)
 		if(newRank ~= oldRank) then
-			customMsg(255, 255, 255, "%s has new rank: %s!", player:getName(), newRank)
+			outputMsg(g_Root, Styles.stats, "%s has new rank: %s!", player:getName(), newRank)
 		end
 	end
 	

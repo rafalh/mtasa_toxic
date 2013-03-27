@@ -8,7 +8,8 @@
     
     <msg id="* %s died!">* %s ist gestorben!</msg>
     <msg id="* %s drowned!">* %s ist ertrunken!</msg>
-    <msg id="* %s has joined the game%s.">* %s ist dem Spiel hinzu gekommen%s.</msg>
+	<msg id="* %s has joined the game.">* %s ist dem Spiel hinzu gekommen.</msg>
+    <msg id="* %s has joined the game (%s).">* %s ist dem Spiel hinzu gekommen (%s).</msg>
     
     <msg id="Nick change spam! Wait %u seconds and try again.">Nick aenderung spam! Warte %u Sekunden und versuche es nochmal.</msg>
     <msg id="Empty nick is not allowed!">Leerer Nickname ist Verboten!</msg>

@@ -67,7 +67,7 @@ function VtnStart (pattern, player)
 	
 	if (pollDidStart) then
 		g_LastVotenext = now
-		customMsg (128, 255, 196, "%s started vote for next map: %s.", getPlayerName (player), mapName)
+		outputMsg(g_Root, Styles.maps, "%s started vote for next map: %s.", getPlayerName (player), mapName)
 	else
 		privMsg (player, "Error! Poll did not started.")
 	end

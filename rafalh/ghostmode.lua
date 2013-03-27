@@ -42,7 +42,7 @@ function GmSet(room, enabled, quiet)
 	
 	local sec = touint(enabled)
 	if (sec) then
-		customMsg(0, 255, 0, "Ghostmode enabled for %u seconds!", sec)
+		outputMsg(room, Styles.green, "Ghostmode enabled for %u seconds!", sec)
 		GmSetEnabled(room, true)
 		
 		local no_gm_warning_time = SmGetUInt("no_gm_warning_time", 0)
@@ -58,7 +58,7 @@ function GmSet(room, enabled, quiet)
 				g_NoGMWarningTimeLeft = g_NoGMWarningTimeLeft - 1
 				if(g_NoGMWarningTimeLeft <= 0) then
 					if(GmIsEnabled(room)) then
-						customMsg(255, 0, 0, "Ghostmode disabled!")
+						outputMsg(room, Styles.red, "Ghostmode disabled!")
 					end
 					GmSetEnabled(room, false)
 				else
@@ -71,9 +71,9 @@ function GmSet(room, enabled, quiet)
 	else
 		if(not quiet and GmIsEnabled(room) ~= enabled) then
 			if(enabled) then
-				customMsg(0, 255, 0, "Ghostmode enabled!")
+				outputMsg(room, Styles.green, "Ghostmode enabled!")
 			else
-				customMsg(255, 0, 0, "Ghostmode disabled!")
+				outputMsg(room, Styles.red, "Ghostmode disabled!")
 			end
 		end
 		GmSetEnabled(room, enabled)

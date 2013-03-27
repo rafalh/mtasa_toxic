@@ -7,6 +7,8 @@
 	<script src="utils/common.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
 	<script src="utils/common_sc.lua" type="shared" />
+	<script src="utils/outputChat_s.lua" type="server" />
+	<script src="utils/outputChat_c.lua" type="client" />
 	<script src="utils/vector_c.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />
 	<script src="utils/timers.lua" type="server" />

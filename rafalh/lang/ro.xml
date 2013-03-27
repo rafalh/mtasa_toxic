@@ -8,7 +8,8 @@
     
     <msg id="* %s died!">* %s a murit!</msg>
     <msg id="* %s drowned!">* %s s-a inecat!</msg>
-    <msg id="* %s has joined the game%s.">* %s s-a alaturat jocului%s.</msg>
+    <msg id="* %s has joined the game.">* %s s-a alaturat jocului.</msg>
+	<msg id="* %s has joined the game (%s).">* %s s-a alaturat jocului (%s).</msg>
     <msg id="* %s is now known as %s.">* %s este cunoscut acum ca %s.</msg>
     
     <msg id="Nick change spam! Wait %u seconds and try again.">Numele nu este permis! Asteapta %u secunde si reincearca.</msg>

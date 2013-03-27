@@ -35,7 +35,7 @@ local function CmdRemTopTime(message, arg)
 					fileClose(f)
 				end
 				
-				outputMsg(room.el, "#FF0000", "%u. toptime (%s by %s) has been removed by %s!",
+				outputMsg(room.el, Styles.red, "%u. toptime (%s by %s) has been removed by %s!",
 					n, formatTimePeriod(rows[n].time / 1000), accountData:get("name"), getPlayerName(source))
 			elseif(rows) then
 				privMsg(source, "There are only %u toptimes saved!", #rows)

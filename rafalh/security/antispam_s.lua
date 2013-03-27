@@ -10,7 +10,7 @@ function AsProcessMsg(player)
 				scriptMsg("%s has been kicked for spamming.", name)
 				kickPlayer(player, "Spam")
 			else
-				customMsg(255, 0, 0, "%s has been muted for spamming.", name)
+				outputMsg(g_Root, Styles.red, "%s has been muted for spamming.", name)
 				mutePlayer(player, 60, false, true)
 			end
 			return true

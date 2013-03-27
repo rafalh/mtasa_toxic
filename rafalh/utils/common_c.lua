@@ -65,10 +65,6 @@ function findPlayer ( str )
 	return false
 end
 
-function customMsg ( r, g, b, fmt, ... )
-	outputChatBox ( MuiGetMsg ( fmt ):format ( ... ):gsub ( "#%x%x%x%x%x%x", "" ), r, g, b, false )
-end
-
 function addInternalEventHandler ( eventtype, handler )
 	assert ( eventtype )
 	if ( not g_InternalEventHandlers[eventtype] ) then

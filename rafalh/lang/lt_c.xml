@@ -137,7 +137,7 @@
 	<msg id="Hide other cars when GM is enabled">Paslėpti kitus automobilius kai GM įjungtas.</msg>
 	<msg id="Hide nearby cars">Paslėpti šalia esančius automobilius</msg>
 	<msg id="Show stars animation above winner car">Rodyti žvaigždžių animaciją po laimėtojo automobiliu</msg>
-	<msg id="Effects">Efektai</msg>
+	<msg id="Effects:">Efektai:</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s buvo išjungtas, kad pagerinti jūsų FPS!</msg>
 	
 	<msg id="Map Info">Žemėlapio informacija</msg>

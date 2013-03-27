@@ -131,7 +131,6 @@
 	<msg id="Unlocked achievements: %u/%u">Odblokowane osiągnięcia: %u/%u</msg>
 	<msg id="Achievement unlocked: %s! %s have been added to your cash.">Odblokowano osiągnięcie: %s! %s dodano do twojej kasy.</msg>
 	
-	
     <msg id="Settings">Ustawienia</msg>
     <msg id="Language:">Język:</msg>
     <msg id="Nick:">Pseudonim:</msg>
@@ -141,7 +140,8 @@
 	<msg id="Hide other cars when GM is enabled">Chowaj inne samochody gdy GM jest włączony</msg>
 	<msg id="Hide nearby cars">Chowaj bliskie samochody</msg>
 	<msg id="Show stars animation above winner car">Pokaż animację gwiazdek nad samochodem zwycięzcy</msg>
-	<msg id="Effects">Efekty</msg>
+	<msg id="Display chat messages above players">Wyświetlaj wiadomości z czatu nad graczami</msg>
+	<msg id="Effects:">Efekty:</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
 	
 	<msg id="Map Info">Informacje o mapie</msg>

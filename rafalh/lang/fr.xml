@@ -8,7 +8,9 @@
     
     <msg id="* %s died!">* %s est mort!</msg>
     <msg id="* %s drowned!">* %s s&apos;est noye!</msg>
-    <msg id="* %s has joined the game%s.">* %s a rejoint la partie%s.</msg>
+	
+    <msg id="* %s has joined the game.">* %s a rejoint la partie.</msg>
+	<msg id="* %s has joined the game (%s).">* %s a rejoint la partie (%s).</msg>
     <msg id="* %s is now known as %s.">* %s est maintenant connue en tant que %s.</msg>
     
     <msg id="Nick change spam! Wait %u seconds and try again.">Anti Spam pseudo! Attendez %u secondes et reessayez.</msg>

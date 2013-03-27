@@ -10,7 +10,7 @@ local function CmdPBan (message, arg)
 		local player_name = getPlayerName (playerEl)
 		local admin_name = getPlayerName (source)
 		
-		customMsg (255, 0, 0, "%s serial has been banned by %s!", player_name, admin_name)
+		outputMsg(g_Root, Styles.red, "%s serial has been banned by %s!", player_name, admin_name)
 		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""))
 	else
 		privMsg (source, "Usage: %s", arg[1].." <player>")
@@ -27,7 +27,7 @@ local function CmdBan1m (message, arg)
 		local player_name = getPlayerName (playerEl)
 		local admin_name = getPlayerName (source)
 		
-		customMsg (255, 0, 0, "%s has been banned by %s (1 minute)!", player_name, getPlayerName (source))
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player_name, getPlayerName (source))
 		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 60)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
@@ -42,7 +42,7 @@ local function CmdBan5m (message, arg)
 		local player_name = getPlayerName (playerEl)
 		local admin_name = getPlayerName (source)
 		
-		customMsg (255, 0, 0, "%s has been banned by %s (5 minutes)!", player_name, getPlayerName (source))
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (5 minutes)!", player_name, getPlayerName (source))
 		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 60*5)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
@@ -57,7 +57,7 @@ local function CmdBan1h (message, arg)
 		local player_name = getPlayerName (playerEl)
 		local admin_name = getPlayerName (source)
 		
-		customMsg (255, 0, 0, "%s has been banned by %s (1 hour)!", player_name, getPlayerName (source))
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 hour)!", player_name, getPlayerName (source))
 		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 3600)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
@@ -72,7 +72,7 @@ local function CmdBan24h (message, arg)
 		local player_name = getPlayerName (playerEl)
 		local admin_name = getPlayerName (source)
 		
-		customMsg (255, 0, 0, "%s has been banned by %s (24 hours)!", player_name, getPlayerName (source))
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (24 hours)!", player_name, getPlayerName (source))
 		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 24*3600)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end

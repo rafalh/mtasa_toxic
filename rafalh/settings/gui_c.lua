@@ -12,7 +12,7 @@ local g_LangButtons = {}
 local g_NewLocale = false
 local g_EffectCheckBoxes = {}
 local g_NickEdit, g_SuicideKeyEdit, g_StatsPanelKeyEdit, g_UserPanelKeyEdit
-local g_CarHideCb, g_HideNearbyCarsCb, g_WinnerAnimCb
+local g_CarHideCb, g_HideNearbyCarsCb, g_WinnerAnimCb, g_MsgAboveCarCb
 local g_NickColorWnd = nil
 local g_Tab = nil
 
@@ -36,20 +36,21 @@ local function onSaveClick ()
 	
 	triggerServerInternalEvent($(EV_SET_NAME_REQUEST), g_Me, guiGetText(g_NickEdit))
 	
-	local race_res = getResourceFromName ( "race" )
+	--[[local race_res = getResourceFromName ( "race" )
 	local suicide_key = guiGetText ( g_SuicideKeyEdit )
 	if ( race_res and suicide_key ~= g_LocalSettings.suicide_key and bindKey ( suicide_key, "down", suicide ) ) then
 		unbindKey ( g_LocalSettings.suicide_key, "down", suicide )
 		g_LocalSettings.suicide_key = suicide_key
 	else
 		guiSetText ( g_SuicideKeyEdit, g_LocalSettings.suicide_key )
-	end
+	end]]
 	
 	g_LocalSettings.carHide = guiCheckBoxGetSelected(g_CarHideCb)
 	ChSetEnabled(g_LocalSettings.carHide)
 	
 	g_LocalSettings.hideNearbyCars = guiCheckBoxGetSelected(g_HideNearbyCarsCb)
 	g_LocalSettings.winAnim = guiCheckBoxGetSelected(g_WinnerAnimCb)
+	g_LocalSettings.msgAboveCar = guiCheckBoxGetSelected(g_MsgAboveCarCb)
 	
 	for res, cb in pairs(g_EffectCheckBoxes) do
 		local enabled = guiCheckBoxGetSelected(cb)
@@ -115,18 +116,25 @@ local function createGui(panel)
 			end, false )
 		end
 	end, false )
+	y = y + 25
 	
-	guiCreateLabel ( 10, y + 25, 170, 20, "Suicide key:", false, panel )
-	g_SuicideKeyEdit = guiCreateEdit ( 180, y+25, 40, 20, g_LocalSettings.suicide_key, false, panel )
+	--[[guiCreateLabel ( 10, y, 170, 20, "Suicide key:", false, panel )
+	g_SuicideKeyEdit = guiCreateEdit ( 180, y, 40, 20, g_LocalSettings.suicide_key, false, panel )
+	y = y + 20]]
 	
-	g_CarHideCb = guiCreateCheckBox ( 10, y + 45, 300, 20, "Hide other cars when GM is enabled", g_LocalSettings.carHide, false, panel )
+	g_CarHideCb = guiCreateCheckBox ( 10, y, w - 20, 20, "Hide other cars when GM is enabled", g_LocalSettings.carHide, false, panel )
+	y = y + 20
 	
-	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y + 65, 300, 20, "Hide nearby cars", g_LocalSettings.hideNearbyCars, false, panel )
+	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y, w - 20, 20, "Hide nearby cars", g_LocalSettings.hideNearbyCars, false, panel )
+	y = y + 20
 	
-	g_WinnerAnimCb = guiCreateCheckBox(10, y + 85, 300, 20, "Show stars animation above winner car", g_LocalSettings.winAnim, false, panel)
+	g_WinnerAnimCb = guiCreateCheckBox(10, y, w - 20, 20, "Show stars animation above winner car", g_LocalSettings.winAnim, false, panel)
+	y = y + 20
 	
-	y = y + 105
-	guiCreateLabel(10, y, 160, 20, "Effects", false, panel)
+	g_MsgAboveCarCb = guiCreateCheckBox(10, y, w - 20, 20, "Display chat messages above players", g_LocalSettings.msgAboveCar, false, panel)
+	y = y + 20
+	
+	guiCreateLabel(10, y + 5, 160, 20, "Effects:", false, panel)
 	local effects_h = math.min(h - y - 60, g_EffectsCount * 20)
 	local effects_pane = guiCreateScrollPane(10, y + 20, w - 20, effects_h, false, panel)
 	local effect_y = 5
@@ -136,7 +144,7 @@ local function createGui(panel)
 			name = name[g_LocalSettings.locale] or name[1]
 		end
 		if ( name ) then
-			local cb = guiCreateCheckBox ( 10, effect_y, 300, 20, name, enabled, false, effects_pane )
+			local cb = guiCreateCheckBox ( 10, effect_y, w - 40, 20, name, enabled, false, effects_pane )
 			g_EffectCheckBoxes[res] = cb
 			effect_y = effect_y + 20
 		end

@@ -8,6 +8,15 @@
 -- Local function definitions --
 --------------------------------
 
+Styles = {
+	joinQuit = {"#FF6464", "#FFFFFF"},
+	stats = {"#FF6464", "#FFFFFF"},
+	maps = {"#80FFC0", "#FFFFFF"},
+	red = {"#FF0000", "#FF8080"},
+	green = {"#00FF00", "#80FF80"},
+	poll = "#80FFC0"
+}
+
 addEvent("main.onPlayerReady", true)
 
 local function isNickChangeAllowed(player, name)
@@ -44,8 +53,11 @@ local function onPlayerJoin()
 		countryName = player.country
 	end
 	
-	local countryStr = countryName and " ("..countryName..")" or ""
-	customMsg(255, 100, 100, "* %s has joined the game%s.", getPlayerName(source), countryStr)
+	if(countryName) then
+		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game (%s).", getPlayerName(source), countryName)
+	else
+		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", getPlayerName(source))
+	end
 	
 	local rows = DbQuery("SELECT joinmsg, pmuted FROM rafalh_players WHERE serial=? LIMIT 1", player:getSerial())
 	
@@ -58,7 +70,7 @@ local function onPlayerJoin()
 	local pmuted = rows and rows[1] and rows[1].pmuted
 	--local pmuted = player.accountData:get("pmuted")
 	if(pmuted == 1) then
-		customMsg(255, 0, 0, "%s has got permanent mute!", getPlayerName(source))
+		outputMsg(g_Root, Styles.red, "%s has got permanent mute!", getPlayerName(source))
 		mutePlayer(source, 0, false, true)
 	end
 end
@@ -103,7 +115,7 @@ local function onPlayerChangeNick(oldNick, newNick)
 	
 	pdata.accountData:set("name", fullNick)
 	if(not onlyColorChanged) then
-		customMsg(255, 96, 96, "* %s is now known as %s.", oldNickPlain, newNickPlain)
+		outputMsg(g_Root, Styles.joinQuit, "* %s is now known as %s.", oldNickPlain, newNickPlain)
 	end
 end
 

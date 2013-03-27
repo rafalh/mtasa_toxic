@@ -451,7 +451,7 @@ local function ShpBuyNextMap(mapResName)
 	local dt = now - rows[1].played_timestamp
 	if(dt > minDelayForMap) then
 		local pos = MqAdd(room, map)
-		customMsg(128, 255, 196, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName(client), pos)
+		outputMsg(room, Styles.maps, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName(client), pos)
 		
 		pdata.accountData:add("cash", -price)
 		pdata.accountData:add("mapsBought", 1)

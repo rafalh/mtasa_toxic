@@ -79,7 +79,7 @@
     <msg id="Suicide key:">Кнопка самоубийства:</msg>
     <msg id="User Panel key:">Кнопка панели управления:</msg>
     <msg id="Statistics Panel key:">Кнопка статистики:</msg>
-    <msg id="Effects">Спецэффекты</msg>
+    <msg id="Effects:">Спецэффекты:</msg>
     
     <msg id="Save">Сохранить</msg>
     <msg id="Color">Цвет</msg>

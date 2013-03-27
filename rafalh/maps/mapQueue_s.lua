@@ -27,9 +27,9 @@ function MqAdd(room, map, display_msg, player)
 	
 	if (display_msg) then
 		if (player) then
-			outputMsg(room.el, "#80FFC0", "%s has been added to next map queue (pos. %u.) by %s!", mapName, pos, getPlayerName (player))
+			outputMsg(room.el, Styles.maps, "%s has been added to next map queue (pos. %u.) by %s!", mapName, pos, getPlayerName (player))
 		else
-			outputMsg(room.el, "#80FFC0", "%s has been added to next map queue (pos. %u.)!", mapName, pos)
+			outputMsg(room.el, Styles.maps, "%s has been added to next map queue (pos. %u.)!", mapName, pos)
 		end
 	end
 	

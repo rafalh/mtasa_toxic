@@ -4,6 +4,12 @@
 
 #include "include/internal_events.lua"
 
+Styles = {
+	joinQuit = {"#FF6464", "#FFFFFF"},
+	help = {"#FF6464", "#FFFFFF"},
+	pm = "#FF6060",
+}
+
 -------------------
 -- Custom events --
 -------------------
@@ -57,10 +63,10 @@ end
 local function onClientPlayerQuit(reason)
 	local nick = getPlayerName(source):gsub("#%x%x%x%x%x%x", "")
 	
-	if(reason == "Kicked") then customMsg(255, 96, 96, "* %s has been kicked from the game.", nick)
-	elseif(reason == "Banned") then customMsg(255, 96, 96, "* %s has been banned from the game.", nick)
-	elseif(reason == "Quit") then customMsg(255, 96, 96, "* %s has left the game.", nick)
-	else customMsg(255, 96, 96, "* %s has left the game [%s].", nick, reason) end
+	if(reason == "Kicked") then outputMsg(Styles.joinQuit, "* %s has been kicked from the game.", nick)
+	elseif(reason == "Banned") then outputMsg(Styles.joinQuit, "* %s has been banned from the game.", nick)
+	elseif(reason == "Quit") then outputMsg(Styles.joinQuit, "* %s has left the game.", nick)
+	else outputMsg(Styles.joinQuit, "* %s has left the game [%s].", nick, reason) end
 end
 
 local function onAccountChange(accountName, accountId)
@@ -77,7 +83,7 @@ local function onClientInit(accountId, settings, isNew, localeId)
 	if(isNew) then
 		local userPanelKey = getKeyBoundToCommand("UserPanel") or "-"
 		local statsPanelKey = getKeyBoundToCommand("StatsPanel") or "-"
-		customMsg(255, 96, 96, "Press %s to open User Panel and %s to open Statistics Panel!", userPanelKey, statsPanelKey)
+		outputMsg(Styles.help, "Press %s to open User Panel and %s to open Statistics Panel!", userPanelKey, statsPanelKey)
 	end
 end
 

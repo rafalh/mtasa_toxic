@@ -90,12 +90,17 @@ local function onRender()
 end
 
 local function onPlayerChat(message)
-	if(isElementStreamedIn(source)) then
-		if(not g_ChatMsgs[source]) then
-			g_ChatMsgs[source] = {}
-		end
-		table.insert(g_ChatMsgs[source], { getTickCount (), message })
+	-- Check if messages has not been disabled
+	if(not g_LocalSettings.msgAboveCar) then return end
+	
+	-- Check if payer is visible
+	if(not isElementStreamedIn(source)) then return end
+	
+	-- Add message to rendering
+	if(not g_ChatMsgs[source]) then
+		g_ChatMsgs[source] = {}
 	end
+	table.insert(g_ChatMsgs[source], { getTickCount (), message })
 end
 
 local function onPlayerChatting(chatting)

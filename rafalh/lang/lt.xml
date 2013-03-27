@@ -8,7 +8,8 @@
 	
     <msg id="* %s died!">* %s Mirė!</msg>
     <msg id="* %s drowned!">* %s Paskendo!</msg>
-    <msg id="* %s has joined the game%s.">* %s prisijungė prie žaidimo.</msg>
+	<msg id="* %s has joined the game.">* %s prisijungė prie žaidimo.</msg>
+    <msg id="* %s has joined the game (%s).">* %s prisijungė prie žaidimo (%s).</msg>
     <msg id="* %s is now known as %s.">* %s dabar žinomas kaip %s.</msg>
 	
     <msg id="Nick change spam! Wait %u seconds and try again.">Vartotojo vardo keitimo spam&apos;as! Palaukite %u sekundes ir bandykite dar kartą.</msg>

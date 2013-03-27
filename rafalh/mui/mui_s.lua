@@ -39,6 +39,10 @@ function MuiLoad(lang_id)
 	g_Langs[lang_id] = MuiLoadFile("lang/"..tostring(lang_id)..".xml")
 end
 
+function MuiGetPlayerLocale(player)
+	return getElementData(player, "lang")
+end
+
 function MuiGetMsg ( text, player )
 	assert ( player and text )
 	local lang = getElementData ( player, "lang" )

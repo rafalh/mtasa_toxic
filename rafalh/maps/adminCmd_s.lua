@@ -18,7 +18,7 @@ local function CmdRemMap (message, arg)
 	DbQuery ("UPDATE rafalh_maps SET removed=? WHERE map=?", reason, map_id)
 	
 	local map_name = map:getName()
-	customMsg (255, 0, 0, "%s has been removed by %s!", map_name, getPlayerName (source))
+	outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map_name, getPlayerName (source))
 	startRandomMap(room)
 end
 
@@ -34,7 +34,7 @@ local function CmdRestoreMap (message, arg)
 			local map_name = map:getName()
 			local map_id = map:getId()
 			DbQuery ("UPDATE rafalh_maps SET removed='' WHERE map=?", map_id)
-			customMsg (0, 255, 0, "%s has been restored by %s!", map_name, getPlayerName (source))
+			outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map_name, getPlayerName (source))
 		else privMsg (source, "Cannot find map \"%s\" or it has not been removed!", str) end
 	else privMsg (source, "Usage: %s", arg[1].." <map>") end
 end
@@ -134,7 +134,7 @@ local function CmdCancelNextMap (message, arg)
 	local map = MqRemove(room)
 	if(map) then
 		local mapName = map:getName()
-		outputMsg(room.el, "#80FFC0", "%s has been removed from map queue by %s!", mapName, getPlayerName(source))
+		outputMsg(room.el, Styles.maps, "%s has been removed from map queue by %s!", mapName, getPlayerName(source))
 	else
 		privMsg(source, "Map queue is empty!")
 	end
