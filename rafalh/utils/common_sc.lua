@@ -19,68 +19,64 @@ function DbgTraceBack(lvl, len, offset, ret)
 end
 
 local _assert = assert
-function assert ( val, str )
-	if ( not val ) then
-		DbgTraceBack ()
-		_assert ( val, str )
+function assert(val, str)
+	if(not val) then
+		DbgTraceBack()
+		_assert(val, str)
 	end
 end
 
-function ifElse ( condition, trueReturn, falseReturn )
-	if ( condition ) then
+function ifElse(condition, trueReturn, falseReturn)
+	if(condition) then
 		return trueReturn
 	end
 	return falseReturn
 end
 
-function toint ( var, nan_r )
-	local r = var and tonumber ( var )
-	return ( r and r < math.huge and r > -math.huge and math.floor ( r ) ) or nan_r  -- nan ~= nan
+function toint(var, nan_r)
+	local r = var and tonumber(var)
+	return (r and r < math.huge and r > -math.huge and math.floor(r)) or nan_r  -- nan ~= nan
 end
 
-function touint ( var, nan_r )
-	local r = var and tonumber ( var )
-	return ( r and r < math.huge and r > -math.huge and r >= 0 and math.floor ( r ) ) or nan_r -- nan ~= nan
+function touint(var, nan_r)
+	local r = var and tonumber(var)
+	return (r and r < math.huge and r > -math.huge and r >= 0 and math.floor(r)) or nan_r -- nan ~= nan
 end
 
-function tofloat ( var, nan_r )
-	local r = var and tonumber ( var )
-	return ( r and r < math.huge and r > -math.huge and r ) or nan_r -- nan ~= nan
+function tofloat(var, nan_r)
+	local r = var and tonumber(var)
+	return (r and r < math.huge and r > -math.huge and r) or nan_r -- nan ~= nan
 end
 
-function tonum ( var )
-	return ( var and tonumber ( var ) ) or 0
+function tonum(var)
+	return (var and tonumber(var)) or 0
 end
 
-function tostr ( var )
-	return ( var and tostring ( var ) ) or ""
+function tostr(var)
+	return (var and tostring(var)) or ""
 end
 
 function tobool(val)
 	return (val == true or val == "true" or val == 1)
 end
 
-function table.size ( t )
+function table.size(t)
 	local n = 0
 	
-	for i, v in pairs ( t ) do
+	for i, v in pairs(t) do
 		n = n + 1
 	end
 	
 	return n
 end
 
-function table.empty ( t )
-	for i, v in pairs ( t ) do
-		return false
-	end
-	
-	return true
+function table.empty(tbl)
+	return (next(tbl) == nil)
 end
 
-function table.find ( t, v )
-	for i, val in ipairs ( t ) do
-		if ( val == v ) then
+function table.find(tbl, v)
+	for i, val in ipairs(tbl) do
+		if(val == v) then
 			return i
 		end
 	end
@@ -117,80 +113,71 @@ function formatTimePeriod(t, decimals)
 	return str
 end
 
-function formatNumber ( num, decimals )
-	num = tonumber ( num )
-	assert ( num )
-	local n1, n2 = math.modf ( num )
-	n1 = tostring ( n1 )
+function formatNumber(num, decimals)
+	num = tonumber(num)
+	assert(num)
+	local n1, n2 = math.modf(num)
+	n1 = tostring(n1)
 	local buf = ""
 	
-	while ( n1 ~= "" ) do
-		buf = n1:sub ( -3 ).." "..buf
-		n1 = n1:sub ( 1, -4 )
+	while(n1 ~= "") do
+		buf = n1:sub(-3).." "..buf
+		n1 = n1:sub(1, -4)
 	end
-	buf = buf:sub ( 1, -2 )
-	if ( decimals ) then
-		return buf.."."..( n2..( "0" ):rep ( decimals ) ):sub ( 1, decimals )
+	buf = buf:sub(1, -2)
+	if(decimals) then
+		return buf.."."..(n2..("0"):rep(decimals)):sub(1, decimals)
 	end
 	return buf
 end
 
-function formatMoney ( money )
-	assert ( money )
-	local str = tostring ( math.floor ( math.abs ( money ) ) )
+function formatMoney(money)
+	assert(money)
+	local str = tostring(math.floor(math.abs(money)))
 	local buf = ""
 	
-	while ( str ~= "" ) do
+	while(str ~= "") do
 		buf = str:sub ( -3 )..","..buf
 		str = str:sub ( 1, -4 )
 	end
-	return ( ( tonumber ( money ) < 0 and "-" ) or "" )..buf:sub ( 1, -2 ).." €"
+	return ((tonumber ( money ) < 0 and "-") or "")..buf:sub(1, -2).." €"
 end
 
 local _isPedDead = isPedDead
-function isPedDead ( player )
-	if ( Player and Player.fromEl(player) and Player.fromEl(player).is_console ) then
+function isPedDead(player)
+	if(Player and Player.fromEl(player) and Player.fromEl(player).is_console) then
 		return false -- console
 	end
-	local state = getElementData ( player, "state" )
-	if ( state and state ~= "alive" ) then
+	local state = getElementData(player, "state")
+	if(state and state ~= "alive") then
 		return true
 	end
-	return ( state and state ~= "alive" ) or _isPedDead ( player )
+	return(state and state ~= "alive") or _isPedDead (player)
 end
 
 function isPlayerAdmin(player)
-	local adminGroup = aclGetGroup ("Admin")
+	local adminGroup = aclGetGroup("Admin")
 	local account = getPlayerAccount(player)
 	local accountName = getAccountName(account)
 	return (adminGroup and account and isObjectInACLGroup("user."..accountName, adminGroup))
 end
 
-#if ( false ) then -- perf debug
-local g_Handlers = {}
-
-local _addEventHandler = addEventHandler
-function addEventHandler ( eventName, attachedTo, handlerFunction, ... )
-	local trace = ""--debug.traceback ()
-	if ( not g_Handlers[handlerFunction] ) then
-		g_Handlers[handlerFunction] = function ( ... )
-			local start = getTickCount ()
-			handlerFunction ( ... )
-			local dt = getTickCount () - start
-			if ( dt > 16 ) then
-				outputDebugString ( eventName.." handler is too slow: "..dt.." "..trace, 2 )
+local function fileCopy(srcPath, dstPath)
+	local success = false
+	local dstFile = fileCreate(dstPath)
+	if(dstFile) then
+		local srcFile = fileOpen(srcPath, true)
+		if(srcFile) then
+			while(not fileIsEOF(srcFile)) do
+				local buf = fileRead(srcFile, 4096)
+				fileWrite(dstFile, buf)
 			end
+			success = true
+			fileClose(srcFile)
 		end
+		
+		fileClose(dstFile)
 	end
-	_addEventHandler ( eventName, attachedTo, g_Handlers[handlerFunction], ... )
+	
+	return success
 end
-
-local _removeEventHandler = removeEventHandler
-function removeEventHandler ( eventName, attachedTo, functionVar )
-	if ( g_Handlers[functionVar] ) then
-		functionVar = g_Handlers[functionVar]
-		g_Handlers[functionVar] = nil
-	end
-	_removeEventHandler ( eventName, attachedTo, functionVar )
-end
-#end

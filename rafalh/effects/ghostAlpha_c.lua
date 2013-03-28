@@ -36,6 +36,13 @@ Settings.register
 	name = "hideNearbyCars",
 	default = true,
 	cast = tobool,
+	onChange = function(oldVal, newVal)
+		if(newVal) then
+			addEventHandler("onClientPreRender", g_Root, updateAlpha)
+		else
+			removeEventHandler("onClientPreRender", g_Root, updateAlpha)
+		end
+	end,
 	createGui = function(wnd, x, y, w)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Hide nearby cars", Settings.hideNearbyCars, false, wnd)
 		return 20, cb

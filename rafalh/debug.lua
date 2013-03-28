@@ -95,3 +95,32 @@ else
 	DbgPerfInit = DbgDummy
 	DbgPerfCp = DbgDummy
 end
+
+#if(false) then -- perf debug
+local g_Handlers = {}
+
+local _addEventHandler = addEventHandler
+function addEventHandler ( eventName, attachedTo, handlerFunction, ... )
+	local trace = ""--debug.traceback ()
+	if ( not g_Handlers[handlerFunction] ) then
+		g_Handlers[handlerFunction] = function ( ... )
+			local start = getTickCount ()
+			handlerFunction ( ... )
+			local dt = getTickCount () - start
+			if ( dt > 16 ) then
+				outputDebugString ( eventName.." handler is too slow: "..dt.." "..trace, 2 )
+			end
+		end
+	end
+	_addEventHandler ( eventName, attachedTo, g_Handlers[handlerFunction], ... )
+end
+
+local _removeEventHandler = removeEventHandler
+function removeEventHandler ( eventName, attachedTo, functionVar )
+	if ( g_Handlers[functionVar] ) then
+		functionVar = g_Handlers[functionVar]
+		g_Handlers[functionVar] = nil
+	end
+	_removeEventHandler ( eventName, attachedTo, functionVar )
+end
+#end
