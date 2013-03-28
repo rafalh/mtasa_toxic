@@ -28,8 +28,11 @@ function tostr(var)
 	return (var and tostring(var)) or ""
 end
 
-function tobool(val)
-	return (val == true or val == "true" or val == 1)
+function tobool(val, def)
+	val = tostring(val):lower()
+	if(val == "true" or val == "1") then return true
+	elseif(val == "false" or val == "0") then return false
+	else return def end
 end
 
 function table.size(t)

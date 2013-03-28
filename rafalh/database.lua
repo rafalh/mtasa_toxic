@@ -1,4 +1,4 @@
-local g_Connection = false
+local g_Connection, g_Ready = false, false
 local g_Config = {}
 local SQLITE_DB_PATH = "conf/db.sqlite"
 
@@ -177,16 +177,25 @@ function DbInit()
 		return false
 	end
 	
+	local success = true
 	if(g_Config.type == "builtin") then
 		DbQuery = executeSQLQuery
 	elseif(g_Config.type == "sqlite") then
-		DbInitSQLite()
+		success = DbInitSQLite()
 	elseif(g_Config.type == "mysql") then
-		DbInitMySQL()
+		success = DbInitMySQL()
 	else
 		outputDebugString("Unknown database type "..tostring(g_Config.type), 1)
 		return false
 	end
 	
-	return true
+	if(success) then
+		g_Ready = true
+	end
+	
+	return success
+end
+
+function DbIsReady()
+	return g_Ready
 end
