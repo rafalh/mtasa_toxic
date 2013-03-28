@@ -182,23 +182,3 @@ end
 CmdRegister ("stats", CmdStats, false, "Shows player statistics")
 CmdRegisterAlias ("stat", "stats")
 CmdRegisterAlias ("st", "stats")
-
-local function CmdStatsOld(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local player = Player.fromEl(playerEl)
-	local oldStats = player.accountData:getTbl()
-	if(oldStats) then
-		local dm_ratio = 0
-		if(oldStats.dm > 0) then
-			dm_ratio = oldStats.dm_wins / oldStats.dm
-		end
-		
-		scriptMsg("%s's statistics:", getPlayerName(player.el))
-		scriptMsg("Placed: 1st: %s - 2nd: %s - 3rd: %s.", formatNumber(oldStats.first), formatNumber(oldStats.second), formatNumber(oldStats.third))
-		scriptMsg("Deathmatches: %s - Wins: %s - Ratio: %.2f%%.", formatNumber(oldStats.dm), formatNumber(oldStats.dm_wins), 100 * dm_ratio)
-		scriptMsg("Top Times held: %s - Points: %s.", formatNumber(oldStats.toptimes_count), formatNumber(oldStats.points))
-	end
-end
-
-CmdRegister("stats2", CmdStatsOld, false)
-CmdRegisterAlias ("st2", "stats2")

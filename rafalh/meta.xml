@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.50" description="Rafalh Scripts System"   />
+	<info type="misc" name="rafalh" author="rafalh" version="2.60" description="Rafalh Scripts System"   />
 	
-	<!--script src="debug.lua" type="client" /-->
+	<script src="debug.lua" type="shared" />
 	
 	<script src="utils/common.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
@@ -18,6 +18,7 @@
 	<script src="start.lua" type="server" />
 	<script src="settings.lua" type="server" />
 	<script src="database.lua" type="server" />
+	<config src="conf/database.xml" type="server" />
 	
 	<script src="main.lua" type="server" />
 	<script src="main_c.lua" type="client" />
@@ -79,7 +80,7 @@
 	<script src="stats/stats_panel_c.lua" type="client" />
 	<script src="stats/http_s.lua" type="server" />
 	<file src="stats/icon.png" />
-	<config src="conf/ranks.xml" />
+	<config src="conf/ranks.xml" type="server" />
 	<export function="getPlayersStats" http="true" />
 	
 	<script src="achievements/main_s.lua" type="server" />
@@ -134,14 +135,15 @@
 	<script src="mui/langs_s.lua" type="server" />
 	<script src="mui/localeList_sc.lua" type="shared" />
 	<script src="mui/setting_c.lua" type="client" />
-	<config src="conf/languages.xml" type="shared" />
+	<config src="conf/languages.xml" type="server" />
+	<config src="conf/languages.xml" type="client" />
 	
 	<script src="profile/main_s.lua" type="server" />
 	<script src="profile/cmd_s.lua" type="server" />
 	<script src="profile/editProfile_c.lua" type="client" />
 	<script src="profile/viewProfile_c.lua" type="client" />
 	<file src="profile/icon.png" />
-	<config src="conf/profile_fields.xml" />
+	<config src="conf/profile_fields.xml" type="server" />
 	<export function="getPlayerProfile" http="true" />
 	
 	<script src="radio/gui_c.lua" type="client" />
@@ -334,10 +336,5 @@
 		<setting group="Recording" name="*recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps." friendlyname="Record top times" />
 		<setting group="Recording" name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." friendlyname="Record top times CPs" />
 		<setting group="Recording" name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." friendlyname="Show ghost" />
-		
-		<setting group="Database" name="*private_db" accept="false,true" value="true" desc="If enabled data is saved in db.sqlite private db instead of server registry" friendlyname="Private database" />
-		<setting group="Database" name="*db_backup_int" accept="0-1000000" value="3" desc="Number of days when database backup is made. If set to 0 backups will not be generated. Only supported for private database." friendlyname="Database backup interval" />
-		<setting group="Database" name="*max_db_backups" accept="0-1000" value="10" desc="Maximal number of backups saved. Only supported for private database." friendlyname="Maximal database backups count" />
-		<setting group="Database" name="*auto_clean_db_interval" accept="0-100000" value="0" desc="Number of minutes between following database cleanings. Set to 0 to disable database autocleaning. To apply this setting you have to restart the script." friendlyname="Autoclean database interval" />
 	</settings>
 </meta>

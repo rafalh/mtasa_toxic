@@ -201,7 +201,7 @@ local function onMapStart(map, room)
 					map_type2.others_in_row = 0
 				end
 			end
-			outputDebugString(dbg_buf, 3)
+			DbgPrint("%s", dbg_buf)
 		end
 		
 		-- show toptimes

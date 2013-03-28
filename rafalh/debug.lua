@@ -2,6 +2,34 @@ local DEBUG = true
 local PERF_DEBUG = false
 local g_DbgPerfData = {}
 
+function DbgTraceBack(lvl, len, offset, ret)
+	local trace = debug.traceback()
+	trace = trace:gsub("\r", "")
+	local lines = split(trace, "\n")
+	local start = 3 + (offset or 0)
+	local stop = #lines
+	if(len) then
+		stop = math.min(stop, start+len-1)
+	end
+	local tbl = {}
+	for i = start, stop do
+		table.insert(tbl, lines[i])
+		if(lvl ~= -1) then
+			outputDebugString(lines[i], lvl or 2)
+		end
+	end
+	
+	return tbl
+end
+
+local _assert = assert
+function assert(val, str)
+	if(not val) then
+		DbgTraceBack()
+		_assert(val, str)
+	end
+end
+
 if(DEBUG) then
 	function DbgPrint(fmt, ...)
 		outputDebugString(fmt:format ( ... ), 3)
@@ -35,26 +63,6 @@ if(DEBUG) then
 		end
 		return false
 	end
-	
-function DbgTraceBack(lvl, len, offset, ret)
-	local trace = debug.traceback()
-	trace = trace:gsub("\r", "")
-	local lines = split(trace, "\n")
-	local start = 3 + (offset or 0)
-	local stop = #lines
-	if(len) then
-		stop = math.min(stop, start+len-1)
-	end
-	local tbl = {}
-	for i = start, stop do
-		table.insert(tbl, lines[i])
-		if(lvl ~= -1) then
-			outputDebugString(lines[i], lvl or 2)
-		end
-	end
-	
-	return tbl
-end
 	
 	if(PERF_DEBUG) then
 		local _addEventHandler = addEventHandler
@@ -95,32 +103,3 @@ else
 	DbgPerfInit = DbgDummy
 	DbgPerfCp = DbgDummy
 end
-
-#if(false) then -- perf debug
-local g_Handlers = {}
-
-local _addEventHandler = addEventHandler
-function addEventHandler ( eventName, attachedTo, handlerFunction, ... )
-	local trace = ""--debug.traceback ()
-	if ( not g_Handlers[handlerFunction] ) then
-		g_Handlers[handlerFunction] = function ( ... )
-			local start = getTickCount ()
-			handlerFunction ( ... )
-			local dt = getTickCount () - start
-			if ( dt > 16 ) then
-				outputDebugString ( eventName.." handler is too slow: "..dt.." "..trace, 2 )
-			end
-		end
-	end
-	_addEventHandler ( eventName, attachedTo, g_Handlers[handlerFunction], ... )
-end
-
-local _removeEventHandler = removeEventHandler
-function removeEventHandler ( eventName, attachedTo, functionVar )
-	if ( g_Handlers[functionVar] ) then
-		functionVar = g_Handlers[functionVar]
-		g_Handlers[functionVar] = nil
-	end
-	_removeEventHandler ( eventName, attachedTo, functionVar )
-end
-#end

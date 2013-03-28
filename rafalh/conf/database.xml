@@ -1,0 +1,11 @@
+<database>
+	<type>sqlite</type> <!-- builtin/sqlite/mysql -->
+	<host>localhost</host> <!-- for MySQL only -->
+	<port></port> <!-- for MySQL only; optional -->
+	<dbname>mta</dbname> <!-- for MySQL only -->
+	<username>root</username> <!-- for MySQL only -->
+	<password></password> <!-- for MySQL only -->
+	<backupInterval>3</backupInterval> <!-- backup interval in days for SQLite only -->
+	<maxBackups>10</maxBackups> <!-- max backups count for SQLite only -->
+	<tblprefix>rafalh_</tblprefix> <!-- don't change after script first start -->
+</database>

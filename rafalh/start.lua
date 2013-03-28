@@ -6,7 +6,10 @@ local g_InitFuncs = {}
 local _addEventHandler
 
 local function setupDatabase()
-	DbInit()
+	if(not DbInit()) then
+		return false
+	end
+	
 	local err = false
 	
 	if(not err and not DbQuery(
@@ -313,12 +316,6 @@ local function init()
 	local consoles = getElementsByType("console")
 	assert(#consoles == 1)
 	Player.create(consoles[1])
-	
-	local auto_clean_db_interval = SmGetUInt("auto_clean_db_interval", 0)
-	if(auto_clean_db_interval > 0) then
-		DbQuery("VACUUM")
-		setTimer(DbQuery, auto_clean_db_interval * 1000 * 60, 0, "VACUUM")
-	end
 	
 	for i, func in ipairs(g_InitFuncs) do
 		func()
