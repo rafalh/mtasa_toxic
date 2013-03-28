@@ -77,7 +77,7 @@ local function renderWinnerAnim()
 end
 
 local function startWinnerAnim()
-	if(g_WinnerAnim or not g_LocalSettings.winAnim) then return end
+	if(g_WinnerAnim or not Settings.winAnim) then return end
 	
 	g_WinnerAnimStart = getTickCount()
 	g_WinnerAnim = source
@@ -109,3 +109,17 @@ addEventHandler("main.onPlayerWinDD", g_Root, startWinnerAnim)
 addEventHandler("onClientMapStopping", g_Root, stopWinnerAnim)
 addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 addEventHandler("onClientResourceStart", g_ResRoot, init)
+
+Settings.register
+{
+	name = "winAnim",
+	default = true,
+	cast = tobool,
+	createGui = function(wnd, x, y, w)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Show stars animation above winner car", Settings.winAnim, false, wnd)
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.winAnim = guiCheckBoxGetSelected(cb)
+	end,
+}

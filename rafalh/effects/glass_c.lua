@@ -54,14 +54,14 @@ local function renderGlass()
 	if(a <= 0) then
 		g_BigDemageTime = false
 	else
-		if(g_ServerSettings.breakable_glass) then
+		if(Settings.breakableGlass) then
 			-- broken glass
 			dxDrawImage(g_Pos * g_ScreenSize[1], g_Pos * g_ScreenSize[2], g_Size * g_ScreenSize[1], g_Size * g_ScreenSize[2], g_Texture, 0, 0, 0, tocolor(255, 255, 255, a))
 		end
 		
 		-- red screen for 128 ms
 		a = 128 - (ticks - g_BigDemageTime)
-		if(a > 0 and g_ServerSettings.red_damage_screen) then
+		if(a > 0 and Settings.redDmgScreen) then
 			dxDrawRectangle(0, 0, g_ScreenSize[1], g_ScreenSize[2], tocolor(255, 0, 0, a))
 		end
 	end
@@ -74,6 +74,52 @@ end
 #VERIFY_SERVER_BEGIN("593C2070A55147B063D423AFAC7003D6")
 	g_Texture = dxCreateTexture("effects/broken_glass.png")
 	if(g_Texture) then
-		--addEventHandler("onClientRender", g_Root, renderGlass)
+		addEventHandler("onClientRender", g_Root, renderGlass)
 	end
 #VERIFY_SERVER_END()
+
+Settings.register
+{
+	name = "breakableGlass",
+	default = true,
+	cast = tobool,
+	onChange = function(oldVal, newVal)
+		if(not Settings.redDmgScreen) then
+			if(newVal) then
+				addEventHandler("onClientRender", g_Root, renderGlass)
+			else
+				removeEventHandler("onClientRender", g_Root, renderGlass)
+			end
+		end
+	end,
+	createGui = function(wnd, x, y, w)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Broken glass image after huge damage", Settings.breakableGlass, false, wnd)
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.breakableGlass = guiCheckBoxGetSelected(cb)
+	end,
+}
+
+Settings.register
+{
+	name = "redDmgScreen",
+	default = true,
+	cast = tobool,
+	onChange = function(oldVal, newVal)
+		if(not Settings.breakableGlass) then
+			if(newVal) then
+				addEventHandler("onClientRender", g_Root, renderGlass)
+			else
+				removeEventHandler("onClientRender", g_Root, renderGlass)
+			end
+		end
+	end,
+	createGui = function(wnd, x, y, w)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Screen flashes red after huge damage", Settings.redDmgScreen, false, wnd)
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.redDmgScreen = guiCheckBoxGetSelected(cb)
+	end,
+}

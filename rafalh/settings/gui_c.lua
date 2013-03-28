@@ -4,17 +4,10 @@
 
 #include "include/internal_events.lua"
 
----------------------
--- Local variables --
----------------------
+-- Local variables
 
-local g_LangButtons = {}
-local g_NewLocale = false
-local g_EffectCheckBoxes = {}
-local g_NickEdit, g_SuicideKeyEdit, g_StatsPanelKeyEdit, g_UserPanelKeyEdit
-local g_CarHideCb, g_HideNearbyCarsCb, g_WinnerAnimCb, g_MsgAboveCarCb
-local g_NickColorWnd = nil
-local g_Tab = nil
+local g_Panel, g_ScrollPane
+local g_SettingGui = {}
 
 local SettingsPanel = {
 	name = "Settings",
@@ -23,174 +16,71 @@ local SettingsPanel = {
 	height = 420,
 }
 
---------------------------------
--- Local function definitions --
---------------------------------
+-- Code
 
-local function onSaveClick ()
-	if(g_NewLocale) then
-		triggerServerEvent("main.onSetLocaleReq", g_ResRoot, g_NewLocale)
-		g_LocalSettings.locale = g_NewLocale
-		g_NewLocale = false
-	end
-	
-	triggerServerInternalEvent($(EV_SET_NAME_REQUEST), g_Me, guiGetText(g_NickEdit))
-	
-	--[[local race_res = getResourceFromName ( "race" )
-	local suicide_key = guiGetText ( g_SuicideKeyEdit )
-	if ( race_res and suicide_key ~= g_LocalSettings.suicide_key and bindKey ( suicide_key, "down", suicide ) ) then
-		unbindKey ( g_LocalSettings.suicide_key, "down", suicide )
-		g_LocalSettings.suicide_key = suicide_key
-	else
-		guiSetText ( g_SuicideKeyEdit, g_LocalSettings.suicide_key )
-	end]]
-	
-	g_LocalSettings.carHide = guiCheckBoxGetSelected(g_CarHideCb)
-	ChSetEnabled(g_LocalSettings.carHide)
-	
-	g_LocalSettings.hideNearbyCars = guiCheckBoxGetSelected(g_HideNearbyCarsCb)
-	g_LocalSettings.winAnim = guiCheckBoxGetSelected(g_WinnerAnimCb)
-	g_LocalSettings.msgAboveCar = guiCheckBoxGetSelected(g_MsgAboveCarCb)
-	
-	for res, cb in pairs(g_EffectCheckBoxes) do
-		local enabled = guiCheckBoxGetSelected(cb)
-		if(g_Effects[res]) then
-			local res_name = getResourceName(res)
-			g_LocalSettings.effects[res_name] = enabled
-			call(res, "setEffectEnabled", enabled)
+function SettingsPanel.onSaveClick()
+	for key, gui in pairs(g_SettingGui) do
+		local item = Settings.items[key]
+		if(item) then
+			item.acceptGui(gui)
 		end
 	end
 	
-	saveSettings()
-	
-	--setLang ( new_lang )
+	Settings.save()
 end
 
-local function onFlagClick()
-	local lang = g_LangButtons[source]
-	g_NewLocale = lang
-	for img, lang in pairs(g_LangButtons) do
-		guiSetAlpha(img, lang == g_NewLocale and 1 or 0.3)
+function SettingsPanel.createScrollPane(panel)
+	local w, h = guiGetSize(panel, false)
+	g_ScrollPane = guiCreateScrollPane(10, 10, w - 20, h - 50, false, panel)
+	
+	local y = 0
+	for key, item in ipairs(Settings.sorted) do
+		if(item.createGui) then
+			local h, gui = item.createGui(g_ScrollPane, 0, y, w - 20)
+			g_SettingGui[item.name] = gui
+			y = y + h
+		end
 	end
 end
 
-local function createGui(panel)
+function SettingsPanel.initGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateLabel(10, 10, 100, 15, "Language:", false, panel)
+	SettingsPanel.createScrollPane(panel)
 	
-	local flagSpace = 5
-	local flagW = math.min(50, (w - 20 + flagSpace) / LocaleList.count() - flagSpace)
-	local flagH = math.floor(flagW * 2 / 3)
-	local x, y = 10, 30
-	for i, locale in LocaleList.ipairs() do
-		local img = guiCreateStaticImage(x, y, flagW, flagH, locale.img, false, panel)
-		setElementData(img, "tooltip", locale.name)
-		addEventHandler("onClientGUIClick", img, onFlagClick, false)
-		g_LangButtons[img] = locale.code
-		
-		if(locale.code ~= g_LocalSettings.locale) then
-			guiSetAlpha(img, 0.3)
-		end
-		
-		x = x + flagW + flagSpace
-	end
-	
-	local y = y + flagH + 10
-	
-	guiCreateLabel ( 10, y, 160, 20, "Nick:", false, panel )
-	g_NickEdit = guiCreateEdit ( 180, y, w - 180 - 60 - 10, 20, getPlayerName ( g_Me ), false, panel )
-	guiSetProperty ( g_NickEdit, "MaxTextLength", "22" )
-	local btn = guiCreateButton ( w - 60, y, 50, 25, "Color", false, panel )
-	addEventHandler ( "onClientGUIClick", btn, function ()
-		if(g_NickColorWnd) then
-			guiBringToFront(g_NickColorWnd)
-		else
-			local r, g, b = getColorFromString(guiGetText(g_NickEdit):sub(1, 7))
-			g_NickColorWnd = call(getResourceFromName("rafalh_shared"), "createColorDlg", "onRafalhColorDlg", r, g, b)
-			addEventHandler("onRafalhColorDlg", g_NickColorWnd, function ( r, g, b )
-				if ( r ) then
-					guiSetText(g_NickEdit, ( "#%02x%02x%02x" ):format ( r, g, b )..guiGetText ( g_NickEdit ):gsub ( "^#%x%x%x%x%x%x", "" ) )
-				end
-				g_NickColorWnd = nil
-			end, false )
-		end
-	end, false )
-	y = y + 25
-	
-	--[[guiCreateLabel ( 10, y, 170, 20, "Suicide key:", false, panel )
-	g_SuicideKeyEdit = guiCreateEdit ( 180, y, 40, 20, g_LocalSettings.suicide_key, false, panel )
-	y = y + 20]]
-	
-	g_CarHideCb = guiCreateCheckBox ( 10, y, w - 20, 20, "Hide other cars when GM is enabled", g_LocalSettings.carHide, false, panel )
-	y = y + 20
-	
-	g_HideNearbyCarsCb = guiCreateCheckBox ( 10, y, w - 20, 20, "Hide nearby cars", g_LocalSettings.hideNearbyCars, false, panel )
-	y = y + 20
-	
-	g_WinnerAnimCb = guiCreateCheckBox(10, y, w - 20, 20, "Show stars animation above winner car", g_LocalSettings.winAnim, false, panel)
-	y = y + 20
-	
-	g_MsgAboveCarCb = guiCreateCheckBox(10, y, w - 20, 20, "Display chat messages above players", g_LocalSettings.msgAboveCar, false, panel)
-	y = y + 20
-	
-	guiCreateLabel(10, y + 5, 160, 20, "Effects:", false, panel)
-	local effects_h = math.min(h - y - 60, g_EffectsCount * 20)
-	local effects_pane = guiCreateScrollPane(10, y + 20, w - 20, effects_h, false, panel)
-	local effect_y = 5
-	for res, name in pairs(g_Effects) do
-		local enabled = call ( res, "isEffectEnabled" )
-		if ( type ( name ) == "table" ) then
-			name = name[g_LocalSettings.locale] or name[1]
-		end
-		if ( name ) then
-			local cb = guiCreateCheckBox ( 10, effect_y, w - 40, 20, name, enabled, false, effects_pane )
-			g_EffectCheckBoxes[res] = cb
-			effect_y = effect_y + 20
-		end
-	end
-	
-	y = y + 20 + effects_h
-	--local btn = guiCreateButton((w - 80) / 2, y + 10, 80, 25, "Save", false, panel)
 	local btn = guiCreateButton(w - 90 - 90, h - 35, 80, 25, "Save", false, panel)
-	addEventHandler("onClientGUIClick", btn, onSaveClick, false)
+	addEventHandler("onClientGUIClick", btn, SettingsPanel.onSaveClick, false)
 	
 	local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
 	addEventHandler("onClientGUIClick", btn, UpBack, false)
 end
 
-function invalidateSettingsGui ()
+function invalidateSettingsGui()
 	--outputDebugString("invalidateSettingsGui", 3)
-	if ( not g_Tab ) then return end
+	if(not g_Panel) then return end
 	
-	g_EffectCheckBoxes = {}
-	for i, el in ipairs ( getElementChildren ( g_Tab ) ) do
-		destroyElement ( el )
-	end
+	destroyElement(g_ScrollPane)
+	g_SettingGui = {}
 	
-	if ( guiGetVisible ( g_Tab ) ) then
-		createGui ( g_Tab )
+	if(guiGetVisible(g_Panel)) then
+		SettingsPanel.createScrollPane(g_Panel)
 	else
-		g_Tab = false
+		g_Panel = false
 	end
 end
 
-function SettingsPanel.onShow ( tab )
-	if ( not g_Tab ) then
-		g_Tab = tab
-		createGui ( g_Tab )
+function SettingsPanel.onShow(panel)
+	if(not g_Panel) then
+		g_Panel = panel
+		SettingsPanel.initGui(g_Panel)
 	end
 end
 
-function SettingsPanel.onHide ( tab )
-	if ( g_NickColorWnd ) then
-		destroyElement ( g_NickColorWnd )
-		g_NickColorWnd = nil
-	end
+function SettingsPanel.onHide(panel)
 end
 
 ----------------------
 -- Global variables --
 ----------------------
 
-UpRegister ( SettingsPanel )
+UpRegister(SettingsPanel)

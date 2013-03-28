@@ -14,7 +14,7 @@ local RadioPanel = {
 	tooltip = "Listen to internet radio",
 }
 
-local function loadChannels ()
+local function loadChannels()
 	local channels = {}
 	local node, i = xmlLoadFile("conf/radio.xml"), 0
 	if(node) then
@@ -43,10 +43,10 @@ local function loadChannels ()
 end
 
 local function startRadio(url)
+	assert(not g_Sound)
 	setRadioChannel(0)
 	
 	g_Url = url
-	g_LocalSettings.radio_channel = url
 	
 	if(not g_Muted) then
 		g_Sound = playSound(url, true)
@@ -69,7 +69,7 @@ local function onChannelClick(i)
 	stopRadio()
 	
 	local ch = g_Channels[i]
-	startRadio ( ch.url )
+	Settings.radioChannel = ch.url
 	
 	guiSetText(g_RadioName, ch.name)
 	if(ch.img) then
@@ -85,10 +85,8 @@ local function setMuted(muted)
 	if(g_Muted == muted) then return end
 	g_Muted = muted
 	
-	if(g_Muted) then
-		guiStaticImageLoadImage(g_VolumeImg, "radio/muted.png")
-	else
-		guiStaticImageLoadImage(g_VolumeImg, "radio/volume.png")
+	if(g_VolumeImg) then
+		guiStaticImageLoadImage(g_VolumeImg, g_Muted and "radio/img/muted.png" or "radio/img/volume.png")
 	end
 	
 	if(g_Muted) then
@@ -99,13 +97,7 @@ local function setMuted(muted)
 end
 
 local function onVolumeChange()
-	g_Volume = guiScrollBarGetScrollPosition(g_VolumeBar)
-	if(g_Sound) then
-		setSoundVolume(g_Sound, g_Volume / 100)
-		g_LocalSettings.radio_volume = g_Volume
-	end
-	
-	setMuted(g_Volume == 0)
+	Settings.radioVolume = guiScrollBarGetScrollPosition(g_VolumeBar)
 end
 
 local function onVolumeClick()
@@ -114,7 +106,7 @@ end
 
 local function onTurnOffClick()
 	guiSetVisible(g_TurnOffBtn, false)
-	g_LocalSettings.radio_channel = ""
+	Settings.radioChannel = ""
 	
 	g_List:setActiveItem(false)
 	stopRadio()
@@ -151,7 +143,7 @@ local function createGui(panel)
 	g_RadioName = guiCreateLabel(65, 10, w - 75, 15, "Select radio channel", false, panel)
 	guiSetFont(g_RadioName, "default-bold-small")
 	
-	g_VolumeImg = guiCreateStaticImage(65, 30, 24, 24, "radio/volume.png", false, panel)
+	g_VolumeImg = guiCreateStaticImage(65, 30, 24, 24, "radio/img/volume.png", false, panel)
 	addEventHandler("onClientGUIClick", g_VolumeImg, onVolumeClick, false)
 	g_VolumeBar = guiCreateScrollBar(95, 32, w - 105, 20, true, false, panel)
 	guiScrollBarSetScrollPosition(g_VolumeBar, g_Volume)
@@ -194,7 +186,7 @@ function RadioPanel.onShow(panel)
 end
 
 function RadioPanel.onHide()
-	saveSettings()
+	Settings.save()
 end
 
 local function onRadioSwitch ( channel )
@@ -237,13 +229,35 @@ end
 
 local function initRadio()
 	setTimer(checkSounds, 1000, 0)
-	
-	g_Volume = math.min(g_LocalSettings.radio_volume, 100)
-	if(g_LocalSettings.radio_channel ~= "") then
-		startRadio(g_LocalSettings.radio_channel)
-	end
 end
 
 UpRegister(RadioPanel)
 addEventHandler("onClientPlayerRadioSwitch", g_Me, onRadioSwitch)
 addEventHandler("onClientResourceStart", g_ResRoot, initRadio)
+
+Settings.register
+{
+	name = "radioChannel",
+	default = "",
+	cast = tostring,
+	onChange = function(oldVal, newVal)
+		if(newVal ~= "" and not g_Muted) then
+			startRadio(newVal)
+		else
+			stopRadio()
+		end
+	end,
+}
+
+Settings.register
+{
+	name = "radioVolume",
+	default = 100,
+	cast = tonumber,
+	onChange = function(oldVal, newVal)
+		if(g_Sound) then
+			setSoundVolume(g_Sound, newVal / 100)
+		end
+		setMuted(newVal == 0)
+	end,
+}

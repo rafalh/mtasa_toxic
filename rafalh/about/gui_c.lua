@@ -36,8 +36,8 @@ local function createGui(panel)
 			local text = xmlNodeGetValue ( subnode )
 			local attr = xmlNodeGetAttributes ( subnode )
 			
-			if ( attr[g_LocalSettings.locale] ) then
-				text = attr[g_LocalSettings.locale]
+			if ( attr[Settings.locale] ) then
+				text = attr[Settings.locale]
 			end
 			
 			if ( text ~= "" ) then

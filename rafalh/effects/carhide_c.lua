@@ -1,6 +1,7 @@
+local INVISIBLE_DIM = 65534
+
 local g_CarHide = false
 local g_KnownVehicles = {}
-local INVISIBLE_DIM = 65534
 local g_SpecMode = nil -- unknown
 
 local function ChUpdatePlayer(player)
@@ -55,6 +56,7 @@ end
 local function ChEnable()
 	if(g_CarHide) then return end
 	g_CarHide = true
+	--outputDebugString("CarHide enabled", 3)
 	
 	addEventHandler("onClientVehicleEnter", root, ChVehEnter)
 	for i, player in ipairs(getElementsByType("player")) do
@@ -71,6 +73,7 @@ end
 local function ChDisable()
 	if(not g_CarHide) then return end
 	g_CarHide = false
+	--outputDebugString("CarHide disabled", 3)
 	
 	ChUpdateAllPlayers()
 	
@@ -117,5 +120,19 @@ end
 addCommandHandler("carhide", ChToggle, false)
 addEventHandler("onClientResourceStart", resourceRoot, ChInit)
 
-addEvent("rafalh_onCarHideReq", true)
-addEventHandler("rafalh_onCarHideReq", localPlayer, ChSetEnabled)
+Settings.register
+{
+	name = "carHide",
+	default = false,
+	cast = tobool,
+	onChange = function(oldVal, newVal)
+		ChSetEnabled(newVal)
+	end,
+	createGui = function(wnd, x, y, w)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Hide other cars when GM is enabled", Settings.carHide, false, wnd)
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.carHide = guiCheckBoxGetSelected(cb)
+	end,
+}

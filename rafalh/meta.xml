@@ -17,7 +17,6 @@
 	
 	<script src="start.lua" type="server" />
 	<script src="settings.lua" type="server" />
-	<script src="settings_c.lua" type="client" />
 	<script src="database.lua" type="server" />
 	
 	<script src="main.lua" type="server" />
@@ -25,6 +24,8 @@
 	<script src="player.lua" type="server" />
 	<script src="playerAccountData.lua" type="server" />
 	<script src="accounts.lua" type="server" />
+	
+	<script src="settings/settings_c.lua" type="client" />
 	
 	<script src="commands/commands.lua" type="server" />
 	<script src="avg_players.lua" type="server" />
@@ -132,8 +133,8 @@
 	<script src="mui/mui_c.lua" type="client" />
 	<script src="mui/langs_s.lua" type="server" />
 	<script src="mui/localeList_sc.lua" type="shared" />
-	<config src="conf/languages.xml" type="server" />
-	<config src="conf/languages.xml" type="client" />
+	<script src="mui/setting_c.lua" type="client" />
+	<config src="conf/languages.xml" type="shared" />
 	
 	<script src="profile/main_s.lua" type="server" />
 	<script src="profile/cmd_s.lua" type="server" />

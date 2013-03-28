@@ -27,7 +27,7 @@ end
 
 local function SpInit()
 	addCommandHandler("StatsPanel", SpToggle, false, false)
-	local key = getKeyBoundToCommand("StatsPanel") or g_LocalSettings.stats_panel_key
+	local key = getKeyBoundToCommand("StatsPanel") or "F1"
 	bindKey(key, "down", "StatsPanel")
 end
 

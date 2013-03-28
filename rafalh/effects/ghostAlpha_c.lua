@@ -1,5 +1,5 @@
 local function updateAlpha()
-	if(not g_LocalSettings.hideNearbyCars) then return end
+	if(not Settings.hideNearbyCars) then return end
 	
 	local cameraPos = Vector.create(getCameraMatrix())
 	local target = getCameraTarget()
@@ -30,3 +30,17 @@ local function updateAlpha()
 end
 
 addEventHandler("onClientPreRender", g_Root, updateAlpha)
+
+Settings.register
+{
+	name = "hideNearbyCars",
+	default = true,
+	cast = tobool,
+	createGui = function(wnd, x, y, w)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Hide nearby cars", Settings.hideNearbyCars, false, wnd)
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.hideNearbyCars = guiCheckBoxGetSelected(cb)
+	end,
+}

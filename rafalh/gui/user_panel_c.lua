@@ -147,7 +147,7 @@ end
 
 local function UpInit()
 	addCommandHandler("UserPanel", UpToggle, false, false)
-	local key = getKeyBoundToCommand("UserPanel") or g_LocalSettings.user_panel_key
+	local key = getKeyBoundToCommand("UserPanel") or "F2"
 	bindKey(key, "down", "UserPanel")
 end
 

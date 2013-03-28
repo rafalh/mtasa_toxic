@@ -91,7 +91,7 @@ end
 
 local function onPlayerChat(message)
 	-- Check if messages has not been disabled
-	if(not g_LocalSettings.msgAboveCar) then return end
+	if(not Settings.msgAboveCar) then return end
 	
 	-- Check if payer is visible
 	if(not isElementStreamedIn(source)) then return end
@@ -122,3 +122,16 @@ addEventHandler("onClientRender", g_Root, onRender)
 addEventHandler("onClientResourceStart", g_ResRoot, init)
 addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 
+Settings.register
+{
+	name = "msgAboveCar",
+	default = true,
+	cast = tobool,
+	createGui = function(wnd, x, y, w)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Display chat messages above players", Settings.msgAboveCar, false, wnd)
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.msgAboveCar = guiCheckBoxGetSelected(cb)
+	end,
+}

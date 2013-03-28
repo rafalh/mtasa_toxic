@@ -10,57 +10,25 @@ Styles = {
 	pm = "#FF6060",
 }
 
+g_Ready = false
+
 -------------------
 -- Custom events --
 -------------------
 
-addEvent("onClientCall_race", true)
 addEvent("main.onAccountChange", true)
 
 --------------------------------
 -- Local function definitions --
 --------------------------------
 
-local function onClientThisResourceStart(res)
-	--[[local raceRes = getResourceFromName("race")
-	if(raceRes and not triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")) then
-		setTimer(function()
-			local raceRes = getResourceFromName("race")
-			if(raceRes) then
-				triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")
-			end
-		end, 1000, 1)
-	end]]
+local function init(res)
+	Settings.load()
 	
-	loadSettings()
-	
-	--[[if(not bindKey(g_LocalSettings.suicide_key, "down", suicide)) then
-		g_LocalSettings.suicide_key = "k"
-		bindKey("k", "down", suicide)
-	end]]
-	
-	triggerServerEvent("main.onPlayerReady", g_ResRoot, g_LocalSettings.locale)
+	triggerServerEvent("main.onPlayerReady", g_ResRoot, Settings.locale)
 end
 
-local function onClientResourceStart(res)
-	--[[if(getResourceName(res) == "race") then
-		setTimer(function()
-			local raceRes = getResourceFromName("race")
-			if(raceRes) then
-				triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "unbindKey", "k", "down")
-			end
-		end, 1000, 1)
-	end]]
-end
-
-local function onClientThisResourceStop()
-	--[[local raceRes = getResourceFromName("race")
-	if(raceRes) then
-		triggerEvent("onClientCall_race", getResourceRootElement(raceRes), "bindKey", "k", "down", "kill")
-	end]]
-end
-
-local function onClientPlayerQuit(reason)
+local function onPlayerQuit(reason)
 	local nick = getPlayerName(source):gsub("#%x%x%x%x%x%x", "")
 	
 	if(reason == "Kicked") then outputMsg(Styles.joinQuit, "* %s has been kicked from the game.", nick)
@@ -77,8 +45,9 @@ end
 local function onClientInit(accountId, settings, isNew, localeId)
 	g_MyId = accountId
 	g_ServerSettings = settings
-	g_LocalSettings.locale = localeId
+	Settings.locale = localeId
 	triggerEvent("onClientLangChange", g_Root, localeId)
+	g_Ready = true
 	
 	if(isNew) then
 		local userPanelKey = getKeyBoundToCommand("UserPanel") or "-"
@@ -100,10 +69,8 @@ addCommandHandler("clearchat", clearChat, false)
 -- Events --
 ------------
 
-addEventHandler("onClientResourceStart", g_Root, onClientResourceStart)
-addEventHandler("onClientResourceStart", g_ResRoot, onClientThisResourceStart)
-addEventHandler("onClientResourceStop", g_ResRoot, onClientThisResourceStop)
-addEventHandler("onClientPlayerQuit", g_Root, onClientPlayerQuit)
+addEventHandler("onClientResourceStart", g_ResRoot, init)
+addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)
 addInternalEventHandler($(EV_CLIENT_INIT), onClientInit)
 addInternalEventHandler($(EV_SET_GRAVITY), setGravity)

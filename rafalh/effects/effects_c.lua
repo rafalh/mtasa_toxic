@@ -8,8 +8,8 @@
 -- Variables --
 ---------------
 
-g_Effects = {}
-g_EffectsCount = 0
+local g_Effects = {}
+local g_Enabled = {}
 local g_LowFpsSeconds = 0
 
 -------------------
@@ -51,7 +51,7 @@ local function checkFps()
 			
 			-- display message for user
 			if(type(name) == "table") then
-				name = name[g_LocalSettings.locale] or name[1]
+				name = name[Settings.locale] or name[1]
 			end
 			if(name) then
 				outputChatBox(MuiGetMsg("%s has been disabled to improve your FPS!"):format(name), 255, 0, 0)
@@ -62,7 +62,7 @@ local function checkFps()
 	end
 end
 
-local function onClientThisResourceStart()
+local function init()
 	-- Get all effects on startup
 	triggerEvent("onRafalhGetEffects", g_Root)
 	
@@ -70,12 +70,11 @@ local function onClientThisResourceStart()
 	setTimer(checkFps, 1000, 0)
 end
 
-local function onClientResourceStop(res)
+local function onResStop(res)
 	if(not g_Effects[res]) then return end
 	
 	-- Effect has been stoped
 	g_Effects[res] = nil
-	g_EffectsCount = g_EffectsCount - 1
 	
 	-- Effects list has changed
 	invalidateSettingsGui()
@@ -85,26 +84,67 @@ local function onAddEffect(res, name)
 	assert(res)
 	
 	-- Register effect resource
-	if(not g_Effects[res]) then
-		g_EffectsCount = g_EffectsCount + 1
-	end
 	g_Effects[res] = name
 	
 	-- Apply effect settings
-	local res_name = getResourceName(res)
-	local effect_enabled = g_LocalSettings.effects[res_name]
-	if(effect_enabled ~= nil) then
-		call(res, "setEffectEnabled", effect_enabled)
+	local resName = getResourceName(res)
+	local enabled = g_Enabled[resName]
+	if(enabled ~= nil) then
+		call(res, "setEffectEnabled", enabled)
 	end
 	
 	-- Effects list has changed
 	invalidateSettingsGui()
 end
 
+Settings.register
+{
+	name = "effects",
+	default = "",
+	priority = 1000,
+	cast = tostring,
+	onChange = function(oldVal, newVal)
+		g_Enabled = fromJSON(newVal)
+		for res, enabled in pairs(g_Enabled) do
+			local res = getResourceFromName(res)
+			if(res) then
+				call(res, "setEffectEnabled", tobool(enabled))
+			end
+		end
+	end,
+	createGui = function(wnd, x, y, w)
+		guiCreateLabel(x, y + 5, w, 20, "Effects:", false, wnd)
+		local h, gui = 25, {}
+		
+		for res, name in pairs(g_Effects) do
+			local enabled = call(res, "isEffectEnabled")
+			if(type(name) == "table") then
+				name = name[Settings.locale] or name[1]
+			end
+			if(name) then
+				gui[res] = guiCreateCheckBox(x, y + h, w, 20, name, enabled, false, wnd)
+				h = h + 20
+			end
+		end
+		
+		return h, gui
+	end,
+	acceptGui = function(gui)
+		for res, cb in pairs(gui) do
+			local enabled = guiCheckBoxGetSelected(cb)
+			if(g_Effects[res]) then
+				local resName = getResourceName(res)
+				g_Enabled[resName] = enabled
+			end
+		end
+		Settings.effects = toJSON(g_Enabled)
+	end,
+}
+
 ------------
 -- Events --
 ------------
 
-addEventHandler("onClientResourceStart", g_ResRoot, onClientThisResourceStart)
-addEventHandler("onClientResourceStop", g_Root, onClientResourceStop)
+addEventHandler("onClientResourceStart", g_ResRoot, init)
+addEventHandler("onClientResourceStop", g_Root, onResStop)
 addEventHandler("onRafalhAddEffect", g_Root, onAddEffect)
