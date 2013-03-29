@@ -31,7 +31,7 @@ local function isNickChangeAllowed(player, name)
 		return false
 	end
 	
-	if(not AsCanPlayerChangeNick(source, namePlain)) then
+	if(AsCanPlayerChangeNick and not AsCanPlayerChangeNick(source, namePlain)) then
 		return false
 	end
 	
@@ -236,7 +236,7 @@ local function onPlayerReady(localeId)
 	
 	pdata:setLocale(localeId) -- set locale
 	
-	local clientSettings = {}
+	local clientSettings = Settings.getClient()
 	
 	pdata.sync = true -- set sync to true just before init event
 	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new, localeId)

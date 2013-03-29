@@ -12,7 +12,7 @@ local function CmdBuy (message, arg)
 			if (cost) then
 				scriptMsg ("%s has bought %s for %s!", getPlayerName (source), item, formatMoney (cost))
 			else
-				privMsg (source, "You can not buy %s right now.", item)
+				privMsg (source, "You cannot buy %s right now.", item)
 			end
 		elseif(item == "bidlevel") then
 			local bidlvl = pdata.accountData.bidlvl
@@ -76,7 +76,7 @@ local function CmdUse (message, arg)
 		if (ShpUseItem (item, source)) then
 			privMsg (source, "You have successfully used %s!", item)
 		else
-			privMsg (source, "You can not use %s right now!", item)
+			privMsg (source, "You cannot use %s right now!", item)
 		end
 	else
 		privMsg (source, "Usage: %s", arg[1].." <item>")

@@ -15,8 +15,43 @@ local function validateInt(val, min, max)
 	else return val end
 end
 
+function Settings.registerMetaSetting(attr)
+	if(not attr.name) then return end
+	
+	local ch1 = attr.name:sub(1, 1)
+	if(ch1 == "*" or ch1 == "@") then
+		attr.name = attr.name:sub(2)
+	end
+	
+	if(Settings.items[attr.name]) then
+		outputDebugString("Ignoring meta setting "..attr.name, 2)
+		return
+	end
+	
+	local item = {}
+	item.name = attr.name
+	if(attr.accept) then
+		local min, max = attr.accept:match("^(%d+)%-(%d+)$")
+		if(min and max) then
+			item.validate = validateInt
+			item.valArgs = {tonumber(min), tonumber(max)}
+		elseif(attr.accept == "true,false" or attr.accept == "false,true") then
+			item.validate = tobool
+			item.valArgs = {}
+		else
+			item.validate = tostring
+			item.valArgs = {}
+		end
+	end
+	
+	item.client = (attr.type == "client" or attr.type == "shared")
+	item.default = item.validate and item.validate(attr.value, unpack(item.valArgs)) or attr.value
+	
+	Settings.items[item.name] = item
+end
+
 function Settings.loadMeta()
-	local node, i = xmlLoadFile("meta.xml"), 0
+	local node = xmlLoadFile("meta.xml")
 	if(not node) then return false end
 	
 	local settingsNode = xmlFindChild(node, "settings", 0)
@@ -27,36 +62,7 @@ function Settings.loadMeta()
 	
 	for i, subnode in ipairs(xmlNodeGetChildren(settingsNode)) do
 		local attr = xmlNodeGetAttributes(subnode)
-		local item = {}
-		if(attr.accept) then
-			local min, max = attr.accept:match("^(%d+)%-(%d+)$")
-			if(min and max) then
-				item.validate = validateInt
-				item.valArgs = {tonumber(min), tonumber(max)}
-			elseif(attr.accept == "true,false" or attr.accept == "false,true") then
-				item.validate = tobool
-				item.valArgs = {}
-			else
-				item.validate = tostring
-				item.valArgs = {}
-			end
-		end
-		item.client = (attr.type == "client")
-		item.default = item.validate and item.validate(attr.value, unpack(item.valArgs)) or attr.value
-		
-		if(attr.name) then
-			local ch1 = attr.name:sub(1, 1)
-			if(ch1 == "*" or ch1 == "@") then
-				attr.name = attr.name:sub(2)
-			end
-			
-			item.name = attr.name
-			if(Settings.items[item.name]) then
-				outputDebugString("Ignoring meta setting "..item.name, 2)
-			else
-				Settings.items[item.name] = item
-			end
-		end
+		Settings.registerMetaSetting(attr)
 	end
 	
 	xmlUnloadFile(node)
@@ -104,6 +110,16 @@ function Settings.loadPrivate()
 	end
 	
 	return true
+end
+
+function Settings.getClient()
+	local ret = {}
+	for name, item in pairs(Settings.items) do
+		if(item.client) then
+			ret[name] = Settings[name]
+		end
+	end
+	return ret
 end
 
 Settings.__mt.__index = function(self, key)

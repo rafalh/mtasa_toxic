@@ -44,7 +44,7 @@ end
 
 local function onClientInit(accountId, settings, isNew, localeId)
 	g_MyId = accountId
-	g_ServerSettings = settings
+	Settings.setGlobal(settings)
 	Settings.locale = localeId
 	triggerEvent("onClientLangChange", g_Root, localeId)
 	g_Ready = true

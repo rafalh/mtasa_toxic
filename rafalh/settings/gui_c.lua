@@ -20,7 +20,7 @@ local SettingsPanel = {
 
 function SettingsPanel.onSaveClick()
 	for key, gui in pairs(g_SettingGui) do
-		local item = Settings.items[key]
+		local item = Settings.localMap[key]
 		if(item) then
 			item.acceptGui(gui)
 		end
@@ -34,7 +34,7 @@ function SettingsPanel.createScrollPane(panel)
 	g_ScrollPane = guiCreateScrollPane(10, 10, w - 20, h - 50, false, panel)
 	
 	local y = 0
-	for key, item in ipairs(Settings.sorted) do
+	for key, item in ipairs(Settings.localSorted) do
 		if(item.createGui) then
 			local h, gui = item.createGui(g_ScrollPane, 0, y, w - 20)
 			g_SettingGui[item.name] = gui

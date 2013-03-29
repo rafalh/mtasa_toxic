@@ -69,5 +69,4 @@ end
 ------------
 
 addEventHandler("onClientResourceStart", g_ResRoot, SpInit)
---addInternalEventHandler($(EV_CLIENT_INIT), SpInit)
 addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)

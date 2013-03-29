@@ -299,7 +299,6 @@
 		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Player with tags will have they own teams" friendlyname="Clan teams" />
 		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />
 		<setting group="General" name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" friendlyname="Login window" />
-		<setting group="General" name="*debug" accept="false,true" value="false" desc="Scripts debugging" friendlyname="Debugging" />
 		<!--setting group="General" name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." friendlyname="Stunt bonus" /-->
 		
 		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
@@ -335,5 +334,8 @@
 		<setting group="Recording" name="*recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps." friendlyname="Record top times" />
 		<setting group="Recording" name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." friendlyname="Record top times CPs" />
 		<setting group="Recording" name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." friendlyname="Show ghost" />
+		
+		<setting group="Debugging" name="*debug" accept="false,true" value="false" type="shared" desc="Scripts debugging" friendlyname="Debugging" />
+		<setting group="Debugging" name="*perfDebug" accept="false,true" value="false" type="shared" desc="Scripts debugging" friendlyname="Check perfomance" />
 	</settings>
 </meta>
