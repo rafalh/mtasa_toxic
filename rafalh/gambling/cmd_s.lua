@@ -1,5 +1,5 @@
 local function CmdFund (message, arg)
-	local lotto_limit = SmGetUInt ("lotto_limit", 0)
+	local lotto_limit = Settings.lotto_limit
 	scriptMsg ("Lottery fund: %s. Max fund: %s.", formatMoney (GbGetLotteryFund ()), formatMoney (lotto_limit))
 end
 

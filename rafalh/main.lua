@@ -196,7 +196,7 @@ local function onPlayerChat(message, messageType)
 		else
 			outputChatBox(message, player, 255, 0, 255, false)
 		end
-		if(SmGetBool("msgs_above_players")) then
+		if(Settings.msgs_above_players) then
 			local x2, y2, z2 = getElementPosition(player)
 			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and Player.fromEl(player)) then
 				triggerClientInternalEvent(player, $(EV_CLIENT_PLAYER_CHAT), source, message2)
@@ -234,13 +234,9 @@ local function onPlayerReady(localeId)
 		end
 	end
 	
-	
 	pdata:setLocale(localeId) -- set locale
 	
 	local clientSettings = {}
-	clientSettings.lang = localeId
-	clientSettings.breakable_glass = SmGetBool("breakable_glass")
-	clientSettings.red_damage_screen = SmGetBool("red_damage_screen")
 	
 	pdata.sync = true -- set sync to true just before init event
 	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new, localeId)
@@ -250,7 +246,7 @@ local function onPlayerReady(localeId)
 	end
 	
 	local account = getPlayerAccount(client)
-	if(isGuestAccount(account) and pdata.new and SmGetBool("loginWnd")) then
+	if(isGuestAccount(account) and pdata.new and Settings.loginWnd) then
 		triggerClientEvent(client, "main.onLoginReq", g_ResRoot)
 	elseif(not isGuestAccount(account)) then
 		local accountName = getAccountName(account)
@@ -274,3 +270,17 @@ addInitFunc(function()
 	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
 	addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)
 end)
+
+Settings.register
+{
+	name = "version",
+	type = "INTEGER",
+	default = 0,
+}
+
+Settings.register
+{
+	name = "cleanup_done",
+	type = "BOOL",
+	default = 0,
+}

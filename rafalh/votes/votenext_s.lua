@@ -13,13 +13,13 @@ local function onRafalhVotenextResult(roomEl, map_res)
 end
 
 function VtnStart (pattern, player)
-	if (not SmGetBool("votenext_enabled")) then
+	if (not Settings.votenext_enabled) then
 		privMsg(player, "Votenext is disabled!")
 		return
 	end
 	
 	local now = getTickCount ()
-	local votenext_locktime = SmGetUInt ("votenext_locktime", 30)
+	local votenext_locktime = Settings.votenext_locktime
 	if(now - g_LastVotenext < votenext_locktime * 1000) then
 		privMsg(player, "You have to wait %u seconds!", (votenext_locktime * 1000 - (now - g_LastVotenext)) / 1000)
 		return
@@ -57,9 +57,9 @@ function VtnStart (pattern, player)
 	-- Actual vote started here
 	local pollDidStart = call (voteMgrRes, "startPoll", {
 		title = "Set next map to "..mapName.."?",
-		percentage = SmGetUInt ("votenext_percentage", 50),
-		timeout = SmGetUInt ("votenext_timeout", 30),
-		allowchange = SmGetBool ("votenext_allowchange"),
+		percentage = Settings.votenext_percentage,
+		timeout = Settings.votenext_timeout,
+		allowchange = Settings.votenext_allowchange,
 		visibleTo = g_Root,
 		[1] = { "Yes", "onRafalhVotenextResult", g_ResRoot, room.el, map.res },
 		[2] = { "No", "onRafalhVotenextResult", g_ResRoot, room.el, false; default=true },

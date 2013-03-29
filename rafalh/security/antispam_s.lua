@@ -1,12 +1,12 @@
 function AsProcessMsg(player)
 	local pdata = Player.fromEl(player)
-	local spamInterval = SmGetUInt("spam_interval", 500)
+	local spamInterval = Settings.spam_interval
 	local ticks = getTickCount()
 	
 	if(pdata.lastMsg and (ticks - pdata.lastMsg) < spamInterval) then
 		local name = getPlayerName(player)
 		if(pdata.antispamWarning and (ticks - pdata.antispamWarning) < spamInterval) then
-			if(SmGetBool("spammer_kick")) then
+			if(Settings.spammer_kick) then
 				scriptMsg("%s has been kicked for spamming.", name)
 				kickPlayer(player, "Spam")
 			else
@@ -15,7 +15,7 @@ function AsProcessMsg(player)
 			end
 			return true
 		else
-			if(SmGetBool("spammer_kick")) then
+			if(Settings.spammer_kick) then
 				privMsg(player, "Do not spam %s! Otherwise you will get kicked.", name)
 			else
 				privMsg(player, "Do not spam %s! Otherwise you will get muted.", name)
@@ -33,7 +33,7 @@ function AsCanPlayerChangeNick(player, newNick, oldNick)
 	
 	if(oldNick ~= newNick) then
 		local pdata = Player.fromEl(player)
-		local minDelay = SmGetUInt("min_nick_change_delay", 0)
+		local minDelay = Settings.min_nick_change_delay
 		local ticks = getTickCount()
 		
 		if(pdata.lastNickChange and minDelay > 0 and (ticks - pdata.lastNickChange) < minDelay*1000) then

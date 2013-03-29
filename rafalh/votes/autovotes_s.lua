@@ -1,8 +1,8 @@
 local function AvCheckPlayer(player)
-	if(SmGetBool("auto_votekick") and hasObjectPermissionTo(player, "command.kick", false)) then
+	if(Settings.auto_votekick and hasObjectPermissionTo(player, "command.kick", false)) then
 		set("*votemanager.votekick_enabled", false)
 	end
-	if(SmGetBool("auto_votemap") and hasObjectPermissionTo(player, "command.setmap", false)) then
+	if(Settings.auto_votemap and hasObjectPermissionTo(player, "command.setmap", false)) then
 		set("*votemanager.votemap_enabled", false)
 	end
 end
@@ -11,8 +11,8 @@ local function AvOnPlayerLogout()
 	if(wasEventCancelled()) then return end
 	
 	local enable_votekick, enable_votemap = true, true
-	local auto_votekick = SmGetBool("auto_votekick")
-	local auto_votemap = SmGetBool("auto_votemap")
+	local auto_votekick = Settings.auto_votekick
+	local auto_votemap = Settings.auto_votemap
 	
 	for player, pdata in pairs(g_Players) do
 		if(auto_votekick and hasObjectPermissionTo(player, "command.kick", false) and player ~= source) then

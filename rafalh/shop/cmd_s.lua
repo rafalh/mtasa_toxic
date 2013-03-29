@@ -16,7 +16,7 @@ local function CmdBuy (message, arg)
 			end
 		elseif(item == "bidlevel") then
 			local bidlvl = pdata.accountData.bidlvl
-			local price = bidlvl * SmGetUInt ("bidlvl_price", 1000)
+			local price = bidlvl * Settings.bidlvl_price
 			if (pdata.accountData.cash < price) then
 				privMsg (source, "You do not have enough cash! Bidlevel costs %s.", formatMoney (price))
 			else
@@ -50,7 +50,7 @@ local function CmdCost (message, arg)
 		elseif(item == "bidlevel") then
 			local pdata = Player.fromEl(source)
 			local bidlvl = pdata.accountData.bidlvl
-			local price = bidlvl * SmGetUInt("bidlvl_price", 1000)
+			local price = bidlvl * Settings.bidlvl_price
 			privMsg(source, "Bidlevel costs %s.", formatMoney(price))
 		else
 			privMsg(source, "There is no item \"%s\"! Use /itemlist to get list of items.", item)

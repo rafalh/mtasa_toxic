@@ -2,6 +2,8 @@ local g_Connection, g_Ready = false, false
 local g_Config = {}
 local SQLITE_DB_PATH = "conf/db.sqlite"
 
+DbPrefix = ""
+
 function DbStr(str)
 	return "'"..tostring(str):gsub("'", "''").."'"
 end
@@ -101,12 +103,12 @@ local function DbAutoBackupSQLite()
 	local now = getRealTime().timestamp
 	
 	local backupsInt = touint(g_Config.backupInterval, 0) * 3600 * 24
-	if(backupsInt > 1000 and now - SmGetInt("backup_timestamp", 0) < backupsInt - 1000) then return end
+	if(backupsInt > 1000 and now - Settings.backup_timestamp < backupsInt - 1000) then return end
 	
 	outputDebugString("Auto-backup...", 3)
 	DbBackupSQLite()
 	
-	SmSet("backup_timestamp", now)
+	Settings.backup_timestamp = now
 end
 
 local function DbInitSQLite()
@@ -189,6 +191,8 @@ function DbInit()
 		return false
 	end
 	
+	DbPrefix = g_Config.tblprefix or ""
+	
 	if(success) then
 		g_Ready = true
 	end
@@ -199,3 +203,10 @@ end
 function DbIsReady()
 	return g_Ready
 end
+
+Settings.register
+{
+	name = "backup_timestamp",
+	type = "INTEGER",
+	default = 0,
+}

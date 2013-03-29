@@ -159,7 +159,7 @@ local function RcOnRecording(map_id, recording)
 	
 	--outputDebugString("RcOnRecording", 3)
 	
-	if(SmGetBool("recorder")) then
+	if(Settings.recorder) then
 		local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
 		
 		-- check if player has a toptime
@@ -202,7 +202,7 @@ function RcStartRecording(room, map_id)
 	
 	local rows = DbQuery("SELECT player, time, rec FROM rafalh_besttimes WHERE map=? AND length(rec)>0 ORDER BY time LIMIT 1", map_id)
 	local rec, rec_title = false, nil
-	if(rows and rows[1] and SmGetBool("ghost")) then
+	if(rows and rows[1] and Settings.ghost) then
 		outputDebugString ("Showing ghost", 3)
 		local data = zlibUncompress(rows[1].rec)
 		if(not data) then outputDebugString("Failed to uncompress", 2) end

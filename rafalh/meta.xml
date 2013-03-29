@@ -185,7 +185,8 @@
 	<script src="security/antispam_s.lua" type="server" />
 	<script src="security/censor_s.lua" type="server" />
 	<script src="security/nickBlocker_s.lua" type="server" />
-	<config src="conf/banned_names.xml" />
+	<config src="conf/banned_names.xml" type="server" />
+	<config src="conf/censor.xml" type="server" />
 	
 	<script src="shop/main_s.lua" type="server" />
 	<script src="shop/cmd_s.lua" type="server" />
@@ -234,7 +235,6 @@
 	
 	<script src="stop.lua" type="server" />
 	
-	<config src="conf/censor.xml" />
 	<config src="conf/commands.xml" />
 	<config src="conf/msg_cmd.xml" />
 	<config src="conf/teams.xml" />
@@ -294,8 +294,6 @@
 		<setting group="General" name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." friendlyname="Kill AFK players" />
 		<setting group="General" name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after /mute command. If it equals 0, mute stop working when player quit." friendlyname="Mute time" />
 		<setting group="General" name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." friendlyname="Chat messages above players" />
-		<setting group="General" name="*breakable_glass" type="client" accept="false,true" value="true" desc="If set to true, script will show glass hole when your vehicle get big demage." friendlyname="Breakable glass" />
-		<setting group="General" name="*red_damage_screen" type="client" accept="false,true" value="true" desc="If set to true, script will change screen color to red for a moment when your vehicle get big demage." friendlyname="Red damage screen" />
 		<setting group="General" name="*max_warns" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." friendlyname="Maximum warnings" />
 		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Player with tags will have they own teams" friendlyname="Clan teams" />
 		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />

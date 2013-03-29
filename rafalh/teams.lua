@@ -47,7 +47,7 @@ local function TmUpdatePlayerTeam ( player, name )
 		end
 	end
 	
-	if ( not player_team_data and SmGetBool ( "clan_teams" ) and player_clan and not g_TeamNameMap[player_clan] ) then
+	if ( not player_team_data and Settings.clan_teams and player_clan and not g_TeamNameMap[player_clan] ) then
 		player_team_data = { name = player_clan }
 	end
 	

@@ -59,9 +59,9 @@ local function GbSpinTimer(player, n, cash)
 end
 
 local function GbLotteryFundInc()
-	local lotto_limit = SmGetUInt("lotto_limit", 0)
+	local lotto_limit = Settings.lotto_limit
 	if(g_PlayersCount > 0 and g_LotteryFund < lotto_limit) then
-		local max_fund_inc = SmGetUInt("max_fund_inc", 1000)
+		local max_fund_inc = Settings.max_fund_inc
 		local n = math.random(1, max_fund_inc)
 		g_LotteryFund = g_LotteryFund + n
 		scriptMsg("Lottery time! %s added to the fund!", formatMoney(n))
@@ -126,7 +126,7 @@ function GbAddLotteryTickets(player, tickets_count)
 		g_LotteryPlayers[pdata.id] = 0
 	end
 	
-	local max_tickets = SmGetUInt("max_tickets", 0)
+	local max_tickets = Settings.max_tickets
 	if(g_LotteryPlayers[pdata.id] + tickets_count > max_tickets) then
 		privMsg(player, "You can buy only %u tickets more, because maximal number of tickets per player is %u!", max_tickets - g_LotteryPlayers[pdata.id], max_tickets)
 		return false
@@ -135,7 +135,7 @@ function GbAddLotteryTickets(player, tickets_count)
 	g_LotteryPlayers[pdata.id] = g_LotteryPlayers[pdata.id] + tickets_count
 	g_LotteryFund = g_LotteryFund + tickets_count
 	
-	local lotto_limit = SmGetUInt("lotto_limit", 100000)
+	local lotto_limit = Settings.lotto_limit
 	if(not _lottery_time and g_LotteryFund >= lotto_limit) then
 		if(not g_FinishLotteryTimer) then
 			g_FinishLotteryTimer = setTimer(GbTryToFinishLottery, 1000, 1)
@@ -201,7 +201,7 @@ local function GbOnMapStop()
 end
 
 local function GbInit()
-	local fund_inc_interval = SmGetUInt("fund_inc_interval", 0)
+	local fund_inc_interval = Settings.fund_inc_interval
 	if(fund_inc_interval > 0) then
 		setTimer(GbLotteryFundInc, fund_inc_interval * 1000, 0)
 	end
@@ -268,8 +268,8 @@ local function GbBetsPlacedTimer()
 end
 
 function GbStartBets()
-	local bet_time = SmGetUInt("bet_time", 0)
-	local bet_min_players = SmGetUInt("bet_min_players", 0)
+	local bet_time = Settings.bet_time
+	local bet_min_players = Settings.bet_min_players
 	if(bet_time > 0 and g_PlayersCount >= bet_min_players) then
 		g_BetsTimer = setTimer(GbBetsPlacedTimer, bet_time * 1000, 1)
 		scriptMsg("Place Your Bets!")

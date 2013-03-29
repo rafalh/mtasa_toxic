@@ -98,12 +98,6 @@ function isPlayerDead ( player )
 	return ( state ~= "alive" )
 end
 
-function suicide ()
-	if ( not executeCommandHandler ( "kill" ) ) then
-		setElementHealth ( g_Me, 0 )
-	end
-end
-
 ------------
 -- Events --
 ------------

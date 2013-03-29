@@ -9,7 +9,7 @@ addEvent ( "onPlayerStuntComplete", true )
 ------------
 
 addEventHandler("onPlayerStuntComplete", g_Root, function(stuntType, vehicle, time, distance, height, rotation, greatLanding)
-	if(SmGetBool("stunt_bonus")) then
+	if(Settings.stunt_bonus) then
 		local addcash
 		if ( stuntType == "Jump" ) then
 			addcash = distance * 4 + height * 8 + rotation * 200/360

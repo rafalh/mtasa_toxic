@@ -1,17 +1,17 @@
 local function AvpTimerProc()
-	local m = SmGetUInt("arit_avg_players_m", 0)
-	local avg = SmGetNum("avg_players", 0)
+	local m = Settings.arit_avg_players_m
+	local avg = Settings.avg_players
 	
 	if(m < 60*24*7) then -- during first week use aritmetic average
-		SmSet("avg_players", (avg*m + g_PlayersCount)/(m + 1))
-		SmSet("arit_avg_players_m", m + 1)
+		Settings.avg_players = (avg*m + g_PlayersCount)/(m + 1)
+		Settings.arit_avg_players_m = m + 1
 	else
-		SmSet("avg_players", avg*0.99993 + g_PlayersCount*0.00007) -- last week has weight of 50%; 0.5^(1/60/24/7)
+		Settings.avg_players = avg*0.99993 + g_PlayersCount*0.00007 -- last week has weight of 50%; 0.5^(1/60/24/7)
 	end
 end
 
 local function CmdAvgPlayers(message, arg)
-	scriptMsg("Average players count: %.1f.", SmGetNum("avg_players", 0))
+	scriptMsg("Average players count: %.1f.", Settings.avg_players)
 end
 
 local function AvpInit()
@@ -20,3 +20,17 @@ end
 
 CmdRegister("avgplayers", CmdAvgPlayers, false, "Shows avarange players count")
 addInitFunc(AvpInit)
+
+Settings.register
+{
+	name = "avg_players",
+	type = "INTEGER",
+	default = 0,
+}
+
+Settings.register
+{
+	name = "arit_avg_players_m",
+	type = "INTEGER",
+	default = 0,
+}

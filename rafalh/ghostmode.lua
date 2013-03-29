@@ -45,7 +45,7 @@ function GmSet(room, enabled, quiet)
 		outputMsg(room, Styles.green, "Ghostmode enabled for %u seconds!", sec)
 		GmSetEnabled(room, true)
 		
-		local no_gm_warning_time = SmGetUInt("no_gm_warning_time", 0)
+		local no_gm_warning_time = Settings.no_gm_warning_time
 		local sec_before_warning = gm_time - no_gm_warning_time
 		
 		setMapTimer(function(room)

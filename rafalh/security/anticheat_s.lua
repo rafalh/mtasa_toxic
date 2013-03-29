@@ -12,13 +12,13 @@ end
 
 local function AcCheckPlayer ( player )
 	-- max vielocity
-	local max_v = SmGetNum ( "max_viel", 0 )
+	local max_v = Settings.max_viel
 	if ( max_v > 0 and not isPedDead ( player ) and not g_HighSpeedAllowed ) then
 		local speedx, speedy = getElementVelocity ( player )
 		local speed = ( ( speedx^2 + speedy^2 )^0.5 ) * 161
 		
 		if ( speed > max_v ) then
-			if ( not SmGetBool ( "max_viel_kick" ) ) then
+			if ( not Settings.max_viel_kick ) then
 				local show_msg = true
 				for player2, pdata2 in pairs ( g_Players ) do
 					if ( hasObjectPermissionTo ( player2, "resource."..g_ResName..".ac_messages", false ) ) then
@@ -27,7 +27,7 @@ local function AcCheckPlayer ( player )
 					end
 				end
 				
-				if ( show_msg and SmGetBool ( "show_ac_msgs" ) ) then
+				if ( show_msg and Settings.show_ac_msgs ) then
 					scriptMsg ( "%s's speed in horizontal plane: %.1f km/h. He seems to cheat!", getPlayerName ( player ), speed )
 				end
 			else
@@ -38,7 +38,7 @@ local function AcCheckPlayer ( player )
 	end
 	
 	-- fps anticheat
-	if ( SmGetBool ( "fps_anticheat" ) ) then
+	if (Settings.fps_anticheat) then
 		local pdata = Player.fromEl(player)
 		local fps = tonumber ( getElementData ( player, "fps" ) )
 		local fps_limit = getFPSLimit ()

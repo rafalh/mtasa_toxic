@@ -210,14 +210,14 @@ local function onMapStart(map, room)
 		-- init some players data
 		for player, pdata in pairs (g_Players) do
 			if(pdata.room == room) then
-				pdata.cp_times = SmGetBool("cp_recorder") and room.isRace and {}
+				pdata.cp_times = Settings.cp_recorder and room.isRace and {}
 				pdata.winner = false
 			end
 		end
 		
 		-- start recording
 		local winning_veh = map_type and map_type.winning_veh
-		room.recording = (room.isRace or winning_veh) and SmGetBool ("recorder")
+		room.recording = (room.isRace or winning_veh) and Settings.recorder
 		if (room.isRace or winning_veh) then
 			if (room.recording) then
 				RcStartRecording(room, map_id)

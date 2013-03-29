@@ -9,7 +9,7 @@ local function AcmpClear(player)
 end
 
 local function AcmpCheckPlayer(player)
-	local kill_afk = SmGetUInt("kill_afk", 0)
+	local kill_afk = Settings.kill_afk
 	local room = Player.fromEl(player).room
 	local currentMap = getCurrentMap(room)
 	if(kill_afk == 0 or currentMap and currentMap:getRespawn()) then

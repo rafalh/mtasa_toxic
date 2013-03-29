@@ -10,13 +10,13 @@ local function CmdBet(message, arg)
 		targetPlayer = sourcePlayer
 	end
 	if(cash and targetPlayer) then
-		local bet_min_players = SmGetUInt ("bet_min_players", 0)
+		local bet_min_players = Settings.bet_min_players
 		if(g_PlayersCount < bet_min_players) then
 			privMsg (sourcePlayer.el, "Not enough players to bet - %u are needed.", bet_min_players)
 		elseif(GbAreBetsPlaced ()) then
 			privMsg(sourcePlayer.el, "Bets are placed!")
 		elseif (cash) then
-			local max_bet = SmGetUInt("max_bet", 0) * sourcePlayer.accountData:get("bidlvl")
+			local max_bet = Settings.max_bet * sourcePlayer.accountData:get("bidlvl")
 			if(sourcePlayer.accountData:get("cash") < cash) then
 				privMsg(sourcePlayer.el, "You do not have enough cash!")
 			elseif (cash > max_bet) then

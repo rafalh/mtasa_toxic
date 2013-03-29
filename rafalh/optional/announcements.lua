@@ -35,7 +35,7 @@ local function AnInit ()
 		end
 	end
 	
-	local announc_interval = SmGetUInt ( "announc_interval", 360 )
+	local announc_interval = Settings.announc_interval
 	if ( #g_Announcements > 0 and announc_interval > 0 ) then
 		setTimer ( AnPrintNext, announc_interval * 1000, 0 )
 	end

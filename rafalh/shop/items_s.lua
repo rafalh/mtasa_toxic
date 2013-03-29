@@ -436,7 +436,7 @@ local function ShpBuyNextMap(mapResName)
 		return
 	end
 	
-	local minDelayForPlayer = SmGetUInt("minBuyMapPlayerDelay", 600)
+	local minDelayForPlayer = Settings.minBuyMapPlayerDelay
 	local mapBoughtTimestamp = pdata.accountData:get("mapBoughtTimestamp")
 	if(mapBoughtTimestamp > 0 and now - mapBoughtTimestamp < minDelayForPlayer) then
 		local delay = mapBoughtTimestamp + minDelayForPlayer - now
@@ -447,7 +447,7 @@ local function ShpBuyNextMap(mapResName)
 	local map_id = map:getId()
 	local rows = DbQuery("SELECT played_timestamp FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	
-	local minDelayForMap = SmGetUInt("minBuyMapDelay", 600)
+	local minDelayForMap = Settings.minBuyMapDelay
 	local dt = now - rows[1].played_timestamp
 	if(dt > minDelayForMap) then
 		local pos = MqAdd(room, map)

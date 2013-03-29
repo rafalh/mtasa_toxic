@@ -1,7 +1,7 @@
 local g_ForbWords = {}
 
 function CsProcessMsg(msg, player)
-	if(not SmGetBool("censor")) then
+	if(not Settings.censor) then
 		return 0, msg
 	end
 	

@@ -19,7 +19,7 @@ function RtPlayerRate(rate)
 	
 	local rows = DbQuery("SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
 	local oldRate = rows and rows[1] and rows[1].rate
-	if(not oldRate or SmGetBool("allow_rate_change")) then
+	if(not oldRate or Settings.allow_rate_change) then
 		if(oldRate) then
 			assert(mapData.rates_count > 0 and mapData.rates > 0)
 			mapData.rates = mapData.rates - oldRate + rate

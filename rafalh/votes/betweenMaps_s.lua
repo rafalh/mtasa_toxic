@@ -23,10 +23,10 @@ local function onPollStarting ( poll )
 		nextMap:start(room)
 	else
 		local maps = getMapsList()
-		local vote_type = SmGetStr ( "vote_between_maps" )
-		local show_ratings = ( vote_type == "1" )
-		local random_play_again_vote = ( vote_type == "2" )
-		local map_type_vote = ( vote_type == "3" )
+		local vote_type = Settings.vote_between_maps
+		local show_ratings = (vote_type == 1)
+		local random_play_again_vote = (vote_type == 2)
+		local map_type_vote = (vote_type == 3)
 		local map_types_count = 0
 		local poll_map_types = {}
 		

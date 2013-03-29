@@ -83,7 +83,7 @@ local function CmdMute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
 	
 	if (playerEl) then
-		mutePlayer(playerEl, tonumber (arg[3]) or SmGetUInt ("mute_time"), source)
+		mutePlayer(playerEl, tonumber (arg[3]) or Settings.mute_time, source)
 	else privMsg(source, "Usage: %s", arg[1].." <player> [<time>]") end
 end
 
@@ -122,7 +122,7 @@ local function CmdWarn(message, arg)
 	if (player) then
 		local warns = player.accountData:get("warnings") + 1
 		player.accountData:set("warnings", warns)
-		local max_warns = SmGetUInt ("max_warns", 0)
+		local max_warns = Settings.max_warns
 		if(max_warns > 0) then
 			scriptMsg ("%s has been warned %u. time (limit: %u)!", getPlayerName(player.el), warns, max_warns)
 		else

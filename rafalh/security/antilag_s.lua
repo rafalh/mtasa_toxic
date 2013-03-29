@@ -1,8 +1,8 @@
 local g_MinFps = 0
 
 local function AlCalcMinFps()
-	g_MinFps = SmGetUInt("min_fps", 0)
-	local min_fps_div = SmGetNum("min_fps_div", 0)
+	g_MinFps = Settings.min_fps
+	local min_fps_div = Settings.min_fps_div
 	
 	if(min_fps_div > 0) then
 		local fps_sum, c = 0, 0
@@ -24,13 +24,13 @@ local function AlCheckPlayer(player)
 	local bGhostmode = GmIsEnabled(pdata.room)
 	
 	-- max ping
-	local maxPing = SmGetUInt("max_ping", 0)
+	local maxPing = Settings.max_ping
 	local playerPing = getPlayerPing(player)
 	local lags = pdata.lags
 	
 	if(maxPing > 0 and playerPing > maxPing) then -- lagger
 		if(not bGhostmode and not isPedDead(player)) then -- player can collide
-			local maxPingTime = SmGetUInt ( "max_ping_time", 0 )
+			local maxPingTime = Settings.max_ping_time
 			local ticks = getTickCount ()
 			
 			if (not lags) then
@@ -118,7 +118,7 @@ end
 CmdRegister("minfps", CmdMinFps, false)
 
 local function CmdMaxPing(message, arg)
-	local max_ping = SmGetUInt("max_ping", 0)
+	local max_ping = Settings.max_ping
 	if ( max_ping > 0 ) then
 		scriptMsg("Maximal ping: %u.", max_ping)
 	else

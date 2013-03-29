@@ -1,7 +1,3 @@
---------------------------------
--- Local function definitions --
---------------------------------
-
 local g_InitFuncs = {}
 local _addEventHandler
 
@@ -10,72 +6,36 @@ local function setupDatabase()
 		return false
 	end
 	
+	if(not Settings.init()) then
+		return false
+	end
+	
 	local err = false
 	
 	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_players ("..
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."players ("..
 			PlayerAccountData.getDbTableFields()..")")) then
-		err = "Cannot create rafalh_players table."
+		err = "Cannot create players table."
 	end
 	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_players_idx ON rafalh_players (account)" ) ) then
-		err = "Cannot create rafalh_players_idx index."
+			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."players_idx ON "..DbPrefix.."players (account)" ) ) then
+		err = "Cannot create players_idx index."
 	end
 	
 	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_names ("..
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."names ("..
 			"player INTEGER NOT NULL,"..
-			"name VARCHAR(32) NOT NULL)")) then
-		err = "Cannot create rafalh_names table."
+			"name VARCHAR(32) NOT NULL,"..
+			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player))")) then
+		err = "Cannot create names table."
 	end
 	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_names_idx ON rafalh_names (player)" ) ) then
-		err = "Cannot create rafalh_names_idx index."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_rates ("..
-			"player INTEGER NOT NULL,"..
-			"map INTEGER NOT NULL,"..
-			"rate TINYINT NOT NULL)")) then
-		err = "Cannot create rafalh_rates table."
-	end
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_rates_idx ON rafalh_rates (map)" ) ) then
-		err = "Cannot create rafalh_rates_idx index."
+			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."names_idx ON "..DbPrefix.."names (player)" ) ) then
+		err = "Cannot create names_idx index."
 	end
 	
 	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_besttimes ("..
-			"player INTEGER NOT NULL,"..
-			"map INTEGER NOT NULL,"..
-			"time INTEGER NOT NULL,"..
-			"rec BLOB DEFAULT x'' NOT NULL,"..
-			"cp_times BLOB DEFAULT x'' NOT NULL,"..
-			"timestamp INTEGER)")) then
-		err = "Cannot create rafalh_besttimes table."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_besttimes_idx ON rafalh_besttimes (map, time)" ) ) then
-		err = "Cannot create rafalh_besttimes_idx index."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_besttimes_idx2 ON rafalh_besttimes (map, player)" ) ) then
-		err = "Cannot create rafalh_besttimes_idx2 index."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_profiles ("..
-			"player INTEGER NOT NULL,"..
-			"field VARCHAR(64) NOT NULL,"..
-			"value VARCHAR(255) NOT NULL)")) then
-		err = "Cannot create rafalh_profiles table."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_maps ("..
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."maps ("..
 			"map INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"..
 			"name VARCHAR(255) NOT NULL,"..
 			"played INTEGER DEFAULT 0 NOT NULL,"..
@@ -84,60 +44,83 @@ local function setupDatabase()
 			"removed VARCHAR(255) DEFAULT '' NOT NULL,"..
 			"played_timestamp INTEGER DEFAULT 0 NOT NULL,"..
 			"added_timestamp INTEGER DEFAULT 0 NOT NULL)")) then
-		err = "Cannot create rafalh_maps table."
+		err = "Cannot create maps table."
 	end
 	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS rafalh_maps_idx ON rafalh_maps (name)" ) ) then
-		err = "Cannot create rafalh_maps_idx index."
+			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."maps_idx ON "..DbPrefix.."maps (name)" ) ) then
+		err = "Cannot create maps_idx index."
 	end
 	
 	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS rafalh_settings ("..
-			"version INTEGER DEFAULT 0 NOT NULL,"..
-			"avg_players REAL DEFAULT 0 NOT NULL,"..
-			"arit_avg_players_m INTEGER DEFAULT 0 NOT NULL,"..
-			"cleanup_done BOOL DEFAULT 0 NOT NULL)")) then
-		err = "Cannot create rafalh_settings table."
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."rates ("..
+			"player INTEGER NOT NULL,"..
+			"map INTEGER NOT NULL,"..
+			"rate TINYINT NOT NULL,"..
+			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
+			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map))")) then
+		err = "Cannot create rates table."
 	end
+	if(not err and not DbQuery(
+			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."rates_idx ON "..DbPrefix.."rates (map)" ) ) then
+		err = "Cannot create rates_idx index."
+	end
+	
+	if(not err and not DbQuery(
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."besttimes ("..
+			"player INTEGER NOT NULL,"..
+			"map INTEGER NOT NULL,"..
+			"time INTEGER NOT NULL,"..
+			"rec BLOB DEFAULT x'' NOT NULL,"..
+			"cp_times BLOB DEFAULT x'' NOT NULL,"..
+			"timestamp INTEGER,"..
+			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
+			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map))")) then
+		err = "Cannot create besttimes table."
+	end
+	
+	if(not err and not DbQuery(
+			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."besttimes_idx ON "..DbPrefix.."besttimes (map, time)" ) ) then
+		err = "Cannot create besttimes_idx index."
+	end
+	
+	if(not err and not DbQuery(
+			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."besttimes_idx2 ON "..DbPrefix.."besttimes (map, player)" ) ) then
+		err = "Cannot create besttimes_idx2 index."
+	end
+	
+	if(not err and not DbQuery(
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."profiles ("..
+			"player INTEGER NOT NULL,"..
+			"field VARCHAR(64) NOT NULL,"..
+			"value VARCHAR(255) NOT NULL,"..
+			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player))")) then
+		err = "Cannot create profiles table."
+	end
+	
+	Settings.createDbTbl()
 	
 	local currentVer = 147
-	local ver = SmGetUInt("version", currentVer)
+	local ver = Settings.version
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
-		set("version", false)
-		SmSet("version", currentVer)
-		outputDebugString ("Version: "..ver, 2)
+		Settings.version = currentVer
+		outputDebugString("Version: "..ver, 2)
 	end
 	
 	if(ver < currentVer) then
-		if(not err and ver < 143) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN racesFinished INTEGER DEFAULT 0 NOT NULL")) then
-				err = "Failed to add racesFinished column."
-			end
-		end
-		if(not err and ver < 144) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN email VARCHAR(128) DEFAULT '' NOT NULL")) then
-				err = "Failed to add email column."
-			end
-		end
-		if(not err and ver < 145) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN mapBoughtTimestamp INT DEFAULT 0 NOT NULL")) then
-				err = "Failed to add mapBoughtTimestamp column."
-			end
-		end
 		if(not err and ver < 146) then
-			if(not DbQuery("ALTER TABLE rafalh_maps ADD COLUMN added_timestamp INT DEFAULT 0 NOT NULL")) then
+			if(not DbQuery("ALTER TABLE "..DbPrefix.."maps ADD COLUMN added_timestamp INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add added_timestamp column."
 			end
 		end
 		if(not err and ver < 147) then
-			if(not DbQuery("ALTER TABLE rafalh_players ADD COLUMN achvCount INT DEFAULT 0 NOT NULL")) then
+			if(not DbQuery("ALTER TABLE "..DbPrefix.."players ADD COLUMN achvCount INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add achvCount column."
 			end
 		end
 		
 		if(not err) then
-			SmSet("version", currentVer)
+			Settings.version = currentVer
 			outputDebugString("Database update ("..ver.." -> "..currentVer..") succeeded", 2)
 		end
 	end
@@ -291,11 +274,11 @@ local function init()
 		return
 	end
 	
-	if(not SmGetBool("cleanup_done")) then
+	if(not Settings.cleanup_done) then
 		outputDebugString("Cleaning database!", 2)
-		DbQuery("UPDATE rafalh_players SET online=0")
+		DbQuery("UPDATE "..DbPrefix.."players SET online=0")
 	end
-	SmSet("cleanup_done", false)
+	Settings.cleanup_done = false
 	
 	LocaleList.init()
 	LoadCountries()

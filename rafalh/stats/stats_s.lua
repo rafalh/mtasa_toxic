@@ -88,7 +88,7 @@ local function StLoadRanks()
 end
 
 local function StOnPlayerConnect(playerNick, playerIP, playerUsername, playerSerial)
-	local max_warns = SmGetUInt("max_warns", 0)
+	local max_warns = Settings.max_warns
 	if(max_warns > 0) then
 		local rows = DbQuery("SELECT warnings FROM rafalh_players WHERE serial=? LIMIT 1", playerSerial)
 		local data = rows and rows[1]
