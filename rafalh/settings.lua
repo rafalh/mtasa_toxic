@@ -93,7 +93,12 @@ function Settings.loadPrivate()
 		assert(item)
 		
 		if(item.type == "BOOL" or item.type == "BOOLEAN") then
+			item.validate = tobool
+			item.valArgs = {}
 			val = tobool(val)
+		elseif(item.type == "INT" or item.type == "INTEGER") then
+			item.validate = toint
+			item.valArgs = {}
 		end
 		item.value = val
 	end
@@ -110,17 +115,21 @@ Settings.__mt.__index = function(self, key)
 		outputDebugString("Unknown setting "..tostring(key), 2)
 		return nil
 	end
-	if(item.value == nil) then
-		local val = get(key)
-		if(item.validate) then
-			val = item.validate(val, unpack(item.valArgs))
-			if(val == nil) then
-				outputDebugString("Invalid setting value: "..key, 2)
-				val = item.default
-			end
-		end
-		item.value = val
+	
+	if(item.value ~= nil) then
+		-- Already in cache
+		return item.value
 	end
+	
+	item.value = get(key)
+	if(item.validate) then
+		item.value = item.validate(item.value, unpack(item.valArgs))
+	end
+	if(item.value == nil) then
+		outputDebugString("Invalid setting value: "..key, 2)
+		item.value = item.default
+	end
+	
 	return item.value
 end
 
@@ -141,11 +150,12 @@ function Settings.__mt.__newindex(self, key, val)
 	if(newVal ~= oldVal) then
 		item.value = newVal
 		if(item.priv) then
-			if(item.type == "BOOL") then
-				newVal = newVal and 1 or 0
+			local sqlVal = newVal
+			if(type(sqlVal) == "boolean") then
+				sqlVal = sqlVal and 1 or 0
 			end
-			DbQuery("UPDATE "..DbPrefix.."settings SET "..key.."=?", newVal)
-		elseif(not item._inSet) then
+			DbQuery("UPDATE "..DbPrefix.."settings SET "..key.."=?", sqlVal)
+		else
 			set(key, newVal)
 		end
 		
@@ -158,13 +168,12 @@ end
 function Settings.init()
 	local success = Settings.loadMeta() and Settings.createDbTbl() and Settings.loadPrivate()
 	if(not success) then return false end
-	
-	outputServerLog("allow_rate_change "..tostring(Settings.allow_rate_change).." ("..type(Settings.allow_rate_change)..")")
-	
 	return true
 end
 
 function Settings.onChange(name, oldVal, newVal)
+	local startTicks = getTickCount()
+	
 	local ch1 = name:sub(1, 1)
 	if(ch1 == "*" or ch1 == "@") then
 		name = name:sub(2)
@@ -180,6 +189,7 @@ function Settings.onChange(name, oldVal, newVal)
 		return
 	end
 	
+	newVal = fromJSON(newVal) or newVal
 	if(item.validate) then
 		newVal = item.validate(newVal, unpack(item.valArgs))
 	end
@@ -193,6 +203,7 @@ function Settings.onChange(name, oldVal, newVal)
 	if(item.value ~= nil) then
 		oldVal = item.value
 	else
+		oldVal = fromJSON(oldVal) or oldVal
 		oldVal = item.validate and item.validate(oldVal, unpack(item.valArgs)) or oldVal
 		if(oldVal == nil) then oldVal = item.default end
 	end
@@ -200,6 +211,11 @@ function Settings.onChange(name, oldVal, newVal)
 	item.value = newVal
 	if(item.onChange and newVal ~= oldVal) then
 		item.onChange(oldVal, newVal)
+	end
+
+	local dt = getTickCount() - startTicks
+	if(dt > 1) then
+		outputDebugString("Too slow "..dt, 2)
 	end
 end
 

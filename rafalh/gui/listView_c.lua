@@ -6,6 +6,7 @@ ListView.style = {}
 ListView.style.normal = {clr = {196, 196, 196}, a = 0.8, fnt = "default-normal"}
 ListView.style.hover = {clr = {255, 255, 255}, a = 1, fnt = "default-normal"}
 ListView.style.active = {clr = {255, 255, 255}, a = 1, fnt = "default-bold-small"}
+ListView.style.iconPos = "top"
 
 function ListView:addItem(name, img, id, style)
 	local idxX = #self.items % self.cols
@@ -20,15 +21,30 @@ function ListView:addItem(name, img, id, style)
 	item.bgEl = guiCreateStaticImage(0, 0, w, h, "img/white.png", false, item.el)
 	guiSetAlpha(item.bgEl, 0)
 	
-	local imgX, imgY = (w - self.imgSize[1])/2, 5
+	local imgX, imgY
+	local titleX, titleY
+	local titleW, titleH
+	
+	if(self.style.iconPos == "top" or not self.style.iconPos) then
+		imgX, imgY = (w - self.imgSize[1])/2, 5
+		titleX, titleY = 0, 10 + self.imgSize[2]
+		titleW, titleH = w, h - 10 - self.imgSize[2]
+	elseif(self.style.iconPos == "left") then
+		imgX, imgY = 5, 5
+		titleX, titleY = 10 + self.imgSize[2], 10
+		titleW, titleH = w - titleX, h - 20
+	else
+		assert(false)
+	end
+	
 	local imgPath = img or "img/empty.png"
 	item.imgEl = guiCreateStaticImage(imgX, imgY, self.imgSize[1], self.imgSize[2], imgPath, false, item.el)
 	guiSetAlpha(item.imgEl, item.style.normal.a)
 	
-	local titleX, titleY = 0, 10 + self.imgSize[2]
-	local titleW, titleH = w, h - 10 - self.imgSize[2]
 	item.titleEl = guiCreateLabel(titleX, titleY, titleW, titleH, name, false, item.el)
-	guiLabelSetHorizontalAlign(item.titleEl, "center", true)
+	if(self.style.iconPos == "top" or not self.style.iconPos) then
+		guiLabelSetHorizontalAlign(item.titleEl, "center", true)
+	end
 	guiLabelSetColor(item.titleEl, unpack(item.style.normal.clr))
 	guiSetFont(item.titleEl, item.style.normal.fnt)
 	
