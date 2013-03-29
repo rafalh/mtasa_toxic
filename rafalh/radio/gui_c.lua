@@ -136,6 +136,8 @@ local function onFilterChange()
 end
 
 local function createGui(panel)
+	DbgPerfInit()
+	
 	g_Panel = panel
 	local w, h = guiGetSize(panel, false)
 	
@@ -176,6 +178,8 @@ local function createGui(panel)
 	
 	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
 	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	
+	DbgPerfCp("Radio GUI creation")
 end
 
 function RadioPanel.onShow(panel)

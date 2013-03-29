@@ -230,6 +230,7 @@
 	
 	<script src="about/gui_c.lua" type="client" />
 	<file src="about/icon.png" />
+	<file src="about/logo.jpg" />
 	<config src="conf/about.xml" type="client" />
 	<!-- MODULES END -->
 	

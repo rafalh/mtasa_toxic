@@ -30,7 +30,7 @@ function ListView:addItem(name, img, id, style)
 		titleX, titleY = 0, 10 + self.imgSize[2]
 		titleW, titleH = w, h - 10 - self.imgSize[2]
 	elseif(self.style.iconPos == "left") then
-		imgX, imgY = 5, 5
+		imgX, imgY = 5, (self.itemSize[2] - self.imgSize[2])/2
 		titleX, titleY = 10 + self.imgSize[2], 10
 		titleW, titleH = w - titleX, h - 20
 	else

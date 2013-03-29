@@ -1,5 +1,6 @@
 local DEBUG = true
-local PERF_DEBUG = false
+local PERF_DEBUG_CHECKPOINTS = true
+local PERF_DEBUG_EVENTS = false
 local g_DbgPerfData = {}
 
 function DbgTraceBack(lvl, len, offset, ret)
@@ -51,7 +52,7 @@ if(DEBUG) then
 	
 	function DbgPerfCp(title, channel, ...)
 		local ticks = getTickCount()
-		if(PERF_DEBUG) then
+		if(PERF_DEBUG_CHECKPOINTS) then
 			local dt = ticks - g_DbgPerfData[channel or 1]
 			g_DbgPerfData[channel or 1] = ticks
 			if(dt > 10) then
@@ -64,7 +65,7 @@ if(DEBUG) then
 		return false
 	end
 	
-	if(PERF_DEBUG) then
+	if(PERF_DEBUG_EVENTS) then
 		local _addEventHandler = addEventHandler
 		local repeatEventHandler = {onClientRender = 10, onClientPreRender = 10}
 		local g_Handlers = {}

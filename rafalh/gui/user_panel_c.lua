@@ -8,16 +8,18 @@
 -- Local variables --
 ---------------------
 
-local PANEL_COLUMNS = 4
+local PANEL_COLUMNS = 1
 local PANEL_ALPHA = 0.9
-local ITEM_W = 100
-local ITEM_H = 100
+local ITEM_W, ITEM_H = 150, 36
 local FADE_DELAY = 200
+local VIEW_W = 400
+local ICON_W, ICON_H = 32, 32
 
 local g_ListStyle = {}
 g_ListStyle.normal = {clr = {255, 255, 0}, a = 0.6, fnt = "default-bold-small"}
 g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = "default-bold-small"}
 g_ListStyle.active = g_ListStyle.hover
+g_ListStyle.iconPos = "left"
 
 local g_Items = {}
 local g_Wnd, g_List, g_UserLabel, g_LogInOutBtn
@@ -101,7 +103,7 @@ local function UpLogInOut()
 end
 
 local function UpCreateGui()
-	local w = ITEM_W * PANEL_COLUMNS + 20
+	local w = ITEM_W * PANEL_COLUMNS + 20 + VIEW_W
 	local h = 90 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
 	local x = ( g_ScreenSize[1] - w ) / 2
 	local y = ( g_ScreenSize[2] - h ) / 2
@@ -117,10 +119,10 @@ local function UpCreateGui()
 	
 	UpSetAccount(g_UserName)
 	
-	local listSize = {w - 20, h - 90}
-	local itemSize = {listSize[1]/PANEL_COLUMNS, ITEM_H}
+	local listSize = {ITEM_W * PANEL_COLUMNS, h - 90}
+	local itemSize = {ITEM_W, ITEM_H}
 	
-	g_List = ListView.create({10, 50}, listSize, g_Wnd, itemSize, {64, 64}, g_ListStyle)
+	g_List = ListView.create({10, 50}, listSize, g_Wnd, itemSize, {ICON_W, ICON_H}, g_ListStyle)
 	g_List.onClickHandler = onItemClick
 	
 	for i, item in ipairs(g_Items) do
