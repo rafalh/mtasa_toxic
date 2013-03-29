@@ -1,11 +1,16 @@
--- Script by Deagle
-
-addEvent("onMapStarting")
+addEvent("onClientMapStarting")
 
 local function updateWaterLevel()
-	setWaterLevel(0.01)
-	setTimer(setWaterLevel, 50, 1, 0.01)
+	local x, y, z = getElementPosition(localPlayer)
+	local lvl = getWaterLevel(x, y, z)
+	if(lvl == 0) then
+		setWaterLevel(0.001)
+	end
 end
 
-addEventHandler("onMapStarting", g_Root, updateWaterLevel)
+local function onMapStart()
+	setTimer(updateWaterLevel, 3000, 1)
+end
+
+addEventHandler("onClientMapStarting", g_Root, onMapStart)
 addEventHandler("onClientResourceStart", g_ResRoot, updateWaterLevel)
