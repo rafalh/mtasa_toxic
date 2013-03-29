@@ -23,7 +23,7 @@ Settings.register
 		guiCreateLabel(x, y, w, 15, "Language:", false, wnd)
 		
 		local flagSpace = 5
-		local flagW = math.min(50, (w + flagSpace) / LocaleList.count() - flagSpace)
+		local flagW = math.min(50, (w + flagSpace - 20) / LocaleList.count() - flagSpace) -- -20 because scrollPane looks bad
 		local flagH = math.floor(flagW * 2 / 3)
 		local gui = {}
 		

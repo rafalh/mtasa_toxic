@@ -27,19 +27,18 @@ addEvent("main.onAchvList", true)
 addEvent("main.onAchvChange", true)
 
 local function AchvInitGui(panel)
+	DbgPerfInit()
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 0, 40, 40, "img/beta.png", false, panel)
-	
 	local achvCntStr = MuiGetMsg("Unlocked achievements: %u/%u"):format(g_ActiveCount, #g_Achievements)
-	g_AchvCountLabel = guiCreateLabel(60, 10, 200, 15, achvCntStr, false, panel)
+	g_AchvCountLabel = guiCreateLabel(10, 10, 200, 15, achvCntStr, false, panel)
 	guiLabelSetColor(g_AchvCountLabel, 255, 196, 0)
 	guiSetFont(g_AchvCountLabel, "default-bold-small")
 	
 	g_List = ListView.create({10, 30}, {w - 20, h - 70}, panel, {105, 90})
 	
 	for i, achv in ipairs(g_Achievements) do
-		local img = achv.active and "achievements/img/icon.png" or "achievements/img/locked.png"
+		local img = achv.active and "achievements/img/unlocked.png" or "achievements/img/locked.png"
 		local style = achv.active and g_UnlockedStyle or g_LockedStyle
 		g_List:addItem(achv.name.."\n("..formatMoney(achv.prize)..")", img, i, style)
 	end
@@ -48,20 +47,23 @@ local function AchvInitGui(panel)
 	addEventHandler("onClientGUIClick", btn, UpBack, false)
 	
 	--triggerServerEvent("main.onAchvListReq", g_ResRoot)
+	DbgPerfCp("Achievements GUI creation")
 end
 
 local function AchvUpdateGui()
 	if(not g_List) then return end
+	DbgPerfInit()
 	
 	local achvCntStr = MuiGetMsg("Unlocked achievements: %u/%u"):format(g_ActiveCount, #g_Achievements)
 	guiSetText(g_AchvCountLabel, achvCntStr)
 	
 	for i, achv in ipairs(g_Achievements) do
-		local img = achv.active and "achievements/img/icon.png" or "achievements/img/locked.png"
+		local img = achv.active and "achievements/img/unlocked.png" or "achievements/img/locked.png"
 		local style = achv.active and g_UnlockedStyle or g_LockedStyle
 		g_List:setItemImg(i, img)
 		g_List:setItemStyle(i, style)
 	end
+	DbgPerfCp("Achievements update")
 end
 
 local function AchvSetActive(id)

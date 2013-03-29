@@ -88,6 +88,7 @@
 	<script src="achievements/list_sc.lua" type="shared" />
 	<file src="achievements/img/icon.png" />
 	<file src="achievements/img/locked.png" />
+	<file src="achievements/img/unlocked.png" />
 	
 	<script src="best_times/main_s.lua" type="server" />
 	<script src="best_times/cmd_s.lua" type="server" />

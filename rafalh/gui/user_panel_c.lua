@@ -25,13 +25,16 @@ local g_Items = {}
 local g_Wnd, g_List, g_UserLabel, g_LogInOutBtn
 local g_CurrentItem = false
 local g_Hiding = false
+local g_PanelH
 
 -- Local functions
 
 function UpBack()
+	if(VIEW_W > 0) then return end
+	
 	GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
 	if(g_CurrentItem.onHide) then
-		g_CurrentItem.onHide(g_CurrentItem.wnd2)
+		g_CurrentItem.onHide(g_CurrentItem.container)
 	end
 	g_CurrentItem = false
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
@@ -41,11 +44,13 @@ local function UpHide()
 	GaFadeOut(g_Wnd, FADE_DELAY)
 	
 	if(g_CurrentItem) then
-		GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
 		if(g_CurrentItem.onHide) then
-			g_CurrentItem.onHide(g_CurrentItem.wnd2)
+			g_CurrentItem.onHide(g_CurrentItem.container)
 		end
-		g_CurrentItem = false
+		if(VIEW_W == 0) then
+			GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
+			g_CurrentItem = false
+		end
 	end
 	
 	guiSetInputEnabled(false)
@@ -54,34 +59,51 @@ end
 
 local function onItemClick(i)
 	local item = g_Items[i]
+	if(item == g_CurrentItem) then return end
 	
 	if(item.noWnd) then
 		local res = item.onShow()
-		if(res) then
+		if(res and VIEW_W == 0) then
 			UpHide()
 		end
 		return
 	end
 	
+	if(g_CurrentItem) then
+		if(g_CurrentItem.onHide) then
+			g_CurrentItem.onHide(g_CurrentItem.container)
+		end
+		guiSetVisible(g_CurrentItem.container, false)
+	end
+	
 	g_CurrentItem = item
-	guiSetVisible(g_Wnd, false)
-	if(not g_CurrentItem.wnd) then
-		local panel_w = g_CurrentItem.width or 450
-		local panel_h = g_CurrentItem.height or 380
-		local w, h = panel_w, panel_h + 20
-		local x = (g_ScreenSize[1] - w) / 2
-		local y = (g_ScreenSize[2] - h) / 2
-		g_CurrentItem.wnd = guiCreateWindow(x, y, w, h, g_CurrentItem.name, false)
-		guiSetVisible(g_CurrentItem.wnd, false)
-		guiWindowSetSizable(g_CurrentItem.wnd, false)
-		
-		g_CurrentItem.wnd2 = guiCreateLabel(0, 20, panel_w, panel_h, "", false, g_CurrentItem.wnd)
+	if(not g_CurrentItem.container) then
+		if(VIEW_W == 0) then
+			local panel_w = g_CurrentItem.width or 450
+			local panel_h = g_CurrentItem.height or 380
+			local w, h = panel_w, panel_h + 20
+			local x = (g_ScreenSize[1] - w) / 2
+			local y = (g_ScreenSize[2] - h) / 2
+			g_CurrentItem.wnd = guiCreateWindow(x, y, w, h, g_CurrentItem.name, false)
+			guiSetVisible(g_CurrentItem.wnd, false)
+			guiWindowSetSizable(g_CurrentItem.wnd, false)
+			
+			g_CurrentItem.container = guiCreateLabel(0, 20, panel_w, panel_h, "", false, g_CurrentItem.wnd)
+		else
+			g_CurrentItem.container = guiCreateLabel(10 + ITEM_W * PANEL_COLUMNS, 50, VIEW_W, g_PanelH - 90, "", false, g_Wnd)
+		end
+	else
+		guiSetVisible(g_CurrentItem.container, true)
 	end
 	if(g_CurrentItem.onShow) then
-		g_CurrentItem.onShow(g_CurrentItem.wnd2)
+		g_CurrentItem.onShow(g_CurrentItem.container)
 	end
-	GaFadeOut(g_Wnd, FADE_DELAY)
-	GaFadeIn(g_CurrentItem.wnd, FADE_DELAY, PANEL_ALPHA)
+	if(VIEW_W == 0) then
+		GaFadeOut(g_Wnd, FADE_DELAY)
+		GaFadeIn(g_CurrentItem.wnd, FADE_DELAY, PANEL_ALPHA)
+	else
+		g_List:setActiveItem(i)
+	end
 end
 
 local function UpSetAccount(accountName)
@@ -110,6 +132,7 @@ local function UpCreateGui()
 	g_Wnd = guiCreateWindow(x, y, w, h, "User Panel", false)
 	guiSetVisible(g_Wnd, false)
 	guiWindowSetSizable(g_Wnd, false)
+	g_PanelH = h
 	
 	g_UserLabel = guiCreateLabel(10, 20, w - 100, 20, "", false, g_Wnd)
 	guiSetFont(g_UserLabel, "default-bold-small")
@@ -145,12 +168,24 @@ local function UpShow()
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
 	guiSetInputEnabled(true)
 	g_Hiding = false
+	
+	if(VIEW_W > 0) then
+		if(not g_CurrentItem) then
+			onItemClick(1)
+		elseif(g_CurrentItem.onShow) then
+			g_CurrentItem.onShow(g_CurrentItem.container)
+		end
+	end
 end
 
 local function UpInit()
 	addCommandHandler("UserPanel", UpToggle, false, false)
 	local key = getKeyBoundToCommand("UserPanel") or "F2"
 	bindKey(key, "down", "UserPanel")
+end
+
+function UpNeedsBackBtn()
+	return false
 end
 
 ----------------------
@@ -164,7 +199,7 @@ function UpRegister(item)
 end
 
 function UpToggle()
-	if((not g_Wnd or not guiGetVisible(g_Wnd)) and not g_CurrentItem) then
+	if((not g_Wnd or not guiGetVisible(g_Wnd)) and (not g_CurrentItem or VIEW_W > 0)) then
 		UpShow()
 	elseif(not g_Hiding) then
 		UpHide()

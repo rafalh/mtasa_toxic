@@ -15,9 +15,12 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 		outputDebugString("onPlayerLogin: no logout before login", 2)
 	end
 	
-	self:setAccount(account)
-	local accountName = not isGuestAccount(account) and getAccountName(account)
+	if(not self:setAccount(account)) then
+		cancelEvent()
+		return
+	end
 	
+	local accountName = not isGuestAccount(account) and getAccountName(account)
 	triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
 	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, accountName, self.id)
 end

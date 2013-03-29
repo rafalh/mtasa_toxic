@@ -61,19 +61,24 @@ end
 function Player:setAccount(account)
 	local now = getRealTime().timestamp
 	
-	if(self.accountData) then
-		self:disconnectFromAccount()
-	end
-	
 	if(type(account) == "userdata") then
 		account = not isGuestAccount(account) and getAccountName(account)
 	end
 	
-	self.id = false
+	local id = false
 	if(account) then
-		local rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", account)
-		self.id = rows and rows[1] and rows[1].player
-		
+		local rows = DbQuery("SELECT player, online FROM rafalh_players WHERE account=? LIMIT 1", account)
+		local data = rows and rows[1]
+		if(data.online == 1) then return false end
+		id = data.player
+	end
+	
+	if(self.accountData) then
+		self:disconnectFromAccount()
+	end
+	
+	self.id = id
+	if(account) then
 		if(not self.id) then
 			DbQuery("INSERT INTO rafalh_players (account, serial, first_visit) VALUES (?, ?, ?)", account, self:getSerial(), now)
 			rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", account)
@@ -93,6 +98,7 @@ function Player:setAccount(account)
 	self.accountData:set("last_visit", now, true)
 	local fullName = self:getName(true)
 	self.accountData:set("name", fullName, true)
+	return true
 end
 
 function Player.onRoomChange(roomEl)
