@@ -132,7 +132,7 @@ local function createGui(panel)
 	addEventHandler ( "onClientGUIClick", btn, onSwitchLangsClick, false )
 	
 	guiCreateLabel ( 260, 10, 50, 15, "To:", false, panel )
-	g_ToLang = guiCreateComboBox ( 310, 10, 130, 300, "", false, panel )
+	g_ToLang = guiCreateComboBox ( 310, 10, math.min(130, w - 320), 300, "", false, panel )
 	
 	updateLangComboBoxes ()
 	
@@ -142,7 +142,7 @@ local function createGui(panel)
 	g_SayBtn = guiCreateButton ( 100, 40, 120, 25, "Say translated", false, panel )
 	addEventHandler ( "onClientGUIClick", g_SayBtn, onTranslateClick, false )
 	
-	g_ChatMsgCb = guiCreateComboBox ( 230, 40, 210, 210, MuiGetMsg ( "Load chat message" ), false, panel )
+	g_ChatMsgCb = guiCreateComboBox ( 230, 40, w - 240, 210, MuiGetMsg ( "Load chat message" ), false, panel )
 	addEventHandler ( "onClientGUIComboBoxAccepted", g_ChatMsgCb, loadChatMsg, false )
 	for i, msg in ipairs ( g_ChatMsg ) do
 		guiComboBoxAddItem ( g_ChatMsgCb, msg )

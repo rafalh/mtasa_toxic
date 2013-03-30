@@ -10,7 +10,7 @@
 
 local PANEL_COLUMNS = 1
 local PANEL_ALPHA = 0.9
-local ITEM_W, ITEM_H = 150, 36
+local ITEM_W, ITEM_H = 140, 36
 local FADE_DELAY = 200
 local VIEW_W = 400
 local ICON_W, ICON_H = 32, 32
@@ -90,7 +90,7 @@ local function onItemClick(i)
 			
 			g_CurrentItem.container = guiCreateLabel(0, 20, panel_w, panel_h, "", false, g_CurrentItem.wnd)
 		else
-			g_CurrentItem.container = guiCreateLabel(10 + ITEM_W * PANEL_COLUMNS, 50, VIEW_W, g_PanelH - 90, "", false, g_Wnd)
+			g_CurrentItem.container = guiCreateLabel(10 + ITEM_W * PANEL_COLUMNS, 50, VIEW_W, g_PanelH - 80, "", false, g_Wnd)
 		end
 	else
 		guiSetVisible(g_CurrentItem.container, true)

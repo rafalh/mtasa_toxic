@@ -162,7 +162,14 @@ local function createGui(panel)
 	
 	g_Channels = loadChannels ()
 	
-	g_List = ListView.create({10, 100}, {w - 20, h - 140}, panel)
+	local listSize = {w - 20, h - 105}
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		listSize[2] = listSize[2] - 35
+	end
+	
+	g_List = ListView.create({10, 100}, listSize, panel)
 	g_List.onClickHandler = onChannelClick
 	
 	for i, ch in ipairs(g_Channels) do
@@ -176,10 +183,7 @@ local function createGui(panel)
 		end
 	end
 	
-	if(UpNeedsBackBtn()) then
-		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
-	end
+	
 	
 	DbgPerfCp("Radio GUI creation")
 end

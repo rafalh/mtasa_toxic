@@ -35,7 +35,14 @@ local function AchvInitGui(panel)
 	guiLabelSetColor(g_AchvCountLabel, 255, 196, 0)
 	guiSetFont(g_AchvCountLabel, "default-bold-small")
 	
-	g_List = ListView.create({10, 30}, {w - 20, h - 70}, panel, {105, 90})
+	local listSize = {w - 20, h - 45}
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		listSize[2] = listSize[2] - 35
+	end
+	
+	g_List = ListView.create({10, 30}, listSize, panel, {105, 90})
 	
 	for i, achv in ipairs(g_Achievements) do
 		local img = achv.active and "achievements/img/unlocked.png" or "achievements/img/locked.png"

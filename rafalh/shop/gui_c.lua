@@ -192,14 +192,16 @@ local function ShpCreateGui(panel)
 	g_DescrMemo = guiCreateLabel(w - 130, 115, 120, 100, "", false, panel)
 	guiLabelSetHorizontalAlign(g_DescrMemo, "left", true)
 	
-	g_BuyButton = guiCreateButton(w - 130, h - 70, 120, 25, "Buy", false, panel)
+	local offY = UpNeedsBackBtn() and 0 or 35
+	
+	g_BuyButton = guiCreateButton(w - 130, h - 70 + offY, 120, 25, "Buy", false, panel)
 	addEventHandler("onClientGUIClick", g_BuyButton, ShpBuyClick)
 	
-	g_SellButton = guiCreateButton(w - 130, h - 105, 120, 25, "Sell", false, panel)
+	g_SellButton = guiCreateButton(w - 130, h - 105 + offY, 120, 25, "Sell", false, panel)
 	guiSetVisible(g_SellButton, false)
 	addEventHandler("onClientGUIClick", g_SellButton, ShpSellClick, false)
 	
-	g_UseButton = guiCreateButton(w - 130, h - 70, 120, 25, "Use", false, panel)
+	g_UseButton = guiCreateButton(w - 130, h - 70 + offY, 120, 25, "Use", false, panel)
 	guiSetVisible(g_UseButton, false)
 	addEventHandler("onClientGUIClick", g_UseButton, ShpUseClick, false)
 	

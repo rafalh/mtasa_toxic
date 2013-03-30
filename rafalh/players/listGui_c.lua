@@ -100,7 +100,7 @@ local function initGui(panel)
 	addEventHandler("onClientGUIBlur", g_SearchBox, onFilterBlur, false)
 	addEventHandler("onClientGUIChanged", g_SearchBox, onFilterChange, false)
 	
-	g_Gui.online = guiCreateCheckBox(50, 40, w - 20, 15, "Players online only", true, false, panel)
+	g_Gui.online = guiCreateCheckBox(50, 40, 150, 15, "Players online only", true, false, panel)
 	addEventHandler("onClientGUIClick", g_Gui.online, invalidateData, false)
 	
 	guiCreateLabel(220, 12, 40, 20, "Sort:", false, panel)
@@ -112,7 +112,7 @@ local function initGui(panel)
 	guiComboBoxSetSelected(g_Gui.sortBox, 0)
 	addEventHandler("onClientGUIComboBoxAccepted", g_Gui.sortBox, onOrderChange, false)
 	
-	g_Gui.desc = guiCreateCheckBox(390, 10, 100, 15, "descending", false, false, panel)
+	g_Gui.desc = guiCreateCheckBox(220, 40, 120, 15, "descending", false, false, panel)
 	addEventHandler("onClientGUIClick", g_Gui.desc, invalidateData, false)
 	
 	if(UpNeedsBackBtn()) then
@@ -120,7 +120,7 @@ local function initGui(panel)
 		addEventHandler("onClientGUIClick", btn, UpBack, false)
 	end
 	
-	g_Gui.list = guiCreateGridList(10, 60, w - 20, h - 65, false, panel)
+	g_Gui.list = guiCreateGridList(10, 60, w - 20, h - 70, false, panel)
 	-- disable sorting because it breaks adding rows (MTA 1.3)
 	guiGridListSetSortingEnabled(g_Gui.list, false)
 	
