@@ -19,7 +19,7 @@ function ProfileView.onDestroy()
 end
 
 function ProfileView:destroy(ignoreEl)
-	self.statsView:destroy()
+	self.statsView:destroy(ignoreEl)
 	guiSetInputEnabled(false)
 	g_WndToObj[self.wnd] = nil
 	g_IdToObj[self.id] = nil

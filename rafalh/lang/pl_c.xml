@@ -64,7 +64,13 @@
 	<msg id="Change password">Zmień hasło</msg>
 	<msg id="Change password for your account">Zmień hasło do swojego konta</msg>
 	<msg id="Old password:">Stare hasło:</msg>
-	<msg id="Old password is invalid!">Stare hasło nie jest poprawne!</msg>
+	<msg id="Old password is invalid!">Stare hasło jest nieprawidłowe!</msg>
+	
+	<msg id="Change e-mail">Zmień e-mail</msg>
+	<msg id="Change your account e-mail address">Zmień adres e-mail swojego konta</msg>
+	<msg id="Password is required!">Hasło jest wymagane!</msg>
+	<msg id="Password is incorrect!">Hasło jest nieprawidłowe!</msg>
+	<msg id="E-mail address is invalid!">Adres e-mail nie jest prawidłowy!</msg>
 	
     <msg id="Players list">Lista graczy</msg>
 	<msg id="Player name">Nazwa gracza</msg>

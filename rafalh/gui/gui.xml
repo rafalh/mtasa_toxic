@@ -74,6 +74,20 @@
 		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
+	<window id="changeEmail" title="Change e-mail" rx="50" x="-100" ry="50" y="-110" w="280" h="220" sizeable="false">
+		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/chgEmail.png" />
+		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Change your account e-mail address" align="center" />
+		
+		<label x="10" y="125" w="80" h="20" text="Password:" />
+		<edit id="pw" x="100" y="120" w="120" h="25" maxlen="128" masked="true" />
+		
+		<label x="10" y="155" w="80" h="20" text="E-mail:" />
+		<edit id="email" x="100" y="150" w="180" h="25" maxlen="128" />
+		
+		<button id="ok" rx="100" x="-180" ry="100" y="-35" w="80" h="25" text="OK" />
+		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
+	</window>
+	
 	<label id="stats" w="200" h="225">
 		<label x="0" y="0" w="120" h="15" text="Cash:" />
 		<label id="cash" x="120" y="0" rw="100" w="-120" h="15" text="" />

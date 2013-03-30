@@ -21,8 +21,6 @@ local function PfSyncCallback(id)
 		ret[data.field] = data.value
 	end
 	
-	ret.email = PlayerAccountData.create(id):get("email")
-	
 	return ret
 end
 
@@ -107,20 +105,14 @@ function setPlayerProfile(id, data)
 				value = value:match("^%d+%.?%d?%d?$") and tofloat(value)
 			elseif(fieldInfo.type == "int") then
 				value = value:match("^%d+$") and toint(value)
-			elseif(fieldInfo.type == "email") then
-				value = value:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$") and value
 			else
 				value = value:sub(1, 128)
 			end
 			data[field] = value
 			if(value) then
-				if(field == "email") then
-					PlayerAccountData.create(id):set("email", value)
-				else
-					DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
-					if(value ~= "") then
-						DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
-					end
+				DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
+				if(value ~= "") then
+					DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
 				end
 			end
 		else

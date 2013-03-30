@@ -1,6 +1,8 @@
 addEvent("main.onLogin", true)
 addEvent("main.onRegisterReq", true)
+addEvent("main.onEmailReq", true)
 addEvent("main.onChgPwReq", true)
+addEvent("main.onChgEmailReq", true)
 addEvent("main.onLogoutReq", true)
 
 local g_RegTimeStamp = 0
@@ -79,11 +81,32 @@ local function onChgPwReq(oldPw, pw)
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) or pw:len() < 3) then return end
 	
-	local status = getAccount(getAccountName(account), oldPw) and true
-	if(status) then
-		status = setAccountPassword(account, pw)
+	local success = getAccount(getAccountName(account), oldPw) and true
+	if(success) then
+		success = setAccountPassword(account, pw)
 	end
-	triggerClientEvent(client, "main.onChgPwResult", g_ResRoot, status)
+	triggerClientEvent(client, "main.onChgPwResult", g_ResRoot, success)
+end
+
+local function onEmailReq()
+	local player = Player.fromEl(client)
+	triggerClientEvent(client, "main.onEmail", g_ResRoot, player.accountData.email)
+end
+
+local function onChgEmailReq(email, pw)
+	local player = Player.fromEl(client)
+	local account = getPlayerAccount(player.el)
+	if(isGuestAccount(account) or not email or not pw or pw:len() < 3) then return end
+	
+	local success = getAccount(getAccountName(account), pw) and true
+	if(success) then
+		success = email:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$") and true
+	end
+	
+	if(success) then
+		player.accountData.email = email
+	end
+	triggerClientEvent(client, "main.onChgEmailResult", g_ResRoot, success)
 end
 
 local function onLogoutReq()
@@ -96,5 +119,7 @@ addInitFunc(function()
 	addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
 	addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
 	addEventHandler("main.onChgPwReq", g_ResRoot, onChgPwReq)
+	addEventHandler("main.onChgEmailReq", g_ResRoot, onChgEmailReq)
+	addEventHandler("main.onEmailReq", g_ResRoot, onEmailReq)
 	addEventHandler("main.onLogoutReq", g_ResRoot, onLogoutReq)
 end)

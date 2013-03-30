@@ -8,7 +8,7 @@
 -- Local variables --
 ---------------------
 
-local g_Panel, g_ChangePwBtn
+local g_Panel, g_ChangePwBtn, g_ChangeEmailBtn
 local g_EditFields = {}
 local g_ChangedEdits = {}
 local g_Profile = {}
@@ -28,6 +28,7 @@ local EditProfilePanel = {
 local function onAccountChange(accountName)
 	if(g_ChangePwBtn) then
 		guiSetEnabled(g_ChangePwBtn, accountName and true)
+		guiSetEnabled(g_ChangeEmailBtn, accountName and true)
 	end
 	
 	if(not accountName and g_ChangePwGui) then
@@ -84,8 +85,11 @@ local function onSync(sync_tbl, name, arg, data)
 		g_ChangePwBtn = guiCreateButton(10, 10, 120, 25, "Change password", false, g_Panel)
 		addEventHandler("onClientGUIClick", g_ChangePwBtn, openChangePasswordGui, false)
 		guiSetEnabled(g_ChangePwBtn, g_UserName and true)
-		y = y + 35
 		
+		g_ChangeEmailBtn = guiCreateButton(140, 10, 120, 25, "Change e-mail", false, g_Panel)
+		addEventHandler("onClientGUIClick", g_ChangeEmailBtn, openChangeEmailGui, false)
+		guiSetEnabled(g_ChangeEmailBtn, g_UserName and true)
+		y = y + 35
 		
 		for i, cat in pairs(sync_tbl.profile_fields[2]) do
 			local catLabel = guiCreateLabel(10, y, 100, 20, cat.name, false, g_Panel)

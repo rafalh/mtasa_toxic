@@ -71,7 +71,7 @@ function StatsView:update()
 	guiSetText(gui.mapsBought, stats.mapsBought)
 end
 
-function StatsView:destroy()
+function StatsView:destroy(ignoreEl)
 	self:hide()
 	
 	local id = self.id
@@ -79,8 +79,8 @@ function StatsView:destroy()
 		g_Stats[id] = nil
 	end
 	
-	self.gui:destroy()
 	StatsView.elMap[self.el] = nil
+	self.gui:destroy(ignoreEl)
 end
 
 function StatsView:changeTarget(id)

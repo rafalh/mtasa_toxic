@@ -123,9 +123,11 @@
 	<script src="login/login_c.lua" type="client" />
 	<script src="login/register_c.lua" type="client" />
 	<script src="login/changePw_c.lua" type="client" />
+	<script src="login/changeEmail_c.lua" type="client" />
 	<file src="login/img/login.png" />
 	<file src="login/img/register.png" />
 	<file src="login/img/chgPw.png" />
+	<file src="login/img/chgEmail.png" />
 	
 	<script src="map_rating/rate_s.lua" type="server" />
 	<script src="map_rating/cmd_s.lua" type="server" />
