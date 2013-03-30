@@ -122,16 +122,22 @@ Settings.register
 				name = name[Settings.locale] or name[1]
 			end
 			if(name) then
-				gui[res] = guiCreateCheckBox(x, y + h, w, 20, name, enabled, false, wnd)
-				h = h + 20
+				guiCreateLabel(x, y + h, 200, 20, name, false, wnd)
+				gui[res] = OnOffBtn.create(x + 200, y + h, wnd, enabled)
+				
+				--gui[res] = guiCreateButton(x + 200, y + h, 60, 20, "ON", false, wnd)
+				--guiSetProperty(gui[res], "NormalTextColour", "FF00FF00")
+				
+				--gui[res] = guiCreateCheckBox(x, y + h, w, 20, name, enabled, false, wnd)
+				h = h + 25
 			end
 		end
 		
 		return h, gui
 	end,
 	acceptGui = function(gui)
-		for res, cb in pairs(gui) do
-			local enabled = guiCheckBoxGetSelected(cb)
+		for res, btn in pairs(gui) do
+			local enabled = btn.enabled -- guiCheckBoxGetSelected(cb)
 			if(g_Effects[res]) then
 				local resName = getResourceName(res)
 				g_Enabled[resName] = enabled

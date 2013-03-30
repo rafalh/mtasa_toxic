@@ -16,7 +16,7 @@ local AboutPanel = {
 
 local function initAboutPane(panel)
 	local w, h = guiGetSize(panel, false)
-	local scrollPane = guiCreateScrollPane(120, 30, w - 130, h - 70, false, panel)
+	local scrollPane = guiCreateScrollPane(10, 100, w - 20, h - 140, false, panel)
 	
 	local node = xmlLoadFile("conf/about.xml")
 	if(not node) then return false end
@@ -54,11 +54,10 @@ local function initAboutPane(panel)
 		else
 			y = y + 15
 		end
-		--local w = guiLabelGetTextExtent(label)
-		--outputChatBox(w)
-		--guiSetSize(label, w, 15)
 	end
 	xmlUnloadFile(node)
+	
+	guiScrollPaneSetVerticalScrollPosition(scrollPane, 100)
 	return true
 end
 
@@ -67,9 +66,9 @@ local function createGui(panel)
 	
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 100, 75, "about/logo.jpg", false, panel)
+	guiCreateStaticImage(10, 10, 200, 64, "about/logo.jpg", false, panel)
 	
-	local label = guiCreateLabel(120, 10, w - 130, 15, "About ToxiC Server", false, panel)
+	local label = guiCreateLabel(10, 80, w - 20, 15, "About ToxiC Server", false, panel)
 	guiLabelSetColor(label, 0, 255, 0)
 	guiSetFont(label, "default-bold-small")
 	

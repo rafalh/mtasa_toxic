@@ -182,8 +182,9 @@ end
 
 function PlayerAccountData.__mt.__index(self, k)
 	--outputDebugString("__index "..tostring(k), 3)
-	if(PlayerAccountData[k]) then
-		return PlayerAccountData[k]
+	local val = PlayerAccountData[k]
+	if(val) then
+		return val
 	else
 		return PlayerAccountData.get(self, k)
 	end

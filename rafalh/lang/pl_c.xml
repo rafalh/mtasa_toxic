@@ -9,6 +9,8 @@
 	<msg id="Apply">Zastosuj</msg>
     <msg id="Close">Zamknij</msg>
 	<msg id="Color">Kolor</msg>
+	<msg id="On">Wł.</msg>
+	<msg id="Off">Wył.</msg>
 	
     <msg id="Usage: %s">Użycie: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
