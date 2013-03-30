@@ -8,11 +8,11 @@ local function CmdRemTopTime(message, arg)
 			local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT "..math.max(n, 4), map_id)
 			if(rows and rows[n]) then
 				DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map=?", rows[n].player, map_id)
-				local accountData = PlayerAccountData.create(rows[n].player)
+				local accountData = AccountData.create(rows[n].player)
 				if(n <= 3) then
 					accountData:add("toptimes_count", -1)
 					if(rows[4]) then
-						PlayerAccountData.create(rows[4].player):add("toptimes_count", 1)
+						AccountData.create(rows[4].player):add("toptimes_count", 1)
 					end
 				end
 				BtDeleteCache()

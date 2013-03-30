@@ -125,10 +125,6 @@ Settings.register
 				guiCreateLabel(x, y + h, 200, 20, name, false, wnd)
 				gui[res] = OnOffBtn.create(x + 200, y + h, wnd, enabled)
 				
-				--gui[res] = guiCreateButton(x + 200, y + h, 60, 20, "ON", false, wnd)
-				--guiSetProperty(gui[res], "NormalTextColour", "FF00FF00")
-				
-				--gui[res] = guiCreateCheckBox(x, y + h, w, 20, name, enabled, false, wnd)
 				h = h + 25
 			end
 		end

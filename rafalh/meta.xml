@@ -23,7 +23,7 @@
 	<script src="main.lua" type="server" />
 	<script src="main_c.lua" type="client" />
 	<script src="player.lua" type="server" />
-	<script src="playerAccountData.lua" type="server" />
+	<script src="accountData_s.lua" type="server" />
 	<script src="accounts.lua" type="server" />
 	
 	<script src="settings/settings_c.lua" type="client" />

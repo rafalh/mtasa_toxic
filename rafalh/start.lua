@@ -14,7 +14,7 @@ local function setupDatabase()
 	
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."players ("..
-			PlayerAccountData.getDbTableFields()..")")) then
+			AccountData.getDbTableFields()..")")) then
 		err = "Cannot create players table."
 	end
 	if(not err and not DbQuery(

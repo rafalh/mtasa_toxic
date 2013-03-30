@@ -91,7 +91,7 @@ function Player:setAccount(account)
 	self.guest = not self.id
 	self.loginTimestamp = now
 	
-	self.accountData = PlayerAccountData.create(self.id)
+	self.accountData = AccountData.create(self.id)
 	self.accountData:set("online", 1, true)
 	self.accountData:set("serial", self:getSerial(), true)
 	self.accountData:set("ip", self:getIP(), true)

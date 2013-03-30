@@ -155,6 +155,9 @@ local function UpCreateGui()
 		end
 	end
 	
+	local copyrightLabel = guiCreateLabel(10, h - 25, w - 100, 15, "Copyright (c) 2009-2013 by rafalh", false, g_Wnd)
+	guiLabelSetColor(copyrightLabel, 128, 128, 128)
+	
 	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, g_Wnd)
 	addEventHandler("onClientGUIClick", btn, UpHide, false)
 end

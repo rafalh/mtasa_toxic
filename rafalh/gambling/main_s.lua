@@ -90,7 +90,7 @@ function GbFinishLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
 		r = r - tickets
 		if(r <= 0) then
-			local accountData = PlayerAccountData.create(id)
+			local accountData = AccountData.create(id)
 			accountData:add("cash", g_LotteryFund)
 			scriptMsg("%s won the lottery!", accountData:get("name"))
 			break
@@ -103,7 +103,7 @@ end
 
 function GbCancelLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
-		PlayerAccountData.create(id):add("cash", tickets)
+		AccountData.create(id):add("cash", tickets)
 		local player = Player.fromId(id)
 		if(player) then
 			privMsg(player.el, "Lottery is canceled! You get your money (%s) back.", formatMoney(tickets))

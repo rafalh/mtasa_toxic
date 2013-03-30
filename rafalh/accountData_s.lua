@@ -1,8 +1,8 @@
-PlayerAccountData = {}
-PlayerAccountData.__mt = {__index = PlayerAccountData}
-PlayerAccountData.onChangeHandlers = {}
-PlayerAccountData.map = {}
-setmetatable(PlayerAccountData.map, {__mode = "v"}) -- weak table
+AccountData = {}
+AccountData.__mt = {__index = AccountData}
+AccountData.onChangeHandlers = {}
+AccountData.map = {}
+setmetatable(AccountData.map, {__mode = "v"}) -- weak table
 
 local AccountDataFields = {
 --   name              type           flags                 default value
@@ -71,7 +71,7 @@ local AccountDataFields = {
 local DefaultData = {}
 local FieldsMap = {}
 
-function PlayerAccountData:getTbl()
+function AccountData:getTbl()
 	if(not self.cache) then
 		assert(self.id)
 		local rows = DbQuery("SELECT * FROM rafalh_players WHERE player=? LIMIT 1", self.id)
@@ -81,7 +81,7 @@ function PlayerAccountData:getTbl()
 	return self.cache
 end
 
-function PlayerAccountData:get(name)
+function AccountData:get(name)
 	assert(type(self) == "table" and name)
 	
 	local fields = name
@@ -107,9 +107,9 @@ function PlayerAccountData:get(name)
 	end
 end
 
--- PlayerAccountData:set(tbl, silent)
--- PlayerAccountData:set(name, value, silent)
-function PlayerAccountData:set(arg1, arg2, arg3)
+-- AccountData:set(tbl, silent)
+-- AccountData:set(name, value, silent)
+function AccountData:set(arg1, arg2, arg3)
 	assert(type(self) == "table" and arg1)
 	
 	local data, silent
@@ -136,7 +136,7 @@ function PlayerAccountData:set(arg1, arg2, arg3)
 			end
 			
 			if(not silent) then
-				for i, handler in ipairs(PlayerAccountData.onChangeHandlers) do
+				for i, handler in ipairs(AccountData.onChangeHandlers) do
 					handler(self, k, v)
 				end
 			end
@@ -158,41 +158,41 @@ function PlayerAccountData:set(arg1, arg2, arg3)
 	end
 end
 
-function PlayerAccountData:add(name, num)
+function AccountData:add(name, num)
 	assert(type(self) == "table" and name and num)
 	local val = self:get(name)
 	assert(type(val) == "number")
 	return self:set(name, val + num)
 end
 
-function PlayerAccountData.create(id)
-	if(id and PlayerAccountData.map[id]) then
-		return PlayerAccountData.map[id]
+function AccountData.create(id)
+	if(id and AccountData.map[id]) then
+		return AccountData.map[id]
 	end
 	
 	local self = {id = id, cache = false}
-	setmetatable(self, PlayerAccountData.__mt)
+	setmetatable(self, AccountData.__mt)
 	if(id) then
-		PlayerAccountData.map[id] = self
+		AccountData.map[id] = self
 	else
 		self.cache = table.copy(DefaultData)
 	end
 	return self
 end
 
-function PlayerAccountData.__mt.__index(self, k)
+function AccountData.__mt.__index(self, k)
 	--outputDebugString("__index "..tostring(k), 3)
-	local val = PlayerAccountData[k]
+	local val = AccountData[k]
 	if(val) then
 		return val
 	else
-		return PlayerAccountData.get(self, k)
+		return AccountData.get(self, k)
 	end
 end
 
-function PlayerAccountData.__mt.__newindex(self, k, v)
+function AccountData.__mt.__newindex(self, k, v)
 	--outputDebugString("__newindex "..tostring(k), 3)
-	PlayerAccountData.set(self, k, v)
+	AccountData.set(self, k, v)
 end
 
 local function init()
@@ -202,7 +202,7 @@ local function init()
 	end
 end
 
-function PlayerAccountData.getDbTableFields()
+function AccountData.getDbTableFields()
 	local fields = {}
 	for i, fieldInfo in ipairs(AccountDataFields) do
 		table.insert(fields, fieldInfo[1].." "..fieldInfo[2].." "..fieldInfo[3])

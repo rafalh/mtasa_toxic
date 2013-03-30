@@ -203,7 +203,7 @@ CmdRegisterAlias("findaccip", "findaccountsip")
 local function CmdDescribeAccount(message, arg)
 	local id = touint(arg[2])
 	if(id) then
-		local accountData = PlayerAccountData.create(id)
+		local accountData = AccountData.create(id)
 		local data = accountData:getTbl()
 		local tm = getRealTime (data.last_visit)
 		local tm2 = getRealTime (data.first_visit)
@@ -230,7 +230,7 @@ local function CmdMergeAccounts(message, arg)
 		end
 		
 		-- get statistics for id
-		local srcAccountData = PlayerAccountData.create(id)
+		local srcAccountData = AccountData.create(id)
 		local src_data = srcAccountData:getTbl()
 		if(not src_data) then
 			privMsg(source, "Cannot find account %u!", id)

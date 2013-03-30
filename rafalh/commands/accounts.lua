@@ -19,7 +19,7 @@ local function CmdChangeLogin(message, arg)
 			
 			local playerId = player.id
 			logOut(source)
-			PlayerAccountData.create(playerId):set("account", newAccName)
+			AccountData.create(playerId):set("account", newAccName)
 			logIn(source, newAccount, passwd)
 			removeAccount(oldAccount)
 			

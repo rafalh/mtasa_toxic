@@ -111,7 +111,7 @@ local function RemoveUnknownMaps(fix)
 			-- Decrement Top Times count
 			local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3", mapId)
 			for j, data in ipairs(rows) do
-				local accountData = PlayerAccountData.create(data.player)
+				local accountData = AccountData.create(data.player)
 				accountData:add("toptimes_count", -1)
 			end
 		end
@@ -163,7 +163,7 @@ local function CheckAchievements(fix)
 		
 		if(invalidIdCount > 0) then
 			if(fix) then
-				local accountData = PlayerAccountData.create(data.player)
+				local accountData = AccountData.create(data.player)
 				
 				if(accountData.achvCount > 0) then
 					assert(accountData.achvCount > invalidIdCount,

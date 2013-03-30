@@ -5,7 +5,7 @@ local function IvTimerProc ( player )
 	local invitedby = pdata.accountData:get("invitedby")
 	if(invitedby > 0) then
 		pdata.accountData:set("invitedby", 0)
-		PlayerAccountData.create(invitedby):add("cash", 1000000)
+		AccountData.create(invitedby):add("cash", 1000000)
 		
 		local invitedbyPlayer = Player.fromId(invitedby)
 		if(invitedbyPlayer) then

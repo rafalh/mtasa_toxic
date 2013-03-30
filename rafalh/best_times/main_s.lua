@@ -31,12 +31,12 @@ function addPlayerTime(player_id, map_id, time)
 	
 	if(pos <= 8) then
 		if(pos <= 3 and not wasInTop) then -- player joined to the top
-			PlayerAccountData.create(player_id):add("toptimes_count", 1)
+			AccountData.create(player_id):add("toptimes_count", 1)
 			
 			local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3,1", map_id)
 			if(rows and rows[1]) then -- someone left the top
 				local pl4_id = rows[1].player
-				PlayerAccountData.create(pl4_id):add("toptimes_count", -1)
+				AccountData.create(pl4_id):add("toptimes_count", -1)
 				DbQuery("UPDATE rafalh_besttimes SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
 			end
 		end

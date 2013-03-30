@@ -14,9 +14,8 @@ local AboutPanel = {
 -- Local function definitions --
 --------------------------------
 
-local function initAboutPane(panel)
-	local w, h = guiGetSize(panel, false)
-	local scrollPane = guiCreateScrollPane(10, 100, w - 20, h - 140, false, panel)
+local function initAboutPane(x, y, w, h, panel)
+	local scrollPane = guiCreateScrollPane(x, y, w, h, false, panel)
 	
 	local node = xmlLoadFile("conf/about.xml")
 	if(not node) then return false end
@@ -57,7 +56,6 @@ local function initAboutPane(panel)
 	end
 	xmlUnloadFile(node)
 	
-	guiScrollPaneSetVerticalScrollPosition(scrollPane, 100)
 	return true
 end
 
@@ -72,14 +70,14 @@ local function createGui(panel)
 	guiLabelSetColor(label, 0, 255, 0)
 	guiSetFont(label, "default-bold-small")
 	
-	initAboutPane(panel)
-	
-	guiCreateLabel(10, h - 25, w - 100, 15, "Copyright (c) 2009-2013 by rafalh", false, panel)
-	
+	local paneH = h - 110
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
 		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		paneH = paneH - 40
 	end
+	
+	initAboutPane(10, 100, w - 20, paneH, panel)
 	
 	DbgPerfCp("About server GUI creation")
 end

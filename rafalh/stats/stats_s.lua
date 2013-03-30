@@ -52,7 +52,7 @@ local function StPlayerStatsSyncCallback(idOrPlayer)
 	if(player) then
 		accountData = player.accountData
 	elseif(id) then
-		accountData = PlayerAccountData.create(id)
+		accountData = AccountData.create(id)
 	else
 		return false
 	end
@@ -140,7 +140,7 @@ local function StInit()
 	addEventHandler("onPlayerJoin", g_Root, StOnPlayerJoin)
 	addEventHandler("onPlayerWasted", g_Root, StOnPlayerWasted)
 	addEventHandler("onVehicleExplode", g_Root, StOnVehicleExplode)
-	table.insert(PlayerAccountData.onChangeHandlers, StAccountDataChange)
+	table.insert(AccountData.onChangeHandlers, StAccountDataChange)
 end
 
 addInitFunc(StInit)
