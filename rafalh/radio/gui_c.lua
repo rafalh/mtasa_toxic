@@ -176,8 +176,10 @@ local function createGui(panel)
 		end
 	end
 	
-	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+	end
 	
 	DbgPerfCp("Radio GUI creation")
 end

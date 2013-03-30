@@ -43,8 +43,10 @@ local function AchvInitGui(panel)
 		g_List:addItem(achv.name.."\n("..formatMoney(achv.prize)..")", img, i, style)
 	end
 	
-	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+	end
 	
 	--triggerServerEvent("main.onAchvListReq", g_ResRoot)
 	DbgPerfCp("Achievements GUI creation")

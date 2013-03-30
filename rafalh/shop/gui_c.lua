@@ -203,8 +203,10 @@ local function ShpCreateGui(panel)
 	guiSetVisible(g_UseButton, false)
 	addEventHandler("onClientGUIClick", g_UseButton, ShpUseClick, false)
 	
-	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+	end
 	
 	DbgPerfCp("Shop GUI creation")
 end

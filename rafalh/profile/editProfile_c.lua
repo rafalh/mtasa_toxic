@@ -114,11 +114,15 @@ local function onSync(sync_tbl, name, arg, data)
 			y = y + 10
 		end
 		
-		local btn = guiCreateButton(w - 80 - 80, h - 35, 70, 25, "Save", false, g_Panel)
-		addEventHandler("onClientGUIClick", btn, onSaveClick, false)
+		local x = w - 80
+		if(UpNeedsBackBtn()) then
+			local btn = guiCreateButton(x, h - 35, 70, 25, "Back", false, g_Panel)
+			addEventHandler("onClientGUIClick", btn, UpBack, false)
+			x = x - 80
+		end
 		
-		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, g_Panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		local btn = guiCreateButton(x, h - 35, 70, 25, "Save", false, g_Panel)
+		addEventHandler("onClientGUIClick", btn, onSaveClick, false)
 	end
 	
 	if(sync_tbl.profile and sync_tbl.profile[1] == g_MyId and sync_tbl.profile[2]) then

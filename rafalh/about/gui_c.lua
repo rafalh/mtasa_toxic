@@ -77,8 +77,10 @@ local function createGui(panel)
 	
 	guiCreateLabel(10, h - 25, w - 100, 15, "Copyright (c) 2009-2013 by rafalh", false, panel)
 	
-	local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
-	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+	end
 	
 	DbgPerfCp("About server GUI creation")
 end

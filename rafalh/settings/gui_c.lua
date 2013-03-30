@@ -48,11 +48,15 @@ function SettingsPanel.initGui(panel)
 	
 	SettingsPanel.createScrollPane(panel)
 	
-	local btn = guiCreateButton(w - 90 - 90, h - 35, 80, 25, "Save", false, panel)
-	addEventHandler("onClientGUIClick", btn, SettingsPanel.onSaveClick, false)
+	local x = w - 90
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(x, h - 35, 80, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		x = x - 90
+	end
 	
-	local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
-	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	local btn = guiCreateButton(x, h - 35, 80, 25, "Save", false, panel)
+	addEventHandler("onClientGUIClick", btn, SettingsPanel.onSaveClick, false)
 end
 
 function invalidateSettingsGui()

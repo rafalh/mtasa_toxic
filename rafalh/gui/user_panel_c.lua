@@ -125,7 +125,7 @@ local function UpLogInOut()
 end
 
 local function UpCreateGui()
-	local w = ITEM_W * PANEL_COLUMNS + 20 + VIEW_W
+	local w = ITEM_W * PANEL_COLUMNS + math.max(VIEW_W + 10, 20)
 	local h = 90 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
 	local x = ( g_ScreenSize[1] - w ) / 2
 	local y = ( g_ScreenSize[2] - h ) / 2
@@ -185,7 +185,7 @@ local function UpInit()
 end
 
 function UpNeedsBackBtn()
-	return false
+	return VIEW_W == 0
 end
 
 ----------------------

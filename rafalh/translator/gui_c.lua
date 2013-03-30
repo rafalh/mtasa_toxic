@@ -160,8 +160,10 @@ local function createGui(panel)
 	guiSetFont(label, "default-small")
 	guiLabelSetHorizontalAlign(label, "right")
 	
-	local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-	addEventHandler("onClientGUIClick", btn, UpBack, false)
+	if(UpNeedsBackBtn()) then
+		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
+		addEventHandler("onClientGUIClick", btn, UpBack, false)
+	end
 end
 
 function TranslatorPanel.onShow ( panel )
