@@ -1,25 +1,44 @@
-local g_ChangePwGui = false
+local g_Gui = false
 
 addEvent("main.onChgPwResult", true)
 
 local function onChgPwEditChange()
-	local pw = guiGetText(g_ChangePwGui.pw)
+	local pw = guiGetText(g_Gui.pw)
 	local strength = getPasswordStrength(pw)*100
 	
-	guiSetText(g_ChangePwGui.pwStr, ("%d%%"):format(strength))
+	guiSetText(g_Gui.pwStr, ("%d%%"):format(strength))
 	if(strength > 70) then
-		guiLabelSetColor(g_ChangePwGui.pwStr, 0, 200, 0)
+		guiLabelSetColor(g_Gui.pwStr, 0, 200, 0)
 	elseif(strength > 40) then
-		guiLabelSetColor(g_ChangePwGui.pwStr, 200, 200, 0)
+		guiLabelSetColor(g_Gui.pwStr, 200, 200, 0)
 	else
-		guiLabelSetColor(g_ChangePwGui.pwStr, 200, 0, 0)
+		guiLabelSetColor(g_Gui.pwStr, 200, 0, 0)
+	end
+end
+
+local function closeChangePwGui()
+	if(not g_Gui) then return end
+	
+	g_Gui:destroy()
+	guiSetInputEnabled(false)
+	g_Gui = false
+end
+
+local function onChgPwResult(success)
+	if(not g_Gui) then return end
+	
+	if(success) then
+		closeChangePwGui()
+	else
+		guiSetText(g_Gui.info, "Old password is invalid!")
+		guiLabelSetColor(g_Gui.info, 255, 0, 0)
 	end
 end
 
 local function onChgPwOkClick()
-	local oldPw = guiGetText(g_ChangePwGui.oldPw)
-	local pw = guiGetText(g_ChangePwGui.pw)
-	local pw2 = guiGetText(g_ChangePwGui.pw2)
+	local oldPw = guiGetText(g_Gui.oldPw)
+	local pw = guiGetText(g_Gui.pw)
+	local pw2 = guiGetText(g_Gui.pw2)
 	local err = false
 	
 	if(pw ~= pw2) then
@@ -30,41 +49,20 @@ local function onChgPwOkClick()
 	end
 	
 	if(err) then
-		guiSetText(g_ChangePwGui.info, err)
-		guiLabelSetColor(g_ChangePwGui.info, 255, 0, 0)
+		guiSetText(g_Gui.info, err)
+		guiLabelSetColor(g_Gui.info, 255, 0, 0)
 	else
-		triggerServerEvent("main.onChgPwReq", g_ResRoot, oldPw, pw)
-	end
-end
-
-local function closeChangePwGui()
-	if(not g_ChangePwGui) then return end
-	
-	g_ChangePwGui:destroy()
-	guiSetInputEnabled(false)
-	g_ChangePwGui = false
-end
-
-local function onChgPwResult(success)
-	if(not g_ChangePwGui) then return end
-	
-	if(success) then
-		closeChangePwGui()
-	else
-		guiSetText(g_ChangePwGui.info, "Old password is invalid!")
-		guiLabelSetColor(g_ChangePwGui.info, 255, 0, 0)
+		RPC("changeAccountPassword", oldPw, pw):onResult(onChgPwResult):exec()
 	end
 end
 
 function openChangePasswordGui()
-	if(g_ChangePwGui) then return end
+	if(g_Gui) then return end
 	
-	g_ChangePwGui = GUI.create("changePw")
+	g_Gui = GUI.create("changePw")
 	guiSetInputEnabled(true)
 	
-	addEventHandler("onClientGUIChanged", g_ChangePwGui.pw, onChgPwEditChange, false)
-	addEventHandler("onClientGUIClick", g_ChangePwGui.ok, onChgPwOkClick, false)
-	addEventHandler("onClientGUIClick", g_ChangePwGui.cancel, closeChangePwGui, false)
+	addEventHandler("onClientGUIChanged", g_Gui.pw, onChgPwEditChange, false)
+	addEventHandler("onClientGUIClick", g_Gui.ok, onChgPwOkClick, false)
+	addEventHandler("onClientGUIClick", g_Gui.cancel, closeChangePwGui, false)
 end
-
-addEventHandler("main.onChgPwResult", g_ResRoot, onChgPwResult)

@@ -99,7 +99,7 @@ local function setupDatabase()
 	
 	Settings.createDbTbl()
 	
-	local currentVer = 147
+	local currentVer = 148
 	local ver = Settings.version
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
@@ -116,6 +116,11 @@ local function setupDatabase()
 		if(not err and ver < 147) then
 			if(not DbQuery("ALTER TABLE "..DbPrefix.."players ADD COLUMN achvCount INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add achvCount column."
+			end
+		end
+		if(not err and ver < 148) then
+			if(not DbQuery("ALTER TABLE "..DbPrefix.."settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL")) then
+				err = "Failed to add backupTimestamp column."
 			end
 		end
 		

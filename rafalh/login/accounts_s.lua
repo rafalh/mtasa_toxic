@@ -2,10 +2,6 @@ local g_RegTimeStamp = 0
 
 addEvent("main.onLogin", true)
 addEvent("main.onRegisterReq", true)
-addEvent("main.onEmailReq", true)
-addEvent("main.onChgPwReq", true)
-addEvent("main.onChgEmailReq", true)
-addEvent("main.onLogoutReq", true)
 
 local function onLoginReq(name, passwd)
 	local self = Player.fromEl(client)
@@ -45,23 +41,25 @@ local function onRegisterReq(name, passwd, email)
 	triggerClientEvent(self.el, "main.onRegStatus", g_ResRoot, account and true)
 end
 
-local function onChgPwReq(oldPw, pw)
+allowRPC("logOutReq")
+function logOutReq()
+	logOut(client)
+end
+
+allowRPC("changeAccountPassword")
+function changeAccountPassword(oldPw, pw)
 	local account = getPlayerAccount(client)
-	if(isGuestAccount(account) or pw:len() < 3) then return end
+	if(isGuestAccount(account) or pw:len() < 3) then return false end
 	
-	local success = getAccount(getAccountName(account), oldPw) and true
-	if(success) then
-		success = setAccountPassword(account, pw)
-	end
-	triggerClientEvent(client, "main.onChgPwResult", g_ResRoot, success)
+	-- Check if password is correct
+	if(not getAccount(getAccountName(account), oldPw)) then return false end
+	
+	-- Change password
+	return setAccountPassword(account, pw)
 end
 
-local function onEmailReq()
-	local player = Player.fromEl(client)
-	triggerClientEvent(client, "main.onEmail", g_ResRoot, player.accountData.email)
-end
-
-local function onChgEmailReq(email, pw)
+allowRPC("changeAccountEmail")
+function changeAccountEmail(email, pw)
 	local player = Player.fromEl(client)
 	local account = getPlayerAccount(player.el)
 	if(isGuestAccount(account) or not email or not pw or pw:len() < 3) then return end
@@ -74,18 +72,16 @@ local function onChgEmailReq(email, pw)
 	if(success) then
 		player.accountData.email = email
 	end
-	triggerClientEvent(client, "main.onChgEmailResult", g_ResRoot, success)
+	return success
 end
 
-local function onLogoutReq()
-	logOut(client)
+allowRPC("getAccountEmail")
+function getAccountEmail()
+	local player = Player.fromEl(client)
+	return player.accountData.email
 end
 
 addInitFunc(function()
 	addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
 	addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
-	addEventHandler("main.onChgPwReq", g_ResRoot, onChgPwReq)
-	addEventHandler("main.onChgEmailReq", g_ResRoot, onChgEmailReq)
-	addEventHandler("main.onEmailReq", g_ResRoot, onEmailReq)
-	addEventHandler("main.onLogoutReq", g_ResRoot, onLogoutReq)
 end)

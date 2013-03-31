@@ -103,12 +103,12 @@ local function DbAutoBackupSQLite()
 	local now = getRealTime().timestamp
 	
 	local backupsInt = touint(g_Config.backupInterval, 0) * 3600 * 24
-	if(backupsInt > 1000 and now - Settings.backup_timestamp < backupsInt - 1000) then return end
+	if(backupsInt > 1000 and now - Settings.backupTimestamp < backupsInt - 1000) then return end
 	
 	outputDebugString("Auto-backup...", 3)
 	DbBackupSQLite()
 	
-	Settings.backup_timestamp = now
+	Settings.backupTimestamp = now
 end
 
 local function DbInitSQLite()
@@ -206,7 +206,7 @@ end
 
 Settings.register
 {
-	name = "backup_timestamp",
+	name = "backupTimestamp",
 	type = "INTEGER",
 	default = 0,
 }

@@ -4,96 +4,94 @@ local g_WndCount = 0
 local GaUpdate
 local GaOnElementDestroy
 
+local function GaRemoveWnd(wnd)
+	if(not g_WndData[wnd]) then return end
+	
+	g_WndData[wnd] = nil
+	removeEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy)
+	
+	g_WndCount = g_WndCount - 1
+	if (g_WndCount <= 0) then
+		removeEventHandler("onClientPreRender", g_Root, GaUpdate)
+	end
+end
+
+local function GaRemoveAnimator(wnd, name)
+	local data = g_WndData[wnd]
+	if(not data[name]) then return end
+	
+	data[name] = nil
+	data.c = data.c - 1
+	
+	if(data.c <= 0) then
+		GaRemoveWnd(wnd)
+	end
+end
+
 GaUpdate = function ( dt )
 	for wnd, data in pairs ( g_WndData ) do
 		local fade = data.fade
-		if ( fade ) then
+		if(fade) then
 			fade.t1 = math.min ( fade.t1 + dt, fade.t2 )
-			local a = ( fade.t1 / fade.t2 ) * fade.a2 + ( ( fade.t2 - fade.t1 ) / fade.t2 ) * fade.a1
-			guiSetAlpha ( wnd, a )
-			if ( a == fade.a2 and a <= 0 ) then
-				guiSetVisible ( wnd, false )
+			local a = (fade.t1 / fade.t2) * fade.a2 + ((fade.t2 - fade.t1) / fade.t2) * fade.a1
+			guiSetAlpha(wnd, a)
+			if(a == fade.a2 and a <= 0) then
+				guiSetVisible(wnd, false)
 			end
 			
-			if ( fade.t1 == fade.t2 ) then
-				data.fade = nil
-				data.c = data.c - 1
-			end
-		end
-		
-		local resize = data.resize
-		if ( resize ) then
-			resize.t1 = math.min ( resize.t1 + dt, resize.t2 )
-			local w = ( resize.t1 / resize.t2 ) * resize.w2 + ( ( resize.t2 - resize.t1 ) / resize.t2 ) * resize.w1
-			local h = ( resize.t1 / resize.t2 ) * resize.h2 + ( ( resize.t2 - resize.t1 ) / resize.t2 ) * resize.h1
-			local x = resize.x - w / 2
-			local y = resize.y - h / 2
-			
-			guiSetSize ( wnd, w, h, false )
-			guiSetPosition ( wnd, x, y, false )
-			
-			if ( resize.t1 == resize.t2 ) then
-				data.resize = nil
-				data.c = data.c - 1
-			end
-		end
-		
-		if ( data.c <= 0 ) then
-			g_WndData[wnd] = nil
-			g_WndCount = g_WndCount - 1
-			removeEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy)
-			
-			if(g_WndCount <= 0) then
-				removeEventHandler("onClientPreRender", g_Root, GaUpdate)
+			if(fade.t1 == fade.t2) then
+				GaRemoveAnimator(wnd, "fade")
 			end
 		end
 	end
 end
 
-GaOnElementDestroy = function ()
-	if ( g_WndData[source] ) then
-		g_WndData[source] = nil
-		g_WndCount = g_WndCount - 1
-		if ( g_WndCount <= 0 ) then
-			removeEventHandler ( "onClientPreRender", g_Root, GaUpdate )
-		end
-	end
+GaOnElementDestroy = function()
+	GaRemoveWnd(source)
 end
 
-local function GaFade ( wnd, delay, target_alpha )
-	local a = guiGetVisible ( wnd ) and guiGetAlpha ( wnd ) or 0
-	if ( a == target_alpha ) then return end
+local function GaFade(wnd, delay, targetAlpha)
+	local data = g_WndData[wnd]
 	
-	if ( not g_WndData[wnd] ) then
-		if ( g_WndCount == 0 ) then
-			addEventHandler ( "onClientPreRender", g_Root, GaUpdate, false )
+	local a = guiGetVisible(wnd) and guiGetAlpha(wnd) or 0
+	if(a == targetAlpha) then
+		GaRemoveAnimator(wnd, "fade")
+		if(targetAlpha == 0) then
+			guiSetVisible(wnd, false)
+		end
+		return
+	end
+	
+	if(not g_WndData[wnd]) then
+		if(g_WndCount == 0) then
+			addEventHandler("onClientPreRender", g_Root, GaUpdate, false)
 		end
 		g_WndCount = g_WndCount + 1
-		g_WndData[wnd] = { c = 0 }
+		data = {c = 0}
+		g_WndData[wnd] = data
 		addEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy, false)
 	end
 	
-	local data = g_WndData[wnd]
-	guiSetVisible ( wnd, true )
-	guiSetAlpha ( wnd, a )
-	if ( not data.fade ) then
+	guiSetVisible(wnd, true)
+	guiSetAlpha(wnd, a)
+	if(not data.fade) then
 		data.c = data.c + 1
 	end
-	data.fade = { t1 = 0, t2 = delay, a1 = a, a2 = target_alpha }
+	data.fade = {t1 = 0, t2 = delay, a1 = a, a2 = targetAlpha}
 end
 
-function GaFadeIn ( wnd, delay, target_alpha )
-	if ( not target_alpha ) then
-		target_alpha = 1
+function GaFadeIn(wnd, delay, targetAlpha)
+	if(not targetAlpha) then
+		targetAlpha = 1
 	end
-	--outputDebugString ( "GaFadeIn "..g_WndCount.." "..guiGetAlpha ( wnd ).."-"..target_alpha, 2 )
-	GaFade ( wnd, delay, target_alpha )
+	--outputDebugString("GaFadeIn "..g_WndCount.." "..guiGetAlpha ( wnd ).."-"..targetAlpha, 3)
+	GaFade(wnd, delay, targetAlpha)
 end
 
-function GaFadeOut ( wnd, delay, target_alpha )
-	if ( not target_alpha ) then
-		target_alpha = 0
+function GaFadeOut(wnd, delay, targetAlpha)
+	if(not targetAlpha) then
+		targetAlpha = 0
 	end
-	--outputDebugString ( "GaFadeOut "..g_WndCount.." "..guiGetAlpha ( wnd ).."-"..target_alpha, 2 )
-	GaFade ( wnd, delay, target_alpha )
+	--outputDebugString("GaFadeOut "..g_WndCount.." "..guiGetAlpha(wnd).."-"..targetAlpha, 3)
+	GaFade(wnd, delay, targetAlpha)
 end

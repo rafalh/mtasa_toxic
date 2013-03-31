@@ -210,6 +210,6 @@ function ListView.onMouseWheel(upOrDown)
 	if(not self) then return end -- if mouse wheel is used over the scrollPane it is handled properly
 	
 	local pos = guiScrollPaneGetVerticalScrollPosition(self.el)
-	pos = pos - upOrDown * 20
+	pos = pos - upOrDown * 10
 	guiScrollPaneSetVerticalScrollPosition(self.el, pos)
 end

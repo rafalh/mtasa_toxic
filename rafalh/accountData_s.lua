@@ -72,13 +72,15 @@ local DefaultData = {}
 local FieldsMap = {}
 
 function AccountData:getTbl()
-	if(not self.cache) then
+	local cache = rawget(self, "cache")
+	if(not cache) then
 		assert(self.id)
 		local rows = DbQuery("SELECT * FROM rafalh_players WHERE player=? LIMIT 1", self.id)
-		self.cache = rows[1]
+		cache = rows[1] or false
+		rawset(self, "cache", cache)
 	end
 	
-	return self.cache
+	return cache
 end
 
 function AccountData:get(name)
@@ -89,12 +91,15 @@ function AccountData:get(name)
 		fields = {name}
 	end
 	
-	self:getTbl() -- load cache
+	local cache = AccountData.getTbl(self)
+	if(not cache) then -- load cache
+		return false
+	end
 	
 	local result = {}
 	for i, field in ipairs(fields) do
-		if(self.cache[field] ~= nil) then
-			result[field] = self.cache[field]
+		if(cache[field] ~= nil) then
+			result[field] = cache[field]
 		else
 			outputDebugString("Unknown field "..field, 2)
 		end
@@ -160,9 +165,9 @@ end
 
 function AccountData:add(name, num)
 	assert(type(self) == "table" and name and num)
-	local val = self:get(name)
+	local val = AccountData.get(self, name)
 	assert(type(val) == "number")
-	return self:set(name, val + num)
+	return AccountData.set(self, name, val + num)
 end
 
 function AccountData.create(id)
@@ -171,19 +176,19 @@ function AccountData.create(id)
 	end
 	
 	local self = {id = id, cache = false}
-	setmetatable(self, AccountData.__mt)
+	self.lol = true
 	if(id) then
 		AccountData.map[id] = self
 	else
 		self.cache = table.copy(DefaultData)
 	end
-	return self
+	
+	return setmetatable(self, AccountData.__mt)
 end
 
 function AccountData.__mt.__index(self, k)
-	--outputDebugString("__index "..tostring(k), 3)
-	local val = AccountData[k]
-	if(val) then
+	local val = AccountData[k] or rawget(self, k)
+	if(val ~= nil) then
 		return val
 	else
 		return AccountData.get(self, k)

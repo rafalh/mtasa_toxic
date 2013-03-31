@@ -154,7 +154,7 @@ end
 
 function StatsView.onSync(sync_tbl)
 	-- is it stats sync?
-	if(not sync_tbl.stats) then return end
+	if(not sync_tbl.stats or not sync_tbl.stats[2]) then return end
 	
 	-- check id
 	local id = sync_tbl.stats[1]

@@ -14,6 +14,7 @@
 	<script src="utils/timers.lua" type="server" />
 	<script src="utils/binary.lua" type="server" />
 	<script src="utils/worker.lua" type="server" />
+	<script src="utils/rpc_sc.lua" type="shared" />
 	
 	<script src="start.lua" type="server" />
 	<script src="settings.lua" type="server" />
