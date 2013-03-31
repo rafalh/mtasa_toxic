@@ -1,32 +1,5 @@
-
-#include "include/internal_events.lua"
-
 g_ProfileFields = {}
 local g_ProfileCats = {}
-
-addEvent("main_onPlayerProfileReq", true)
-
-local function PfSyncCallback(id)
-	if(not id) then return {} end -- guest
-	
-	id = touint(id)
-	if (not id) then
-		outputDebugString("Wrong id", 2)
-		return false
-	end
-	
-	local rows = DbQuery("SELECT field, value FROM rafalh_profiles WHERE player=?", id)
-	local ret = {}
-	for i, data in ipairs(rows) do
-		ret[data.field] = data.value
-	end
-	
-	return ret
-end
-
-local function PfFieldsSyncCallback()
-	return g_ProfileCats
-end
 
 local function PfLoadCat(node, cat)
 	local i = 0
@@ -66,30 +39,33 @@ local function PfLoadFields()
 	return true
 end
 
--- HTTP Export
-function getPlayerProfile ( player_id )
+allowRPC("getPlayerProfile")
+function getPlayerProfile(playerId)
 	-- Validate parameters
-	player_id = touint ( player_id )
-	if ( not player_id ) then
+	playerId = touint(playerId)
+	if(not playerId) then
+		outputDebugString("Wrong id", 2)
 		return false
 	end
 	
 	-- Query database
-	local rows = DbQuery ( "SELECT * FROM rafalh_profiles WHERE player=?", player_id )
-	if ( rows ) then
-		local result = {}
-		
-		for i, data in ipairs ( rows ) do
-			local prof_field = g_ProfileFields[data.field]
-			if ( prof_field ) then
-				result[prof_field.longname] = data.value
-			end
+	local rows = DbQuery("SELECT * FROM rafalh_profiles WHERE player=?", playerId)
+	if(not rows) then return false end
+	
+	local result = {}
+	for i, data in ipairs(rows) do
+		local fieldInfo = g_ProfileFields[data.field]
+		if(fieldInfo) then
+			result[fieldInfo.longname] = data.value
 		end
-		
-		return result
 	end
 	
-	return false
+	return result
+end
+
+allowRPC("getProfileFields")
+function getProfileFields()
+	return g_ProfileCats
 end
 
 function setPlayerProfile(id, data)
@@ -120,16 +96,11 @@ function setPlayerProfile(id, data)
 		end
 	end
 	
-	notifySyncerChange("profile", id, data)
 	return data
 end
 
-local function PfOnGetProfileReq(id)
-	local data = getPlayerProfile(id)
-	triggerClientEvent(client, "main_onPlayerProfile", g_ResRoot, id, data)
-end
-
-local function PfOnSetProfileRequest(data)
+allowRPC("setProfileReq")
+function setProfileReq(data)
 	local pdata = Player.fromEl(client)
 	if(data and type(data) == "table" and pdata.id) then
 		setPlayerProfile(pdata.id, data)
@@ -138,12 +109,6 @@ end
 
 local function PfInit()
 	PfLoadFields()
-	
-	addSyncer("profile", PfSyncCallback)
-	addSyncer("profile_fields", PfFieldsSyncCallback)
-	
-	addInternalEventHandler($(EV_SET_PROFILE_REQUEST), PfOnSetProfileRequest)
-	addEventHandler("main_onPlayerProfileReq", g_ResRoot, PfOnGetProfileReq)
 end
 
 addInitFunc(PfInit)

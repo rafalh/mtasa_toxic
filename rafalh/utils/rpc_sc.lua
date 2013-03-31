@@ -5,7 +5,7 @@
 ]]
 
 local RpcMethods = {}
-local g_RpcResultHandlers = {}
+local g_WaitingRpc = {}
 local g_AllowedRpc = {}
 local SERVER = triggerClientEvent and true
 
@@ -19,14 +19,19 @@ end
 
 function RpcMethods.exec(self)
 	if(self.callback) then
-		self.id = #g_RpcResultHandlers + 1
-		g_RpcResultHandlers[self.id] = self.callback
+		self.id = #g_WaitingRpc + 1
+		g_WaitingRpc[self.id] = self
 	end
 	if(SERVER) then
 		return triggerClientEvent(self.client, "main.onRpc", resourceRoot, self.id, self.fn, unpack(self.args))
 	else
 		return triggerServerEvent("main.onRpc", resourceRoot, self.id, self.fn, unpack(self.args))
 	end
+end
+
+function RpcMethods.setCallbackArgs(self, ...)
+	self.cbArgs = {...}
+	return self
 end
 
 if(SERVER) then
@@ -44,6 +49,7 @@ function RPC(fnName, ...)
 	local self = setmetatable({}, mt)
 	self.fn = fnName
 	self.args = {...}
+	self.cbArgs = {}
 	self.id = false
 	if(SERVER) then
 		self.client = root
@@ -78,13 +84,16 @@ local function onRpc(id, fnName, ...)
 end
 
 local function onRpcResult(id, ...)
-	local handler = g_RpcResultHandlers[id]
-	if(not handler) then
+	local self = g_WaitingRpc[id]
+	if(not self) then
 		outputDebugString("Unknown RPC "..tostring(id), 2)
 		return
 	end
-	g_RpcResultHandlers[id] = nil
-	handler(...)
+	g_WaitingRpc[id] = nil
+	for i, arg in ipairs({...}) do
+		table.insert(self.cbArgs, arg)
+	end
+	self.callback(unpack(self.cbArgs))
 end
 
 addEventHandler("main.onRpc", resourceRoot, onRpc)

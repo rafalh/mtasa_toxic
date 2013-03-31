@@ -59,7 +59,7 @@ function ProfileView.create(id, name)
 	GaFadeIn(self.wnd, 200)
 	guiSetInputEnabled(true)
 	
-	triggerServerEvent("main_onPlayerProfileReq", g_ResRoot, id)
+	RPC("getPlayerProfile", id):onResult(ProfileView.onProfile):setCallbackArgs(id):exec()
 	g_WndToObj[self.wnd] = self
 	g_IdToObj[self.id] = self
 	
@@ -78,6 +78,3 @@ function ProfileView.onProfile(id, data)
 		y = y + 15
 	end
 end
-
-addEvent("main_onPlayerProfile", true)
-addEventHandler("main_onPlayerProfile", g_ResRoot, ProfileView.onProfile)
