@@ -8,6 +8,9 @@
 
 local g_Panel, g_ScrollPane
 local g_SettingGui = {}
+local g_Save = false
+
+local SAVE_BTN = false
 
 local SettingsPanel = {
 	name = "Settings",
@@ -26,17 +29,16 @@ function SettingsPanel.onSaveClick()
 		end
 	end
 	
-	Settings.save()
+	g_Save = true
 end
 
-function SettingsPanel.createScrollPane(panel)
-	local w, h = guiGetSize(panel, false)
-	g_ScrollPane = guiCreateScrollPane(10, 10, w - 20, h - 50, false, panel)
+function SettingsPanel.createScrollPane(x, y, w, h, panel)
+	g_ScrollPane = guiCreateScrollPane(x, y, w, h, false, panel)
 	
 	local y = 0
 	for key, item in ipairs(Settings.localSorted) do
 		if(item.createGui) then
-			local h, gui = item.createGui(g_ScrollPane, 0, y, w - 20)
+			local h, gui = item.createGui(g_ScrollPane, 0, y, w, not SAVE_BTN and SettingsPanel.onSaveClick)
 			g_SettingGui[item.name] = gui
 			y = y + h
 		end
@@ -46,17 +48,23 @@ end
 function SettingsPanel.initGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	SettingsPanel.createScrollPane(panel)
+	local paneH = h - 20
 	
 	local x = w - 90
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(x, h - 35, 80, 25, "Back", false, panel)
 		addEventHandler("onClientGUIClick", btn, UpBack, false)
 		x = x - 90
+		paneH = h - 50
 	end
 	
-	local btn = guiCreateButton(x, h - 35, 80, 25, "Save", false, panel)
-	addEventHandler("onClientGUIClick", btn, SettingsPanel.onSaveClick, false)
+	if(SAVE_BTN) then
+		local btn = guiCreateButton(x, h - 35, 80, 25, "Save", false, panel)
+		addEventHandler("onClientGUIClick", btn, SettingsPanel.onSaveClick, false)
+		paneH = h - 50
+	end
+	
+	SettingsPanel.createScrollPane(10, 10, w - 20, paneH, panel)
 end
 
 function invalidateSettingsGui()
@@ -81,6 +89,10 @@ function SettingsPanel.onShow(panel)
 end
 
 function SettingsPanel.onHide(panel)
+	if(g_Save) then
+		Settings.save()
+		g_Save = false
+	end
 end
 
 ----------------------

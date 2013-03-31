@@ -43,8 +43,11 @@ Settings.register
 			removeEventHandler("onClientPreRender", g_Root, updateAlpha)
 		end
 	end,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Hide nearby cars", Settings.hideNearbyCars, false, wnd)
+		if(onChange) then
+			addEventHandler("onClientGUIClick", cb, onChange, false)
+		end
 		return 20, cb
 	end,
 	acceptGui = function(cb)

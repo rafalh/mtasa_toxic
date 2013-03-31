@@ -115,8 +115,11 @@ Settings.register
 	name = "winAnim",
 	default = true,
 	cast = tobool,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Show stars animation above winner car", Settings.winAnim, false, wnd)
+		if(onChange) then
+			addEventHandler("onClientGUIClick", cb, onChange, false)
+		end
 		return 20, cb
 	end,
 	acceptGui = function(cb)

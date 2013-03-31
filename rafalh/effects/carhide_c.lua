@@ -128,8 +128,11 @@ Settings.register
 	onChange = function(oldVal, newVal)
 		ChSetEnabled(newVal)
 	end,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Hide other cars when GM is enabled", Settings.carHide, false, wnd)
+		if(onChange) then
+			addEventHandler("onClientGUIClick", cb, onChange, false)
+		end
 		return 20, cb
 	end,
 	acceptGui = function(cb)

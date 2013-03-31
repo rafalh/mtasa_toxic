@@ -112,9 +112,13 @@ Settings.register
 			end
 		end
 	end,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		guiCreateLabel(x, y + 5, w, 20, "Effects:", false, wnd)
 		local h, gui = 25, {}
+		
+		local function onBtnToggle()
+			onChange("effects")
+		end
 		
 		for res, name in pairs(g_Effects) do
 			local enabled = call(res, "isEffectEnabled")
@@ -124,6 +128,7 @@ Settings.register
 			if(name) then
 				guiCreateLabel(x, y + h, 200, 20, name, false, wnd)
 				gui[res] = OnOffBtn.create(x + 200, y + h, wnd, enabled)
+				gui[res].onChange = onBtnToggle
 				
 				h = h + 25
 			end

@@ -92,8 +92,13 @@ Settings.register
 			end
 		end
 	end,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Broken glass image after huge damage", Settings.breakableGlass, false, wnd)
+		if(onChange) then
+			addEventHandler("onClientGUIClick", cb, function()
+				onChange("breakableGlass")
+			end, false)
+		end
 		return 20, cb
 	end,
 	acceptGui = function(cb)
@@ -115,8 +120,11 @@ Settings.register
 			end
 		end
 	end,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Screen flashes red after huge damage", Settings.redDmgScreen, false, wnd)
+		if(onChange) then
+			addEventHandler("onClientGUIClick", cb, onChange, false)
+		end
 		return 20, cb
 	end,
 	acceptGui = function(cb)

@@ -19,7 +19,7 @@ Settings.register
 			triggerServerEvent("main.onSetLocaleReq", g_ResRoot, newVal)
 		end
 	end,
-	createGui = function(wnd, x, y, w)
+	createGui = function(wnd, x, y, w, onChange)
 		guiCreateLabel(x, y, w, 15, "Language:", false, wnd)
 		
 		local flagSpace = 5
@@ -35,6 +35,9 @@ Settings.register
 			local img = guiCreateStaticImage(x, y + 20, flagW, flagH, locale.img, false, wnd)
 			setElementData(img, "tooltip", locale.name)
 			addEventHandler("onClientGUIClick", img, onFlagClick, false)
+			if(onChange) then
+				addEventHandler("onClientGUIClick", img, onChange, false)
+			end
 			g_LangButtons[img] = locale.code
 			
 			if(locale.code ~= Settings.locale) then
