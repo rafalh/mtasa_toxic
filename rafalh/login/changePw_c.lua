@@ -16,7 +16,7 @@ local function onChgPwEditChange()
 	end
 end
 
-local function closeChangePwGui()
+function closeChangePwGui()
 	if(not g_Gui) then return end
 	
 	g_Gui:destroy()

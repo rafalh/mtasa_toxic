@@ -5,8 +5,6 @@
 local g_Panel, g_ChangePwBtn, g_ChangeEmailBtn
 local g_EditFields = {}
 local g_ChangedEdits = {}
-local g_Profile = {}
-local g_Gui
 
 local EditProfilePanel = {
 	name = "Profile",
@@ -26,9 +24,9 @@ local function onAccountChange(accountName)
 		guiSetEnabled(g_ChangeEmailBtn, accountName and true)
 	end
 	
-	if(not accountName and g_ChangePwGui) then
-		g_ChangePwGui:remove()
-		g_ChangePwGui = false
+	if(not accountName) then
+		closeChangePwGui()
+		closeChangeEmailGui()
 	end
 end
 
@@ -52,7 +50,7 @@ local function onProfileFields(fields)
 			if(data.w and data.w < editW) then
 				editW = data.w
 			end
-			local edit = guiCreateEdit(110, y, editW, 22, g_Profile[data.longname] or "", false, g_Panel)
+			local edit = guiCreateEdit(110, y, editW, 22, "", false, g_Panel)
 			if(data.type == "int") then
 				guiSetProperty(edit, "ValidationString", "-?\\d*")
 			elseif(data.type == "num") then

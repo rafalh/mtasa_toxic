@@ -1,6 +1,6 @@
 local g_Gui = false
 
-local function closeChangeEmailGui()
+function closeChangeEmailGui()
 	if(not g_Gui) then return end
 	
 	g_Gui:destroy()

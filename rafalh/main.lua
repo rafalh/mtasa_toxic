@@ -236,10 +236,10 @@ local function onPlayerReady(localeId)
 	
 	pdata:setLocale(localeId) -- set locale
 	
-	local clientSettings = Settings.getClient()
+	local globalSettings = Settings.getClient()
 	
 	pdata.sync = true -- set sync to true just before init event
-	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, clientSettings, pdata.new, localeId)
+	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, globalSettings, pdata.new, localeId)
 	
 	if(BtSendMapInfo) then
 		BtSendMapInfo(pdata.room, pdata.new, client)
@@ -255,6 +255,11 @@ local function onPlayerReady(localeId)
 	end
 	
 	pdata.new = false
+end
+
+allowRPC("getThisResourceVersion")
+function getThisResourceVersion()
+	return getResourceInfo(resource, "version")
 end
 
 ------------
