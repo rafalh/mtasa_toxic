@@ -1,0 +1,8 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Nitro Mod" description="Nitro Modification" type="script" />
+
+	<script src="nitro.lua" />
+	<script src="nitro_c.lua" type="client" />
+	
+	<export function="getNitro" type="client" />
+</meta>
