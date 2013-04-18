@@ -19,6 +19,7 @@ local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
 local g_WidgetName = {"Speedometer", pl = "Prędkościomierz"}
 local g_Textures = {}
+local HAS_NITRO_API = getVersion().sortable >= "1.3.1-9.05174" -- above version with crash-fix
 
 --------------------------------
 -- Local function definitions --
@@ -60,12 +61,16 @@ local function renderHealth ( health )
 	end
 end
 
-local function renderNos ( veh )
+local function renderNos(veh)
 	local nos = 0
 	
-	if ( veh == getPedOccupiedVehicle ( g_Me ) ) then
-		local res = getResourceFromName ( "rafalh_nitro" )
-		nos = res and call ( res, "getNitro" ) or 0
+	if(veh == getPedOccupiedVehicle(g_Me)) then
+		local res = getResourceFromName("rafalh_nitro")
+		if(res) then
+			nos = call(res, "getNitro") or 0
+		elseif(HAS_NITRO_API) then
+			nos = not isVehicleNitroRecharging(veh) and getVehicleNitroLevel(veh) or 0
+		end
 	end
 	
 	local x, y = g_Pos[1], g_Pos[2]
