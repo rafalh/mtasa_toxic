@@ -17,7 +17,7 @@ local function CmdSetMapName(message, arg)
 	else privMsg(source, arg[1].." <name>") end
 end
 
-CmdRegister("setmapname", CmdSetMapName, "resource.rafalh.setmapname")
+CmdRegister("setmapname", CmdSetMapName, "resource."..g_ResName..".setmapname")
 CmdRegisterAlias("smn", "setmapname")
 
 local function CmdSetMapType(message, arg)
@@ -41,7 +41,7 @@ local function CmdSetMapType(message, arg)
 	else privMsg(source, arg[1].." <dd/dm/race/cnr/tdd/tdm/fun>") end
 end
 
-CmdRegister("setmaptype", CmdSetMapType, "resource.rafalh.setmapname")
+CmdRegister("setmaptype", CmdSetMapType, "resource."..g_ResName..".setmapname")
 CmdRegisterAlias("smt", "setmaptype")
 
 local function CmdSetMapCreator(message, arg)
@@ -61,7 +61,7 @@ local function CmdSetMapCreator(message, arg)
 	else privMsg(source, arg[1].." <creator>") end
 end
 
-CmdRegister("setmapcreator", CmdSetMapCreator, "resource.rafalh.setmapcreator")
+CmdRegister("setmapcreator", CmdSetMapCreator, "resource."..g_ResName..".setmapcreator")
 CmdRegisterAlias("sc", "setmapcreator")
 
 local function CmdSetMapRespawn(message, arg)
@@ -96,7 +96,7 @@ local function CmdSetMapRespawn(message, arg)
 	else privMsg(source, arg[1].." <seconds/no/auto>") end
 end
 
-CmdRegister("setrs", CmdSetMapRespawn, "resource.rafalh.setrs")
+CmdRegister("setrs", CmdSetMapRespawn, "resource."..g_ResName..".setrs")
 
 local function CmdSetMapGhostmode(message, arg)
 	if(#arg >= 2) then
@@ -122,7 +122,7 @@ local function CmdSetMapGhostmode(message, arg)
 	else privMsg(source, arg[1].." <true/false/auto>") end
 end
 
-CmdRegister("setmapgm", CmdSetMapGhostmode, "resource.rafalh.setmapgm")
+CmdRegister("setmapgm", CmdSetMapGhostmode, "resource."..g_ResName..".setmapgm")
 CmdRegisterAlias("smgm", "setmapgm")
 
 local function CmdSetMapTimeLimit(message, arg)
@@ -144,7 +144,7 @@ local function CmdSetMapTimeLimit(message, arg)
 	else privMsg(source, arg[1].." <[h:m:]s>") end
 end
 
-CmdRegister("setmaptimelimit", CmdSetMapTimeLimit, "resource.rafalh.setmaptimelimit")
+CmdRegister("setmaptimelimit", CmdSetMapTimeLimit, "resource."..g_ResName..".setmaptimelimit")
 CmdRegisterAlias("smtimelimit", "setmaptimelimit")
 CmdRegisterAlias("settimelimit", "setmaptimelimit")
 
@@ -168,7 +168,7 @@ local function CmdSetMapVehicleWeapons(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <true/false/auto>") end
 end
 
-CmdRegister("setmapvehwep", CmdSetMapVehicleWeapons, "resource.rafalh.setmapvehwep")
+CmdRegister("setmapvehwep", CmdSetMapVehicleWeapons, "resource."..g_ResName..".setmapvehwep")
 CmdRegisterAlias("smvehwep", "setmapvehwep")
 
 local function CmdSetMapHunterMinigun(message, arg)
@@ -191,7 +191,7 @@ local function CmdSetMapHunterMinigun(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <true/false/auto>") end
 end
 
-CmdRegister("setmaphuntermg", CmdSetMapHunterMinigun, "resource.rafalh.setmaphuntermg")
+CmdRegister("setmaphuntermg", CmdSetMapHunterMinigun, "resource."..g_ResName..".setmaphuntermg")
 CmdRegisterAlias("smhuntermg", "setmaphuntermg")
 CmdRegisterAlias("smhuntmg", "setmaphuntermg")
 
@@ -213,7 +213,7 @@ local function CmdSetMapWaveHeight(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <num/auto>") end
 end
 
-CmdRegister("setmapwaveheight", CmdSetMapWaveHeight, "resource.rafalh.setmapwaveheight")
+CmdRegister("setmapwaveheight", CmdSetMapWaveHeight, "resource."..g_ResName..".setmapwaveheight")
 CmdRegisterAlias("smwaveh", "setmapwaveheight")
 
 local function CmdVehicleWeapons(message, arg)
@@ -235,7 +235,7 @@ local function CmdVehicleWeapons(message, arg)
 	end
 end
 
-CmdRegister("vehicleweapons", CmdVehicleWeapons, "resource.rafalh.vehicleweapons")
+CmdRegister("vehicleweapons", CmdVehicleWeapons, "resource."..g_ResName..".vehicleweapons")
 CmdRegisterAlias("vehwep", "vehicleweapons")
 
 local function CmdSetMapCompMode(message, arg)
@@ -255,7 +255,7 @@ local function CmdSetMapCompMode(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <true/false>") end
 end
 
-CmdRegister("setcompmode", CmdSetMapCompMode, "resource.rafalh.setcompmode")
+CmdRegister("setcompmode", CmdSetMapCompMode, "resource."..g_ResName..".setcompmode")
 CmdRegisterAlias("setcmode", "setcompmode")
 
 local function CmdSetMapMaxSpeed(message, arg)
@@ -274,7 +274,7 @@ local function CmdSetMapMaxSpeed(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <maxspeed>") end
 end
 
-CmdRegister("setmapmaxspeed", CmdSetMapMaxSpeed, "resource.rafalh.setmapmaxspeed")
+CmdRegister("setmapmaxspeed", CmdSetMapMaxSpeed, "resource."..g_ResName..".setmapmaxspeed")
 
 local function GenMapResName(map)
 	local name = map:getName()

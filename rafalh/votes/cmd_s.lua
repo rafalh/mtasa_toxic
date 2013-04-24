@@ -37,7 +37,7 @@ local function CmdCancel (message, arg)
 	end
 end
 
-CmdRegister("cancel", CmdCancel, "resource.rafalh.cancel", "Cancels current vote")
+CmdRegister("cancel", CmdCancel, "resource."..g_ResName..".cancel", "Cancels current vote")
 
 local function CmdVoteNext(message, arg)
 	local pattern = message:sub(arg[1]:len() + 2)
@@ -68,4 +68,4 @@ local function CmdPoll(message, arg)
 	end
 end
 
-CmdRegister("poll", CmdPoll, "resource.rafalh.poll", "Starts a custom poll")
+CmdRegister("poll", CmdPoll, "resource."..g_ResName..".poll", "Starts a custom poll")

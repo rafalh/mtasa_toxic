@@ -27,7 +27,7 @@ local function CmdSetPoints (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." [<player>] <points>") end
 end
 
-CmdRegister("setpoints", CmdSetPoints, "resource.rafalh.setpoints", "Sets player points")
+CmdRegister("setpoints", CmdSetPoints, "resource."..g_ResName..".setpoints", "Sets player points")
 
 local function CmdSetBidLevel (message, arg)
 	local playerEl = (#arg >= 3 and findPlayer (arg[2])) or source
@@ -40,7 +40,7 @@ local function CmdSetBidLevel (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." [<player>] <bidlvl>") end
 end
 
-CmdRegister("setbidlevel", CmdSetBidLevel, "resource.rafalh.setbidlevel", "Sets player bidlevel")
+CmdRegister("setbidlevel", CmdSetBidLevel, "resource."..g_ResName..".setbidlevel", "Sets player bidlevel")
 
 local function CmdResetStats(message, arg)
 	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))
@@ -55,4 +55,4 @@ local function CmdResetStats(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("resetstats", CmdResetStats, "resource.rafalh.resetstats", "Resets player statistics")
+CmdRegister("resetstats", CmdResetStats, "resource."..g_ResName..".resetstats", "Resets player statistics")

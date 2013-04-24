@@ -22,7 +22,7 @@ local function CmdRemMap (message, arg)
 	startRandomMap(room)
 end
 
-CmdRegister("remmap", CmdRemMap, "resource.rafalh.remmap", "Removes map from server")
+CmdRegister("remmap", CmdRemMap, "resource."..g_ResName..".remmap", "Removes map from server")
 CmdRegisterAlias ("removemap", "remmap")
 
 local function CmdRestoreMap (message, arg)
@@ -39,7 +39,7 @@ local function CmdRestoreMap (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <map>") end
 end
 
-CmdRegister("restoremap", CmdRestoreMap, "resource.rafalh.restoremap", "Restores proviously removed map")
+CmdRegister("restoremap", CmdRestoreMap, "resource."..g_ResName..".restoremap", "Restores proviously removed map")
 
 
 
@@ -115,12 +115,12 @@ local function CmdNextMap (message, arg)
 	end
 end
 
-CmdRegister("nextmap", CmdNextMap, "resource.rafalh.nextmap", "Adds next map to queue")
+CmdRegister("nextmap", CmdNextMap, "resource."..g_ResName..".nextmap", "Adds next map to queue")
 CmdRegisterAlias ("next", "nextmap", true)
 
 -- For Admin Panel
 local function onSetNextMap (mapName)
-	if (hasObjectPermissionTo(client, "resource.rafalh.nextmap", false)) then
+	if (hasObjectPermissionTo(client, "resource."..g_ResName..".nextmap", false)) then
 		local map = findMap(mapName, false)
 		if(map) then
 			local pdata = Player.fromEl(client)
@@ -140,7 +140,7 @@ local function CmdCancelNextMap (message, arg)
 	end
 end
 
-CmdRegister("cancelnext", CmdCancelNextMap, "resource.rafalh.nextmap", "Removes last map from queue")
+CmdRegister("cancelnext", CmdCancelNextMap, "resource."..g_ResName..".nextmap", "Removes last map from queue")
 
 local function CmdRedo (message, arg)
 	local now = getRealTime ().timestamp

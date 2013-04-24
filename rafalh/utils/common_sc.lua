@@ -1,3 +1,8 @@
+g_Root = getRootElement()
+g_ResRoot = getResourceRootElement()
+g_Res = getThisResource()
+g_ResName = getResourceName(g_Res)
+
 function ifElse(condition, trueReturn, falseReturn)
 	if(condition) then
 		return trueReturn

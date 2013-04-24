@@ -2,14 +2,8 @@
 -- Global variables --
 ----------------------
 
-g_Root = getRootElement()
-g_ResRoot = getResourceRootElement()
-g_Res = getThisResource()
-g_ResName = getResourceName(g_Res)
-
 g_PlayersCount = 0
 
-g_ScriptMsgState = { recipients = { g_Root }, prefix = "", color = false }
 g_InternalEventHandlers = {}
 g_OldVehicleWeapons = nil
 g_Countries = {}
@@ -27,13 +21,16 @@ addEvent("onEvent_"..g_ResName, true)
 -- Local function definitions --
 --------------------------------
 
-local function onEventHandler ( event, ... )
+local function onEventHandler(event, ...)
 	--outputChatBox("'"..getResourceName ( sourceResource ).."' "..tostring(event))
-	if ( g_InternalEventHandlers[event or false] and ( sourceResource == g_Res or getResourceName ( sourceResource ):sub ( 1, 6 ) == "rafalh" ) ) then
-		for _, handler in ipairs ( g_InternalEventHandlers[event] ) do
+	if(not event or not g_InternalEventHandlers[event]) then return end
+	if(sourceResource == g_Res or getResourceName(sourceResource):sub(1, 6) == "rafalh") then
+		for _, handler in ipairs(g_InternalEventHandlers[event]) do
 			-- Note: unpack must be last arg
-			handler ( unpack ( { ... } ) )
+			handler(unpack({...}))
 		end
+	else
+		outputDebugString("Access denied", 2)
 	end
 end
 
@@ -41,21 +38,21 @@ end
 -- Global function definitions --
 ---------------------------------
 
-function findPlayer ( str )
-	if ( not str ) then
+function findPlayer(str)
+	if(not str) then
 		return false
 	end
 	
-	local player = getPlayerFromName ( str ) -- returns player or false
-	if ( Player.fromEl(player) ) then
+	local player = getPlayerFromName(str) -- returns player or false
+	if(Player.fromEl(player)) then
 		return player
 	end
 	
-	str = str:lower ()
-	for player, pdata in pairs ( g_Players ) do
-		if ( not pdata.is_console ) then
-			local name = getPlayerName ( player ):gsub ( "#%x%x%x%x%x%x", "" ):lower ()
-			if ( name:find ( str, 1, true ) ) then
+	str = str:lower()
+	for player, pdata in pairs(g_Players) do
+		if(not pdata.is_console) then
+			local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", ""):lower()
+			if(name:find(str, 1, true)) then
 				return player
 			end
 		end
@@ -69,7 +66,7 @@ function strGradient(str, r1, g1, b1, r2, g2, b2)
 	local buf = ""
 	for i = 0, math.ceil (n) - 1, 1 do
 		local a = i/(n - 1)
-		buf = buf..("#%02X%02X%02X"):format ( r1*( 1 - a ) + r2*a, g1*( 1 - a ) + g2*a, b1*( 1 - a ) + b2*a )..str:sub ( 1 + i*part_len, ( i + 1 )*part_len )
+		buf = buf..("#%02X%02X%02X"):format(r1*(1 - a) + r2*a, g1*(1 - a) + g2*a, b1*(1 - a) + b2*a)..str:sub(1 + i*part_len, (i + 1)*part_len)
 	end
 	return buf
 end

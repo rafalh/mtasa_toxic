@@ -149,7 +149,7 @@ end
 -- Commands --
 --------------
 
-#VERIFY_SERVER_BEGIN("593C2070A55147B063D423AFAC7003D6")
+#VERIFY_SERVER_BEGIN("15037C1B515E37A28A04BCBE719D5B71")
 	addCommandHandler("pm", PmCmdHandler, false)
 	addInternalEventHandler($(EV_CLIENT_PLAYER_PM), PmOnPlayerPrivMsg)
 	addEventHandler("onClientPlayerQuit", g_Root, PmOnPlayerQuit)

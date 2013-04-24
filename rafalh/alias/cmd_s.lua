@@ -29,5 +29,5 @@ local function CmdAlias(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("alias", CmdAlias, "resource.rafalh.alias", "Displays all player nicknames")
+CmdRegister("alias", CmdAlias, "resource."..g_ResName..".alias", "Displays all player nicknames")
 CmdRegisterAlias("pma", "alias")

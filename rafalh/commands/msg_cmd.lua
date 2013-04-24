@@ -85,7 +85,7 @@ local function CmdAddCom (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <command> <message>") end
 end
 
-CmdRegister ("addcom", CmdAddCom, "resource.rafalh.addcom", "Adds a custom command")
+CmdRegister ("addcom", CmdAddCom, "resource."..g_ResName..".addcom", "Adds a custom command")
 
 local function CmdRemCom (message, arg)
 	if(not MODIFY_MSG_CMD) then
@@ -117,7 +117,7 @@ local function CmdRemCom (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <command>") end
 end
 
-CmdRegister ("remcom", CmdRemCom, "resource.rafalh.remcom", "Removes a custom command")
+CmdRegister ("remcom", CmdRemCom, "resource."..g_ResName..".remcom", "Removes a custom command")
 
 local function CmdEditCom (message, arg)
 	if(not MODIFY_MSG_CMD) then
@@ -154,7 +154,7 @@ local function CmdEditCom (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <command> <message>") end
 end
 
-CmdRegister ("editcom", CmdEditCom, "resource.rafalh.addcom", "Changes custom command message")
+CmdRegister ("editcom", CmdEditCom, "resource."..g_ResName..".addcom", "Changes custom command message")
 
 local function McInit ()
 	local node, i = xmlLoadFile ("conf/msg_cmd.xml"), 0

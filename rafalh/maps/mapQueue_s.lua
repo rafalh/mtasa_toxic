@@ -85,7 +85,7 @@ function MqGetMapPos(room, map)
 end
 
 local function MqOnAddReq(mapResName)
-	if (not hasObjectPermissionTo(client, "resource.rafalh.nextmap", false)) then return end
+	if (not hasObjectPermissionTo(client, "resource."..g_ResName..".nextmap", false)) then return end
 	
 	local room = Player.fromEl(client).room
 	local map = false

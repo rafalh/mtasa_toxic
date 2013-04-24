@@ -32,7 +32,7 @@ local function CmdBan1m (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("ban1m", CmdBan1m, "resource.rafalh.ban1m", "Bans player for 1 minute")
+CmdRegister("ban1m", CmdBan1m, "resource."..g_ResName..".ban1m", "Bans player for 1 minute")
 
 local function CmdBan5m (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -47,7 +47,7 @@ local function CmdBan5m (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("ban5m", CmdBan5m, "resource.rafalh.ban5m", "Bans player for 5 minutes")
+CmdRegister("ban5m", CmdBan5m, "resource."..g_ResName..".ban5m", "Bans player for 5 minutes")
 
 local function CmdBan1h (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -62,7 +62,7 @@ local function CmdBan1h (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("ban1h", CmdBan1h, "resource.rafalh.ban1h", "Bans player for 1 hour")
+CmdRegister("ban1h", CmdBan1h, "resource."..g_ResName..".ban1h", "Bans player for 1 hour")
 
 local function CmdBan24h (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
@@ -77,7 +77,7 @@ local function CmdBan24h (message, arg)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("ban24h", CmdBan24h, "resource.rafalh.ban24h", "Bans player for 24 hours")
+CmdRegister("ban24h", CmdBan24h, "resource."..g_ResName..".ban24h", "Bans player for 24 hours")
 
 local function CmdMute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -99,7 +99,7 @@ local function CmdPMute (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("pmute", CmdPMute, "resource.rafalh.pmute", "Mutes player for ever")
+CmdRegister("pmute", CmdPMute, "resource."..g_ResName..".pmute", "Mutes player for ever")
 
 local function CmdUnmute (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -135,7 +135,7 @@ local function CmdWarn(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("warn", CmdWarn, "resource.rafalh.warn", "Adds player warning and bans if he has too many")
+CmdRegister("warn", CmdWarn, "resource."..g_ResName..".warn", "Adds player warning and bans if he has too many")
 
 local function CmdUnwarn (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
@@ -150,7 +150,7 @@ local function CmdUnwarn (message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
-CmdRegister("unwarn", CmdUnwarn, "resource.rafalh.unwarn", "Removes player warning")
+CmdRegister("unwarn", CmdUnwarn, "resource."..g_ResName..".unwarn", "Removes player warning")
 
 local function CmdKill (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
@@ -172,7 +172,7 @@ local function CmdIp (message, arg)
 	end
 end
 
-CmdRegister("ip", CmdIp, "resource.rafalh.ip", "Shows player IP address")
+CmdRegister("ip", CmdIp, "resource."..g_ResName..".ip", "Shows player IP address")
 
 local function CmdAccount(message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
@@ -197,7 +197,7 @@ local function CmdFindAccountsIp(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <ip>") end
 end
 
-CmdRegister("findaccountsip", CmdFindAccountsIp, "resource.rafalh.findaccounts")
+CmdRegister("findaccountsip", CmdFindAccountsIp, "resource."..g_ResName..".findaccounts")
 CmdRegisterAlias("findaccip", "findaccountsip")
 
 local function CmdDescribeAccount(message, arg)
@@ -215,7 +215,7 @@ local function CmdDescribeAccount(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <account ID>") end
 end
 
-CmdRegister("describeaccount", CmdDescribeAccount, "resource.rafalh.findaccounts")
+CmdRegister("describeaccount", CmdDescribeAccount, "resource."..g_ResName..".findaccounts")
 CmdRegisterAlias ("descra", "describeaccount")
 
 local function CmdMergeAccounts(message, arg)
@@ -363,7 +363,7 @@ local function CmdMergeAccounts(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <player> <other account ID>") end
 end
 
-CmdRegister("mergeaccounts", CmdMergeAccounts, "resource.rafalh.mergeaccounts")
+CmdRegister("mergeaccounts", CmdMergeAccounts, "resource."..g_ResName..".mergeaccounts")
 CmdRegisterAlias ("mergeacc", "mergeaccounts")
 
 local function CmdDelAcc(message, arg)
@@ -384,7 +384,7 @@ local function CmdDelAcc(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <account ID>") end
 end
 
-CmdRegister("delacc", CmdDelAcc, "resource.rafalh.resetstats", "Deletes player account")
+CmdRegister("delacc", CmdDelAcc, "resource."..g_ResName..".resetstats", "Deletes player account")
 
 local function CmdSqlQuery(message, arg)
 	local query = #arg >= 2 and message:sub (arg[1]:len () + 2)

@@ -310,7 +310,7 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN ( "593C2070A55147B063D423AFAC7003D6" )
+#VERIFY_SERVER_BEGIN ( "15037C1B515E37A28A04BCBE719D5B71" )
 	addInternalEventHandler ( $(EV_CLIENT_START_RECORDING_REQUEST), RcStartRecordingReq )
 	addInternalEventHandler ( $(EV_CLIENT_STOP_RECORDING_REQUEST), RcStopRecordingReq )
 	addInternalEventHandler ( $(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), RcStopSendRecordingReq )

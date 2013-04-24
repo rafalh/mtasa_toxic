@@ -204,4 +204,4 @@ local function CmdCleanDb (message, arg)
 	end
 end
 
-CmdRegister("cleandb", CmdCleanDb, "resource.rafalh.cleandb")
+CmdRegister("cleandb", CmdCleanDb, "resource."..g_ResName..".cleandb")

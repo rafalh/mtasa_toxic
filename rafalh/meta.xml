@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="rafalh" author="rafalh" version="2.60" description="Rafalh Scripts System"   />
+	<info type="misc" name="Toxic" author="rafalh" version="2.60" description="Rafalh Scripts System" />
 	
 	<script src="debug.lua" type="shared" />
 	
+	<script src="utils/common_sc.lua" type="shared" />
 	<script src="utils/common.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
-	<script src="utils/common_sc.lua" type="shared" />
 	<script src="utils/outputChat_s.lua" type="server" />
 	<script src="utils/outputChat_c.lua" type="client" />
 	<script src="utils/vector_c.lua" type="client" />

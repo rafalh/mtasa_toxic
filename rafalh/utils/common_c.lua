@@ -8,8 +8,6 @@
 -- Global variables --
 ----------------------
 
-g_Root = getRootElement ()
-g_ResRoot = getResourceRootElement ()
 g_Me = getLocalPlayer ()
 g_MyId = 0
 g_ScreenSize = { guiGetScreenSize () }

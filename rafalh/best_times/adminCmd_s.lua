@@ -5,7 +5,12 @@ local function CmdRemTopTime(message, arg)
 		local map = getCurrentMap(room)
 		if (map) then
 			local map_id = map:getId()
-			local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT "..math.max(n, 4), map_id)
+			local rows = DbQuery(
+				"SELECT player, time "..
+				"FROM "..DbPrefix.."_besttimes "..
+				"WHERE map=? "..
+				"ORDER BY time "..
+				"LIMIT "..math.max(n, 4), map_id)
 			if(rows and rows[n]) then
 				DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map=?", rows[n].player, map_id)
 				local accountData = AccountData.create(rows[n].player)
@@ -44,4 +49,4 @@ local function CmdRemTopTime(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <toptime number>") end
 end
 
-CmdRegister("remtoptime", CmdRemTopTime, "resource.rafalh.remtoptime", "Removes specified toptime on current map")
+CmdRegister("remtoptime", CmdRemTopTime, "resource."..g_ResName..".remtoptime", "Removes specified toptime on current map")

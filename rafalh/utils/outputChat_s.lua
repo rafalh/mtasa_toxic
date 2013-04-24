@@ -1,3 +1,5 @@
+g_ScriptMsgState = { recipients = { g_Root }, prefix = "", color = false }
+
 function divChatStr ( str )
 	local tbl = {}
 	
