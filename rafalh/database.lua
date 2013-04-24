@@ -146,9 +146,11 @@ local function DbInitMySQL()
 		params = params..";port="..g_Config.port
 	end
 	
+	outputServerLog("MySQL support is experimental!", 3)
 	g_Connection = dbConnect("mysql", params, g_Config.username, g_Config.password)
 	if(not g_Connection) then
 		outputDebugString("Failed to connect to MySQL database!", 1)
+		outputDebugString("Params: "..params.." "..g_Config.username.." "..("*"):rep(g_Config.password:len()), 3)
 		return false
 	end
 	
@@ -202,6 +204,10 @@ end
 
 function DbIsReady()
 	return g_Ready
+end
+
+function DbGetType()
+	return g_Config.type
 end
 
 Settings.register

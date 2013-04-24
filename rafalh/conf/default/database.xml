@@ -1,6 +1,6 @@
 <database>
 	<type>sqlite</type> <!-- builtin/sqlite/mysql -->
-	<host>localhost</host> <!-- for MySQL only -->
+	<host>127.0.0.1</host> <!-- for MySQL only -->
 	<port></port> <!-- for MySQL only; optional -->
 	<dbname>mta</dbname> <!-- for MySQL only -->
 	<username>root</username> <!-- for MySQL only -->

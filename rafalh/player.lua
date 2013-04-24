@@ -69,8 +69,8 @@ function Player:setAccount(account)
 	if(account) then
 		local rows = DbQuery("SELECT player, online FROM rafalh_players WHERE account=? LIMIT 1", account)
 		local data = rows and rows[1]
-		if(data.online == 1) then return false end
-		id = data.player
+		if(data and data.online == 1) then return false end
+		id = data and data.player
 	end
 	
 	if(self.accountData) then

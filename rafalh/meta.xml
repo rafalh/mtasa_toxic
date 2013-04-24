@@ -182,6 +182,11 @@
 	<file src="radio/img/channels/HipHopPLOpenFM.png" />
 	<file src="radio/img/channels/WesolyHanys.png" />
 	<file src="radio/img/channels/RadioPiekary.jpg" />
+	<file src="radio/img/channels/CiezkieBrzmienia.png" />
+	<file src="radio/img/channels/00sHitsOpenFM.png" />
+	<file src="radio/img/channels/KidsOpenFM.png" />
+	<file src="radio/img/channels/SkaRootsReggaeOpenFM.png" />
+	<file src="radio/img/channels/ClubParty.jpg" />
 	<config src="conf/radio.xml" type="client" />
 	
 	<script src="security/anticamp_s.lua" type="server" />

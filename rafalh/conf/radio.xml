@@ -36,4 +36,9 @@
 	<channel name="Hip-Hop PL (Open FM)" img="HipHopPLOpenFM.png">http://open.fm/24.m3u</channel>
 	<channel name="Wesoły Hanys" img="WesolyHanys.png">http://wesolyhanys.pl/listen.m3u</channel>
 	<channel name="Radio Piekary" img="RadioPiekary.jpg">http://shot4.inten.pl:8412/listen.pls</channel>
+	<channel name="Ciężkie Brzmienia" img="CiezkieBrzmienia.png">http://open.fm/13.m3u</channel>
+	<channel name="00s HITS (Open FM)" img="00sHitsOpenFM.png">http://open.fm/72.m3u</channel>
+	<channel name="Kids (Open EM)" img="KidsOpenFM.png">http://open.fm/16.m3u</channel>
+	<channel name="Ska Roots Reggae (Open FM)" img="SkaRootsReggaeOpenFM.png">http://open.fm/44.m3u</channel>
+	<channel name="ClubParty" img="ClubParty.jpg">http://s1.slotex.pl:8654/listen.pls</channel>
 </channels>

@@ -6,67 +6,67 @@ setmetatable(AccountData.map, {__mode = "v"}) -- weak table
 
 local AccountDataFields = {
 --   name              type           flags                 default value
-	{"player",         "INTEGER",     "PRIMARY KEY AUTOINCREMENT NOT NULL", 0},
-	{"serial",         "VARCHAR(32)", "NOT NULL",             ""},
-	{"account",        "TEXT",        "UNIQUE",               ""},
-	{"cash",           "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"points",         "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"warnings",       "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"dm",             "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"dm_wins",        "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"first",          "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"second",         "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"third",          "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"time_here",      "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"first_visit",    "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"last_visit",     "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"bidlvl",         "INTEGER",     "DEFAULT 1 NOT NULL",   1},
-	{"ip",             "VARCHAR(16)", "DEFAULT '' NOT NULL",  ""},
-	{"name",           "VARCHAR(32)", "DEFAULT '' NOT NULL",  ""},
-	{"joinmsg",        "VARCHAR(128)", "DEFAULT NULL",        false},
-	{"pmuted",         "BOOL",        "DEFAULT 0 NOT NULL",   0},
-	{"toptimes_count", "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"online",         "BOOL",        "DEFAULT 0 NOT NULL",   0},
-	{"exploded",       "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"drowned",        "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"locked_nick",    "BOOL",        "DEFAULT 0 NOT NULL",   0},
-	{"invitedby",      "INTEGER",     "DEFAULT 0 NOT NULL",   0},
-	{"achievements",   "BLOB",        "DEFAULT x'' NOT NULL", ""},
-	{"mapBoughtTimestamp", "INTEGER", "DEFAULT 0 NOT NULL",   0},
-	{"email",          "VARCHAR(128)", "DEFAULT '' NOT NULL", ""},
+	{"player",         "INT UNSIGNED",       "PRIMARY KEY NOT NULL", 0,           autoInc = true},
+	{"serial",         "VARCHAR(32)",        "NOT NULL",             ""},
+	{"account",        "VARCHAR(255)",       "UNIQUE",               ""},
+	{"cash",           "INT",                "DEFAULT 0 NOT NULL",   0},
+	{"points",         "MEDIUMINT",          "DEFAULT 0 NOT NULL",   0},
+	{"warnings",       "TINYINT UNSIGNED",   "DEFAULT 0 NOT NULL",   0},
+	{"dm",             "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"dm_wins",        "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"first",          "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"second",         "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"third",          "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"time_here",      "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
+	{"first_visit",    "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
+	{"last_visit",     "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
+	{"bidlvl",         "SMALLINT UNSIGNED",  "DEFAULT 1 NOT NULL",   1},
+	{"ip",             "VARCHAR(16)",        "DEFAULT '' NOT NULL",  ""},
+	{"name",           "VARCHAR(32)",        "DEFAULT '' NOT NULL",  ""},
+	{"joinmsg",        "VARCHAR(128)",       "DEFAULT NULL",         false},
+	{"pmuted",         "BOOL",               "DEFAULT 0 NOT NULL",   0},
+	{"toptimes_count", "SMALLINT UNSIGNED",  "DEFAULT 0 NOT NULL",   0},
+	{"online",         "BOOL",               "DEFAULT 0 NOT NULL",   0},
+	{"exploded",       "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"drowned",        "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
+	{"locked_nick",    "BOOL",               "DEFAULT 0 NOT NULL",   0},
+	{"invitedby",      "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
+	{"achievements",   "BLOB",               "DEFAULT x'' NOT NULL", ""},
+	{"mapBoughtTimestamp", "INT UNSIGNED",   "DEFAULT 0 NOT NULL",   0},
+	{"email",          "VARCHAR(128)",       "DEFAULT '' NOT NULL",  ""},
 	
 	-- New stats
-	{"maxWinStreak",  "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"mapsPlayed",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"mapsBought",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"mapsRated",     "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"huntersTaken",  "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"dmVictories",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"ddVictories",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"raceVictories", "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"racesFinished", "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"dmPlayed",      "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"ddPlayed",      "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"racesPlayed",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"achvCount",     "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"maxWinStreak",  "SMALLINT UNSIGNED",  "DEFAULT 0 NOT NULL", 0},
+	{"mapsPlayed",    "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"mapsBought",    "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"mapsRated",     "SMALLINT UNSIGNED",  "DEFAULT 0 NOT NULL", 0},
+	{"huntersTaken",  "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"dmVictories",   "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"ddVictories",   "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"raceVictories", "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"racesFinished", "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"dmPlayed",      "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"ddPlayed",      "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"racesPlayed",   "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"achvCount",     "TINYINT UNSIGNED",   "DEFAULT 0 NOT NULL", 0},
 	
 	-- Shop
-	{"health100",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"selfdestr",    "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"mines",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"oil",          "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"beers",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"invisibility", "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"godmodes30",   "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"flips",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"thunders",     "INTEGER", "DEFAULT 0 NOT NULL", 0},
-	{"smoke",        "INTEGER", "DEFAULT 0 NOT NULL", 0},
+	{"health100",    "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"selfdestr",    "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"mines",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"oil",          "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"beers",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"invisibility", "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"godmodes30",   "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"flips",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"thunders",     "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"smoke",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
 	
 	-- Effectiveness
-	{"efectiveness",      "REAL", "DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_dd",   "REAL", "DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_dm",   "REAL", "DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_race", "REAL", "DEFAULT 0 NOT NULL", 0}
+	{"efectiveness",      "FLOAT", "DEFAULT 0 NOT NULL", 0},
+	{"efectiveness_dd",   "FLOAT", "DEFAULT 0 NOT NULL", 0},
+	{"efectiveness_dm",   "FLOAT", "DEFAULT 0 NOT NULL", 0},
+	{"efectiveness_race", "FLOAT", "DEFAULT 0 NOT NULL", 0}
 }
 local DefaultData = {}
 local FieldsMap = {}
@@ -210,7 +210,11 @@ end
 function AccountData.getDbTableFields()
 	local fields = {}
 	for i, fieldInfo in ipairs(AccountDataFields) do
-		table.insert(fields, fieldInfo[1].." "..fieldInfo[2].." "..fieldInfo[3])
+		local fieldDef = fieldInfo[1].." "..fieldInfo[2].." "..fieldInfo[3]
+		if(fieldInfo.autoInc and DbGetType() == "mysql") then
+			fieldDef = fieldDef.."AUTO_INCREMENT"
+		end
+		table.insert(fields, fieldDef)
 	end
 	return table.concat(fields, ", ")
 end

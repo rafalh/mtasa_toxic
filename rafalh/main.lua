@@ -119,7 +119,7 @@ local function onPlayerChangeNick(oldNick, newNick)
 	end
 end
 
-local function onSetNameRequest(name)
+--[[local function onSetNameRequest(name)
 	name = tostring(name)
 	if(getPlayerFromName(name)) then return end
 	
@@ -129,7 +129,7 @@ local function onSetNameRequest(name)
 	if(plainName == oldPlainName or isNickChangeAllowed(client, name)) then
 		setPlayerName(client, name)
 	end
-end
+end]]
 
 local function onPlayerChat(message, messageType)
 	if(wasEventCancelled()) then return end
@@ -273,7 +273,7 @@ addInitFunc(function()
 	addEventHandler("onPlayerChat", g_Root, onPlayerChat)
 	addEventHandler("main.onPlayerReady", g_ResRoot, onPlayerReady)
 	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
-	addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)
+	--addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)
 end)
 
 Settings.register

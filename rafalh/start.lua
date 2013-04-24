@@ -11,86 +11,68 @@ local function setupDatabase()
 	end
 	
 	local err = false
-	
+--TODO: unique index <> normal index!!!
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."players ("..
-			AccountData.getDbTableFields()..")")) then
+			AccountData.getDbTableFields()..","..
+			"CONSTRAINT "..DbPrefix.."players_idx UNIQUE(account))")) then
 		err = "Cannot create players table."
-	end
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."players_idx ON "..DbPrefix.."players (account)" ) ) then
-		err = "Cannot create players_idx index."
 	end
 	
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."names ("..
-			"player INTEGER NOT NULL,"..
+			"player INT UNSIGNED NOT NULL,"..
 			"name VARCHAR(32) NOT NULL,"..
-			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player))")) then
+			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
+			"CONSTRAINT "..DbPrefix.."names_idx UNIQUE(player))")) then
 		err = "Cannot create names table."
 	end
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."names_idx ON "..DbPrefix.."names (player)" ) ) then
-		err = "Cannot create names_idx index."
-	end
 	
+	-- AUTO_INCREMENT is not needed for SQLite (and is called different)
+	local autoInc = DbGetType() == "mysql" and "AUTO_INCREMENT" or ""
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."maps ("..
-			"map INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"..
+			"map INT UNSIGNED PRIMARY KEY "..autoInc.." NOT NULL,"..
 			"name VARCHAR(255) NOT NULL,"..
-			"played INTEGER DEFAULT 0 NOT NULL,"..
-			"rates INTEGER DEFAULT 0 NOT NULL,"..
-			"rates_count INTEGER DEFAULT 0 NOT NULL,"..
+			"played MEDIUMINT UNSIGNED DEFAULT 0 NOT NULL,"..
+			"rates MEDIUMINT UNSIGNED DEFAULT 0 NOT NULL,"..
+			"rates_count SMALLINT UNSIGNED DEFAULT 0 NOT NULL,"..
 			"removed VARCHAR(255) DEFAULT '' NOT NULL,"..
-			"played_timestamp INTEGER DEFAULT 0 NOT NULL,"..
-			"added_timestamp INTEGER DEFAULT 0 NOT NULL)")) then
+			"played_timestamp INT UNSIGNED DEFAULT 0 NOT NULL,"..
+			"added_timestamp INT UNSIGNED DEFAULT 0 NOT NULL,"..
+			"CONSTRAINT "..DbPrefix.."maps_idx UNIQUE(name))")) then
 		err = "Cannot create maps table."
-	end
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."maps_idx ON "..DbPrefix.."maps (name)" ) ) then
-		err = "Cannot create maps_idx index."
 	end
 	
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."rates ("..
-			"player INTEGER NOT NULL,"..
-			"map INTEGER NOT NULL,"..
-			"rate TINYINT NOT NULL,"..
+			"player INT UNSIGNED NOT NULL,"..
+			"map INT UNSIGNED NOT NULL,"..
+			"rate TINYINT UNSIGNED NOT NULL,"..
 			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
-			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map))")) then
+			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map),"..
+			"CONSTRAINT "..DbPrefix.."rates_idx UNIQUE(map, player))")) then
 		err = "Cannot create rates table."
-	end
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."rates_idx ON "..DbPrefix.."rates (map)" ) ) then
-		err = "Cannot create rates_idx index."
 	end
 	
 	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."besttimes ("..
-			"player INTEGER NOT NULL,"..
-			"map INTEGER NOT NULL,"..
-			"time INTEGER NOT NULL,"..
+			"player INT UNSIGNED NOT NULL,"..
+			"map INT UNSIGNED NOT NULL,"..
+			"time INT UNSIGNED NOT NULL,"..
 			"rec BLOB DEFAULT x'' NOT NULL,"..
 			"cp_times BLOB DEFAULT x'' NOT NULL,"..
-			"timestamp INTEGER,"..
+			"timestamp INT UNSIGNED,"..
 			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
-			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map))")) then
+			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map),"..
+			"CONSTRAINT "..DbPrefix.."besttimes_idx UNIQUE(map, time, player),"..
+			"CONSTRAINT "..DbPrefix.."besttimes_idx2 UNIQUE(map, player))")) then
 		err = "Cannot create besttimes table."
 	end
 	
 	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."besttimes_idx ON "..DbPrefix.."besttimes (map, time)" ) ) then
-		err = "Cannot create besttimes_idx index."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE INDEX IF NOT EXISTS "..DbPrefix.."besttimes_idx2 ON "..DbPrefix.."besttimes (map, player)" ) ) then
-		err = "Cannot create besttimes_idx2 index."
-	end
-	
-	if(not err and not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."profiles ("..
-			"player INTEGER NOT NULL,"..
+			"player INT UNSIGNED NOT NULL,"..
 			"field VARCHAR(64) NOT NULL,"..
 			"value VARCHAR(255) NOT NULL,"..
 			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player))")) then
@@ -126,12 +108,12 @@ local function setupDatabase()
 		
 		if(not err) then
 			Settings.version = currentVer
-			outputDebugString("Database update ("..ver.." -> "..currentVer..") succeeded", 2)
+			outputDebugString("Database update (ver "..ver.." -> "..currentVer..") succeeded", 2)
 		end
 	end
 	
 	if(err) then
-		outputDebugString("Database update ("..ver.." -> "..currentVer..") failed: "..tostring(err), 1)
+		outputDebugString("Database init (ver "..ver.." -> "..currentVer..") failed: "..tostring(err), 1)
 		return false
 	end
 	

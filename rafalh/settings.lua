@@ -91,7 +91,11 @@ function Settings.loadPrivate()
 	
 	local rows = DbQuery("SELECT * FROM rafalh_settings LIMIT 1")
 	if(not rows[1]) then
-		DbQuery("INSERT INTO rafalh_settings DEFAULT VALUES") -- Note: DEFAULT VALUES is sqlite only
+		if(DbGetType() == "mysql") then
+			DbQuery("INSERT INTO rafalh_settings () VALUES ()") -- Note: DEFAULT VALUES is sqlite only
+		else
+			DbQuery("INSERT INTO rafalh_settings DEFAULT VALUES") -- Note: DEFAULT VALUES is sqlite only
+		end
 		rows = DbQuery("SELECT * FROM rafalh_settings LIMIT 1")
 	end
 	for key, val in pairs(rows[1]) do
