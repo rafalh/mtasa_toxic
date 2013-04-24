@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include "../include/serv_verification.lua"
-
 ----------------------
 -- Global variables --
 ----------------------
@@ -71,12 +65,12 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN("15037C1B515E37A28A04BCBE719D5B71")
+local function init()
 	g_Texture = dxCreateTexture("effects/broken_glass.png")
 	if(g_Texture) then
 		addEventHandler("onClientRender", g_Root, renderGlass)
 	end
-#VERIFY_SERVER_END()
+end
 
 Settings.register
 {
@@ -131,3 +125,5 @@ Settings.register
 		Settings.redDmgScreen = guiCheckBoxGetSelected(cb)
 	end,
 }
+
+addEventHandler("onClientResourceStart", g_ResRoot, init)

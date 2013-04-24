@@ -3,7 +3,6 @@
 --------------
 
 #include "include/internal_events.lua"
-#include "../include/serv_verification.lua"
 
 -------------
 -- Defines --
@@ -310,10 +309,12 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN ( "15037C1B515E37A28A04BCBE719D5B71" )
+local function RcInit()
 	addInternalEventHandler ( $(EV_CLIENT_START_RECORDING_REQUEST), RcStartRecordingReq )
 	addInternalEventHandler ( $(EV_CLIENT_STOP_RECORDING_REQUEST), RcStopRecordingReq )
 	addInternalEventHandler ( $(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), RcStopSendRecordingReq )
 	addEventHandler ( "onClientMapStopping", g_Root, RcMapStopping )
 	g_Verified = true
-#VERIFY_SERVER_END ()
+end
+
+addEventHandler("onClientResourceStart", g_ResRoot, RcInit)
