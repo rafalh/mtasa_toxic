@@ -1,4 +1,4 @@
-﻿RaceMode = {}
+RaceMode = {}
 RaceMode.__index = RaceMode
 
 RaceMode.registeredModes = {}

@@ -1,4 +1,4 @@
-﻿g_Root = getRootElement()
+g_Root = getRootElement()
 g_ResRoot = getResourceRootElement(getThisResource())
 allowRPC('setElementPosition')
 g_MotorBikeIDs = table.create({ 448, 461, 462, 463, 468, 471, 521, 522, 523, 581, 586 }, true)

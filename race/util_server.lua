@@ -1,4 +1,4 @@
-﻿g_Root = getRootElement()
+g_Root = getRootElement()
 g_ResRoot = getResourceRootElement(getThisResource())
 
 function clientCall(player, fnName, ...)

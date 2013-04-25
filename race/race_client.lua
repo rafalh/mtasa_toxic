@@ -1,4 +1,4 @@
-﻿g_Root = getRootElement()
+g_Root = getRootElement()
 g_ResRoot = getResourceRootElement(getThisResource())
 g_Me = getLocalPlayer()
 g_ArmedVehicleIDs = table.create({ 425, 447, 520, 430, 464, 432, 476 }, true)

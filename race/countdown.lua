@@ -1,4 +1,4 @@
-﻿Countdown = {}
+Countdown = {}
 function Countdown:__index(k)
 	if Countdown[k] then
 		return Countdown[k]
