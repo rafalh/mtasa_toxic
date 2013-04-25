@@ -193,7 +193,7 @@ end
 function dxText:boundingBox(left,top,right,bottom,relative)
 	if left == nil then
 		if self.tBoundingBox then
-			return unpack(boundingBox)
+			return unpack(self.tBoundingBox)
 		else
 			return false
 		end

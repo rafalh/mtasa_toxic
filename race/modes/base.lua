@@ -87,7 +87,10 @@ function RaceMode.endMap()
     if stateAllowsPostFinish() then
         gotoState('PostFinish')
         local text = (g_GameOptions.randommaps or g_NextMap) and 'Next map starts in:' or 'Vote for next map starts in:'
-        Countdown.create(3, RaceMode.startNextMapSelect, text, 255, 255, 255, 0.6, 2.5 ):start()
+        for i, player in ipairs(RaceMode.getPlayers()) do
+			triggerClientEvent(player, 'race._onCountdownStart', resourceRoot, 'nextmap', 3)
+		end
+		TimerManager.createTimerFor("map"):setTimer(RaceMode.startNextMapSelect, 3000, 1)
 		triggerEvent('onPostFinish', g_Root)
     end
 end
@@ -311,7 +314,8 @@ function RaceMode:onPlayerWasted(player)
         -- See if its worth doing a respawn
         local respawnTime       = RaceMode.getMapOption('respawntime')
         if self:getTimeRemaining() - respawnTime > 3000 then
-            Countdown.create(respawnTime/1000, restorePlayer, 'You will respawn in:', 255, 255, 255, 0.25, 2.5, true, self.id, player):start(player)
+			TimerManager.createTimerFor("map",player):setTimer(restorePlayer, respawnTime/1000, 1, self.id, player)
+			triggerClientEvent(restorePlayer, 'race._onCountdownStart', resourceRoot, 'respawn', respawnTime/1000)
         end
 	    if RaceMode.getMapOption('respawntime') >= 5000 then
 		    TimerManager.createTimerFor("map",player):setTimer(clientCall, 2000, 1, player, 'Spectate.start', 'auto')

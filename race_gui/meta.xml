@@ -3,6 +3,8 @@
 
 	<script src="utils_c.lua" type="client" />
 	<script src="ui_c.lua" type="client" />
+	<script src="spec_c.lua" type="client" />
+	<script src="countdown_c.lua" type="client" />
 	<script src="textlib_c.lua" type="client" />
 	<script src="client_anim.lua" type="client" />
 	<script src="textlib_anim.lua" type="client" />

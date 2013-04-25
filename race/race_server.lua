@@ -21,10 +21,6 @@ g_Vehicles = {}				-- { player = vehicle }
 
 local unloadedPickups = {}
 
-g_Images = {
-	countdown = { path = "img/countdown_%d.png", w = 380, h = 380/528*384 }
-}
-
 local _spawnPlayer = spawnPlayer
 function spawnPlayer ( player, x, y, z, rotation, skinID, ... )
 	skinID = getElementData ( player, "fixed_skin" ) or skinID
@@ -374,21 +370,9 @@ function launchRace()
     gotoState('Running')
 end
 
-g_RaceStartCountdown = Countdown.create(6, launchRace)
-g_RaceStartCountdown:useImages(g_Images.countdown.path, g_Images.countdown.w, g_Images.countdown.h)
-g_RaceStartCountdown:enableFade(true)
-g_RaceStartCountdown:addClientHook(3, "triggerEvent", "onClientRaceCountdown", g_Root, 3)
-g_RaceStartCountdown:addClientHook(2, "triggerEvent", "onClientRaceCountdown", g_Root, 2)
-g_RaceStartCountdown:addClientHook(1, "triggerEvent", "onClientRaceCountdown", g_Root, 1)
-g_RaceStartCountdown:addClientHook(0, "triggerEvent", "onClientRaceCountdown", g_Root, 0)
-
-
-
 -- Called from:
 --      event onPlayerJoin
 --      g_SpawnTimer = setTimer(joinHandler, 500, 0) in startRace
--- Interesting calls to:
---      g_RaceStartCountdown:start()
 --
 -- note: player is always nil on entry
 
@@ -432,7 +416,10 @@ function joinHandlerBoth(player)
 				TimerManager.destroyTimersFor("spawn")
                 if stateAllowsGridCountdown() then
                     gotoState('GridCountdown')
-			        g_RaceStartCountdown:start()
+					TimerManager.createTimerFor("map"):setTimer(launchRace, 3000, 1)
+					for i, player in ipairs(g_Players) do
+						triggerClientEvent(player, 'race._onCountdownStart', resourceRoot, 'race', 3)
+					end
                 end
     		end
 			return

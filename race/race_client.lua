@@ -1249,3 +1249,8 @@ function setPipeDebug(bOn)
     outputConsole( 'bPipeDebug set to ' .. tostring(g_bPipeDebug) )
 end
 
+addEvent('race._onCountdownStart', true)
+addEventHandler('race._onCountdownStart', resourceRoot, function(name, seconds)
+	triggerEvent('race.onCountdownStart', resourceRoot, name, seconds)
+end)
+

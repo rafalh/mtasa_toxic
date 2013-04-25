@@ -1,11 +1,12 @@
 local g_SoundVolume = 0.5
 local g_UnmuteRadioTimer = false
+local g_CountdownValue = 0
 
 addEvent("race_audio.onPlayReq", true)
 addEvent("onClientPlayerOutOfTime", true)
 addEvent("onClientPlayerHitPickup", true)
 addEvent("onClientPlayerReachCheckpoint", true)
-addEvent("onClientRaceCountdown", true)
+addEvent("race.onCountdownStart")
 
 local function playAudio(filename)
 	local sound = playSound("audio/"..filename)
@@ -54,11 +55,21 @@ local function onFinish()
 	muteRadio(8000)
 end
 
-local function onCountdown(num)
-	if(num > 0) then
+local function updateCountdown()
+	if(g_CountdownValue > 0) then
 		playAudio("countdown.mp3")
 	else
 		playAudio("go.mp3")
+	end
+	g_CountdownValue = g_CountdownValue - 1
+end
+
+local function onCountdownStart(name, sec)
+	sec = math.floor(sec)
+	if(name == "race") then
+		g_CountdownValue = sec
+		updateCountdown()
+		setTimer(updateCountdown, 1000, sec)
 	end
 end
 
@@ -88,5 +99,5 @@ addEventHandler("onClientPlayerOutOfTime", root, onOutOfTime)
 addEventHandler("onClientPlayerHitPickup", localPlayer, onHitPickup)
 addEventHandler("onClientPlayerReachCheckpoint", localPlayer, onReachCheckpoint)
 addEventHandler("onClientPlayerFinish", localPlayer, onFinish)
-addEventHandler("onClientRaceCountdown", root, onCountdown)
+addEventHandler("race.onCountdownStart", root, onCountdownStart)
 addCommandHandler("racevolume", onRaceVolumeCmd, false, false)
