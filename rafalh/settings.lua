@@ -45,7 +45,10 @@ function Settings.registerMetaSetting(attr)
 	end
 	
 	item.client = (attr.type == "client" or attr.type == "shared")
-	item.default = item.validate and item.validate(attr.value, unpack(item.valArgs)) or attr.value
+	item.default = attr.value
+	if(item.validate) then
+		item.default = item.validate(item.default, unpack(item.valArgs))
+	end
 	
 	Settings.items[item.name] = item
 end
@@ -160,7 +163,10 @@ function Settings.__mt.__newindex(self, key, val)
 		return
 	end
 	
-	local newVal = item.validate and item.validate(val, unpack(item.valArgs)) or val
+	local newVal = val
+	if(item.validate) then
+		newVal = item.validate(val, unpack(item.valArgs))
+	end
 	if(newVal == nil) then
 		outputDebugString("Invalid setting value "..tostring(newVal), 2)
 		return
@@ -224,7 +230,9 @@ function Settings.onChange(name, oldVal, newVal)
 		oldVal = item.value
 	else
 		oldVal = fromJSON(oldVal) or oldVal
-		oldVal = item.validate and item.validate(oldVal, unpack(item.valArgs)) or oldVal
+		if(item.validate) then
+			oldVal = item.validate(oldVal, unpack(item.valArgs))
+		end
 		if(oldVal == nil) then oldVal = item.default end
 	end
 	

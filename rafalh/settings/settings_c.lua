@@ -13,6 +13,7 @@ function Settings.register(item)
 	if(not item.priority) then
 		item.priority = 100
 	end
+	assert(not rawget(Settings, "localMap")[item.name])
 	rawget(Settings, "localMap")[item.name] = item
 	
 	local localSorted = rawget(Settings, "localSorted")
@@ -50,11 +51,14 @@ function Settings.__mt.__newindex(self, key, val)
 		outputDebugString("Invalid setting value "..tostring(val), 2)
 	else
 		local oldVal = item.value
-		local newVal = item.cast and item.cast(val) or val
-		if(newVal ~= oldVal) then
-			item.value = newVal
+		if(item.cast) then
+			val = item.cast(val)
+		end
+		
+		if(val ~= oldVal) then
+			item.value = val
 			if(item.onChange) then
-				item.onChange(oldVal, newVal)
+				item.onChange(oldVal, val)
 			end
 		end
 	end
