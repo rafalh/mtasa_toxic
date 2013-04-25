@@ -10,10 +10,7 @@
 
 #NITRO_TIME = 20000
 #AUTO_NITRO_TIME = 60000
-
 #NITRO_UPGRADE_ID = 1010
-#NS_LONG = 1
-#NS_TEMP = 2
 
 ---------------------
 -- Local variables --
@@ -31,9 +28,11 @@ local g_AutoNitroTimer = false
 local g_LastUpdate = getTickCount()
 local g_AddNitro = false
 
+local HAS_NITRO_API = getVersion().sortable >= "1.3.1-9.05174" -- above version with crash-fix
+local USE_NITRO_API = HAS_NITRO_API
+
 local g_DebugNitro = false
 local g_DbgBuf = {}
-local HAS_NITRO_API = getVersion().sortable >= "1.3.1-9.04993"
 
 -------------------
 -- Custom events --
@@ -112,7 +111,7 @@ local function NitRemove()
 	end
 end
 
-local function NitTimerProc ()
+local function NitTimerProc()
 	g_AutoNitroTimer = false
 	NitAdd()
 	DbgPrint("added auto nitro")
@@ -126,7 +125,7 @@ local function NitStartAutoNitro()
 	end
 end
 
-local function NitStopAutoNitro ()
+local function NitStopAutoNitro()
 	if(g_AutoNitroTimer) then
 		killTimer(g_AutoNitroTimer)
 		g_AutoNitroTimer = false
@@ -140,16 +139,24 @@ function NitStart()
 			NitStartAutoNitro()
 		end
 		g_NitroActive = true
-		--g_AddNitro = false
-		-- always set control state because player could change it when using temp nitro
-		setControlState("vehicle_fire", true)
+		if(USE_NITRO_API) then
+			setVehicleNitroActivated(g_Vehicle, true)
+		else
+			--g_AddNitro = false
+			-- always set control state because player could change it when using temp nitro
+			setControlState("vehicle_fire", true)
+		end
 	end
 end
 
 function NitStop()
-	DbgPrint ( "NitStop "..tostring(g_NitroActive))
-	if(g_NitroActive) then
-		g_NitroActive = false
+	DbgPrint("NitStop "..tostring(g_NitroActive))
+	if(not g_NitroActive) then return end
+	
+	g_NitroActive = false
+	if(USE_NITRO_API) then
+		setVehicleNitroActivated(g_Vehicle, false)
+	else
 		setControlState("vehicle_fire", false)
 		if(g_Vehicle) then
 			removeVehicleUpgrade(g_Vehicle, $(NITRO_UPGRADE_ID))
@@ -291,6 +298,19 @@ local function NitBug()
 end
 
 addCommandHandler("nitrobug", NitBug)
+
+local function NitExperimental()
+	if(not HAS_NITRO_API) then return end
+	
+	USE_NITRO_API = not USE_NITRO_API
+	if(USE_NITRO_API) then
+		outputChatBox("Experimental Nitro is enabled!", 0, 255, 0)
+	else
+		outputChatBox("Experimental Nitro is disabled!", 255, 0, 0)
+	end
+end
+
+addCommandHandler("nitro2", NitExperimental)
 
 ---------------------------------
 -- Global function definitions --
