@@ -18,8 +18,8 @@ g_Images = {
 local g_HurryDuration = 30
 local g_CheckpointsCount = 0
 
-local g_HudKeyColor = "#00AA00"
-local g_HudValueColor = "#FFFFFF"
+g_HudKeyColor = "#00AA00"
+g_HudValueColor = "#FFFFFF"
 
 -------------------------------------------------------
 -- Title screen - Shown when player first joins the game
