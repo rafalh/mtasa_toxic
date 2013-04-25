@@ -140,12 +140,6 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 	if duration then
 		launchRace(duration)
 	end
-
-	-- Editor start
-	if isEditor() then
-		editorInitRace()
-		return
-	end
 	
 	delay = 2 -- FIXME
 	-- Do fadeup and then tell server client is ready
