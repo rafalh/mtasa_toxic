@@ -1,8 +1,10 @@
 <meta>
-	<info name="Race audio" version="1.0" type="script" author="rafalh" description="Audio support for Race gamemode" addon="race" />
+	<info name="Race audio" version="1.1" type="script" author="rafalh" description="Audio support for Race gamemode" addon="race" />
 
 	<script src="audio_s.lua" type="server"/>
 	<script src="audio_c.lua" type="client"/>
+	
+	<export function="setRaceAudioVolume" type="client" />
 	
 	<file src="audio/raceon.mp3" />
 	<file src="audio/wasted.mp3" />

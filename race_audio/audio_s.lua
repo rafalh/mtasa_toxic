@@ -8,7 +8,7 @@ addEvent("onPlayerToptimeImprovement")
 
 local function playAudio(player, filename)
 	-- outputDebugString("play sound "..filename.." for "..getPlayerName(player))
-	triggerClientEvent(player, "playClientAudio", getRootElement(), filename)
+	triggerClientEvent(player, "race_audio.onPlayReq", getRootElement(), filename)
 end
 
 local function onMapStarting(mapInfo)

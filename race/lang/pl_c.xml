@@ -1,0 +1,10 @@
+﻿<strings>
+	<msg id="Next map: not set">Nastepna mapa: nie ustawiona</msg>
+	<msg id="Travelling to">Ladowanie mapy</msg>
+	<msg id="Spectators: none">Obserwatorzy: brak</msg>
+	<msg pattern="Map: (.+)">Mapa: %1</msg>
+	<msg pattern="Next map: (.+)">Nastepna mapa: %1</msg>
+	<msg pattern="Author: (.+)">Autor: %1</msg>
+	<msg pattern="Spectators: (.+)">Obserwatorzy: %1</msg>
+	<msg pattern="KEYS:(.+)">KLAWISZE:%1</msg>
+</strings>

@@ -1,0 +1,23 @@
+<meta>
+	<info name="Race GUI" version="1.0" type="script" author="rafalh" description="GUI support for Race gamemode" addon="race" />
+
+	<script src="ui_c.lua" type="client" />
+	<script src="textlib_c.lua" type="client" />
+	<script src="client_anim.lua" type="client" />
+	<script src="textlib_anim.lua" type="client" />
+	
+	<file src="img/countdown_3.png"/>
+	<file src="img/countdown_2.png"/>
+	<file src="img/countdown_1.png"/>
+	<file src="img/countdown_0.png"/>
+	<file src="img/timeleft.png"/>
+	<file src="img/hurry.png"/>
+	<file src="img/specprev.png"/>
+	<file src="img/specprev_hi.png"/>
+	<file src="img/specnext.png"/>
+	<file src="img/specnext_hi.png"/>
+	<file src="img/blank.png"/>
+	<file src="img/title.jpg"/>
+	<file src="img/travelling.png"/>
+	<file src="img/killmessage.png"/>
+</meta>

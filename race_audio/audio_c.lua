@@ -1,7 +1,7 @@
 local g_SoundVolume = 0.5
 local g_UnmuteRadioTimer = false
 
-addEvent("playClientAudio", true)
+addEvent("race_audio.onPlayReq", true)
 addEvent("onClientPlayerOutOfTime", true)
 addEvent("onClientPlayerHitPickup", true)
 addEvent("onClientPlayerReachCheckpoint", true)
@@ -62,16 +62,31 @@ local function onCountdown(num)
 	end
 end
 
-local function onSoundVolumeCmd(cmd, value)
-	g_SoundVolume = value/100
-	outputConsole("set sound volume to "..value.."%")
+function setRaceAudioVolume(val)
+	val = math.min(math.max(tonumber(val), 0), 1)
+	if(val) then
+		g_SoundVolume = val
+		return true
+	else
+		return false
+	end
 end
 
-addEventHandler("playClientAudio", root, playAudio)
+local function onRaceVolumeCmd(cmd, value)
+	value = math.min(math.max(tonumber(value), 0), 100)
+	if(value) then
+		g_SoundVolume = value/100
+		outputChatBox("Race audio volume has been set to "..value.."%", 255, 255, 255)
+	else
+		outputChatBox("Usage: /"..cmd.." n", 255, 255, 255)
+	end
+end
+
+addEventHandler("race_audio.onPlayReq", root, playAudio)
 addEventHandler("onClientResourceStart", resourceRoot, onResStart)
 addEventHandler("onClientPlayerOutOfTime", root, onOutOfTime)
 addEventHandler("onClientPlayerHitPickup", localPlayer, onHitPickup)
 addEventHandler("onClientPlayerReachCheckpoint", localPlayer, onReachCheckpoint)
 addEventHandler("onClientPlayerFinish", localPlayer, onFinish)
 addEventHandler("onClientRaceCountdown", root, onCountdown)
-addCommandHandler("soundvolume", onSoundVolumeCmd, false, false)
+addCommandHandler("racevolume", onRaceVolumeCmd, false, false)
