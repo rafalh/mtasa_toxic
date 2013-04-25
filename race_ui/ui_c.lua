@@ -1,4 +1,6 @@
 local g_Root = root
+local g_HurryDuration = 30
+local g_Me = localPlayer
 
 -- Utils
 
@@ -51,6 +53,23 @@ function hideGUIComponents(...)
 	end
 end
 
+function msToTimeStr(ms)
+	if not ms then
+		return ''
+	end
+	local centiseconds = tostring(math.floor(math.fmod(ms, 1000)/10))
+	if #centiseconds == 1 then
+		centiseconds = '0' .. centiseconds
+	end
+	local s = math.floor(ms / 1000)
+	local seconds = tostring(math.fmod(s, 60))
+	if #seconds == 1 then
+		seconds = '0' .. seconds
+	end
+	local minutes = tostring(math.floor(s / 60))
+	return minutes .. ':' .. seconds .. ':' .. centiseconds
+end
+
 -- race_client
 
 g_ScrW, g_ScrH = guiGetScreenSize()
@@ -69,8 +88,14 @@ g_Images = {
 local g_HudKeyColor = "#00AA00"
 local g_HudValueColor = "#FFFFFF"
 
-addEvent("race.onTravelingStart")
 addEvent("onClientMapStarting")
+addEvent("onClientMapStopping")
+addEvent("onClientPlayerOutOfTime")
+addEvent("onClientPlayerFinish")
+addEvent("race.onTravelingStart")
+addEvent("race.onRaceLaunch")
+addEvent("race.onRankChange")
+addEvent("onClientPlayerReachCheckpoint")
 
 -------------------------------------------------------
 -- Title screen - Shown when player first joins the game
@@ -215,6 +240,7 @@ end)
 addEventHandler("onClientMapStarting", root, function(mapInfo)
 	g_dxGUI.mapdisplay:text("Map: "..g_HudValueColor..mapInfo.name)
 	showHUD(false)
+	g_Finished = false
 	
 	-- GUI
 	g_dxGUI.timepassed:text('0:00:00')
@@ -256,6 +282,7 @@ addEventHandler("onClientMapStopping", root, function()
 end)
 
 addEventHandler("race.onRaceLaunch", root, function(duration)
+	g_StartTick = getTickCount()
 	if type(duration) == 'number' then
 		showGUIComponents('timeleftbg', 'timeleft')
 		guiLabelSetColor(g_GUI.timeleft, 255, 255, 255)
@@ -267,7 +294,7 @@ end)
 function updateTime()
 	local tick = getTickCount()
 	local msPassed = tick - g_StartTick
-	if not isPlayerFinished(g_Me) then
+	if not g_Finished then
 		g_dxGUI.timepassed:text(msToTimeStr(msPassed))
 	end
 	local timeLeft = g_Duration - msPassed
@@ -381,6 +408,7 @@ addEventHandler ( "onClientScreenFadedIn", root,
 )
 
 addEventHandler("onClientPlayerFinish", root, function()
+	g_Finished = true
 	g_dxGUI.checkpoint:text(g_CheckpointsCount .. ' / ' .. g_CheckpointsCount)
 		if g_GUI.hurry then
 			Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeOut(500), destroyElement)
