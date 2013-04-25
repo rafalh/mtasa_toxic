@@ -17,20 +17,6 @@ function Countdown:start(info)
 	
 	self.images.width = resAdjust(self.images.width)
 	self.images.height = resAdjust(self.images.height)
-	if self.background then
-		local screenWidth, screenHeight = guiGetScreenSize()
-		self.background.width = resAdjust(self.background.width)
-		self.background.height = resAdjust(self.background.height)
-		self.background.elem = guiCreateStaticImage(
-			math.floor(screenWidth/2 - self.background.width/2),
-			math.floor(screenHeight/2 - self.background.height/2),
-			self.background.width,
-			self.background.height,
-			self.background.file,
-			false,
-			nil
-		)
-	end
 	
 	self.value = self.startvalue
 end
@@ -56,7 +42,7 @@ function Countdown:update()
 
 		local screenWidth, screenHeight = guiGetScreenSize()
 		local numImages = g_GameOptions.countdowneffect and self.value == 0 and 3 or 1
-		for i=numImages,1,-1 do
+		for i = 1, numImages do
 			self.countelems[i] = guiCreateStaticImage(
 				math.floor(screenWidth/2 - self.images.width/2),
 				math.floor(screenHeight/2 - self.images.height/2),
@@ -72,12 +58,6 @@ function Countdown:update()
 				self.countelems,
 				{ from = 0, to = 1, time = 1000, fn = zoomFades, width = self.images.width, height = self.images.height }
 			)
-			if self.background and self.value == 0 then
-				Animation.createAndPlay(
-					self.background.elem,
-					{ from = 1, to = 0, time = 700, fn = guiSetAlpha }
-				)
-			end
 		end
 	end
     if self.value then
@@ -95,10 +75,6 @@ function Countdown:destroy()
 		table.each( self.countelems, destroyElement )
 	end
 	self.countelems = nil
-	if self.background and self.background.elem then
-		destroyElement(self.background.elem)
-		self.background.elem = nil
-	end
 	Countdown.instances[self.id] = nil
 	self.id = nil
 end

@@ -37,7 +37,6 @@ function OverrideClient.updateVars( element )
 		setElementAlpha ( element, alpha )
 	end
 	if OverrideClient.method ~= "fast" then return end
-	-- 1.0.2
 	-- Collide others
 	local collideothers = isCollideOthers ( element )
 	for _,other in ipairs( getElementsByType( "vehicle" ) ) do

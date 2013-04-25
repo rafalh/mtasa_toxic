@@ -57,10 +57,6 @@ function Countdown:clientCall(player, fn, ...)
 	clientCall(player, 'Countdown.call', self.client.id, fn, ...)
 end
 
-function Countdown:setBackground(file, width, height)
-	self.client.background = { file = file, width = width, height = height }
-end
-
 function Countdown:useImages(namePattern, width, height)
 	self.client.images = { namepattern = namePattern, width = width, height = height }
 end
