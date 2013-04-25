@@ -17,8 +17,7 @@ local g_Show, g_Size, g_Pos = false -- set in WG_RESET
 local g_WidgetCtrl = {}
 local g_WidgetName = {"Perfomance meter", pl = "Miernik wydajności"}
 
-local g_BgColor = tocolor ( 0, 0, 128, 96 )
-local g_TextColor = tocolor ( 255, 255, 255 )
+local KEY_COLOR = tocolor(getColorFromString("#00AA00"))
 local g_Font = "bankgothic"
 local g_Scale = 0.7
 local g_FontHeight = dxGetFontHeight(g_Scale, g_Font)
@@ -42,7 +41,7 @@ local function PerfRender ()
 		g_FramesTicks = ticks
 	end
 	
-	dxDrawText("FPS: ", x, y, x, y + h, tocolor(255, 255, 255), g_Scale, g_Font)
+	dxDrawText("FPS: ", x, y, x, y + h, KEY_COLOR, g_Scale, g_Font)
 	local offset = dxGetTextWidth("FPS: ", g_Scale, g_Font)
 	
 	local fps = g_Fps --tonumber(getElementData(g_Me, "fps"))
@@ -57,7 +56,7 @@ local function PerfRender ()
 	dxDrawText ( fps or "unknown", x + offset, y, 0, 0, clr, g_Scale, g_Font)
 	y = y + g_FontHeight*2/3
 	
-	dxDrawText("Ping: ", x, y, 0, 0, tocolor(255, 255, 255), g_Scale, g_Font)
+	dxDrawText("Ping: ", x, y, 0, 0, KEY_COLOR, g_Scale, g_Font)
 	local offset = dxGetTextWidth("Ping: ", g_Scale, g_Font)
 	
 	local ping = getPlayerPing(g_Me)
