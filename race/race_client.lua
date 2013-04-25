@@ -13,62 +13,23 @@ g_VisiblePickups = {}
 g_Objects = {}
 
 g_ScreenWidth, g_ScreenHeight = guiGetScreenSize()
-g_Images = {
-	title = { path = "img/title.jpg", w = 0.8*g_ScreenHeight, h = 600/800*0.8*g_ScreenHeight },
-	specprev = { path = "img/specprev.png", w = 82, h = 82/167*180 },
-	specprev_hi = { path = "img/specprev_hi.png", w = 82, h = 82/167*180 },
-	specnext = { path = "img/specnext.png", w = 82, h = 82/167*180 },
-	specnext_hi = { path = "img/specnext_hi.png", w = 82, h = 82/167*180 },
-	timeleft = { path = "img/timeleft.png", w = 100, h = 100/100*24 },
-	travelling = { path = "img/travelling.png", w = 640, h = 480 },
-	hurry = { path = "img/hurry.png", w = resAdjust(370), h = resAdjust(112) },
-	loading = { path = "img/loading.gif" }
-}
 
 local g_HudKeyColor = "#00AA00"
 local g_HudValueColor = "#FFFFFF"
 
 addEvent("onClientPlayerReachCheckpoint")
 addEvent("onClientRaceCountdown")
+addEvent("race.onRankChange")
+addEvent("race.onSpecPrev")
+addEvent("race.onSpecNext")
+addEvent("race.onSpecTargetChange")
+addEvent("race.onStartHurry")
 
 addEventHandler('onClientResourceStart', g_ResRoot,
 	function()
 		g_Players = getElementsByType('player')
 		
         fadeCamera(false,0.0)
-		-- create GUI
-		local screenWidth, screenHeight = guiGetScreenSize()
-		g_dxGUI = {
-			ranknum = dxText:create('1', screenWidth - 60, screenHeight - 95, false, 'bankgothic', 2, 'right'),
-			ranksuffix = dxText:create('st', screenWidth - 40, screenHeight - 86, false, 'bankgothic', 1),
-			checkpoint = dxText:create('0/0', screenWidth - 15, screenHeight - 54, false, 'bankgothic', 0.8, 'right'),
-			timepassed = dxText:create('0:00:00', screenWidth - 10, screenHeight - 25, false, 'bankgothic', 0.7, 'right'),
-			mapdisplay = dxText:create('Map: '..g_HudValueColor..'none', 2, screenHeight - dxGetFontHeight(0.7, 'bankgothic')*2.00, false, 'bankgothic', 0.7, 'left'),
-			nextdisplay = dxText:create('Next map: '..g_HudValueColor..'not set', 2, screenHeight - dxGetFontHeight(0.7, 'bankgothic')*1.25, false, 'bankgothic', 0.7, 'left'),
-			spectators = dxText:create('Spectators: '..g_HudValueColor..'none', 2, screenHeight - dxGetFontHeight(0.7, 'bankgothic')*0.5, false, 'bankgothic', 0.7, 'left'),
-		}
-		g_dxGUI.ranknum:type('stroke', 2, 0, 0, 0, 255)
-		g_dxGUI.ranksuffix:type('stroke', 2, 0, 0, 0, 255)
-		g_dxGUI.checkpoint:type('stroke', 1, 0, 0, 0, 255)
-		g_dxGUI.timepassed:type('stroke', 1, 0, 0, 0, 255)
-		g_dxGUI.mapdisplay:wordWrap(false)
-		g_dxGUI.mapdisplay:colorCoded(true)
-		g_dxGUI.mapdisplay:color(getColorFromString(g_HudKeyColor))
-		g_dxGUI.nextdisplay:wordWrap(false)
-		g_dxGUI.nextdisplay:colorCoded(true)
-		g_dxGUI.nextdisplay:color(getColorFromString(g_HudKeyColor))
-		g_dxGUI.spectators:wordWrap(false)
-		g_dxGUI.spectators:color(getColorFromString(g_HudKeyColor))
-		g_dxGUI.spectators:colorCoded(true)
-		g_GUI = {
-			timeleftbg = guiCreateStaticImage(screenWidth/2-g_Images.timeleft.w/2, 15, g_Images.timeleft.w, g_Images.timeleft.h, g_Images.timeleft.path, false, nil),
-			timeleft = guiCreateLabel(screenWidth/2-108/2, 19, 108, 30, '', false),
-		}
-		guiSetFont(g_GUI.timeleft, 'default-bold-small')
-		guiLabelSetHorizontalAlign(g_GUI.timeleft, 'center')
-		
-		hideGUIComponents('timeleftbg', 'timeleft', 'ranknum', 'ranksuffix', 'checkpoint', 'timepassed')
-        RankingBoard.precreateLabels(10)
 		
 		-- set update handlers
 		g_PickupStartTick = getTickCount()
@@ -82,121 +43,17 @@ addEventHandler('onClientResourceStart', g_ResRoot,
 			engineSetModelLODDistance( id, 60 )
 		end
 
-		if isVersion101Compatible() then
-			-- Dont clip vehicles (1.0.1 function)
-			setCameraClip ( true, false )
-		end
-
-        -- Init presentation screens
-        TitleScreen.init()
-        TravelScreen.init()
-
-        -- Show title screen now
-        TitleScreen.show()
-
+		-- Dont clip vehicles (1.0.1 function)
+		setCameraClip ( true, false )
+		
 		setPedCanBeKnockedOffBike(g_Me, false)
 	end
 )
 
-
--------------------------------------------------------
--- Title screen - Shown when player first joins the game
--------------------------------------------------------
-TitleScreen = {}
-TitleScreen.startTime = 0
-
-function TitleScreen.init()
-	local screenWidth, screenHeight = guiGetScreenSize()
-	local adjustY = math.clamp( -30, -15 + (-30- -15) * (screenHeight - 480)/(900 - 480), -15 );
-	g_GUI['titleImage'] = guiCreateStaticImage((screenWidth-g_Images.title.w)/2, (screenHeight-g_Images.title.h)/2+adjustY, g_Images.title.w, g_Images.title.h, g_Images.title.path, false)
-	g_dxGUI['titleText1'] = dxText:create('', 30, screenHeight-100, false, 'bankgothic', 0.70, 'left' )
-	g_dxGUI['titleText2'] = dxText:create('', 120, screenHeight-100, false, 'bankgothic', 0.70, 'left' )
-	g_dxGUI['titleText1']:text(	'KEYS: \n' ..
-								'F4 \n' ..
-								'F5 \n' ..
-								'K' )
-	g_dxGUI['titleText2']:text(	'\n' ..
-								'- TRAFFIC ARROWS \n' ..
-								'- TOP TIMES \n' ..
-								'- RETRY' )
-	hideGUIComponents('titleImage','titleText1','titleText2')
-end
-
-function TitleScreen.show()
-    showGUIComponents('titleImage','titleText1','titleText2')
-	guiMoveToBack(g_GUI['titleImage'])
-    TitleScreen.startTime = getTickCount()
-    TitleScreen.bringForward = 0
-    addEventHandler('onClientRender', g_Root, TitleScreen.update)
-end
-
-function TitleScreen.update()
-    local secondsLeft = TitleScreen.getTicksRemaining() / 1000
-    local alpha = math.min(1,math.max( secondsLeft ,0))
-    guiSetAlpha(g_GUI['titleImage'], alpha)
-    g_dxGUI['titleText1']:color(220,220,220,255*alpha)
-    g_dxGUI['titleText2']:color(220,220,220,255*alpha)
-    if alpha == 0 then
-        hideGUIComponents('titleImage','titleText1','titleText2')
-        removeEventHandler('onClientRender', g_Root, TitleScreen.update)
-	end
-end
-
-function TitleScreen.getTicksRemaining()
-    return math.max( 0, TitleScreen.startTime - TitleScreen.bringForward + 10000 - getTickCount() )
-end
-
--- Start the fadeout as soon as possible
-function TitleScreen.bringForwardFadeout(maxSkip)
-    local ticksLeft = TitleScreen.getTicksRemaining()
-    local bringForward = ticksLeft - 1000
-    outputDebug( 'MISC', 'bringForward ' .. bringForward )
-    if bringForward > 0 then
-        TitleScreen.bringForward = math.min(TitleScreen.bringForward + bringForward,maxSkip)
-        outputDebug( 'MISC', 'TitleScreen.bringForward ' .. TitleScreen.bringForward )
-    end
-end
--------------------------------------------------------
-
-
--------------------------------------------------------
--- Travel screen - Message for client feedback when loading maps
--------------------------------------------------------
-TravelScreen = {}
-TravelScreen.startTime = 0
-
-function TravelScreen.init()
-    local screenWidth, screenHeight = guiGetScreenSize()
-    g_GUI['travelImage']   = guiCreateStaticImage((screenWidth-g_Images.travelling.w)/2, (screenHeight-g_Images.travelling.h)/2-70, g_Images.travelling.w, g_Images.travelling.h, g_Images.travelling.path, false, nil)
-	g_dxGUI['travelText1'] = dxText:create('Travelling to', screenWidth/2, (screenHeight+g_Images.travelling.h)/2-40, false, 'bankgothic', 0.60, 'center' )
-	g_dxGUI['travelText2'] = dxText:create('', screenWidth/2, (screenHeight+g_Images.travelling.h)/2-10, false, 'bankgothic', 0.70, 'center' )
-	g_dxGUI['travelText3'] = dxText:create('', screenWidth/2, (screenHeight+g_Images.travelling.h)/2+20, false, 'bankgothic', 0.70, 'center' )
-    g_dxGUI['travelText1']:color(240,240,240)
-    hideGUIComponents('travelImage', 'travelText1', 'travelText2', 'travelText3')
-end
-
-function TravelScreen.show( mapName, authorName )
-    TravelScreen.startTime = getTickCount()
-    g_dxGUI['travelText2']:text(mapName) 
-	g_dxGUI['travelText3']:text(authorName and "Author: " .. authorName or "")
-    showGUIComponents('travelImage', 'travelText1', 'travelText2', 'travelText3')
-	guiMoveToBack(g_GUI['travelImage'])
-end
-
-function TravelScreen.hide()
-    hideGUIComponents('travelImage', 'travelText1', 'travelText2', 'travelText3')
-end
-
-function TravelScreen.getTicksRemaining()
-    return math.max( 0, TravelScreen.startTime + 3000 - getTickCount() )
-end
--------------------------------------------------------
-
-
 -- Called from server
 function notifyLoadingMap( mapName, authorName )
     fadeCamera( false, 0.0, 0,0,0 ) -- fadeout, instant, black
-    TravelScreen.show( mapName, authorName )
+	triggerEvent("race.onTravelingStart", resourceRoot, mapName, authorName)
 end
 
 
@@ -205,6 +62,8 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
     outputDebug( 'MISC', 'initRace start' )
 	unloadAll()
 	
+	mapinfo.cpCount = #checkpoints
+	
 	g_Players = getElementsByType('player')
 	g_MapOptions = mapoptions
 	g_GameOptions = gameoptions
@@ -212,10 +71,7 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
     g_PlayerInfo = playerInfo
     triggerEvent('onClientMapStarting', g_Me, mapinfo )
 	
-	g_dxGUI.mapdisplay:text("Map: "..g_HudValueColor..g_MapInfo.name)
-	
 	fadeCamera(true)
-	showHUD(false)
 	
 	g_Vehicle = vehicle
 	setVehicleDamageProof(g_Vehicle, true)
@@ -231,7 +87,6 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 	updateVehicleWeapons()
 	setCloudsEnabled(g_GameOptions.cloudsenable)
 	setBlurLevel(g_GameOptions.blurlevel)
-	g_dxGUI.mapdisplay:visible(g_GameOptions.showmapname)
 	if engineSetAsynchronousLoading then
 		engineSetAsynchronousLoading( g_GameOptions.asyncloading )
 	end
@@ -286,21 +141,6 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 		showNextCheckpoint()
 	end
 	
-	-- GUI
-	g_dxGUI.timepassed:text('0:00:00')
-	showGUIComponents('timepassed')
-	hideGUIComponents('timeleftbg', 'timeleft')
-	if ranked then
-		showGUIComponents('ranknum', 'ranksuffix')
-	else
-		hideGUIComponents('ranknum', 'ranksuffix')
-	end
-	if #g_Checkpoints > 0 then
-		showGUIComponents('checkpoint')
-	else
-		hideGUIComponents('checkpoint')
-	end
-	
 	g_HurryDuration = g_GameOptions.hurrytime
 	if duration then
 		launchRace(duration)
@@ -313,17 +153,9 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 		editorInitRace()
 		return
 	end
-
-    -- Min 3 seconds on travel message
-    local delay = TravelScreen.getTicksRemaining()
-    delay = math.max(50,delay)
-    setTimer(TravelScreen.hide,delay,1)
-
-    -- Delay readyness until after title
-    TitleScreen.bringForwardFadeout(3000)
-    delay = delay + math.max( 0, TitleScreen.getTicksRemaining() - 1500 )
-
-    -- Do fadeup and then tell server client is ready
+	
+	delay = 2 -- FIXME
+	-- Do fadeup and then tell server client is ready
     setTimer(fadeCamera, delay + 750, 1, true, 10.0)
     setTimer(fadeCamera, delay + 1500, 1, true, 2.0)
 
@@ -342,7 +174,6 @@ function updateOptions ( gameoptions, mapoptions )
 	updateVehicleWeapons()
 	setCloudsEnabled(g_GameOptions.cloudsenable)
 	setBlurLevel(g_GameOptions.blurlevel)
-	g_dxGUI.mapdisplay:visible(g_GameOptions.showmapname)
 	if engineSetAsynchronousLoading then
 		engineSetAsynchronousLoading( g_GameOptions.asyncloading )
 	end
@@ -351,12 +182,7 @@ end
 function launchRace(duration)
 	g_Players = getElementsByType('player')
 	
-	if type(duration) == 'number' then
-		showGUIComponents('timeleftbg', 'timeleft')
-		guiLabelSetColor(g_GUI.timeleft, 255, 255, 255)
-		g_Duration = duration
-		addEventHandler('onClientRender', g_Root, updateTime)
-	end
+	triggerEvent("race.onRaceLaunch", resourceRoot, duration)
 	
 	setVehicleDamageProof(g_Vehicle, false)
 	
@@ -596,19 +422,6 @@ function vehicleUnloading()
 	g_Vehicle = nil
 end
 
-function updateTime()
-	local tick = getTickCount()
-	local msPassed = tick - g_StartTick
-	if not isPlayerFinished(g_Me) then
-		g_dxGUI.timepassed:text(msToTimeStr(msPassed))
-	end
-	local timeLeft = g_Duration - msPassed
-	guiSetText(g_GUI.timeleft, msToTimeStr(timeLeft > 0 and timeLeft or 0))
-	if g_HurryDuration and g_GUI.hurry == nil and timeLeft <= g_HurryDuration then
-		startHurry()
-	end
-end
-
 addEventHandler('onClientElementDataChange', g_Me,
 	function(dataName)
 		if dataName == 'race rank' and not Spectate.active then
@@ -619,15 +432,8 @@ addEventHandler('onClientElementDataChange', g_Me,
 )
 
 function setRankDisplay( rank )
-	if not tonumber(rank) then
-		g_dxGUI.ranknum:text('')
-		g_dxGUI.ranksuffix:text('')
-		return
-	end
-	g_dxGUI.ranknum:text(tostring(rank))
-	g_dxGUI.ranksuffix:text( (rank < 10 or rank > 20) and ({ [1] = 'st', [2] = 'nd', [3] = 'rd' })[rank % 10] or 'th' )
+	triggerEvent("race.onRankChange", resourceRoot, rank)
 end
-
 
 addEventHandler('onClientElementDataChange', g_Root,
 	function(dataName)
@@ -678,7 +484,6 @@ end
 function showNextCheckpoint(bOtherPlayer)
 	g_CurrentCheckpoint = g_CurrentCheckpoint + 1
 	local i = g_CurrentCheckpoint
-	g_dxGUI.checkpoint:text((i - 1) .. ' / ' .. #g_Checkpoints)
 	if i > 1 then
 		destroyCheckpoint(i-1)
 	else
@@ -786,11 +591,6 @@ function checkpointReached(elem)
 	if g_CurrentCheckpoint < #g_Checkpoints then
 		showNextCheckpoint()
 	else
-		g_dxGUI.checkpoint:text(#g_Checkpoints .. ' / ' .. #g_Checkpoints)
-		if g_GUI.hurry then
-			Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeOut(500), destroyElement)
-			g_GUI.hurry = false
-		end
 		destroyCheckpoint(#g_Checkpoints)
         triggerEvent('onClientPlayerFinish', g_Me)
 		toggleAllControls(false, true, false)
@@ -798,14 +598,7 @@ function checkpointReached(elem)
 end
 
 function startHurry()
-	if not isPlayerFinished(g_Me) then
-		local screenWidth, screenHeight = guiGetScreenSize()
-		g_GUI.hurry = guiCreateStaticImage(screenWidth/2 - g_Images.hurry.w/2, screenHeight - g_Images.hurry.h - 40, g_Images.hurry.w, g_Images.hurry.h, g_Images.hurry.path, false, nil)
-		guiSetAlpha(g_GUI.hurry, 0)
-		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeIn(800))
-		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiPulse(1000))
-	end
-	guiLabelSetColor(g_GUI.timeleft, 255, 0, 0)
+	triggerEvent("race.onStartHurry", resourceRoot, isPlayerFinished(g_Me))
 end
 
 function setTimeLeft(timeLeft)
@@ -864,15 +657,7 @@ function Spectate._start()
 	outputDebug( 'SPECTATE', 'Spectate._start ' )
 	triggerServerEvent('onClientNotifySpectate', g_Me, true )
 	assert(not Spectate.active, "Spectate._start - not Spectate.active")
-	local screenWidth, screenHeight = guiGetScreenSize()
-	g_GUI.specprev = guiCreateStaticImage(screenWidth/2 - 100 - g_Images.specprev.w, screenHeight - 123, g_Images.specprev.w, g_Images.specprev.h, g_Images.specprev.path, false, nil)
-	g_GUI.specprevhi = guiCreateStaticImage(screenWidth/2 - 100 - g_Images.specprev_hi.w, screenHeight - 123, g_Images.specprev_hi.w, g_Images.specprev_hi.h, g_Images.specprev_hi.path, false, nil)
-	g_GUI.specnext = guiCreateStaticImage(screenWidth/2 + 100, screenHeight - 123, g_Images.specprev.w, g_Images.specprev.h, g_Images.specnext.path, false, nil)
-	g_GUI.specnexthi = guiCreateStaticImage(screenWidth/2 + 100, screenHeight - 123, g_Images.specprev.w, g_Images.specprev.h, g_Images.specnext_hi.path, false, nil)
-	g_GUI.speclabel = guiCreateLabel(screenWidth/2 - 100, screenHeight - 100, 200, 70, '', false)
-	Spectate.updateGuiFadedOut()
-	guiLabelSetHorizontalAlign(g_GUI.speclabel, 'center')
-	hideGUIComponents('specprevhi', 'specnexthi')
+	
 	if Spectate.savePos then
 		savePosition()
 	end
@@ -892,12 +677,6 @@ function Spectate._stop()
 	triggerServerEvent('onClientNotifySpectate', g_Me, false )
 	outputDebug( 'SPECTATE', 'Spectate._stop ' )
 	assert(Spectate.active, "Spectate._stop - Spectate.active")
-	for i,name in ipairs({'specprev', 'specprevhi', 'specnext', 'specnexthi', 'speclabel'}) do
-		if g_GUI[name] then
-			destroyElement(g_GUI[name])
-			g_GUI[name] = nil
-		end
-	end
 	unbindKey('arrow_l', 'down', Spectate.previous)
 	unbindKey('arrow_r', 'down', Spectate.next)
 	MovePlayerAway.stop()
@@ -913,16 +692,14 @@ end
 function Spectate.previous(bGUIFeedback)
 	Spectate.setTarget( Spectate.findNewTarget(Spectate.target,-1) )
 	if bGUIFeedback then
-		setGUIComponentsVisible({ specprev = false, specprevhi = true })
-		setTimer(setGUIComponentsVisible, 100, 1, { specprevhi = false, specprev = true })
+		triggerEvent("race.onSpecPrev", resourceRoot)
 	end
 end
 
 function Spectate.next(bGUIFeedback)
 	Spectate.setTarget( Spectate.findNewTarget(Spectate.target,1) )
 	if bGUIFeedback then
-		setGUIComponentsVisible({ specnext = false, specnexthi = true })
-		setTimer(setGUIComponentsVisible, 100, 1, { specnexthi = false, specnext = true })
+		triggerEvent("race.onSpecNext", resourceRoot)
 	end
 end
 
@@ -1028,19 +805,18 @@ function Spectate.cancelDropCamera()
 	end
 end
 
-
 function Spectate.setTarget( player )
 	if Spectate.hasDroppedCamera() then
 		return
 	end
-
+	
 	Spectate.active = true
 	Spectate.target = player
 	if Spectate.target then
 		if Spectate.getCameraTargetPlayer() ~= Spectate.target then
 			setCameraTarget(Spectate.target)
 		end
-		guiSetText(g_GUI.speclabel, 'Currently spectating:\n' .. getPlayerName(Spectate.target))
+		
 	else
 		local x,y,z = getElementPosition(g_Me)
 		x = x - ( x % 32 )
@@ -1048,11 +824,14 @@ function Spectate.setTarget( player )
 		z = getGroundPosition ( x, y, 5000 ) or 40
 		setCameraTarget( g_Me )
 		setCameraMatrix( x,y,z+10,x,y+50,z+60)
-		guiSetText(g_GUI.speclabel, 'Currently spectating:\n No one to spectate')
 	end
+	
+	local joinBtn = false
 	if Spectate.active and Spectate.savePos then
-		guiSetText(g_GUI.speclabel, guiGetText(g_GUI.speclabel) .. "\n\nPress 'B' to join")
+		joinBtn = true
 	end
+	
+	triggerEvent("race.onSpecTargetChange", resourceRoot, Spectate.target, joinBtn)
 end
 
 function Spectate.blockAsTarget( player, ticks )
@@ -1096,23 +875,6 @@ function restorePosition()
 	setElementRotation( g_Vehicle, g_SavedPos.vrx, g_SavedPos.vry, g_SavedPos.vrz )
 end
 
-
-addEvent ( "onClientScreenFadedOut", true )
-addEventHandler ( "onClientScreenFadedOut", g_Root,
-	function()
-		Spectate.fadedout = true
-		Spectate.updateGuiFadedOut()
-	end
-)
-
-addEvent ( "onClientScreenFadedIn", true )
-addEventHandler ( "onClientScreenFadedIn", g_Root,
-	function()
-		Spectate.fadedout = false
-		Spectate.updateGuiFadedOut()
-	end
-)
-
 addEvent ( "onClientPreRender", true )
 addEventHandler ( "onClientPreRender", g_Root,
 	function()
@@ -1125,16 +887,6 @@ addEventHandler ( "onClientPreRender", g_Root,
 		updateSpectatingCheckpointsAndRank()
 	end
 )
-
-function Spectate.updateGuiFadedOut()
-	if g_GUI and g_GUI.specprev then
-		if Spectate.fadedout then
-			setGUIComponentsVisible({ specprev = false, specnext = false, speclabel = false })
-		else
-			setGUIComponentsVisible({ specprev = true, specnext = true, speclabel = true })
-		end
-	end
-end
 
 -----------------------------------------------------------------------
 
@@ -1234,15 +986,9 @@ end
 -----------------------------------------------------------------------
 
 function raceTimeout()
-	removeEventHandler('onClientRender', g_Root, updateTime)
 	if g_CurrentCheckpoint then
 		destroyCheckpoint(g_CurrentCheckpoint)
 		destroyCheckpoint(g_CurrentCheckpoint + 1)
-	end
-	guiSetText(g_GUI.timeleft, msToTimeStr(0))
-	if g_GUI.hurry then
-		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeOut(500), destroyElement)
-		g_GUI.hurry = nil
 	end
 	triggerEvent("onClientPlayerOutOfTime", g_Me)
 	toggleAllControls(false, true, false)
@@ -1274,17 +1020,9 @@ function unloadAll()
 	setElementData(g_Me, 'race.checkpoint', nil)
 	
 	g_Vehicle = nil
-	removeEventHandler('onClientRender', g_Root, updateTime)
 	
 	toggleAllControls(true)
 	
-	if g_GUI then
-		hideGUIComponents('timeleftbg', 'timeleft', 'ranknum', 'ranksuffix', 'checkpoint', 'timepassed')
-		if g_GUI.hurry then
-			Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeOut(500), destroyElement)
-			g_GUI.hurry = nil
-		end
-	end
 	TimerManager.destroyTimersFor("map")
 	g_StartTick = nil
 	g_HurryDuration = nil
@@ -1411,7 +1149,6 @@ addEventHandler('onClientResourceStop', g_ResRoot,
 	function()
 		unloadAll()
 		killTimer(g_WaterCheckTimer)
-		showHUD(true)
 		setPedCanBeKnockedOffBike(g_Me, true)
 	end
 )
@@ -1515,13 +1252,3 @@ function setPipeDebug(bOn)
     outputConsole( 'bPipeDebug set to ' .. tostring(g_bPipeDebug) )
 end
 
-addEvent ( "onClientSetNextMap", true )
-addEventHandler ( "onClientSetNextMap", g_Root, function ( mapName )
-	g_NextMap = mapName
-	g_dxGUI.nextdisplay:text ( "Next map: "..g_HudValueColor..( mapName or "not set" ) )
-end )
-
-addEvent("onClientSetSpectators", true)
-addEventHandler ( "onClientSetSpectators", g_Root, function ( spectatorsList )
-	g_dxGUI.spectators:text ( "Spectators: "..g_HudValueColor..(spectatorsList or "none") )
-end )

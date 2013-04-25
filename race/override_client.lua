@@ -37,34 +37,16 @@ function OverrideClient.updateVars( element )
 		setElementAlpha ( element, alpha )
 	end
 	if OverrideClient.method ~= "fast" then return end
-	if not isVersion102Compatible() then
-		if g_Vehicle then
-			-- 1.0 and 1.0.1
-			-- Collide others
-			local collideothers = isCollideOthers ( g_Vehicle )
-			for _,other in ipairs( getElementsByType( "vehicle" ) ) do
-				if other ~= g_Vehicle then
-					local docollide = collideothers and isCollideOthers ( other )
-					setElementCollisionsEnabled ( other, docollide )
-				end
-			end
-			-- Collide world
-			local collideworld = isCollideWorld ( g_Vehicle )
-			setElementCollisionsEnabled ( g_Vehicle, collideworld )
-		end
-	else
-		-- 1.0.2
-		-- Collide others
-		local collideothers = isCollideOthers ( element )
-		for _,other in ipairs( getElementsByType( "vehicle" ) ) do
-			local docollide = collideothers and isCollideOthers ( other )
-			setElementCollidableWith ( element, other, docollide )
-		end
-		-- Collide world
-		local collideworld = isCollideWorld ( element )
-		setElementCollisionsEnabled ( element, collideworld )
+	-- 1.0.2
+	-- Collide others
+	local collideothers = isCollideOthers ( element )
+	for _,other in ipairs( getElementsByType( "vehicle" ) ) do
+		local docollide = collideothers and isCollideOthers ( other )
+		setElementCollidableWith ( element, other, docollide )
 	end
-
+	-- Collide world
+	local collideworld = isCollideWorld ( element )
+	setElementCollisionsEnabled ( element, collideworld )
 end
 
 function isCollideOthers ( element )

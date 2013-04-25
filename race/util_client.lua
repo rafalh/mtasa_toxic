@@ -35,36 +35,6 @@ server = createServerCallInterface()
 ----------------------------
 -- GUI
 
-function showHUD(show)
-	for i,name in ipairs({ 'ammo', 'area_name', 'armour', 'breath', 'clock', 'health', 'money', 'vehicle_name', 'weapon' }) do
-		showPlayerHudComponent(name, show)
-	end
-end
-
-function showGUIComponents(...)
-	for i,name in ipairs({...}) do
-		if g_dxGUI[name] then
-			g_dxGUI[name]:visible(true)
-		elseif type(g_GUI[name]) == 'table' then
-			g_GUI[name]:show()
-		else
-			guiSetVisible(g_GUI[name], true)
-		end
-	end
-end
-
-function hideGUIComponents(...)
-	for i,name in ipairs({...}) do
-		if g_dxGUI[name] then
-			g_dxGUI[name]:visible(false)
-		elseif type(g_GUI[name]) == 'table' then
-			g_GUI[name]:hide()
-		else
-			guiSetVisible(g_GUI[name], false)
-		end
-	end
-end
-
 function setGUIComponentsVisible(settings)
 	for name,visible in pairs(settings) do
 		if type(g_GUI[name]) == 'table' then

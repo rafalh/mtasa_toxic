@@ -6,7 +6,6 @@
 	<include resource="votemanager"/>
 	<include resource="helpmanager" />
 
-
 	<script src="_common.lua" type="server"/>
 	<script src="_joiner.lua" type="server"/>
 	<script src="util_server.lua" type="server"/>
@@ -28,7 +27,6 @@
 	<script src="_common.lua" type="client"/>
 	<script src="_joiner_client.lua" type="client"/>
 	<script src="util_client.lua" type="client"/>
-	<script src="fancyprogress.lua" type="client"/>
 	<script src="nametags.lua" type="client"/>
 	<script src="client_anim.lua" type="client"/>
 	<script src="countdown_client.lua" type="client"/>
@@ -47,15 +45,7 @@
 	<file src="img/countdown_2.png"/>
 	<file src="img/countdown_1.png"/>
 	<file src="img/countdown_0.png"/>
-	<file src="img/timeleft.png"/>
-	<file src="img/hurry.png"/>
-	<file src="img/specprev.png"/>
-	<file src="img/specprev_hi.png"/>
-	<file src="img/specnext.png"/>
-	<file src="img/specnext_hi.png"/>
 	<file src="img/blank.png"/>
-	<file src="img/title.jpg"/>
-	<file src="img/travelling.png"/>
 	<file src="img/killmessage.png"/>
 	
 	<file src="model/nitro.dff"/>
@@ -77,6 +67,8 @@
 	<export function="setGhostmodeEnabled" type="server"/>
 	
 	<sync_map_element_data>false</sync_map_element_data>
+	
+	<min_mta_version client="1.3.0" server="1.3.0" />
 	
 	<settings>
 		<!-- *****************************************************

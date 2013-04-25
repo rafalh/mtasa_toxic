@@ -1,4 +1,4 @@
-﻿--
+--
 -- common.lua
 --   Common setting for server and client
 --
@@ -253,21 +253,6 @@ function Timer:handleFunctionCall()
     end
 end
 
----------------------------------------------------------------------------
-
-
----------------------------------------------------------------------------
--- Version checks
----------------------------------------------------------------------------
-function isVersion10()
-	return getVersion().number == 256
-end
-function isVersion101Compatible()
-	return getVersion().number >= 257
-end
-function isVersion102Compatible()
-	return getVersion().number >= 258
-end
 ---------------------------------------------------------------------------
 
 
