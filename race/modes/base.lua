@@ -248,10 +248,6 @@ function RaceMode:onPlayerReachCheckpoint(player, checkpointNum)
             gotoState('SomeoneWon')
 			showMessage(getPlayerName(player)..' has won the race!', 255, 255, 255)
 			showMessage('You have won the race!', 0, 255, 0, player)
-			if self.rankingBoard then	-- Remove lingering labels
-				self.rankingBoard:destroy()
-			end
-			self.rankingBoard = RankingBoard:create()
 			if g_MapOptions.duration then
 				self:setTimeLeft( g_GameOptions.timeafterfirstfinish )
 			end
@@ -267,7 +263,6 @@ function RaceMode:onPlayerReachCheckpoint(player, checkpointNum)
 			g_Root,
 			255,0,0
 		)
-		self.rankingBoard:add(player, time)
 		if getActivePlayerCount() > 0 then
 			TimerManager.createTimerFor("map",player):setTimer(clientCall, 5000, 1, player, 'Spectate.start', 'auto')
 		else
@@ -561,10 +556,6 @@ function RaceMode:onPlayerQuit(player)
 end
 
 function RaceMode:destroy()
-	if self.rankingBoard then
-		self.rankingBoard:destroy()
-		self.rankingBoard = nil
-	end
 	TimerManager.destroyTimersFor("checkpointBackup")
 	RaceMode.instances[self.id] = nil
 end

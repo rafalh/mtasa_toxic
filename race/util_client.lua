@@ -35,28 +35,6 @@ server = createServerCallInterface()
 ----------------------------
 -- GUI
 
-function setGUIComponentsVisible(settings)
-	for name,visible in pairs(settings) do
-		if type(g_GUI[name]) == 'table' then
-			g_GUI[name][visible and 'show' or 'hide'](g_GUI[name])
-		else
-			guiSetVisible(g_GUI[name], visible)
-		end
-	end
-end
-
-function createShadowedLabel(x, y, width, height, text, align)
-	local shadow = guiCreateLabel(x + 1, y + 1, width, height, text, false)
-	guiLabelSetColor(shadow, 0, 0, 0)
-	local label = guiCreateLabel(x, y, width, height, text, false)
-	guiLabelSetColor(label, 255, 255, 255)
-	if align then
-		guiLabelSetHorizontalAlign(shadow, align)
-		guiLabelSetHorizontalAlign(label, align)
-	end
-	return label, shadow
-end
-
 function msToTimeStr(ms)
 	if not ms then
 		return ''

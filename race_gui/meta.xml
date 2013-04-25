@@ -1,6 +1,7 @@
 <meta>
 	<info name="Race GUI" version="1.0" type="script" author="rafalh" description="GUI support for Race gamemode" addon="race" />
 
+	<script src="utils_c.lua" type="client" />
 	<script src="ui_c.lua" type="client" />
 	<script src="textlib_c.lua" type="client" />
 	<script src="client_anim.lua" type="client" />

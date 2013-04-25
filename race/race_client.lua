@@ -29,8 +29,6 @@ addEventHandler('onClientResourceStart', g_ResRoot,
 	function()
 		g_Players = getElementsByType('player')
 		
-        fadeCamera(false,0.0)
-		
 		-- set update handlers
 		g_PickupStartTick = getTickCount()
 		g_WaterCheckTimer = setTimer(checkWater, 1000, 0)
@@ -52,7 +50,6 @@ addEventHandler('onClientResourceStart', g_ResRoot,
 
 -- Called from server
 function notifyLoadingMap( mapName, authorName )
-    fadeCamera( false, 0.0, 0,0,0 ) -- fadeout, instant, black
 	triggerEvent("race.onTravelingStart", resourceRoot, mapName, authorName)
 end
 
@@ -70,8 +67,6 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 	g_MapInfo = mapinfo
     g_PlayerInfo = playerInfo
     triggerEvent('onClientMapStarting', g_Me, mapinfo )
-	
-	fadeCamera(true)
 	
 	g_Vehicle = vehicle
 	setVehicleDamageProof(g_Vehicle, true)
@@ -146,8 +141,6 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 		launchRace(duration)
 	end
 
-    fadeCamera( false, 0.0 )
-
 	-- Editor start
 	if isEditor() then
 		editorInitRace()
@@ -156,9 +149,6 @@ function initRace(vehicle, checkpoints, objects, pickups, mapoptions, ranked, du
 	
 	delay = 2 -- FIXME
 	-- Do fadeup and then tell server client is ready
-    setTimer(fadeCamera, delay + 750, 1, true, 10.0)
-    setTimer(fadeCamera, delay + 1500, 1, true, 2.0)
-
     setTimer( function() triggerServerEvent('onNotifyPlayerReady', g_Me) end, delay + 3500, 1 )
     outputDebug( 'MISC', 'initRace end' )
     setTimer( function() setCameraBehindVehicle( g_Vehicle ) end, delay + 300, 1 )
@@ -219,6 +209,17 @@ addEventHandler('onClientElementStreamOut', g_Root,
 		end
 	end
 )
+
+addEvent("onClientScreenFadedOut", true)
+addEventHandler("onClientScreenFadedOut", root,
+function()
+	Spectate.fadedout = true
+end)
+
+addEvent("onClientScreenFadedIn", true)
+addEventHandler("onClientScreenFadedIn", root, function()
+	Spectate.fadedout = false
+end)
 
 function updatePickups()
 	local angle = math.fmod((getTickCount() - g_PickupStartTick) * 360 / 2000, 360)
@@ -656,6 +657,7 @@ end
 function Spectate._start()
 	outputDebug( 'SPECTATE', 'Spectate._start ' )
 	triggerServerEvent('onClientNotifySpectate', g_Me, true )
+	triggerEvent('race.onSpecStart', resourceRoot)
 	assert(not Spectate.active, "Spectate._start - not Spectate.active")
 	
 	if Spectate.savePos then
@@ -675,6 +677,7 @@ function Spectate._stop()
 	Spectate.cancelDropCamera()
 	Spectate.tickTimer:killTimer()
 	triggerServerEvent('onClientNotifySpectate', g_Me, false )
+	triggerEvent('race.onSpecStop', resourceRoot)
 	outputDebug( 'SPECTATE', 'Spectate._stop ' )
 	assert(Spectate.active, "Spectate._stop - Spectate.active")
 	unbindKey('arrow_l', 'down', Spectate.previous)
@@ -828,7 +831,7 @@ function Spectate.setTarget( player )
 	
 	local joinBtn = false
 	if Spectate.active and Spectate.savePos then
-		joinBtn = true
+		joinBtn = 'B'
 	end
 	
 	triggerEvent("race.onSpecTargetChange", resourceRoot, Spectate.target, joinBtn)

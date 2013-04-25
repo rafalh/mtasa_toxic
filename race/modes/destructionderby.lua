@@ -80,13 +80,7 @@ end
 addEvent( "onPlayerWinDD" )
 addEvent( "onPlayerFinishDD" )
 function DestructionDerby:handleFinishActivePlayer(player)
-	-- Update ranking board for player being removed
-	if not self.rankingBoard then
-		self.rankingBoard = RankingBoard:create()
-		self.rankingBoard:setDirection( 'up', getActivePlayerCount() )
-	end
 	local timePassed = self:getTimePassed()
-	self.rankingBoard:add(player, timePassed)
 	triggerEvent("onPlayerFinishDD", player, self:getPlayerRank(player), timePassed)
 	-- Do remove
 	finishActivePlayer(player)
@@ -95,7 +89,6 @@ function DestructionDerby:handleFinishActivePlayer(player)
 	if #activePlayers == 1 then
 		triggerEvent("onPlayerWinDD", activePlayers[1])
 		triggerEvent("onPlayerFinishDD", activePlayers[1], self:getPlayerRank(player), timePassed)
-		self.rankingBoard:add(activePlayers[1], timePassed)
 		showMessage(getPlayerName(activePlayers[1]) .. ' is the final survivor!', 0, 255, 0)
 	end
 end

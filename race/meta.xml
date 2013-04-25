@@ -11,7 +11,6 @@
 	<script src="util_server.lua" type="server"/>
 	<script src="racemap.lua" type="server"/>
 	<script src="countdown.lua" type="server"/>
-	<script src="rankingboard.lua" type="server"/>
 	<script src="modes/base.lua" type="server"/>
 	<script src="modes/destructionderby.lua" type="server"/>
 	<script src="modes/freeroam.lua" type="server"/>
@@ -29,7 +28,6 @@
 	<script src="util_client.lua" type="client"/>
 	<script src="client_anim.lua" type="client"/>
 	<script src="countdown_client.lua" type="client"/>
-	<script src="rankingboard_client.lua" type="client"/>
 	<script src="race_client.lua" type="client"/>
 	<script src="textlib.lua" type="client"/>
 	<script src="textlib_anim.lua" type="client"/>
