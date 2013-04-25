@@ -132,22 +132,28 @@ end
 
 -- Kill when respawned and gets hunter
 local function TmPlayerPickUpRacePickup ( pickupID, pickupType, vehicleModel )
-	if ( pickupType ~= "vehiclechange" or not g_DangerousVeh[vehicleModel] ) then
-		return
+	if(pickupType ~= "vehiclechange") then return end
+	
+	if(type(vehicleModel) ~= "number") then
+		outputDebugString("vehicleModel is not a number", 2)
+		vehicleModel = tonumber(vehicleModel)
 	end
+	if(not g_DangerousVeh[vehicleModel]) then return end
 	
 	-- for example hunter
-	local state = getElementData ( source, "state" ) or "dead"
-	if ( state == "dead" ) then
+	local state = getElementData(source, "state") or "dead"
+	if(state == "dead") then
+		outputDebugString("Killing ghost "..getPlayerName(source), 3)
+		
 		-- Kill
-		setElementHealth ( source, 0 )
-		local veh = exports.race:getPlayerVehicle ( player )
-		if ( veh ) then
-			setElementHealth ( veh, 0 )
+		setElementHealth(source, 0)
+		local veh = exports.race:getPlayerVehicle(player)
+		if(veh) then
+			setElementHealth(veh, 0)
 		end
 		
 		-- Disable respawn
-		triggerClientEvent ( "onClientTrainingMode", g_Root, false )
+		triggerClientEvent("onClientTrainingMode", g_Root, false)
 	end
 end
 
