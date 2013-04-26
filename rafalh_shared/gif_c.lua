@@ -94,7 +94,7 @@ local function GifDecompress ( data, min_code_size )
 	local stream = GifInitStream ( data )
 	_assert ( GifGetBits ( stream, i, code_size ) == cc )
 	
-	while ( i < bits ) do
+	while ( i + code_size <= bits ) do
 		local code = GifGetBits ( stream, i, code_size )
 		i = i + code_size
 		
