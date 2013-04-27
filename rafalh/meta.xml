@@ -35,7 +35,6 @@
 	<script src="room.lua" type="server" />
 	<script src="sync.lua" type="server" />
 	<script src="spectators.lua" type="server" />
-	<script src="teams.lua" type="server" />
 	<script src="water_fix_c.lua" type="client" />
 	
 	<script src="commands/accounts.lua" />
@@ -218,6 +217,11 @@
 	<file src="shop/img/smoke.png" />
 	<file src="shop/img/nextmap.png" />
 	
+	<script src="teams/teams_s.lua" type="server" />
+	<script src="teams/admin_s.lua" type="server" />
+	<script src="teams/admin_c.lua" type="client" />
+	<config src="conf/teams.xml" />
+	
 	<script src="trans_admin/main_s.lua" type="server" />
 	<script src="trans_admin/gui_c.lua" type="client" />
 	
@@ -248,7 +252,6 @@
 	
 	<config src="conf/commands.xml" />
 	<config src="conf/msg_cmd.xml" />
-	<config src="conf/teams.xml" />
 	<config src="conf/countries.xml" />
 	<config src="conf/iso_langs.xml" />
 	<config src="conf/adverts.xml" type="client" />

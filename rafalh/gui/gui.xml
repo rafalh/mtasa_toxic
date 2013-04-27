@@ -166,4 +166,18 @@
 		<button id="ok" rx="50" x="-85" ry="100" y="-35" w="80" h="25" text="OK" />
 		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
+	
+	<window id="teamsAdmin" title="Teams Admin Panel" rx="50" x="-160" ry="50" y="-140" w="600" h="400">
+		<button id="update" rx="100" x="-220" y="25" w="120" h="25" text="Update" enabled="false" />
+		<button id="close" rx="100" x="-90" y="25" w="80" h="25" text="Close" />
+		
+		<list id="msgList" x="10" y="60" rw="100" w="-110" rh="100" h="-70" sorting="false">
+			<column id="idCol" text="ID" w="0.45" />
+			<column id="valCol" text="Value" w="0.5" />
+		</list>
+		
+		<button id="add" rx="100" x="-90" y="60" w="80" h="25" text="Add" />
+		<button id="edit" rx="100" x="-90" y="90" w="80" h="25" text="Edit" />
+		<button id="del" rx="100" x="-90" y="120" w="80" h="25" text="Delete" />
+	</window>
 </gui>
