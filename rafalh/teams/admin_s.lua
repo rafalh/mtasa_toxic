@@ -14,7 +14,9 @@ local function CmdTeamsAdmin()
 end
 
 function saveTeamInfo(newTeamInfo, oldTeamInfo)
+	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return end
 	assert(newTeamInfo)
+	
 	if(oldTeamInfo) then
 		local teamInfo = findTeam(oldTeamInfo)
 		if(not teamInfo) then
@@ -24,6 +26,8 @@ function saveTeamInfo(newTeamInfo, oldTeamInfo)
 		
 		g_TeamNameMap[teamInfo.name] = nil
 		g_TeamNameMap[newTeamInfo.name] = teamInfo
+		teamInfo.acl_group = false
+		teamInfo.clan = false
 		for k, v in pairs(newTeamInfo) do
 			teamInfo[k] = v
 		end
@@ -37,7 +41,9 @@ end
 allowRPC('saveTeamInfo')
 
 function deleteTeamInfo(teamInfo)
+	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return end
 	assert(teamInfo)
+	
 	teamInfo = findTeam(teamInfo)
 	if(not teamInfo) then
 		privMsg(client, "Failed to delete team")

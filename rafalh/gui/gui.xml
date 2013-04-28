@@ -179,5 +179,8 @@
 		
 		<button id="add" rx="100" x="-90" y="70" w="80" h="25" text="Add" />
 		<button id="del" rx="100" x="-90" y="100" w="80" h="25" text="Delete" />
+		
+		<button id="up" rx="100" x="-90" y="130" w="80" h="25" text="Up" />
+		<button id="down" rx="100" x="-90" y="160" w="80" h="25" text="Down" />
 	</window>
 </gui>

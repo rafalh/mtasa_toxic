@@ -25,13 +25,21 @@ local function onAddClick()
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, "", false, false)
 end
 
+local function onUpClick()
+	
+end
+
+local function onDownClick()
+	
+end
+
 local function onEditAccepted()
 	local newText = guiGetText(source)
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol)
 	local oldTeamInfo = teamInfo and table.copy(teamInfo)
 	
 	if(not teamInfo) then
-		teamInfo = {name = "", clan = ""}
+		teamInfo = {name = "", clan = "", acl_group = false}
 	end
 	
 	guiGridListSetItemText(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.clickedCol, newText, false, false)
@@ -55,7 +63,33 @@ local function onEditAccepted()
 	destroyElement(source)
 end
 
-local function onEditBlur()
+local function onTypeClick()
+	local row, col = guiGridListGetSelectedItem(source)
+	if(not row or row == -1) then return end
+	
+	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol)
+	local oldTeamInfo = teamInfo and table.copy(teamInfo)
+	
+	if(not teamInfo) then
+		teamInfo = {name = "", clan = "", acl_group = false}
+	end
+	
+	if(row == 0) then -- tag
+		teamInfo.clan = teamInfo.clan or teamInfo.acl_group
+		teamInfo.acl_group = false
+	else
+		teamInfo.acl_group = teamInfo.clan or teamInfo.acl_group
+		teamInfo.clan = false
+	end
+	
+	local typeStr = teamInfo.clan and "Tag" or "ACL"
+	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
+	guiGridListSetItemText(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.typeCol, typeStr, false, false)
+	RPC("saveTeamInfo", teamInfo, oldTeamInfo):exec()
+	destroyElement(source)
+end
+
+local function destroyOnBlur()
 	destroyElement(source)
 end
 
@@ -68,12 +102,26 @@ local function onListDblClick(btn, state, absX, absY)
 	
 	g_GUI.clickedRow = row
 	g_GUI.clickedCol = col
+	
 	local text = guiGridListGetItemText(g_GUI.teamsList, row, col)
-	local edit = guiCreateEdit(x, y, 200, 20, text, false, g_GUI.wnd)
-	guiEditSetCaretIndex(edit, text:len())
-	guiBringToFront(edit)
-	addEventHandler("onClientGUIAccepted", edit, onEditAccepted, false)
-	addEventHandler("onClientGUIBlur", edit, onEditBlur, false)
+	if(col == g_GUI.nameCol or col == g_GUI.tagCol or col == g_GUI.clrCol) then
+		local edit = guiCreateEdit(absX, absY, 200, 20, text, false)
+		guiEditSetCaretIndex(edit, text:len())
+		guiBringToFront(edit)
+		addEventHandler("onClientGUIAccepted", edit, onEditAccepted, false)
+		addEventHandler("onClientGUIBlur", edit, destroyOnBlur, false)
+	else
+		local list = guiCreateGridList(absX, absY, 200, 100, false)
+		local col = guiGridListAddColumn(list, "Type", 0.9)
+		local tagRow = guiGridListAddRow(list)
+		guiGridListSetItemText(list, tagRow, col, "Tag", false, false)
+		local aclRow = guiGridListAddRow(list)
+		guiGridListSetItemText(list, aclRow, col, "ACL", false, false)
+		guiGridListSetSelectedItem(list, text == "Tag" and tagRow or aclRow, col)
+		guiBringToFront(list)
+		addEventHandler("onClientGUIDoubleClick", list, onTypeClick, false)
+		addEventHandler("onClientGUIBlur", list, destroyOnBlur, false)
+	end
 end
 
 function openTeamsAdmin(teams)
@@ -86,6 +134,8 @@ function openTeamsAdmin(teams)
 	addEventHandler("onClientGUIClick", g_GUI.close, closeTeamsAdmin, false)
 	addEventHandler("onClientGUIClick", g_GUI.add, onAddClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.del, onDelClick, false)
+	addEventHandler("onClientGUIClick", g_GUI.up, onUpClick, false)
+	addEventHandler("onClientGUIClick", g_GUI.down, onDownClick, false)
 	addEventHandler("onClientGUIDoubleClick", g_GUI.teamsList, onListDblClick, false)
 	
 	guiSetInputEnabled(true)

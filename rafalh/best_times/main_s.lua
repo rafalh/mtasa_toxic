@@ -57,7 +57,11 @@ function BtSendMapInfo(room, show, player)
 		-- this takes long...
 		--local start = getTickCount()
 		--for i = 1, 100, 1 do
-			g_TopTimes = DbQuery("SELECT bt.player, bt.time, p.name FROM rafalh_besttimes bt, rafalh_players p WHERE bt.map=? AND bt.player=p.player ORDER BY time LIMIT 8", map_id )
+			g_TopTimes = DbQuery(
+				"SELECT bt.player, bt.time, p.name "..
+				"FROM rafalh_besttimes bt "..
+				"INNER JOIN rafalh_players p ON bt.player=p.player "..
+				"WHERE bt.map=? ORDER BY time LIMIT 8", map_id)
 		--end
 		for i, data in ipairs(g_TopTimes) do
 			data.time = formatTimePeriod(data.time / 1000)
@@ -90,7 +94,9 @@ function BtSendMapInfo(room, show, player)
 	local start = getTickCount()
 	if(#idList > 0) then
 		local rows = DbQuery(
-			"SELECT bt1.player, bt1.time, (SELECT COUNT(*) FROM rafalh_besttimes AS bt2 WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos "..
+			"SELECT bt1.player, bt1.time, ("..
+				"SELECT COUNT(*) FROM rafalh_besttimes AS bt2 "..
+				"WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos "..
 			"FROM rafalh_besttimes bt1 "..
 			"WHERE bt1.map=? AND bt1.player IN (??)", map_id, table.concat(idList, ","))
 		for i, data in ipairs(rows) do

@@ -72,7 +72,7 @@ end
 CmdRegister("maps", CmdMaps, false, "Shows maps count")
 
 local function CmdMapStats(message, arg)
-	local rows = DbQuery("SELECT * FROM rafalh_maps")
+	local rows = DbQuery("SELECT map, removed, rates, rates_count, played FROM rafalh_maps")
 	local maps_data = {}
 	for i, data in ipairs(rows) do
 		maps_data[data.map] = data

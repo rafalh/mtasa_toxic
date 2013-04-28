@@ -4,7 +4,6 @@ addEvent("main.onChangeLocaleReq", true)
 
 local function checkPlayerAccess(player, code)
 	return isPlayerAdmin(player) or hasObjectPermissionTo(player, "resource."..g_ResName..".translate_"..code, false)
-	
 end
 
 local function onTransPanelReq()
