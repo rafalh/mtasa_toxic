@@ -76,6 +76,11 @@ function table.copy(tbl, full)
 	return ret
 end
 
+function table.removeValue(tbl, v)
+	local i = table.find(tbl, v)
+	if(i) then table.remove(tbl, i) end
+end
+
 function formatTimePeriod(t, decimals)
 	assert(t)
 	
