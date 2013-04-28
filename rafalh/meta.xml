@@ -139,6 +139,8 @@
 	<script src="mui/langs_s.lua" type="server" />
 	<script src="mui/localeList_sc.lua" type="shared" />
 	<script src="mui/setting_c.lua" type="client" />
+	<script src="mui/admin_s.lua" type="server" />
+	<script src="mui/admin_c.lua" type="client" />
 	<config src="conf/languages.xml" type="server" />
 	<config src="conf/languages.xml" type="client" />
 	
@@ -221,9 +223,6 @@
 	<script src="teams/admin_s.lua" type="server" />
 	<script src="teams/admin_c.lua" type="client" />
 	<config src="conf/teams.xml" />
-	
-	<script src="trans_admin/main_s.lua" type="server" />
-	<script src="trans_admin/gui_c.lua" type="client" />
 	
 	<script src="translator/main_s.lua" type="server" />
 	<script src="translator/cmd_s.lua" type="server" />
