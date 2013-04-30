@@ -1,0 +1,10 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Nametags" type="script" />
+	<min_mta_version client="1.3.0-9.04431" />
+	
+	<script src="nametags_c.lua" type="client" />
+	
+	<file src="img/nametag_health.png" type="client" />
+	
+	<include resource="rafalh_shared" />
+</meta>
