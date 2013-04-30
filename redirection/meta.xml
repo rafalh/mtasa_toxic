@@ -1,5 +1,5 @@
 <meta>
-	<info author="rafalh" version="1.0" name="Redirection" description="Redirection" type="script" />
+	<info author="rafalh" version="1.1" name="Redirection" description="Redirection" type="script" />
 	
 	<script src="redirect.lua" />
 	<script src="redirect_c.lua" type="client" />
