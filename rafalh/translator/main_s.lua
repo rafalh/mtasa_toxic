@@ -52,6 +52,22 @@ function translate (text, from, to, callback, ...)
 	return true
 end
 
+function sayAsPlayer(text, player)
+	if (isPlayerMuted (player)) then
+		outputChatBox ("translate: You are muted!", player, 255, 128, 0)
+		return
+	end
+	
+	local r, g, b
+	if (getElementType (player) == "player") then
+		r, g, b = getPlayerNametagColor (player)
+	else
+		r, g, b = 255, 128, 255 -- console
+	end
+	local msg = getPlayerName (player)..": #FFFF00"..text
+	outputChatBox (msg, g_Root, r, g, b, true)
+end
+
 local function onTranslateReq (text, from, to, say)
 	translate (text, from, to, function (text, player)
 		if (not isElement (player)) then return end

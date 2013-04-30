@@ -44,22 +44,6 @@ end
 CmdRegister("translate", CmdTranslate, false, "Translates text to any language")
 CmdRegisterAlias("t", "translate")
 
-local function sayAsPlayer (text, player)
-	if (isPlayerMuted (player)) then
-		outputChatBox ("translate: You are muted!", player, 255, 128, 0)
-		return
-	end
-	
-	local r, g, b
-	if (getElementType (player) == "player") then
-		r, g, b = getPlayerNametagColor (player)
-	else
-		r, g, b = 255, 128, 255 -- console
-	end
-	local msg = getPlayerName (player)..": #FFFF00"..text
-	outputChatBox (msg, g_Root, r, g, b, true)
-end
-
 local function CmdTranslateSay(message, arg)
 	local lang = arg[2] or ""
 	local text = message:sub (arg[1]:len () + lang:len() + 3)

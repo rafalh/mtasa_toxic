@@ -109,7 +109,6 @@ end
 
 function TmInitDatabase()
 	local autoInc = DbGetType() == "mysql" and "AUTO_INCREMENT" or "AUTOINCREMENT"
-	--DbQuery("DROP TABLE IF EXISTS "..DbPrefix.."teams")
 	if(not DbQuery(
 			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."teams ("..
 			"id INTEGER PRIMARY KEY "..autoInc.." NOT NULL,"..
@@ -153,8 +152,9 @@ end
 local function TmInitDelayed()
 	if(not TmInitDatabase()) then return end
 	
-	--local oldTeams = TmLoadFromXML()
+	local oldTeams = TmLoadFromXML()
 	if(oldTeams) then
+		fileDelete("conf/teams.xml")
 		local cnt = DbQuery("SELECT COUNT(id) AS c FROM "..DbPrefix.."teams")[1].c
 		for i, teamInfo in ipairs(oldTeams) do
 			if(not DbQuery("INSERT INTO "..DbPrefix.."teams (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)",

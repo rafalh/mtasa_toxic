@@ -1,7 +1,7 @@
 local TEAMS_RIGHT = "resource."..g_ResName..".teams"
 
 local function CmdTeamsAdmin()
-	RPC("openTeamsAdmin", g_Teams):exec()
+	RPC("openTeamsAdmin", g_Teams):setClient(source):exec()
 end
 
 function saveTeamInfo(teamInfo)

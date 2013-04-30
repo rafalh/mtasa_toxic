@@ -222,7 +222,6 @@
 	<script src="teams/teams_s.lua" type="server" />
 	<script src="teams/admin_s.lua" type="server" />
 	<script src="teams/admin_c.lua" type="client" />
-	<config src="conf/teams.xml" />
 	
 	<script src="translator/main_s.lua" type="server" />
 	<script src="translator/cmd_s.lua" type="server" />

@@ -24,8 +24,8 @@ local function onAddClick()
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, "Tag", false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, "", false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, "", false, false)
-	local teamInfo = {name = "", clan = "", acl_group = "", color = ""}
-	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
+	local teamInfo = {name = "", tag = "", aclGroup = "", color = ""}
+	guiGridListSetItemData(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo, false, false)
 end
 
 local function onUpClick()

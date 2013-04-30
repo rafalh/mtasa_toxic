@@ -25,7 +25,7 @@ function MqAdd(room, map, display_msg, player)
 		triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, mapName)
 	end
 	
-	if (display_msg) then
+	if(display_msg) then
 		if (player) then
 			outputMsg(room.el, Styles.maps, "%s has been added to next map queue (pos. %u.) by %s!", mapName, pos, getPlayerName (player))
 		else

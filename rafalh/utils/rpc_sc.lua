@@ -35,8 +35,9 @@ function RpcMethods.setCallbackArgs(self, ...)
 end
 
 if(SERVER) then
-	function RpcMethods.client(self, cl)
+	function RpcMethods.setClient(self, cl)
 		self.client = cl
+		return self
 	end
 	
 	function allowRPC(fnName)
