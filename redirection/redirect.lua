@@ -1,10 +1,7 @@
-local g_Root = getRootElement()
-local g_ResRoot = getResourceRootElement()
 local g_ResName = getResourceName(getThisResource())
 
-addEvent("onClientRedirectRequest", true)
-addEvent("onRedirectRequest", true)
-addEvent("onRedirectorStart", true)
+addEvent("redirect.onReq", true)
+addEvent("redirect.onReady", true)
 
 local function onRedirectRequest()
 	redirectPlayer(client, get("ip"), tonumber(get("port")))
@@ -32,19 +29,19 @@ end
 local function cmdRedirect(source, cmd, name)
 	local player = source
 	if(hasObjectPermissionTo(player, "resource."..g_ResName, false)) then
-		player = name:len () > 1 and findPlayer(name)
+		player = name:len() > 1 and findPlayer(name)
 	end
 	if(player) then
 		redirectPlayer(player, get("ip"), tonumber(get("port")))
 	end
 end
 
-local function onRedirectorStart()
-	if(get("redirect_all" ) == "true") then
-		triggerClientEvent(client, "onClientRedirectRequest", g_Root)
+local function onPlayerReady()
+	if(get("redirect_all") == "true") then
+		triggerClientEvent(client, "redirect.onDisplayWndReq", resourceRoot, get("ip")..":"..get("port"))
 	end
 end
 
-addEventHandler("onRedirectRequest", g_Root, onRedirectRequest)
-addEventHandler("onRedirectorStart", g_Root, onRedirectorStart)
-addCommandHandler(get("redirect_cmd" ) or "redirect", cmdRedirect, false, false)
+addEventHandler("redirect.onReq", resourceRoot, onRedirectRequest)
+addEventHandler("redirect.onReady", resourceRoot, onPlayerReady)
+addCommandHandler(get("redirect_cmd") or "redirect", cmdRedirect, false, false)

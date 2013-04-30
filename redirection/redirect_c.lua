@@ -1,95 +1,116 @@
+local TIMEOUT = 60
+
 local g_ScrW, g_ScrH = guiGetScreenSize()
-local g_Me = getLocalPlayer()
-local g_Root = getRootElement()
-local g_ResRoot = getResourceRootElement()
+local g_Timer, g_ProgressBar, g_Countdown
+local g_Counter = 0
+local g_Address
 
-local g_ProgressBar, g_Button, g_Countdown
-local g_Timeout = 60
-local g_StartTime
-local g_Timer
-
+local g_WndTitle = {
+	en = "Redirection",
+	pl = "Przeniesienie",
+}
 local g_Message = {}
-
 g_Message.pl = {
-	"Serwer ToxiC zostal przeniesiony na nowy adres IP.",
-	"Za wszystkie utrudnienia bardzo przepraszamy.",
-	{ "Jezeli wchodzisz na serwer z listy ulubionych, usun stary wpis i dodaj", "default-bold-small" },
-	{ "ToxiC do Ulubionych ponownie.", "default-bold-small" },
-	"Nowy adres IP serwera: 185.5.98.175:22003",
+	{"Serwer ToxiC został przeniesiony na nowy adres IP.", clr = "#00FF00", font = "default-bold-small"},
+	{"Za wszystkie utrudnienia bardzo przepraszamy."},
+	{"Jeżeli wchodzisz na serwer z listy ulubionych, usuń stary wpis i dodaj", font = "default-bold-small"},
+	{"ToxiC do Ulubionych ponownie.", font = "default-bold-small"},
+	{"Nowy adres IP serwera:"},
 }
 g_Message.en = {
-	"ToxiC server has been moved to new IP address.",
-	"Sorry for any inconvenience caused.",
-	{ "If you join server through the favorites list, delete the old entry and", "default-bold-small" },
-	{ "add ToxiC to your favorities again.", "default-bold-small" },
-	"New IP address of the server: 185.5.98.175:22003",
+	{"ToxiC server has been moved to new IP address.", clr = "#00FF00", font = "default-bold-small"},
+	{"Sorry for any inconvenience caused."},
+	{"If you join server through the favorites list, delete the old entry and", font = "default-bold-small"},
+	{"add ToxiC to your favorities again.", font = "default-bold-small"},
+	{"New IP address of the server:"},
 }
-
-g_RedirectMsg = {
+local g_RedirectMsg = {
 	en = "You will be automatically redirected to the new server in:",
 	pl = "Zostaniesz automatycznie przeniesiony na nowy serwer za:",
 }
+local g_RedirectBtnTitle = {
+	en = "Redirect now",
+	pl = "Przenieś teraz",
+}
+local g_CopyBtnTitle = {
+	en = "Copy to clipboard",
+	pl = "Skopiuj do schowka",
+}
 
-addEvent("onClientRedirectRequest", true)
-addEvent("onRedirectRequest", true)
-addEvent("onRedirectorStart", true)
+addEvent("redirect.onDisplayWndReq", true)
 
 local function redirect()
-	triggerServerEvent("onRedirectRequest", g_Root)
+	triggerServerEvent("redirect.onReq", resourceRoot)
 end
 
-local function onClientRedirectRequest()
+local function copyAddress()
+	setClipboard(g_Address)
+end
+
+local function onTimerTick()
+	g_Counter = g_Counter + 1
+	if(g_Counter == TIMEOUT) then
+		redirect()
+		killTimer(g_Timer)
+	end
+	guiProgressBarSetProgress(g_ProgressBar, g_Counter / TIMEOUT * 100)
+	guiSetText(g_Countdown, (TIMEOUT - g_Counter).." s.")
+end
+
+local function createGUI(address)
 	local lang = getElementData(localPlayer, "lang") or "en"
+	g_Address = address
 	
 	local msg = g_Message[lang] or g_Message.en
-	
-	local h = 130 + #msg * 15
-	local wnd = guiCreateWindow((g_ScrW - 500) / 2, (g_ScrH - h) / 2, 500, h, "Przeniesienie / Redirection", false)
+	local h = 140 + #msg * 15
+	local wndTitle = g_WndTitle[lang] or g_WndTitle.en
+	local wnd = guiCreateWindow((g_ScrW - 500) / 2, (g_ScrH - h) / 2, 500, h, wndTitle, false)
 	local label
 	
 	guiCreateStaticImage(10, 30, 50, 50, "info.png", false, wnd) 
 	
 	local y = 20
 	for i, line in ipairs(msg) do
-		if(type(line) == "table") then
-			label = guiCreateLabel(70, y, 400, 15, line[1], false, wnd)
-			guiSetFont ( label, line[2] )
-		else
-			guiCreateLabel(70, y, 400, 15, line, false, wnd)
+		label = guiCreateLabel(70, y, 400, 15, line[1], false, wnd)
+		if(line.font) then
+			guiSetFont(label, line.font)
+		end
+		if(line.clr) then
+			guiLabelSetColor(label, getColorFromString(line.clr))
 		end
 		y = y + 15
 	end
 	
+	local copyBtnTitle = g_CopyBtnTitle[lang] or g_CopyBtnTitle.en
+	local edit = guiCreateEdit(70, y + 5, 200, 20, address, false, wnd)
+	guiEditSetReadOnly(edit, true)
+	local copyBtn = guiCreateButton(280, y + 5, 200, 20, copyBtnTitle, false, wnd)
+	addEventHandler("onClientGUIClick", copyBtn, copyAddress, false)
+	
 	local redirectMsg = g_RedirectMsg[lang] or g_RedirectMsg.en
-	label = guiCreateLabel(70, y + 15, 340, 15, redirectMsg, false, wnd)
+	label = guiCreateLabel(70, y + 30, 340, 15, redirectMsg, false, wnd)
 	guiSetFont(label, "default-bold-small")
 	
-	g_Countdown = guiCreateLabel(420, y + 15, 50, 15, g_Timeout.." s.", false, wnd)
+	g_Countdown = guiCreateLabel(420, y + 30, 50, 15, TIMEOUT.." s.", false, wnd)
 	
-	g_ProgressBar = guiCreateProgressBar(20, y + 40, 460, 20, false, wnd)
+	g_ProgressBar = guiCreateProgressBar(20, y + 55, 460, 20, false, wnd)
 	
-	g_Button = guiCreateButton(150, y + 70, 200, 20, "Przenies teraz / Redirect now", false, wnd)
-	addEventHandler("onClientGUIClick", g_Button, redirect, false)
+	local btnTitle = g_RedirectBtnTitle[lang] or g_RedirectBtnTitle.en
+	local redirBtn = guiCreateButton(150, y + 85, 200, 20, btnTitle, false, wnd)
+	addEventHandler("onClientGUIClick", redirBtn, redirect, false)
 	
 	guiSetInputEnabled(true)
 	guiBringToFront(wnd)
 	
 	g_StartTime = getTickCount()
 	
-	g_Timer = setTimer(function()
-		local t = g_Timeout - (getTickCount () - g_StartTime) / 1000
-		if ( t <= 0 ) then
-			redirect()
-			killTimer(g_Timer)
-		end
-		guiProgressBarSetProgress(g_ProgressBar, (getTickCount() - g_StartTime) / 1000 / g_Timeout * 100)
-		guiSetText(g_Countdown, math.floor(t).." s.")
-	end, 1000, 0)
+	g_Timer = setTimer(onTimerTick, 1000, 0)
 end
 
 local function init()
-	triggerServerEvent("onRedirectorStart", g_Root)
+	addEventHandler("redirect.onDisplayWndReq", resourceRoot, createGUI)
+	
+	triggerServerEvent("redirect.onReady", resourceRoot)
 end
 
-addEventHandler("onClientRedirectRequest", g_ResRoot, onClientRedirectRequest)
-addEventHandler("onClientResourceStart", g_ResRoot, init)
+addEventHandler("onClientResourceStart", resourceRoot, init)
