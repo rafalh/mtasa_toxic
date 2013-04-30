@@ -47,7 +47,7 @@ function ChatRoom:onPlayerMsg(player, msg)
 		outputServerLog(logPrefix..playerName..": "..msg)
 	end
 	
-	local rafalhRes = getResourceFromName("rafalh")
+	local rafalhRes = getResourceFromName("toxic")
 	if(rafalhRes and getResourceState(rafalhRes) == "running") then
 		call(rafalhRes, "parseCommand", msg, player, recipients, chatPrefix)
 	end
