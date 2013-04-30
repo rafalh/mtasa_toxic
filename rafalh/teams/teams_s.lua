@@ -1,5 +1,6 @@
 g_Teams = {} -- used by admin_s.lua
-g_TeamNameMap = {}
+g_TeamFromName = {}
+g_TeamFromID = {}
 local g_Patterns = { -- -FoH-S#808080treetch
 	"^%[([^%]][^%]]?[^%]]?[^%]]?[^%]]?[^%]]?)%]",
 	"^%(([^%)][^%)]?[^%)]?[^%)]?[^%)]?[^%)]?)%)",
@@ -38,20 +39,23 @@ local function TmUpdatePlayerTeam(player, name)
 	local foundTeamInfo = false
 	
 	for i, teamInfo in ipairs(g_Teams) do
-		if(teamInfo.acl_group and accName and isObjectInACLGroup("user."..accName, aclGetGroup(teamInfo.acl_group))) then
+		if(teamInfo.aclGroup ~= "" and accName and isObjectInACLGroup("user."..accName, aclGetGroup(teamInfo.aclGroup))) then
 			foundTeamInfo = teamInfo
 			break
-		elseif(teamInfo.clan and clanTag == teamInfo.clan) then
+		end
+		if(teamInfo.tag ~= "" and clanTag == teamInfo.tag) then
 			foundTeamInfo = teamInfo
 			break
 		end
 	end
 	
-	if(not foundTeamInfo and Settings.clan_teams and clanTag and not g_TeamNameMap[clanTag]) then
+	if(not foundTeamInfo and Settings.clan_teams and clanTag and not g_TeamFromName[clanTag]) then
 		foundTeamInfo = {name = clanTag}
 	end
 	
 	if(foundTeamInfo) then
+		local now = getRealTime().timestamp
+		DbQuery("UPDATE "..DbPrefix.."teams SET lastUsage=? WHERE id=?", now, foundTeamInfo.id)
 		local team = getTeamFromName(foundTeamInfo.name)
 		if(not team) then
 			local r, g, b = getColorFromString(foundTeamInfo.color)
@@ -103,7 +107,68 @@ local function TmOnPlayerQuit ()
 	TmUpdateTeams()
 end
 
+function TmInitDatabase()
+	local autoInc = DbGetType() == "mysql" and "AUTO_INCREMENT" or "AUTOINCREMENT"
+	--DbQuery("DROP TABLE IF EXISTS "..DbPrefix.."teams")
+	if(not DbQuery(
+			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."teams ("..
+			"id INTEGER PRIMARY KEY "..autoInc.." NOT NULL,"..
+			"name VARCHAR(255) NOT NULL,"..
+			"tag VARCHAR(255) DEFAULT '' NOT NULL,"..
+			"aclGroup VARCHAR(255) DEFAULT '' NOT NULL,"..
+			"color VARCHAR(7) DEFAULT '' NOT NULL,"..
+			"priority INT NOT NULL,"..
+			"lastUsage INT UNSIGNED DEFAULT 0 NOT NULL)")) then
+		return false, "Cannot create teams table."
+	end
+	
+	return true
+end
+
+local function TmLoadFromXML()
+	local node, i = xmlLoadFile("conf/teams.xml"), 0
+	if(not node) then return false end
+	
+	local teams = {}
+	while(true) do
+		local subnode = xmlFindChild(node, "team", i)
+		if(not subnode) then break end
+		i = i + 1
+		
+		local team = {}
+		team.name = tostring(xmlNodeGetAttribute(subnode, "name"))
+		team.tag = xmlNodeGetAttribute(subnode, "clan") or ""
+		team.aclGroup = xmlNodeGetAttribute(subnode, "acl_group") or ""
+		team.color = xmlNodeGetAttribute(subnode, "color") or ""
+		if(team.aclGroup or team.tag) then
+			table.insert(teams, team)
+		else
+			outputDebugString("Invalid team definition", 2)
+		end
+	end
+	xmlUnloadFile(node)
+	return teams
+end
+
 local function TmInitDelayed()
+	if(not TmInitDatabase()) then return end
+	
+	--local oldTeams = TmLoadFromXML()
+	if(oldTeams) then
+		local cnt = DbQuery("SELECT COUNT(id) AS c FROM "..DbPrefix.."teams")[1].c
+		for i, teamInfo in ipairs(oldTeams) do
+			if(not DbQuery("INSERT INTO "..DbPrefix.."teams (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)",
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, cnt + 1)) then break end
+			cnt = cnt + 1
+		end
+	end
+	g_Teams = DbQuery("SELECT * FROM "..DbPrefix.."teams")
+	
+	for i, teamInfo in ipairs(g_Teams) do
+		g_TeamFromName[teamInfo.name] = teamInfo
+		g_TeamFromID[teamInfo.id] = teamInfo
+	end
+	
 	for player, pdata in pairs(g_Players) do
 		pdata.team = false
 		TmUpdatePlayerTeam(player)
@@ -118,61 +183,7 @@ local function TmInitDelayed()
 	addEventHandler("onPlayerQuit", g_Root, TmOnPlayerQuit)
 end
 
-local function TmLoad()
-	local node, i = xmlLoadFile("conf/teams.xml"), 0
-	if(not node) then return false end
-	
-	while(true) do
-		local subnode = xmlFindChild(node, "team", i)
-		if(not subnode) then break end
-		i = i + 1
-		
-		local team = {}
-		team.name = tostring(xmlNodeGetAttribute(subnode, "name"))
-		team.acl_group = xmlNodeGetAttribute(subnode, "acl_group")
-		team.clan = xmlNodeGetAttribute(subnode, "clan")
-		team.color = xmlNodeGetAttribute(subnode, "color")
-		if(team.acl_group or team.clan) then
-			g_TeamNameMap[team.name] = team
-			table.insert(g_Teams, team)
-		else
-			outputDebugString("Invalid team definition", 2)
-		end
-	end
-	xmlUnloadFile(node)
-	return true
-end
-
-function TmSave()
-	local node = xmlCreateFile("conf/teams.xml", "teams")
-	if(not node) then return false end
-	
-	for i, teamInfo in ipairs(g_Teams) do
-		local subnode = xmlCreateChild(node, "team")
-		if(teamInfo.name) then
-			xmlNodeSetAttribute(subnode, "name", teamInfo.name)
-		end
-		if(teamInfo.acl_group) then
-			xmlNodeSetAttribute(subnode, "acl_group", teamInfo.acl_group)
-		end
-		if(teamInfo.clan) then
-			xmlNodeSetAttribute(subnode, "clan", teamInfo.clan)
-		end
-		if(teamInfo.color) then
-			xmlNodeSetAttribute(subnode, "color", teamInfo.color)
-		end
-	end
-	xmlSaveFile(node)
-	xmlUnloadFile(node)
-	return true
-end
-
 local function TmInit()
-	if(not TmLoad()) then
-		outputDebugString("Failed to load team definitions", 2)
-		return
-	end
-	
 	-- Don't setup teams in onResourceStart event - see MTA bug #6861
 	setTimer(TmInitDelayed, 50, 1)
 end

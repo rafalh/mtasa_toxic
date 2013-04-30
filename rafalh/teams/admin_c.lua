@@ -1,4 +1,5 @@
 local g_GUI = false
+local g_Teams = {}
 
 local function closeTeamsAdmin()
 	g_GUI:destroy()
@@ -23,6 +24,8 @@ local function onAddClick()
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, "Tag", false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, "", false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, "", false, false)
+	local teamInfo = {name = "", clan = "", acl_group = "", color = ""}
+	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
 end
 
 local function onUpClick()
@@ -36,20 +39,15 @@ end
 local function onEditAccepted()
 	local newText = guiGetText(source)
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol)
-	local oldTeamInfo = teamInfo and table.copy(teamInfo)
-	
-	if(not teamInfo) then
-		teamInfo = {name = "", clan = "", acl_group = false}
-	end
 	
 	guiGridListSetItemText(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.clickedCol, newText, false, false)
 	if(g_GUI.clickedCol == g_GUI.nameCol) then
 		teamInfo.name = newText
 	elseif(g_GUI.clickedCol == g_GUI.tagCol) then
-		if(teamInfo.clan) then
-			teamInfo.clan = newText
+		if(teamInfo.aclGroup == "") then
+			teamInfo.tag = newText
 		else
-			teamInfo.acl_group = newText
+			teamInfo.aclGroup = newText
 		end
 	elseif(g_GUI.clickedCol == g_GUI.clrCol) then
 		local r, g, b = getColorFromString(newText)
@@ -59,7 +57,7 @@ local function onEditAccepted()
 		end
 	end
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	RPC("saveTeamInfo", teamInfo, oldTeamInfo):exec()
+	RPC("saveTeamInfo", teamInfo):exec()
 	destroyElement(source)
 end
 
@@ -68,24 +66,20 @@ local function onTypeClick()
 	if(not row or row == -1) then return end
 	
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol)
-	local oldTeamInfo = teamInfo and table.copy(teamInfo)
 	
-	if(not teamInfo) then
-		teamInfo = {name = "", clan = "", acl_group = false}
-	end
-	
+	local tagOrGroup = teamInfo.tag == "" and teamInfo.aclGroup or teamInfo.tag
 	if(row == 0) then -- tag
-		teamInfo.clan = teamInfo.clan or teamInfo.acl_group
-		teamInfo.acl_group = false
+		teamInfo.tag = tagOrGroup
+		teamInfo.aclGroup = ""
 	else
-		teamInfo.acl_group = teamInfo.clan or teamInfo.acl_group
-		teamInfo.clan = false
+		teamInfo.aclGroup = tagOrGroup
+		teamInfo.tag = ""
 	end
 	
-	local typeStr = teamInfo.clan and "Tag" or "ACL"
+	local typeStr = teamInfo.tag ~= "" and "Tag" or "ACL"
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
 	guiGridListSetItemText(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.typeCol, typeStr, false, false)
-	RPC("saveTeamInfo", teamInfo, oldTeamInfo):exec()
+	RPC("saveTeamInfo", teamInfo):exec()
 	destroyElement(source)
 end
 
@@ -128,6 +122,7 @@ function openTeamsAdmin(teams)
 	if(g_GUI) then return end
 	
 	g_GUI = GUI.create("teamsAdmin")
+	g_Teams = teams
 	
 	guiGridListSetSelectionMode(g_GUI.teamsList, 2)
 	
@@ -142,10 +137,11 @@ function openTeamsAdmin(teams)
 	
 	for i, teamInfo in ipairs(teams) do
 		local row = guiGridListAddRow(g_GUI.teamsList)
-		local tag = teamInfo.clan or teamInfo.acl_group
-		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo.name or tag, false, false)
-		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, teamInfo.clan and "Tag" or "ACL", false, false)
-		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, tag, false, false)
+		local tagOrGroup = teamInfo.tag == "" and teamInfo.aclGroup or teamInfo.tag
+		local typeStr = teamInfo.tag ~= "" and "Tag" or "ACL"
+		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo.name, false, false)
+		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, typeStr, false, false)
+		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, tagOrGroup, false, false)
 		if(teamInfo.color) then
 			guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, teamInfo.color, false, false)
 			local r, g, b = getColorFromString(teamInfo.color)

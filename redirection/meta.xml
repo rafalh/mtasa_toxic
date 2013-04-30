@@ -1,0 +1,15 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Redirection" description="Redirection" type="script" />
+	
+	<script src="redirect.lua" />
+	<script src="redirect_c.lua" type="client" />
+	
+	<file src="info.png" />
+	
+	<settings>
+		<setting name="*ip" value="" friendlyname="IP" />
+		<setting name="*port" value="22003" friendlyname="Port" />
+		<setting name="*redirect_all" value="false" friendlyname="Redirect all" />
+		<setting name="*redirect_cmd" value="redirect" friendlyname="Redirect command" />
+	</settings>
+</meta>

@@ -1,58 +1,57 @@
 local TEAMS_RIGHT = "resource."..g_ResName..".teams"
 
-local function findTeam(teamInfo)
-	for i, curInfo in ipairs(g_Teams) do
-		if(curInfo.name == teamInfo.name and curInfo.acl_group == teamInfo.acl_group and curInfo.clan == teamInfo.clan) then
-			return curInfo
-		end
-	end
-	return false
-end
-
 local function CmdTeamsAdmin()
 	RPC("openTeamsAdmin", g_Teams):exec()
 end
 
-function saveTeamInfo(newTeamInfo, oldTeamInfo)
-	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return end
-	assert(newTeamInfo)
+function saveTeamInfo(teamInfo)
+	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return false end
+	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
 	
-	if(oldTeamInfo) then
-		local teamInfo = findTeam(oldTeamInfo)
-		if(not teamInfo) then
+	if(teamInfo.id) then
+		local teamCopy = g_TeamFromID[teamInfo.id]
+		if(not teamCopy) then
 			privMsg(client, "Failed to modify team")
-			return
+			return false
 		end
 		
-		g_TeamNameMap[teamInfo.name] = nil
-		g_TeamNameMap[newTeamInfo.name] = teamInfo
-		teamInfo.acl_group = false
-		teamInfo.clan = false
-		for k, v in pairs(newTeamInfo) do
-			teamInfo[k] = v
+		g_TeamFromName[teamCopy.name] = nil
+		for k, v in pairs(teamInfo) do
+			teamCopy[k] = v
+		end
+		g_TeamFromName[teamCopy.name] = teamCopy
+		if(not DbQuery("UPDATE "..DbPrefix.."teams "..
+				"SET name=?, tag=?, aclGroup=?, color=? WHERE id=?",
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.id)) then
+			return false
 		end
 	else
-		g_TeamNameMap[newTeamInfo.name] = newTeamInfo
-		table.insert(g_Teams, newTeamInfo)
+		DbQuery("INSERT INTO "..DbPrefix.."teams (name, tag, aclGroup, color) VALUES(?, ?, ?, ?)",
+			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color)
+		local rows = DbQuery("SELECT last_insert_rowid() AS id")
+		teamInfo.id = rows[1].id
+		g_TeamFromName[teamInfo.name] = teamInfo
+		table.insert(g_Teams, teamInfo)
 	end
 	
-	TmSave()
+	return teamInfo
 end
 allowRPC('saveTeamInfo')
 
-function deleteTeamInfo(teamInfo)
+function deleteTeamInfo(id)
 	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return end
 	assert(teamInfo)
 	
-	teamInfo = findTeam(teamInfo)
+	local teamInfo = g_TeamFromID[id]
 	if(not teamInfo) then
 		privMsg(client, "Failed to delete team")
 		return
 	end
 	
+	DbQuery("DELETE FROM "..DbPrefix.."teams WHERE id=?", teamInfo.id)
 	table.removeValue(g_Teams, teamInfo)
-	g_TeamNameMap[teamInfo.name] = nil
-	TmSave()
+	g_TeamFromName[teamInfo.name] = nil
+	g_TeamFromID[teamInfo.id] = nil
 end
 allowRPC('deleteTeamInfo')
 

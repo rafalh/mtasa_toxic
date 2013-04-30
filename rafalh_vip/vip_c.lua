@@ -233,8 +233,10 @@ local function VipSaveSettings ()
 	
 	g_Settings.driver = guiCheckBoxGetSelected ( g_Gui.driver )
 	local skin_i = guiComboBoxGetSelected ( g_Gui.driver_id ) + 1
-	g_Settings.driver_id = g_Skins[skin_i] and g_Skins[skin_i].id
-	assert(g_Settings.driver_id)
+	if(g_Skins[skin_i]) then -- FIXME: is it valid?
+		g_Settings.driver_id = g_Skins[skin_i].id
+		assert(g_Settings.driver_id)
+	end
 	
 	g_Settings.clouds = guiCheckBoxGetSelected ( g_Gui.clouds )
 	
