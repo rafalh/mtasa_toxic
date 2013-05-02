@@ -24,13 +24,13 @@ addInitFunc(AvpInit)
 Settings.register
 {
 	name = "avg_players",
-	type = "INTEGER",
+	type = "DOUBLE",
 	default = 0,
 }
 
 Settings.register
 {
 	name = "arit_avg_players_m",
-	type = "INTEGER",
+	type = "DOUBLE",
 	default = 0,
 }
