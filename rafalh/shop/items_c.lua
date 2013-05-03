@@ -228,39 +228,25 @@ local function ShpDrunkEffect ()
 	end
 end
 
-local g_ThunderEffectSource, g_ThunderEffectTarget, g_ThunderEffectStart
+local ShpThunderEffect = {}
+ShpThunderEffect.active = false
 
-local function VecNeg ( vec )
-	return { -vec[1], -vec[2], -vec[3] }
-end
-
-local function VecAdd ( vec1, vec2 )
-	return { vec1[1] + vec2[1], vec1[2] + vec2[2], vec1[3] + vec2[3] }
-end
-
-local function VecSub ( vec1, vec2 )
-	return VecAdd(vec1, VecNeg (vec2))
-end
-
-local function VecMult ( vec, a )
-	return {vec[1] * a, vec[2] * a, vec[3] * a}
-end
-
-local function ShpRenderThunderEffect ()
-	if ( getTickCount () - g_ThunderEffectStart > 5000 ) then
-		removeEventHandler ( "onClientRender", g_Root, ShpRenderThunderEffect )
+function ShpThunderEffect.onRender ()
+	if(getTickCount() - ShpThunderEffect.ticks > 5000) then
+		removeEventHandler("onClientRender", g_Root, ShpThunderEffect.onRender)
+		ShpThunderEffect.active = false
 	end
 	
-	local src = getPedOccupiedVehicle ( g_ThunderEffectSource ) or g_ThunderEffectSource
-	local dst = getPedOccupiedVehicle ( g_ThunderEffectTarget ) or g_ThunderEffectTarget
-	local vecBegin = { getElementPosition(src) }
-	local vecEnd = { getElementPosition(dst) }
+	local src = getPedOccupiedVehicle(ShpThunderEffect.source) or ShpThunderEffect.source
+	local dst = getPedOccupiedVehicle(ShpThunderEffect.target) or ShpThunderEffect.target
+	local vecBegin = Vector(getElementPosition(src))
+	local vecEnd = Vector(getElementPosition(dst))
 	
-	local vecDir = VecSub(vecEnd, vecBegin)
-	vecDir = VecMult(vecDir, 1/10)
+	local vecDir = vecEnd - vecBegin
+	vecDir = vecDir * 0.1
 	local vec = vecBegin
 	for i = 1, 9, 1 do
-		local vec2 = VecAdd(vecBegin, VecMult(vecDir, i))
+		local vec2 = vecBegin + vecDir * i
 		for j = 1, 3, 1 do
 			vec2[j] = vec2[j] + (math.random()-0.5)*0.75
 		end
@@ -273,35 +259,37 @@ local function ShpRenderThunderEffect ()
 	dxDrawLine3D(vec[1], vec[2], vec[3], vec2[1], vec2[2], vec2[3], 0xA0FFFFFF, 3)
 end
 
-local function ShpThunderEffect ( target )
-	g_ThunderEffectSource = source
-	g_ThunderEffectTarget = target
-	g_ThunderEffectStart = getTickCount ()
-	addEventHandler ( "onClientRender", g_Root, ShpRenderThunderEffect )
+function ShpThunderEffect.start(target)
+	ShpThunderEffect.source = source
+	ShpThunderEffect.target = target
+	ShpThunderEffect.ticks = getTickCount()
+	if(not ShpThunderEffect.active) then
+		addEventHandler("onClientRender", g_Root, ShpThunderEffect.onRender)
+	end
 end
 
-local function ShpSetPlayerAlpha ( value )
-	setElementAlpha ( source, value )
-	for i, el in ipairs ( getAttachedElements ( source ) ) do
-		setElementAlpha ( el, value )
-		if ( getElementType ( el ) =="blip" ) then
-			--outputDebugString ( "blip", 3 )
-			setBlipColor ( el, 0, 0, 0, 0 )
+local function ShpSetPlayerAlpha(value)
+	setElementAlpha(source, value)
+	for i, el in ipairs(getAttachedElements(source)) do
+		setElementAlpha(el, value)
+		if(getElementType(el) == "blip") then
+			--outputDebugString("blip", 3)
+			setBlipColor(el, 0, 0, 0, 0)
 		end
 	end
 	
-	local veh = getPedOccupiedVehicle ( source )
-	if ( veh ) then
-		setElementAlpha ( veh, value )
-		for i, el in ipairs ( getAttachedElements ( veh ) ) do
-			setElementAlpha ( el, value )
-			if ( getElementType ( el ) =="blip" ) then
-				outputDebugString ( "blip2", 2 )
-				setBlipColor ( el, 0, 0, 0, 0 )
+	local veh = getPedOccupiedVehicle(source)
+	if(veh) then
+		setElementAlpha(veh, value)
+		for i, el in ipairs(getAttachedElements(veh)) do
+			setElementAlpha(el, value)
+			if(getElementType(el) =="blip") then
+				outputDebugString("blip2", 2)
+				setBlipColor(el, 0, 0, 0, 0)
 			end
 		end
 		
-		setVehicleOverrideLights ( veh, 1 )
+		setVehicleOverrideLights(veh, 1)
 	end
 end
 
@@ -310,6 +298,6 @@ end
 ------------
 
 addInternalEventHandler ( $(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect )
-addEventHandler ( "onThunderEffect", g_Root, ShpThunderEffect )
+addEventHandler ( "onThunderEffect", g_Root, ShpThunderEffect.start )
 addEventHandler ( "onSetPlayerAlphaReq", g_Root, ShpSetPlayerAlpha )
 addEventHandler("rafalh_onBuyNextMap", g_ResRoot, g_ShopItems.nextmap.onBuy)

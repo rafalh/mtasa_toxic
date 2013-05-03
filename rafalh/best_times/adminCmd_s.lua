@@ -7,7 +7,7 @@ local function CmdRemTopTime(message, arg)
 			local map_id = map:getId()
 			local rows = DbQuery(
 				"SELECT player, time "..
-				"FROM "..DbPrefix.."_besttimes "..
+				"FROM "..DbPrefix.."besttimes "..
 				"WHERE map=? "..
 				"ORDER BY time "..
 				"LIMIT "..math.max(n, 4), map_id)

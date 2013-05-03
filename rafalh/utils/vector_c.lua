@@ -1,19 +1,19 @@
 Vector = {}
-Vector.__mt = {__index = Vector}
+Vector.__mt = {__index = {}}
 
-function Vector:len()
+function Vector.__mt.__index:len()
 	return (self[1]^2 + self[2]^2 + self[3]^2)^0.5
 end
 
-function Vector:len2()
+function Vector.__mt.__index:len2()
 	return self[1]^2 + self[2]^2 + self[3]^2
 end
 
-function Vector:dist(vec)
+function Vector.__mt.__index:dist(vec)
 	return ((self[1] - vec[1])^2 + (self[2] - vec[2])^2 + (self[3] - vec[3])^2)^0.5
 end
 
-function Vector:distFromSeg(a, b)
+function Vector.__mt.__index:distFromSeg(a, b)
 	-- Based on http://www.softsurfer.com/Archive/algorithm_0102/algorithm_0102.htm
 	local v = b - a
     local w = self - a
@@ -33,7 +33,7 @@ function Vector:distFromSeg(a, b)
     return self:dist(Pb)
 end
 
-function Vector:dot(vec)
+function Vector.__mt.__index:dot(vec)
 	return self[1]*vec[1] + self[2]*vec[2] + self[3]*vec[3]
 end
 
@@ -60,3 +60,21 @@ end
 function Vector.__mt:__div(a)
 	return Vector.create(self[1]/a, self[2]/a, self[3]/a)
 end
+
+function Vector.__mt:__eq(vec)
+	return self[1] == vec[1] and self[2] == vec[2] and self[3] == vec[3]
+end
+
+function Vector.__mt:__tostring()
+	return "("..tostring(self[1]).." "..tostring(self[2]).." "..tostring(self[3])..")"
+end
+
+-- Allow creating vectors by calling Vector(x, y, z)
+local mt = {}
+function mt:__call(x, y, z)
+	return Vector.create(x, y, z)
+end
+setmetatable(Vector, mt)
+
+-- Simple test
+--assert(((Vector(1, 0, 0) + Vector(0, 1, 0)) * 2) == Vector(2, 2, 0))
