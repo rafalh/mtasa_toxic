@@ -1,12 +1,12 @@
-local g_Root = getRootElement ()
-local g_ResRoot = getResourceRootElement ()
+local g_Root = getRootElement()
+local g_ResRoot = getResourceRootElement()
 local g_Players = {}
 local g_Music = {}
-local g_ServerAddress = get ( "server_address" )
+local g_ServerAddress = get("server_address")
 
-addEvent("onClientStartMusicReq", true)
-addEvent("onClientStopMusicReq", true)
-addEvent("onPlayerReady", true)
+addEvent("mapmusic.onStartReq", true)
+addEvent("mapmusic.onStopReq", true)
+addEvent("mapmusic.onPlayerReady", true)
 addEvent("onRaceStateChanging")
 addEvent("onPlayerJoinRoom")
 addEvent("onPlayerLeaveRoom")
@@ -38,10 +38,10 @@ local function getPlayerRoom(player)
 end
 
 local function startMusic(res, room)
-	--outputDebugString ( "startMusic", 3 )
-	local res_name = getResourceName ( res )
-	local path = getResourceInfo ( res, "music" ) or get ( res_name..".music" )
-	if ( path ) then
+	--outputDebugString("startMusic", 3)
+	local res_name = getResourceName(res)
+	local path = getResourceInfo(res, "music") or get(res_name..".music")
+	if(path) then
 		g_Music[room] = {}
 		g_Music[room].res = res
 		g_Music[room].res_name = res_name
@@ -52,13 +52,13 @@ local function startMusic(res, room)
 		end
 		g_Music[room].url = url
 		
-		for player, playerRoom in pairs ( g_Players ) do
+		for player, playerRoom in pairs(g_Players) do
 			if(playerRoom == room) then
-				triggerClientEvent ( player, "onClientStartMusicReq", g_ResRoot, g_Music[room].url )
+				triggerClientEvent(player, "mapmusic.onStartReq", g_ResRoot, g_Music[room].url)
 			end
 		end
 	else
-		--outputDebugString ( "No music!", 3 )
+		--outputDebugString("No music!", 3)
 	end
 end
 
@@ -67,9 +67,9 @@ local function stopMusic(room)
 	
 	g_Music[room] = false
 	
-	for player, playerRoom in pairs ( g_Players ) do
+	for player, playerRoom in pairs(g_Players) do
 		if(playerRoom == room) then
-			triggerClientEvent ( player, "onClientStopMusicReq", g_ResRoot )
+			triggerClientEvent(player, "mapmusic.onStopReq", g_ResRoot)
 		end
 	end
 end
@@ -77,21 +77,21 @@ end
 local function onResStop(res)
 	local roomID = getElementData(getResourceRootElement(res), "roomid")
 	local room = roomID and getElementByID(roomID)
-	if ( not g_Music[room] or g_Music[room].res ~= res ) then return end
+	if(not g_Music[room] or g_Music[room].res ~= res) then return end
 	stopMusic(room)
 end
 
-local function onPlayerReady ()
+local function onPlayerReady()
 	--outputDebugString ( "onPlayerReady", 3 )
 	local room = getPlayerRoom(client)
 	g_Players[client] = room
-	if (g_Music[room]) then
+	if(g_Music[room]) then
 		--outputDebugString ( "Start music", 3 )
-		triggerClientEvent ( client, "onClientStartMusicReq", g_ResRoot, g_Music[room].url )
+		triggerClientEvent(client, "mapmusic.onStartReq", g_ResRoot, g_Music[room].url)
 	end
 end
 
-local function onPlayerQuit ()
+local function onPlayerQuit()
 	g_Players[source] = nil
 end
 
@@ -100,10 +100,10 @@ local function onPlayerJoinRoom(room)
 	local oldRoom = g_Players[source]
 	g_Players[source] = room
 	
-	if (g_Music[room]) then
-		triggerClientEvent ( source, "onClientStartMusicReq", g_ResRoot, g_Music[room].url )
+	if(g_Music[room]) then
+		triggerClientEvent(source, "mapmusic.onStartReq", g_ResRoot, g_Music[room].url)
 	elseif(g_Music[oldRoom]) then
-		triggerClientEvent ( source, "onClientStopMusicReq", g_ResRoot )
+		triggerClientEvent(source, "mapmusic.onStopReq", g_ResRoot)
 	end
 end
 
@@ -114,21 +114,10 @@ local function onPlayerLeaveRoom()
 	local oldRoom = g_Players[source]
 	g_Players[source] = room
 	
-	if (g_Music[room]) then
-		triggerClientEvent ( source, "onClientStartMusicReq", g_ResRoot, g_Music[room].url )
+	if(g_Music[room]) then
+		triggerClientEvent(source, "mapmusic.onStartReq", g_ResRoot, g_Music[room].url)
 	elseif(g_Music[oldRoom]) then
-		triggerClientEvent ( source, "onClientStopMusicReq", g_ResRoot )
-	end
-end
-
-local function init ()
-	--outputDebugString ( "init", 3 )
-	local rooms = getRooms()
-	for i, room in ipairs(rooms) do
-		local mapRes = getMapRes(room)
-		if(mapRes) then
-			startMusic(mapRes, room)
-		end
+		triggerClientEvent(source, "mapmusic.onStopReq", g_ResRoot)
 	end
 end
 
@@ -138,19 +127,31 @@ local function onElDestroy()
 	end
 end
 
-local function onRaceStateChanging ( state, oldState, room )
-	if ( state == "GridCountdown" ) then
+local function onRaceStateChanging(state, oldState, room)
+	if(state == "GridCountdown") then
 		local map_res = getMapRes(room or false)
 		startMusic(map_res, room or false)
 	end
 end
 
---addEventHandler ( "onGamemodeMapStart", g_Root, startMusic )
-addEventHandler ( "onResourceStop", g_Root, onResStop )
-addEventHandler ( "onPlayerReady", g_ResRoot, onPlayerReady )
-addEventHandler ( "onPlayerQuit", g_Root, onPlayerQuit )
-addEventHandler ( "onPlayerLeaveRoom", g_Root, onPlayerLeaveRoom )
-addEventHandler ( "onPlayerJoinRoom", g_Root, onPlayerJoinRoom )
-addEventHandler ( "onResourceStart", g_ResRoot, init )
-addEventHandler ( "onElementDestroy", g_Root, onElDestroy )
-addEventHandler ( "onRaceStateChanging", g_Root, onRaceStateChanging )
+local function init()
+	--outputDebugString ( "init", 3 )
+	local rooms = getRooms()
+	for i, room in ipairs(rooms) do
+		local mapRes = getMapRes(room)
+		if(mapRes) then
+			startMusic(mapRes, room)
+		end
+	end
+	
+	--addEventHandler("onGamemodeMapStart", g_Root, startMusic)
+	addEventHandler("onResourceStop", g_Root, onResStop)
+	addEventHandler("onPlayerQuit", g_Root, onPlayerQuit)
+	addEventHandler("onPlayerLeaveRoom", g_Root, onPlayerLeaveRoom)
+	addEventHandler("onPlayerJoinRoom", g_Root, onPlayerJoinRoom)
+	addEventHandler("onElementDestroy", g_Root, onElDestroy)
+	addEventHandler("onRaceStateChanging", g_Root, onRaceStateChanging)
+	addEventHandler("mapmusic.onPlayerReady", g_ResRoot, onPlayerReady)
+end
+
+addEventHandler("onResourceStart", g_ResRoot, init)
