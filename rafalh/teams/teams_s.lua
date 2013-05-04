@@ -162,7 +162,7 @@ local function TmInitDelayed()
 			cnt = cnt + 1
 		end
 	end
-	g_Teams = DbQuery("SELECT * FROM "..DbPrefix.."teams")
+	g_Teams = DbQuery("SELECT * FROM "..DbPrefix.."teams ORDER BY priority")
 	
 	for i, teamInfo in ipairs(g_Teams) do
 		g_TeamFromName[teamInfo.name] = teamInfo

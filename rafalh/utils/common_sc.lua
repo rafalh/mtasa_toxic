@@ -81,6 +81,11 @@ function table.removeValue(tbl, v)
 	if(i) then table.remove(tbl, i) end
 end
 
+function formatDate(timestamp)
+	local tm = getRealTime(timestamp)
+	return ("%d-%02d-%02d %d:%02d"):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
+end
+
 function formatTimePeriod(t, decimals)
 	assert(t)
 	

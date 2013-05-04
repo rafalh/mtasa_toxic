@@ -1,10 +1,56 @@
 local g_GUI = false
 local g_Teams = {}
 
+local function updateRow(row, teamInfo)
+	local tagOrGroup = teamInfo.tag == "" and teamInfo.aclGroup or teamInfo.tag
+	local typeStr = teamInfo.aclGroup == "" and "Tag" or "ACL"
+	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo.name, false, false)
+	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, typeStr, false, false)
+	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, tagOrGroup, false, false)
+	if(teamInfo.color) then
+		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, teamInfo.color, false, false)
+		local r, g, b = getColorFromString(teamInfo.color)
+		if(r) then
+			guiGridListSetItemColor(g_GUI.teamsList, row, g_GUI.clrCol, r, g, b)
+		end
+	end
+	local lastUsageStr = ""
+	local now = getRealTime().timestamp
+	if(teamInfo.lastUsage > 0) then
+		local days = math.floor(now/(24*3600)) - math.floor(teamInfo.lastUsage/(24*3600))
+		if(days == 0) then
+			lastUsageStr = "today"
+		elseif(days == 1) then
+			lastUsageStr = "yesterday"
+		else
+			lastUsageStr = days.." days ago"
+		end
+	end
+	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.lastUsageCol, lastUsageStr, false, false)
+	guiGridListSetItemData(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo)
+end
+
+local function updateList(teams, selectedID, selectedCol)
+	guiGridListClear(g_GUI.teamsList)
+	for i, teamInfo in ipairs(teams) do
+		local row = guiGridListAddRow(g_GUI.teamsList)
+		updateRow(row, teamInfo)
+		if(selectedID == teamInfo.id) then
+			guiGridListSetSelectedItem(g_GUI.teamsList, row, selectedCol)
+		end
+	end
+end
+
 local function closeTeamsAdmin()
 	g_GUI:destroy()
 	g_GUI = false
 	guiSetInputEnabled(false)
+end
+
+local function onDelResult(row, success)
+	if(success) then
+		guiGridListRemoveRow(g_GUI.teamsList, row)
+	end
 end
 
 local function onDelClick()
@@ -12,9 +58,10 @@ local function onDelClick()
 	if(not row or row == -1) then return end
 	
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
-	guiGridListRemoveRow(g_GUI.teamsList, row)
-	if(teamInfo) then
-		RPC("deleteTeamInfo", teamInfo):exec()
+	if(teamInfo.id) then
+		RPC("deleteTeamInfo", teamInfo.id):onResult(onDelResult):setCallbackArgs(row):exec()
+	else
+		guiGridListRemoveRow(g_GUI.teamsList, row)
 	end
 end
 
@@ -28,19 +75,37 @@ local function onAddClick()
 	guiGridListSetItemData(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo, false, false)
 end
 
+local function onChgPriResult(teams)
+	if(teams) then
+		local row, col = guiGridListGetSelectedItem(g_GUI.teamsList)
+		local teamInfo = row and row > -1 and guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
+		updateList(teams, teamInfo and teamInfo.id, col)
+	end
+end
+
 local function onUpClick()
-	
+	local row, col = guiGridListGetSelectedItem(g_GUI.teamsList)
+	local teamInfo = row and row > -1 and guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
+	if(not teamInfo or not teamInfo.id) then return end
+	RPC("changeTeamPriority", teamInfo.id, true):onResult(onChgPriResult):exec()
 end
 
 local function onDownClick()
-	
+	local row, col = guiGridListGetSelectedItem(g_GUI.teamsList)
+	local teamInfo = row and row > -1 and guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
+	if(not teamInfo or not teamInfo.id) then return end
+	RPC("changeTeamPriority", teamInfo.id, false):onResult(onChgPriResult):exec()
+end
+
+local function onSaveResult(row, teamInfo)
+	if(not g_GUI or not teamInfo) then return end
+	updateRow(row, teamInfo)
 end
 
 local function onEditAccepted()
 	local newText = guiGetText(source)
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol)
 	
-	guiGridListSetItemText(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.clickedCol, newText, false, false)
 	if(g_GUI.clickedCol == g_GUI.nameCol) then
 		teamInfo.name = newText
 	elseif(g_GUI.clickedCol == g_GUI.tagCol) then
@@ -51,13 +116,12 @@ local function onEditAccepted()
 		end
 	elseif(g_GUI.clickedCol == g_GUI.clrCol) then
 		local r, g, b = getColorFromString(newText)
-		teamInfo.color = r and newText
-		if(r) then
-			guiGridListSetItemColor(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.clrCol, r, g, b)
-		end
+		teamInfo.color = r and newText or ""
 	end
+	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	RPC("saveTeamInfo", teamInfo):exec()
+	RPC("saveTeamInfo", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
+	
 	destroyElement(source)
 end
 
@@ -76,10 +140,9 @@ local function onTypeClick()
 		teamInfo.tag = ""
 	end
 	
-	local typeStr = teamInfo.tag ~= "" and "Tag" or "ACL"
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	guiGridListSetItemText(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.typeCol, typeStr, false, false)
-	RPC("saveTeamInfo", teamInfo):exec()
+	RPC("saveTeamInfo", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
+	
 	destroyElement(source)
 end
 
@@ -135,20 +198,5 @@ function openTeamsAdmin(teams)
 	
 	guiSetInputEnabled(true)
 	
-	for i, teamInfo in ipairs(teams) do
-		local row = guiGridListAddRow(g_GUI.teamsList)
-		local tagOrGroup = teamInfo.tag == "" and teamInfo.aclGroup or teamInfo.tag
-		local typeStr = teamInfo.tag ~= "" and "Tag" or "ACL"
-		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo.name, false, false)
-		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, typeStr, false, false)
-		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, tagOrGroup, false, false)
-		if(teamInfo.color) then
-			guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, teamInfo.color, false, false)
-			local r, g, b = getColorFromString(teamInfo.color)
-			if(r) then
-				guiGridListSetItemColor(g_GUI.teamsList, row, g_GUI.clrCol, r, g, b)
-			end
-		end
-		guiGridListSetItemData(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo)
-	end
+	updateList(teams)
 end

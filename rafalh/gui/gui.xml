@@ -173,8 +173,9 @@
 		<list id="teamsList" x="10" y="25" rw="100" w="-110" rh="100" h="-40" sorting="false">
 			<column id="nameCol" text="Name" w="0.45" />
 			<column id="typeCol" text="Type" w="0.08" />
-			<column id="tagCol" text="Tag/ACL" w="0.2" />
+			<column id="tagCol" text="Tag/ACL" w="0.12" />
 			<column id="clrCol" text="Color" w="0.12" />
+			<column id="lastUsageCol" text="Last Usage" w="0.2" />
 		</list>
 		
 		<button id="add" rx="100" x="-90" y="70" w="80" h="25" text="Add" />

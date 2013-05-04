@@ -30,7 +30,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	local query = "SELECT player, name, cash, points, "..
 		"dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesFinished, racesPlayed, "..
 		"mapsPlayed, maxWinStreak, toptimes_count, achvCount, bidlvl, "..
-		"time_here, first_visit, last_visit, online, ip "..
+		"time_here, first_visit, last_visit, online, ip, serial, account "..
 		"FROM rafalh_players"..where
 	if ( order ) then
 		query = query.." ORDER BY "..tostring ( order )..( ( desc and " DESC" ) or "" )
