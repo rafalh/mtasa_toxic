@@ -87,7 +87,7 @@ Settings.register
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
-		local cb = guiCreateCheckBox(x, y, w, 20, "Broken glass image after huge damage", Settings.breakableGlass, false, wnd)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Broken glass after huge damage", Settings.breakableGlass, false, wnd)
 		if(onChange) then
 			addEventHandler("onClientGUIClick", cb, function()
 				onChange("breakableGlass")

@@ -149,6 +149,8 @@
 	<msg id="Hide nearby cars">Chowaj bliskie samochody</msg>
 	<msg id="Show stars animation above winner car">Pokaż animację gwiazdek nad samochodem zwycięzcy</msg>
 	<msg id="Display chat messages above players">Wyświetlaj wiadomości z czatu nad graczami</msg>
+	<msg id="Broken glass after huge damage">Zbita szyba po poważnym uszkodzeniu</msg>
+	<msg id="Screen flashes red after huge damage">Ekran miga na czerwono po poważnym uszkodzeniu</msg>
 	<msg id="Effects:">Efekty:</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
 	

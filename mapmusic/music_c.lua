@@ -50,7 +50,7 @@ local function setMusicEnabled(enabled)
 	
 	if(not enabled) then
 		if(g_Sound) then
-			setSoundVolume(g_Sound, 0 )
+			setSoundVolume(g_Sound, 0)
 		end
 		g_MusicEnabled = false
 		removeEventHandler("onClientPlayerRadioSwitch", g_Root, onRadioSwitch)
@@ -84,6 +84,7 @@ local function startMusicReq(url)
 end
 
 local function stopMusicReq()
+	setMusicEnabled(false)
 	g_SoundUrl = false
 	invalidateSound()
 end

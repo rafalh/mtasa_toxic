@@ -9,8 +9,8 @@
 --------------------------------
 
 Styles = {
-	joinQuit = {"#FF6464", "#FFFFFF"},
-	stats = {"#FF6464", "#FFFFFF"},
+	joinQuit = {"#00BB00", "#EEEEEE"},
+	stats = {"#FF6464", "#FFD0D0"},
 	maps = {"#80FFC0", "#FFFFFF"},
 	red = {"#FF0000", "#FF8080"},
 	green = {"#00FF00", "#80FF80"},

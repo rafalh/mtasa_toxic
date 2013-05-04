@@ -5,8 +5,8 @@
 #include "include/internal_events.lua"
 
 Styles = {
-	joinQuit = {"#FF6464", "#FFFFFF"},
-	help = {"#FF6464", "#FFFFFF"},
+	joinQuit = {"#00BB00", "#EEEEEE"},
+	help = {"#FF6464", "#FFD0D0"},
 	pm = "#FF6060",
 }
 
@@ -61,6 +61,8 @@ local function clearChat()
 	for i = 1, chatLayout.chat_lines do
 		outputChatBox("")
 	end
+	
+outputMsg(Styles.joinQuit, "%s has been kicked from the game.", "TEST")
 end
 
 addCommandHandler("clearchat", clearChat, false)

@@ -199,11 +199,11 @@ function RadioPanel.onHide()
 	Settings.save()
 end
 
-local function onRadioSwitch ( channel )
+local function onRadioSwitch(channel)
 	if(g_Sound and channel ~= 0) then
-		cancelEvent ()
+		cancelEvent()
 		
-		local ticks = getTickCount ()
+		local ticks = getTickCount()
 		if(ticks - g_LastWarning > 3000) then
 			outputChatBox("Disable online radio before using ingame radio (you can do it in User Panel)!", 255, 0, 0)
 			g_LastWarning = ticks
@@ -211,7 +211,7 @@ local function onRadioSwitch ( channel )
 	end
 end
 
-local function checkSounds ()
+local function checkSounds()
 	if(not g_Sound or g_Volume == 0) then return end
 	
 	-- find long sounds
