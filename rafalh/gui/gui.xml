@@ -181,7 +181,9 @@
 		<button id="add" rx="100" x="-90" y="70" w="80" h="25" text="Add" />
 		<button id="del" rx="100" x="-90" y="100" w="80" h="25" text="Delete" />
 		
-		<button id="up" rx="100" x="-90" y="130" w="80" h="25" text="Up" />
-		<button id="down" rx="100" x="-90" y="160" w="80" h="25" text="Down" />
+		<button id="up" rx="100" x="-90" y="140" w="80" h="25" text="Up" />
+		<button id="down" rx="100" x="-90" y="170" w="80" h="25" text="Down" />
+		
+		<button id="update" rx="100" x="-90" y="210" w="80" h="35" text="Update players" />
 	</window>
 </gui>

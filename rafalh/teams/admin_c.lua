@@ -59,7 +59,7 @@ local function onDelClick()
 	
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
 	if(teamInfo.id) then
-		RPC("deleteTeamInfo", teamInfo.id):onResult(onDelResult):setCallbackArgs(row):exec()
+		RPC("Teams.delItem", teamInfo.id):onResult(onDelResult):setCallbackArgs(row):exec()
 	else
 		guiGridListRemoveRow(g_GUI.teamsList, row)
 	end
@@ -71,7 +71,8 @@ local function onAddClick()
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, "Tag", false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, "", false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, "", false, false)
-	local teamInfo = {name = "", tag = "", aclGroup = "", color = ""}
+	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.lastUsageCol, "", false, false)
+	local teamInfo = {name = "", tag = "", aclGroup = "", color = "", lastUsage = 0}
 	guiGridListSetItemData(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo, false, false)
 end
 
@@ -87,14 +88,18 @@ local function onUpClick()
 	local row, col = guiGridListGetSelectedItem(g_GUI.teamsList)
 	local teamInfo = row and row > -1 and guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
 	if(not teamInfo or not teamInfo.id) then return end
-	RPC("changeTeamPriority", teamInfo.id, true):onResult(onChgPriResult):exec()
+	RPC("Teams.changePriority", teamInfo.id, true):onResult(onChgPriResult):exec()
 end
 
 local function onDownClick()
 	local row, col = guiGridListGetSelectedItem(g_GUI.teamsList)
 	local teamInfo = row and row > -1 and guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
 	if(not teamInfo or not teamInfo.id) then return end
-	RPC("changeTeamPriority", teamInfo.id, false):onResult(onChgPriResult):exec()
+	RPC("Teams.changePriority", teamInfo.id, false):onResult(onChgPriResult):exec()
+end
+
+local function onUpdateClick()
+	RPC("Teams.updateAllPlayers"):exec()
 end
 
 local function onSaveResult(row, teamInfo)
@@ -120,7 +125,7 @@ local function onEditAccepted()
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	RPC("saveTeamInfo", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
+	RPC("Teams.updateItem", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
 	
 	destroyElement(source)
 end
@@ -141,7 +146,7 @@ local function onTypeClick()
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	RPC("saveTeamInfo", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
+	RPC("Teams.updateItem", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
 	
 	destroyElement(source)
 end
@@ -194,6 +199,7 @@ function openTeamsAdmin(teams)
 	addEventHandler("onClientGUIClick", g_GUI.del, onDelClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.up, onUpClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.down, onDownClick, false)
+	addEventHandler("onClientGUIClick", g_GUI.update, onUpdateClick, false)
 	addEventHandler("onClientGUIDoubleClick", g_GUI.teamsList, onListDblClick, false)
 	
 	guiSetInputEnabled(true)

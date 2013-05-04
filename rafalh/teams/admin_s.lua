@@ -1,55 +1,55 @@
 local TEAMS_RIGHT = "resource."..g_ResName..".teams"
 
-local function CmdTeamsAdmin()
-	RPC("openTeamsAdmin", g_Teams):setClient(source):exec()
+local function Teams_adminCmd()
+	RPC("openTeamsAdmin", Teams.list):setClient(source):exec()
 end
 
-function saveTeamInfo(teamInfo)
+function Teams.updateItem(teamInfo)
 	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return false end
 	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
 	
 	if(teamInfo.id) then
-		local teamCopy = g_TeamFromID[teamInfo.id]
+		local teamCopy = Teams.fromID[teamInfo.id]
 		if(not teamCopy) then
 			privMsg(client, "Failed to modify team")
 			return false
 		end
 		
-		g_TeamFromName[teamCopy.name] = nil
+		Teams.fromName[teamCopy.name] = nil
 		for k, v in pairs(teamInfo) do
 			teamCopy[k] = v
 		end
-		g_TeamFromName[teamCopy.name] = teamCopy
+		Teams.fromName[teamCopy.name] = teamCopy
 		if(not DbQuery("UPDATE "..DbPrefix.."teams "..
 				"SET name=?, tag=?, aclGroup=?, color=? WHERE id=?",
 				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.id)) then
 			return false
 		end
 	else
-		local rows = DbQuery("SELECT id FROM "..DbPrefix.."teams WHERE name=?", teamInfo.name)
+		local rows = DbQuery("SELECT id FROM "..DbPrefix.."teams WHERE name=? AND tag=? AND aclGroup=?", teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
 		if(rows and rows[1]) then
 			privMsg(client, "Failed to add team %s", teamInfo.name)
 			return false
 		end
 		
 		DbQuery("INSERT INTO "..DbPrefix.."teams (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)",
-			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, #g_Teams + 1)
+			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, #Teams.list + 1)
 		local rows = DbQuery("SELECT last_insert_rowid() AS id")
 		teamInfo.id = rows[1].id
-		g_TeamFromName[teamInfo.name] = teamInfo
-		g_TeamFromID[teamInfo.id] = teamInfo
-		table.insert(g_Teams, teamInfo)
+		Teams.fromName[teamInfo.name] = teamInfo
+		Teams.fromID[teamInfo.id] = teamInfo
+		table.insert(Teams.list, teamInfo)
 	end
 	
 	return teamInfo
 end
-allowRPC('saveTeamInfo')
+allowRPC('Teams.updateItem')
 
-function deleteTeamInfo(id)
+function Teams.delItem(id)
 	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return false end
 	assert(id)
 	
-	local teamInfo = g_TeamFromID[id]
+	local teamInfo = Teams.fromID[id]
 	if(not teamInfo) then
 		privMsg(client, "Failed to delete team")
 		return false
@@ -57,33 +57,33 @@ function deleteTeamInfo(id)
 	
 	DbQuery("UPDATE "..DbPrefix.."teams SET priority=priority-1 WHERE priority > ?", teamInfo.priority)
 	DbQuery("DELETE FROM "..DbPrefix.."teams WHERE id=?", teamInfo.id)
-	table.removeValue(g_Teams, teamInfo)
-	g_TeamFromName[teamInfo.name] = nil
-	g_TeamFromID[teamInfo.id] = nil
+	table.removeValue(Teams.list, teamInfo)
+	Teams.fromName[teamInfo.name] = nil
+	Teams.fromID[teamInfo.id] = nil
 	return true
 end
-allowRPC('deleteTeamInfo')
+allowRPC('Teams.delItem')
 
-function changeTeamPriority(id, up)
-	local teamInfo = id and g_TeamFromID[id]
+function Teams.changePriority(id, up)
+	local teamInfo = id and Teams.fromID[id]
 	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false) or not teamInfo) then return false end
 	
-	local i = table.find(g_Teams, teamInfo)
+	local i = table.find(Teams.list, teamInfo)
 	local j = up and (i - 1) or (i + 1)
-	local teamInfo2 = g_Teams[j]
+	local teamInfo2 = Teams.list[j]
 	if(not teamInfo2) then return false end
 	
 	local tmp = teamInfo.priority
 	teamInfo.priority = teamInfo2.priority
 	teamInfo2.priority = tmp
-	g_Teams[j] = teamInfo
-	g_Teams[i] = teamInfo2
+	Teams.list[j] = teamInfo
+	Teams.list[i] = teamInfo2
 	
 	DbQuery("UPDATE "..DbPrefix.."teams SET priority=? WHERE id=?", teamInfo.priority, teamInfo.id)
 	DbQuery("UPDATE "..DbPrefix.."teams SET priority=? WHERE id=?", teamInfo2.priority, teamInfo2.id)
 	
-	return g_Teams
+	return Teams.list
 end
-allowRPC('changeTeamPriority')
+allowRPC('Teams.changePriority')
 
-CmdRegister("teamsadmin", CmdTeamsAdmin, TEAMS_RIGHT)
+CmdRegister("teamsadmin", Teams_adminCmd, TEAMS_RIGHT)
