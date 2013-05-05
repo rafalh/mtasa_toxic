@@ -36,6 +36,7 @@
 	<script src="sync.lua" type="server" />
 	<script src="spectators.lua" type="server" />
 	<script src="water_fix_c.lua" type="client" />
+	<script src="tempMod_s.lua" type="server" />
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />

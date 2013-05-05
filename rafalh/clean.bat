@@ -1,5 +1,5 @@
 @echo off
 call "..\config.bat"
 pause
-%MAKE% rafalh_clean
+%MAKE% toxic_clean
 pause
