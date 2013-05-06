@@ -1,19 +1,14 @@
----------------------------------
--- Global function definitions --
----------------------------------
-
 local function CmdPBan(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local player = (#arg >= 2 and Player.find(arg[2]))
 	local reason = arg[3]
 	
-	if(playerEl) then
-		local accountName = getAccountName(getPlayerAccount (source))
-		local player = Player.fromEl(playerEl)
+	if(player) then
+		local accountName = getAccountName(getPlayerAccount(source))
 		local admin = Player.fromEl(source)
 		
 		outputMsg(g_Root, Styles.red, "%s serial has been banned by %s!", player:getName(true), admin:getName(true))
 		local banInfo = "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or "")
-		addBan(nil, nil, getPlayerSerial(playerEl), source, banInfo)
+		addBan(nil, nil, player:getSerial(), source, banInfo)
 	else
 		privMsg(source, "Usage: %s", arg[1].." <player>")
 	end
@@ -22,72 +17,68 @@ end
 CmdRegister("pban", CmdPBan, "command.banserial")
 
 local function CmdBan1m(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local player = (#arg >= 2 and Player.find(arg[2]))
 	local reason = arg[3]
 	
-	if(playerEl) then
+	if(player) then
 		local accountName = getAccountName(getPlayerAccount(source))
 		local player = Player.fromEl(playerEl)
 		local admin = Player.fromEl(source)
 		
 		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player:getName(true), admin:getName(true))
-		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 60)
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
+		addBan(nil, nil, player:getSerial(), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 60)
+	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban1m", CmdBan1m, "resource."..g_ResName..".ban1m", "Bans player for 1 minute")
 
 local function CmdBan5m(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local player = (#arg >= 2 and Player.find(arg[2]))
 	local reason = arg[3]
 	
-	if(playerEl) then
+	if(player) then
 		local accountName = getAccountName(getPlayerAccount(source))
-		local player = Player.fromEl(playerEl)
 		local admin = Player.fromEl(source)
 		
 		outputMsg(g_Root, Styles.red, "%s has been banned by %s (5 minutes)!", player:getName(true), admin:getName(true))
-		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 60*5)
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
+		addBan(nil, nil, player:getSerial(), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 60*5)
+	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban5m", CmdBan5m, "resource."..g_ResName..".ban5m", "Bans player for 5 minutes")
 
 local function CmdBan1h(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local player = (#arg >= 2 and Player.find(arg[2]))
 	local reason = arg[3]
 	
-	if(playerEl) then
+	if(player) then
 		local accountName = getAccountName(getPlayerAccount(source))
-		local player = Player.fromEl(playerEl)
 		local admin = Player.fromEl(source)
 		
 		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 hour)!", player:getName(true), admin:getName(true))
-		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 3600)
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
+		addBan(nil, nil, player:getSerial(), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 3600)
+	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban1h", CmdBan1h, "resource."..g_ResName..".ban1h", "Bans player for 1 hour")
 
-local function CmdBan24h (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+local function CmdBan24h(message, arg)
+	local player = (#arg >= 2 and Player.find(arg[2]))
 	local reason = arg[3]
 	
-	if(playerEl) then
+	if(player) then
 		local accountName = getAccountName(getPlayerAccount(source))
-		local player = Player.fromEl(playerEl)
 		local admin = Player.fromEl(source)
 		
 		outputMsg(g_Root, Styles.red, "%s has been banned by %s (24 hours)!", player:getName(true), admin:getName(true))
-		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 24*3600)
-	else privMsg (source, "Usage: %s", arg[1].." <player>") end
+		addBan(nil, nil, player:getSerial(), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 24*3600)
+	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban24h", CmdBan24h, "resource."..g_ResName..".ban24h", "Bans player for 24 hours")
 
 local function CmdMute(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len() + 2)))
-	local player = playerEl and Player.fromEl(playerEl)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
 	local admin = Player.fromEl(source)
 	
 	if(player) then
@@ -98,12 +89,11 @@ end
 CmdRegister("mute", CmdMute, "command.mute", "Mutes player on chat and voice-chat for 1 minute")
 
 local function CmdPMute(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len() + 2)))
-	local player = playerEl and Player.fromEl(playerEl)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
 	local admin = Player.fromEl(source)
 	
 	if(player) then
-		player.accountData:set("pmuted", 1)
+		player.accountData.pmuted = 1
 		mutePlayer(player, false, admin)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
@@ -111,8 +101,7 @@ end
 CmdRegister("pmute", CmdPMute, "resource."..g_ResName..".pmute", "Mutes player for ever")
 
 local function CmdUnmute(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
-	local player = playerEl and Player.fromEl(playerEl)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
 	local admin = Player.fromEl(source)
 	
 	if(player) then
@@ -131,8 +120,7 @@ end
 CmdRegister("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and voice-chat")
 
 local function CmdWarn(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
-	local player = playerEl and Player.fromEl(playerEl)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len () + 2)))
 	
 	if(player) then
 		local warns = player.accountData:get("warnings") + 1
@@ -153,8 +141,7 @@ end
 CmdRegister("warn", CmdWarn, "resource."..g_ResName..".warn", "Adds player warning and bans if he has too many")
 
 local function CmdUnwarn (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
-	local player = playerEl and Player.fromEl(playerEl)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len () + 2)))
 	
 	if (player) then
 		local warns = player.accountData:get("warnings")
@@ -167,11 +154,12 @@ end
 
 CmdRegister("unwarn", CmdUnwarn, "resource."..g_ResName..".unwarn", "Removes player warning")
 
-local function CmdKill (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2))) or source
+local function CmdKill(message, arg)
+	local sourcePlayer = Player.fromEl(source)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or sourcePlayer
 	
-	if(playerEl == source or hasObjectPermissionTo(source, "command.slap", false)) then
-		killPed(playerEl)
+	if(player == sourcePlayer or hasObjectPermissionTo(source, "command.slap", false)) then
+		killPed(player.el)
 	else
 		privMsg(source, "Access denied for \"%s\"!", arg[1])
 	end
@@ -179,21 +167,19 @@ end
 
 CmdRegister("kill", CmdKill, false, "Kills player", true)
 
-local function CmdIp (message, arg)
-	local player = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2))) or source
-	local ip = getPlayerIP(player)
+local function CmdIp(message, arg)
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
+	local ip = player:getIP()
 	if(ip) then
-		scriptMsg("%s's IP: %s.", getPlayerName(player), ip)
+		scriptMsg("%s's IP: %s.", player:getName(), ip)
 	end
 end
 
 CmdRegister("ip", CmdIp, "resource."..g_ResName..".ip", "Shows player IP address")
 
 local function CmdAccount(message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = Player.fromEl(player)
-	
-	scriptMsg(getPlayerName(player).."'s account ID: "..(pdata.id or "none")..".")
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
+	scriptMsg("%s's account ID: %s.", player:getName(), player.id or "none")
 end
 
 CmdRegister("account", CmdAccount, false, "Shows player account ID")
@@ -220,8 +206,8 @@ local function CmdDescribeAccount(message, arg)
 	if(id) then
 		local accountData = AccountData.create(id)
 		local data = accountData:getTbl()
-		local tm = getRealTime (data.last_visit)
-		local tm2 = getRealTime (data.first_visit)
+		local tm = getRealTime(data.last_visit)
+		local tm2 = getRealTime(data.first_visit)
 		scriptMsg("Name: %s, points: %s, cash: %u, bidlevel: %u, playtime: %u, last visit: %d-%02d-%02d %d:%02d:%02d, joined: %d-%02d-%02d %d:%02d:%02d, IP: %s, serial: %s.",
 			data.name, data.points, data.cash, data.bidlvl, data.time_here,
 			tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second,
@@ -234,12 +220,11 @@ CmdRegister("describeaccount", CmdDescribeAccount, "resource."..g_ResName..".fin
 CmdRegisterAlias ("descra", "describeaccount")
 
 local function CmdMergeAccounts(message, arg)
-	local player = findPlayer(arg[2])
-	local pdata = Player.fromEl(player)
+	local player = Player.find(arg[2])
 	local id = touint(arg[3])
 	
-	if(player and id and pdata.id) then
-		if(pdata.id == id) then
+	if(player and player.id and id) then
+		if(player.id == id) then
 			privMsg(source, "Cannot merge account with the same account!", id)
 			return
 		end
@@ -252,7 +237,7 @@ local function CmdMergeAccounts(message, arg)
 			return
 		end
 		
-		--[[if(src_data.first_visit > pdata.accountData.first_visit) then
+		--[[if(src_data.first_visit > player.accountData.first_visit) then
 			privMsg(source, "Account for merge is newer")
 			return
 		end]]
@@ -260,7 +245,7 @@ local function CmdMergeAccounts(message, arg)
 		-- remove duplicated names
 		local names = {}
 		local questionMarks = {}
-		local rows = DbQuery("SELECT n1.name FROM rafalh_names n1, rafalh_names n2 WHERE n1.player=? AND n2.player=? AND n1.name=n2.name", pdata.id, id)
+		local rows = DbQuery("SELECT n1.name FROM rafalh_names n1, rafalh_names n2 WHERE n1.player=? AND n2.player=? AND n1.name=n2.name", player.id, id)
 		for i, data in ipairs(rows) do
 			table.insert(names, data.name)
 			table.insert(questionMarks, "?")
@@ -268,50 +253,50 @@ local function CmdMergeAccounts(message, arg)
 		
 		local questionMarksStr = table.concat(questionMarks, ",")
 		DbQuery("DELETE FROM rafalh_names WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names)) -- remove duplicates
-		DbQuery("UPDATE rafalh_names SET player=? WHERE player=?", pdata.id, id) -- change all names owner
+		DbQuery("UPDATE rafalh_names SET player=? WHERE player=?", player.id, id) -- change all names owner
 		
 		-- update stats
 		local newData = {}
-		newData.cash = pdata.accountData.cash + src_data.cash
-		newData.points = pdata.accountData.points + src_data.points
-		newData.warnings = pdata.accountData.warnings + src_data.warnings
-		newData.bidlvl = math.max(src_data.bidlvl, pdata.accountData.bidlvl)
-		newData.time_here = pdata.accountData.time_here + src_data.time_here
+		newData.cash = player.accountData.cash + src_data.cash
+		newData.points = player.accountData.points + src_data.points
+		newData.warnings = player.accountData.warnings + src_data.warnings
+		newData.bidlvl = math.max(src_data.bidlvl, player.accountData.bidlvl)
+		newData.time_here = player.accountData.time_here + src_data.time_here
 		newData.first_visit = src_data.first_visit
-		if(pdata.accountData.email == "") then
+		if(player.accountData.email == "") then
 			newData.email = src_data.email
 		end
 		
 		-- Old statistics
-		newData.dm = pdata.accountData.dm + src_data.dm
-		newData.dm_wins= pdata.accountData.dm_wins + src_data.dm_wins
-		newData.first = pdata.accountData.first + src_data.first
-		newData.second = pdata.accountData.second + src_data.second
-		newData.third = pdata.accountData.third + src_data.third
-		newData.exploded = pdata.accountData.exploded + src_data.exploded
-		newData.drowned = pdata.accountData.drowned + src_data.drowned
+		newData.dm = player.accountData.dm + src_data.dm
+		newData.dm_wins= player.accountData.dm_wins + src_data.dm_wins
+		newData.first = player.accountData.first + src_data.first
+		newData.second = player.accountData.second + src_data.second
+		newData.third = player.accountData.third + src_data.third
+		newData.exploded = player.accountData.exploded + src_data.exploded
+		newData.drowned = player.accountData.drowned + src_data.drowned
 		
 		-- New statistics
-		newData.maxWinStreak = math.max(pdata.accountData.maxWinStreak, src_data.maxWinStreak)
-		newData.mapsPlayed = pdata.accountData.mapsPlayed + src_data.mapsPlayed
-		newData.mapsBought = pdata.accountData.mapsBought + src_data.mapsBought
+		newData.maxWinStreak = math.max(player.accountData.maxWinStreak, src_data.maxWinStreak)
+		newData.mapsPlayed = player.accountData.mapsPlayed + src_data.mapsPlayed
+		newData.mapsBought = player.accountData.mapsBought + src_data.mapsBought
 		-- mapsRated are set later
-		newData.huntersTaken = pdata.accountData.huntersTaken + src_data.huntersTaken
-		newData.dmVictories = pdata.accountData.dmVictories + src_data.dmVictories
-		newData.ddVictories = pdata.accountData.ddVictories + src_data.ddVictories
-		newData.raceVictories = pdata.accountData.raceVictories + src_data.raceVictories
-		newData.racesFinished = pdata.accountData.racesFinished + src_data.racesFinished
-		newData.dmPlayed = pdata.accountData.dmPlayed + src_data.dmPlayed
-		newData.ddPlayed = pdata.accountData.ddPlayed + src_data.ddPlayed
-		newData.racesPlayed = pdata.accountData.racesPlayed + src_data.racesPlayed
+		newData.huntersTaken = player.accountData.huntersTaken + src_data.huntersTaken
+		newData.dmVictories = player.accountData.dmVictories + src_data.dmVictories
+		newData.ddVictories = player.accountData.ddVictories + src_data.ddVictories
+		newData.raceVictories = player.accountData.raceVictories + src_data.raceVictories
+		newData.racesFinished = player.accountData.racesFinished + src_data.racesFinished
+		newData.dmPlayed = player.accountData.dmPlayed + src_data.dmPlayed
+		newData.ddPlayed = player.accountData.ddPlayed + src_data.ddPlayed
+		newData.racesPlayed = player.accountData.racesPlayed + src_data.racesPlayed
 		
 		-- Join Msg
-		if(pdata.accountData.joinmsg == "" and src_data.joinmsg ~= "") then
+		if(player.accountData.joinmsg == "" and src_data.joinmsg ~= "") then
 			newData.joinmsg = src_data.joinmsg
 		end
 		
 		-- Rates
-		local rows = DbQuery("SELECT r1.map FROM rafalh_rates r1, rafalh_rates r2 WHERE r1.player=? AND r2.player=? AND r1.map=r2.map", pdata.id, id)
+		local rows = DbQuery("SELECT r1.map FROM rafalh_rates r1, rafalh_rates r2 WHERE r1.player=? AND r2.player=? AND r1.map=r2.map", player.id, id)
 		local maps = {}
 		local questionMarks = {}
 		for i, data in ipairs(rows) do
@@ -322,15 +307,15 @@ local function CmdMergeAccounts(message, arg)
 			local questionMarksStr = table.concat(questionMarks, ",")
 			DbQuery("DELETE FROM rafalh_rates WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(maps)) -- remove duplicates
 		end
-		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", pdata.id, id) -- set new rates owner
-		local rows = DbQuery("SELECT COUNT(map) AS c FROM rafalh_rates WHERE player=?", pdata.id)
+		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", player.id, id) -- set new rates owner
+		local rows = DbQuery("SELECT COUNT(map) AS c FROM rafalh_rates WHERE player=?", player.id)
 		newData.mapsRated = rows[1].c
 		
 		-- Best times
-		local rows = DbQuery("SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map", pdata.id, id)
+		local rows = DbQuery("SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map", player.id, id)
 		local mapsSrc, mapsDst = {}, {}
 		local questionMarksSrc, questionMarksDst = {}, {}
-		newData.toptimes_count = pdata.accountData.toptimes_count + src_data.toptimes_count
+		newData.toptimes_count = player.accountData.toptimes_count + src_data.toptimes_count
 		
 		for i, data in ipairs(rows) do
 			local delTime = math.min(data.time1, data.time2)
@@ -349,16 +334,16 @@ local function CmdMergeAccounts(message, arg)
 		end
 		if(#mapsDst > 0) then
 			local questionMarksStr = table.concat(questionMarksDst, ",")
-			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", pdata.id, unpack(mapsDst)) -- remove duplicates
+			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", player.id, unpack(mapsDst)) -- remove duplicates
 		end
 		if(#mapsSrc > 0) then
 			local questionMarksStr = table.concat(questionMarksSrc, ",")
 			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(mapsSrc)) -- remove duplicates
 		end
-		DbQuery("UPDATE rafalh_besttimes SET player=? WHERE player=?", pdata.id, id) -- set new best times owner
+		DbQuery("UPDATE rafalh_besttimes SET player=? WHERE player=?", player.id, id) -- set new best times owner
 		
 		-- Profile fields
-		local rows = DbQuery("SELECT p1.field FROM rafalh_profiles p1, rafalh_profiles p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field", pdata.id, id)
+		local rows = DbQuery("SELECT p1.field FROM rafalh_profiles p1, rafalh_profiles p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field", player.id, id)
 		local fields = {}
 		local questionMarks = {}
 		for i, data in ipairs(rows) do
@@ -367,12 +352,12 @@ local function CmdMergeAccounts(message, arg)
 		end
 		local questionMarksStr = table.concat(questionMarks, ",")
 		DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field IN ("..questionMarksStr..")", id, unpack(fields)) -- remove duplicates
-		DbQuery("UPDATE rafalh_profiles SET player=? WHERE player=?", pdata.id, id) -- set new profile fields owner
+		DbQuery("UPDATE rafalh_profiles SET player=? WHERE player=?", player.id, id) -- set new profile fields owner
 		
 		-- Set new account data and delete old account
-		pdata.accountData:set(newData, true)
+		player.accountData:set(newData, true)
 		DbQuery("DELETE FROM rafalh_players WHERE player=?", id)
-		AchvInvalidateCache(player)
+		AchvInvalidateCache(player.el)
 		
 		scriptMsg("Accounts has been merged. Old account has been removed...")
 	else privMsg(source, "Usage: %s", arg[1].." <player> <other account ID>") end

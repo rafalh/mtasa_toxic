@@ -54,9 +54,9 @@ local function onPlayerJoin()
 	end
 	
 	if(countryName) then
-		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game (%s).", getPlayerName(source), countryName)
+		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game (%s).", player:getName(true), countryName)
 	else
-		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", getPlayerName(source))
+		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", player:getName(true))
 	end
 	
 	local rows = DbQuery("SELECT joinmsg, pmuted FROM rafalh_players WHERE serial=? LIMIT 1", player:getSerial())
@@ -70,8 +70,8 @@ local function onPlayerJoin()
 	local pmuted = rows and rows[1] and rows[1].pmuted
 	--local pmuted = player.accountData:get("pmuted")
 	if(pmuted == 1) then
-		outputMsg(g_Root, Styles.red, "%s has got permanent mute!", getPlayerName(source))
-		mutePlayer(source, 0, false, true)
+		outputMsg(g_Root, Styles.red, "%s has got permanent mute!", player:getName(true))
+		mutePlayer(player, 0, false, true)
 	end
 end
 

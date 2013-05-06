@@ -11,7 +11,7 @@ function AsProcessMsg(player)
 				kickPlayer(player, "Spam")
 			else
 				outputMsg(g_Root, Styles.red, "%s has been muted for spamming.", name)
-				mutePlayer(player, 60, false, true)
+				mutePlayer(pdata, 60, false, true)
 			end
 			return true
 		else

@@ -188,6 +188,12 @@ function Player.fromEl(el)
 	return Player.elMap[el]
 end
 
+function Player.find(name)
+	local el = findPlayer(name)
+	if(not el) then return false end
+	return Player.fromEl(el)
+end
+
 addInitFunc(function()
 	addEventHandler("onPlayerChangeRoom", g_Root, Player.onRoomChange)
 	addEventHandler("onPlayerChangeTeam", g_Root, Player.onTeamChange)

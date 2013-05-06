@@ -71,46 +71,46 @@ function strGradient(str, r1, g1, b1, r2, g2, b2)
 	return buf
 end
 
-function addScreenMsg ( text, player, ms, r, g, b )
-	assert ( not ms or ms > 50 )
+function addScreenMsg(text, player, ms, r, g, b)
+	assert(not ms or ms > 50)
 	
-	local players = getElementsByType ( "player", player )
+	local players = getElementsByType("player", player)
 	local textitem
 	
-	for i, player in ipairs ( players ) do
+	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
 		
-		if ( not pdata.display ) then
-			pdata.display = textCreateDisplay ()
-			textDisplayAddObserver ( pdata.display, player )
+		if(not pdata.display) then
+			pdata.display = textCreateDisplay()
+			textDisplayAddObserver(pdata.display, player)
 			pdata.scrMsgs = {}
 		end
-		local msg = MuiGetMsg ( text, player )
-		textitem = textCreateTextItem ( msg, 0.5, 0.4 + #pdata.scrMsgs * 0.05, "medium", r or 255, g or 0, b or 0, 255, 3, "center" )
-		table.insert ( pdata.scrMsgs, textitem )
-		textDisplayAddText ( pdata.display, textitem )
+		local msg = MuiGetMsg(text, player)
+		textitem = textCreateTextItem(msg, 0.5, 0.4 + #pdata.scrMsgs * 0.05, "medium", r or 255, g or 0, b or 0, 255, 3, "center")
+		table.insert(pdata.scrMsgs, textitem)
+		textDisplayAddText(pdata.display, textitem)
 		
-		if ( ms ) then
-			addPlayerTimer ( removeScreenMsg, ms, 1, player, textitem )
+		if(ms) then
+			addPlayerTimer(removeScreenMsg, ms, 1, player, textitem)
 		end
 	end
 	
 	return textitem
 end
 
-function removeScreenMsg ( msgItem, player )
+function removeScreenMsg(msgItem, player)
 	local index = false
-	for i, textItem in ipairs ( Player.fromEl(player).scrMsgs ) do
-		if ( index ) then -- msgs under textItem
-			local x, y = textItemGetPosition ( textItem )
-			textItemSetPosition ( textItem, x, y - 0.05 )
-		elseif ( textItem == msgItem ) then
+	for i, textItem in ipairs(Player.fromEl(player).scrMsgs) do
+		if(index) then -- msgs under textItem
+			local x, y = textItemGetPosition(textItem)
+			textItemSetPosition(textItem, x, y - 0.05)
+		elseif(textItem == msgItem) then
 			index = i
 		end
 	end
-	assert ( index )
-	table.remove ( Player.fromEl(player).scrMsgs, index )
-	textDestroyTextItem ( msgItem )
+	assert(index)
+	table.remove(Player.fromEl(player).scrMsgs, index)
+	textDestroyTextItem(msgItem)
 end
 
 function setPlayerVoiceMuted(player, muted)
@@ -131,9 +131,7 @@ local function unmuteTimerProc(playerEl)
 end
 
 function mutePlayer(player, sec, admin, quiet)
-	if(type(player) ~= "table") then
-		player = Player.fromEl(player)
-	end
+	assert(type(player) == "table")
 	
 	setPlayerMuted(player.el, true)
 	setPlayerVoiceMuted(player.el, true)
@@ -155,16 +153,16 @@ function mutePlayer(player, sec, admin, quiet)
 	end
 end
 
-function addInternalEventHandler ( eventtype, handler )
-	assert ( eventtype and handler )
-	if ( not g_InternalEventHandlers[eventtype] ) then
+function addInternalEventHandler(eventtype, handler)
+	assert(eventtype and handler)
+	if(not g_InternalEventHandlers[eventtype]) then
 		g_InternalEventHandlers[eventtype] = {}
 	end
-	table.insert ( g_InternalEventHandlers[eventtype], handler )
+	table.insert(g_InternalEventHandlers[eventtype], handler)
 end
 
-function triggerClientInternalEvent ( player, eventtype, source, ... )
-	assert (eventtype and isElement(source) and isElement(player))
+function triggerClientInternalEvent(player, eventtype, source, ...)
+	assert(eventtype and isElement(source) and isElement(player))
 	
 	local players = getElementsByType("player", player)
 	for i, player in ipairs(players) do

@@ -41,4 +41,5 @@
 	<channel name="Kids (Open EM)" img="KidsOpenFM.png">http://open.fm/16.m3u</channel>
 	<channel name="Ska Roots Reggae (Open FM)" img="SkaRootsReggaeOpenFM.png">http://open.fm/44.m3u</channel>
 	<channel name="ClubParty" img="ClubParty.jpg">http://s1.slotex.pl:8654/listen.pls</channel>
+	<channel name="100% Linkin Park">http://open.fm/42.m3u</channel>
 </channels>

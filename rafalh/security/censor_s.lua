@@ -46,7 +46,8 @@ function CsProcessMsg(msg, player)
 	end
 	
 	if(mute) then
-		mutePlayer(player, 60)
+		local pdata = Player.fromEl(player)
+		mutePlayer(pdata, 60)
 	end
 	
 	return fine, msg
