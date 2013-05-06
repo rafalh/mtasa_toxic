@@ -48,6 +48,7 @@
     <msg id="%s has been muted by %s!">%s został uciszony przez %s!</msg>
     <msg id="%s has been muted by Script!">%s został uciszony automatycznie!</msg>
     <msg id="%s has been unmuted by Script!">%s odzyskał głos automatycznie!</msg>
+	<msg id="%s has been unmuted by %s!">%s odzyskał głos po interwencji %s!</msg>
     <msg id="%s has got permanent mute!">%s jest uciszony na stałe!</msg>
     <msg id="%s&apos;s %s: %s">%s %s: %s</msg>
     <msg id="%s&apos;s %s is not set.">%s %s nie jest ustawiony.</msg>

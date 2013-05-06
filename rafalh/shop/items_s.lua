@@ -437,7 +437,7 @@ local function ShpBuyNextMap(mapResName)
 	end
 	
 	local minDelayForPlayer = Settings.minBuyMapPlayerDelay
-	local mapBoughtTimestamp = pdata.accountData:get("mapBoughtTimestamp")
+	local mapBoughtTimestamp = pdata.accountData.mapBoughtTimestamp
 	if(mapBoughtTimestamp > 0 and now - mapBoughtTimestamp < minDelayForPlayer) then
 		local delay = mapBoughtTimestamp + minDelayForPlayer - now
 		privMsg(client, "You cannot buy maps so often. Please wait %s...", formatTimePeriod(delay, 0))
@@ -451,7 +451,7 @@ local function ShpBuyNextMap(mapResName)
 	local dt = now - rows[1].played_timestamp
 	if(dt > minDelayForMap) then
 		local pos = MqAdd(room, map)
-		outputMsg(room, Styles.maps, "%s has been bought by %s (%u. in map queue)!", mapName, getPlayerName(client), pos)
+		outputMsg(room, Styles.maps, "%s has been bought by %s (%u. in map queue)!", mapName, pdata:getName(true), pos)
 		
 		pdata.accountData:add("cash", -price)
 		pdata.accountData:add("mapsBought", 1)
@@ -467,7 +467,7 @@ end
 ------------
 
 addInitFunc(function()
-	addInternalEventHandler ( $(EV_SET_JOIN_MSG_REQUEST), ShpSetJoinMsgRequest )
-	addEventHandler ( "onGamemodeMapStop", g_Root, ShpMapStop )
-	addEventHandler ( "onBuyNextMapReq", g_Root, ShpBuyNextMap )
+	addInternalEventHandler($(EV_SET_JOIN_MSG_REQUEST), ShpSetJoinMsgRequest)
+	addEventHandler("onGamemodeMapStop", g_Root, ShpMapStop)
+	addEventHandler("onBuyNextMapReq", g_Root, ShpBuyNextMap)
 end)

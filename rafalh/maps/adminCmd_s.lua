@@ -1,47 +1,46 @@
 local g_LastRedo = 0
 
 local function CmdRemMap (message, arg)
-	local room = Player.fromEl(source).room
-	local map = getCurrentMap(room)
-	if (not map) then return end
+	local admin = Player.fromEl(source)
+	local map = getCurrentMap(admin.room)
+	if(not map) then return end
 	
 	local reason = message:sub (arg[1]:len () + 2)
-	if (reason:len () < 5) then
-		privMsg (source, "Usage: %s", arg[1].." <reason>")
+	if(reason:len() < 5) then
+		privMsg(admin.el, "Usage: %s", arg[1].." <reason>")
 		return
 	end
 	
-	local account = getPlayerAccount (source)
-	reason = reason.." (removed by "..getAccountName (account)..")"
+	local account = getPlayerAccount(admin.el)
+	reason = reason.." (removed by "..getAccountName(account)..")"
 	
 	local map_id = map:getId()
-	DbQuery ("UPDATE rafalh_maps SET removed=? WHERE map=?", reason, map_id)
+	DbQuery("UPDATE rafalh_maps SET removed=? WHERE map=?", reason, map_id)
 	
 	local map_name = map:getName()
-	outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map_name, getPlayerName (source))
-	startRandomMap(room)
+	outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map_name, admin:getName(true))
+	startRandomMap(admin.room)
 end
 
 CmdRegister("remmap", CmdRemMap, "resource."..g_ResName..".remmap", "Removes map from server")
-CmdRegisterAlias ("removemap", "remmap")
+CmdRegisterAlias("removemap", "remmap")
 
 local function CmdRestoreMap (message, arg)
-	if (#arg >= 2) then
-		local str = message:sub (arg[1]:len () + 2)
-		local map = findMap (str, true)
+	if(#arg >= 2) then
+		local str = message:sub(arg[1]:len () + 2)
+		local map = findMap(str, true)
+		local admin = Player.fromEl(source)
 		
-		if (map) then
+		if(map) then
 			local map_name = map:getName()
 			local map_id = map:getId()
-			DbQuery ("UPDATE rafalh_maps SET removed='' WHERE map=?", map_id)
-			outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map_name, getPlayerName (source))
-		else privMsg (source, "Cannot find map \"%s\" or it has not been removed!", str) end
-	else privMsg (source, "Usage: %s", arg[1].." <map>") end
+			DbQuery("UPDATE rafalh_maps SET removed='' WHERE map=?", map_id)
+			outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map_name, admin:getName(true))
+		else privMsg(source, "Cannot find map \"%s\" or it has not been removed!", str) end
+	else privMsg(source, "Usage: %s", arg[1].." <map>") end
 end
 
 CmdRegister("restoremap", CmdRestoreMap, "resource."..g_ResName..".restoremap", "Restores proviously removed map")
-
-
 
 local function CmdMap (message, arg)
 	local mapName = message:sub (arg[1]:len () + 2)
@@ -71,8 +70,8 @@ local function CmdMap (message, arg)
 			privMsg (source, "Cannot find map \"%s\"!", mapName)
 		end
 	else
-		addEvent ("onClientDisplayChangeMapGuiReq", true)
-		triggerClientEvent (source, "onClientDisplayChangeMapGuiReq", g_ResRoot)
+		addEvent("onClientDisplayChangeMapGuiReq", true)
+		triggerClientEvent(source, "onClientDisplayChangeMapGuiReq", g_ResRoot)
 	end
 end
 
@@ -83,7 +82,7 @@ local function AddMapToQueue(room, map)
 	local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
 	if (rows[1].removed ~= "") then
 		local map_name = map:getName()
-		privMsg (source, "%s has been removed!", map_name)
+		privMsg(source, "%s has been removed!", map_name)
 	else
 		MqAdd(room, map, true, source)
 	end
@@ -110,8 +109,8 @@ local function CmdNextMap (message, arg)
 			privMsg (source, "Cannot find map \"%s\"!", mapName)
 		end
 	else
-		addEvent ("onClientDisplayNextMapGuiReq", true)
-		triggerClientEvent (source, "onClientDisplayNextMapGuiReq", g_ResRoot)
+		addEvent("onClientDisplayNextMapGuiReq", true)
+		triggerClientEvent(source, "onClientDisplayNextMapGuiReq", g_ResRoot)
 	end
 end
 

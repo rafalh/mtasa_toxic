@@ -113,37 +113,45 @@ function removeScreenMsg ( msgItem, player )
 	textDestroyTextItem ( msgItem )
 end
 
-local function setPlayerVoiceMuted ( player, muted )
-	local voice_res = getResourceFromName ( "voice" )
-	if ( voice_res and getResourceState ( voice_res ) == "running" ) then
-		return call ( voice_res, "setPlayerVoiceMuted", player, muted )
+function setPlayerVoiceMuted(player, muted)
+	local voiceRes = getResourceFromName("voice")
+	if(voiceRes and getResourceState(voiceRes) == "running") then
+		return call(voiceRes, "setPlayerVoiceMuted", player, muted)
 	end
 	return false
 end
 
-local function unmuteTimerProc ( player )
-	if ( isPlayerMuted ( player ) ) then
-		setPlayerMuted ( player, false )
-		outputMsg(g_Root, Styles.green, "%s has been unmuted by Script!", getPlayerName ( player ) )
+local function unmuteTimerProc(playerEl)
+	local player = Player.fromEl(playerEl)
+	if(isPlayerMuted(player.el)) then
+		setPlayerMuted(player.el, false)
+		outputMsg(g_Root, Styles.green, "%s has been unmuted by Script!", player:getName(true))
 	end
-	setPlayerVoiceMuted ( player, false )
+	setPlayerVoiceMuted(player.el, false)
 end
 
-function mutePlayer ( player, sec, admin, quiet )
-	setPlayerMuted ( player, true )
-	setPlayerVoiceMuted ( player, true )
+function mutePlayer(player, sec, admin, quiet)
+	if(type(player) ~= "table") then
+		player = Player.fromEl(player)
+	end
 	
-	if ( not quiet ) then
-		if ( admin ) then
-			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", getPlayerName ( player ), getPlayerName ( admin ) )
+	setPlayerMuted(player.el, true)
+	setPlayerVoiceMuted(player.el, true)
+	
+	if(not quiet) then
+		if(admin) then
+			if(type(admin) ~= "table") then
+				admin = Player.fromEl(admin)
+			end
+			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", player:getName(true), admin:getName(true))
 		else
-			outputMsg(g_Root, Styles.red, "%s has been muted by Script!", getPlayerName ( player ) )
+			outputMsg(g_Root, Styles.red, "%s has been muted by Script!", player:getName(true))
 		end
 	end
 	
-	sec = touint ( sec, 0 )
-	if ( sec > 0 ) then
-		setPlayerTimer ( unmuteTimerProc, sec * 1000, 1, player )
+	sec = touint(sec, 0)
+	if(sec > 0) then
+		setPlayerTimer(unmuteTimerProc, sec * 1000, 1, player.el)
 	end
 end
 

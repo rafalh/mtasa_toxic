@@ -32,7 +32,7 @@
 	<channel name="Dubstep (Open FM)" img="DupstepOpenFM.png">http://open.fm/68.m3u</channel>
 	<channel name="ClubMusic24" img="ClubMusic24.png">http://nadaje.com/playlist/1280/m3u/</channel>
 	<channel name="All4Music.pl" img="All4Music.png">http://sc5.24cast.pl:8014/listen.pls</channel>
-	<channel name="Equestria.FM" img="equestriafm.png">http://s1.slotex.pl:10026/</channel>
+	<channel name="EverFree">http://78.47.53.77:8000/stream/1/</channel>
 	<channel name="Hip-Hop PL (Open FM)" img="HipHopPLOpenFM.png">http://open.fm/24.m3u</channel>
 	<channel name="Wesoły Hanys" img="WesolyHanys.png">http://wesolyhanys.pl/listen.m3u</channel>
 	<channel name="Radio Piekary" img="RadioPiekary.jpg">http://shot4.inten.pl:8412/listen.pls</channel>

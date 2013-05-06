@@ -159,7 +159,7 @@ function outputMsg(visibleTo, style, fmt, ...)
 		end
 		
 		local pdata = Player.fromEl(player)
-		if(pdata.sync and msg:len() > 128) then -- fix long message being ignored
+		if(pdata and pdata.sync and msg:len() > 128) then -- fix long message being ignored
 			RPC("outputChatBox", msg, r, g, b, true):setClient(player):exec()
 		else
 			outputChatBox(msg, player, r, g, b, true)

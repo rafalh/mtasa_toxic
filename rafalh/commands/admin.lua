@@ -2,134 +2,149 @@
 -- Global function definitions --
 ---------------------------------
 
-local function CmdPBan (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
+local function CmdPBan(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local reason = arg[3]
 	
-	if (playerEl) then
-		local account_name = getAccountName (getPlayerAccount (source))
-		local player_name = getPlayerName (playerEl)
-		local admin_name = getPlayerName (source)
+	if(playerEl) then
+		local accountName = getAccountName(getPlayerAccount (source))
+		local player = Player.fromEl(playerEl)
+		local admin = Player.fromEl(source)
 		
-		outputMsg(g_Root, Styles.red, "%s serial has been banned by %s!", player_name, admin_name)
-		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""))
+		outputMsg(g_Root, Styles.red, "%s serial has been banned by %s!", player:getName(true), admin:getName(true))
+		local banInfo = "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or "")
+		addBan(nil, nil, getPlayerSerial(playerEl), source, banInfo)
 	else
-		privMsg (source, "Usage: %s", arg[1].." <player>")
+		privMsg(source, "Usage: %s", arg[1].." <player>")
 	end
 end
 
 CmdRegister("pban", CmdPBan, "command.banserial")
 
-local function CmdBan1m (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
+local function CmdBan1m(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local reason = arg[3]
 	
-	if (playerEl) then
-		local account_name = getAccountName (getPlayerAccount (source))
-		local player_name = getPlayerName (playerEl)
-		local admin_name = getPlayerName (source)
+	if(playerEl) then
+		local accountName = getAccountName(getPlayerAccount(source))
+		local player = Player.fromEl(playerEl)
+		local admin = Player.fromEl(source)
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player_name, getPlayerName (source))
-		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 60)
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player:getName(true), admin:getName(true))
+		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 60)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban1m", CmdBan1m, "resource."..g_ResName..".ban1m", "Bans player for 1 minute")
 
-local function CmdBan5m (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
+local function CmdBan5m(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local reason = arg[3]
 	
-	if (playerEl) then
-		local account_name = getAccountName (getPlayerAccount (source))
-		local player_name = getPlayerName (playerEl)
-		local admin_name = getPlayerName (source)
+	if(playerEl) then
+		local accountName = getAccountName(getPlayerAccount(source))
+		local player = Player.fromEl(playerEl)
+		local admin = Player.fromEl(source)
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (5 minutes)!", player_name, getPlayerName (source))
-		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 60*5)
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (5 minutes)!", player:getName(true), admin:getName(true))
+		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 60*5)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban5m", CmdBan5m, "resource."..g_ResName..".ban5m", "Bans player for 5 minutes")
 
-local function CmdBan1h (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
+local function CmdBan1h(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local reason = arg[3]
 	
-	if (playerEl) then
-		local account_name = getAccountName (getPlayerAccount (source))
-		local player_name = getPlayerName (playerEl)
-		local admin_name = getPlayerName (source)
+	if(playerEl) then
+		local accountName = getAccountName(getPlayerAccount(source))
+		local player = Player.fromEl(playerEl)
+		local admin = Player.fromEl(source)
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 hour)!", player_name, getPlayerName (source))
-		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 3600)
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 hour)!", player:getName(true), admin:getName(true))
+		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 3600)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban1h", CmdBan1h, "resource."..g_ResName..".ban1h", "Bans player for 1 hour")
 
 local function CmdBan24h (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (arg[2]))
+	local playerEl = (#arg >= 2 and findPlayer(arg[2]))
+	local reason = arg[3]
 	
-	if (playerEl) then
-		local account_name = getAccountName (getPlayerAccount (source))
-		local player_name = getPlayerName (playerEl)
-		local admin_name = getPlayerName (source)
+	if(playerEl) then
+		local accountName = getAccountName(getPlayerAccount(source))
+		local player = Player.fromEl(playerEl)
+		local admin = Player.fromEl(source)
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (24 hours)!", player_name, getPlayerName (source))
-		addBan (nil, nil, getPlayerSerial (playerEl), source, "(nick: "..player_name..")"..((account_name ~= admin_name and " (by: "..account_name..")") or "")..(arg[3] and " "..arg[3] or ""), 24*3600)
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (24 hours)!", player:getName(true), admin:getName(true))
+		addBan (nil, nil, getPlayerSerial(playerEl), source, "(nick: "..player:getName()..") (by: "..accountName..")"..(reason and " "..reason or ""), 24*3600)
 	else privMsg (source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("ban24h", CmdBan24h, "resource."..g_ResName..".ban24h", "Bans player for 24 hours")
 
-local function CmdMute (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
+local function CmdMute(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len() + 2)))
+	local player = playerEl and Player.fromEl(playerEl)
+	local admin = Player.fromEl(source)
 	
-	if (playerEl) then
-		mutePlayer(playerEl, tonumber (arg[3]) or Settings.mute_time, source)
+	if(player) then
+		mutePlayer(player, tonumber(arg[3]) or Settings.mute_time, admin)
 	else privMsg(source, "Usage: %s", arg[1].." <player> [<time>]") end
 end
 
 CmdRegister("mute", CmdMute, "command.mute", "Mutes player on chat and voice-chat for 1 minute")
 
-local function CmdPMute (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
+local function CmdPMute(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len() + 2)))
 	local player = playerEl and Player.fromEl(playerEl)
+	local admin = Player.fromEl(source)
 	
-	if (player) then
+	if(player) then
 		player.accountData:set("pmuted", 1)
-		mutePlayer(player.el, false, source)
+		mutePlayer(player, false, admin)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("pmute", CmdPMute, "resource."..g_ResName..".pmute", "Mutes player for ever")
 
-local function CmdUnmute (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
+local function CmdUnmute(message, arg)
+	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
 	local player = playerEl and Player.fromEl(playerEl)
+	local admin = Player.fromEl(source)
 	
 	if(player) then
-		player.accountData:set("pmuted", 0)
-		if(isPlayerMuted(player.el)) then
-			triggerEvent("aPlayer", source, player.el, "mute")
+		if(player.accountData.pmuted == 1) then
+			player.accountData.pmuted = 0
+			outputMsg(g_Root, Styles.green, "%s has been unpmuted by %s!", player:getName(true), admin:getName(true))
+		elseif(isPlayerMuted(player.el)) then
+			outputMsg(g_Root, Styles.green, "%s has been unmuted by %s!", player:getName(true), admin:getName(true))
 		end
+		
+		setPlayerMuted(player.el, false)
+		setPlayerVoiceMuted(player.el, false)
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and voice-chat")
 
 local function CmdWarn(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
+	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
 	local player = playerEl and Player.fromEl(playerEl)
 	
-	if (player) then
+	if(player) then
 		local warns = player.accountData:get("warnings") + 1
 		player.accountData:set("warnings", warns)
 		local max_warns = Settings.max_warns
 		if(max_warns > 0) then
-			scriptMsg ("%s has been warned %u. time (limit: %u)!", getPlayerName(player.el), warns, max_warns)
+			scriptMsg ("%s has been warned %u. time (limit: %u)!", player:getName(true), warns, max_warns)
 		else
-			scriptMsg ("%s has been warned %u. time!", getPlayerName(player.el), warns)
+			scriptMsg ("%s has been warned %u. time!", player:getName(true), warns)
 		end
 		
-		if (max_warns > 0 and warns > max_warns) then
+		if(max_warns > 0 and warns > max_warns) then
 			kickPlayer(player.el, source, warns.." warnings (limit: "..max_warns..")")
 		end
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
@@ -138,7 +153,7 @@ end
 CmdRegister("warn", CmdWarn, "resource."..g_ResName..".warn", "Adds player warning and bans if he has too many")
 
 local function CmdUnwarn (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2)))
+	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
 	local player = playerEl and Player.fromEl(playerEl)
 	
 	if (player) then
@@ -146,16 +161,16 @@ local function CmdUnwarn (message, arg)
 		if (warns > 0) then
 			player.accountData:set("warnings", warns - 1)
 		end
-		scriptMsg("%s has been unwarned!", getPlayerName(player.el))
+		scriptMsg("%s has been unwarned!", player:getName(true))
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
 CmdRegister("unwarn", CmdUnwarn, "resource."..g_ResName..".unwarn", "Removes player warning")
 
 local function CmdKill (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
+	local playerEl = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2))) or source
 	
-	if (playerEl == source or hasObjectPermissionTo (source, "command.slap", false)) then
+	if(playerEl == source or hasObjectPermissionTo(source, "command.slap", false)) then
 		killPed(playerEl)
 	else
 		privMsg(source, "Access denied for \"%s\"!", arg[1])
@@ -165,7 +180,7 @@ end
 CmdRegister("kill", CmdKill, false, "Kills player", true)
 
 local function CmdIp (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
+	local player = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2))) or source
 	local ip = getPlayerIP(player)
 	if(ip) then
 		scriptMsg("%s's IP: %s.", getPlayerName(player), ip)
