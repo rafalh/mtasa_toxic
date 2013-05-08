@@ -64,7 +64,7 @@ local function GbLotteryFundInc()
 		local max_fund_inc = Settings.max_fund_inc
 		local n = math.random(1, max_fund_inc)
 		g_LotteryFund = g_LotteryFund + n
-		scriptMsg("Lottery time! %s added to the fund!", formatMoney(n))
+		outputMsg(g_Root, Styles.gambling, "Lottery time! %s added to the fund!", formatMoney(n))
 		if(g_LotteryFund >= lotto_limit and not g_FinishLotteryTimer) then
 			g_FinishLotteryTimer = setTimer(GbTryToFinishLottery, 20000, 1)
 		end
@@ -76,7 +76,7 @@ end
 ---------------------------------
 
 function GbFinishLottery()
-	scriptMsg("Lottery limit reached! Fund: %s.", formatMoney(g_LotteryFund))
+	outputMsg(g_Root, Styles.gambling, "Lottery limit reached! Fund: %s.", formatMoney(g_LotteryFund))
 	
 	local c = 0
 	for id, tickets in pairs(g_LotteryPlayers) do
@@ -92,7 +92,7 @@ function GbFinishLottery()
 		if(r <= 0) then
 			local accountData = AccountData.create(id)
 			accountData:add("cash", g_LotteryFund)
-			scriptMsg("%s won the lottery!", accountData:get("name"))
+			outputMsg(g_Root, Styles.gambling, "%s won the lottery!", accountData:get("name"))
 			break
 		end
 	end
@@ -263,7 +263,7 @@ function GbUnbet(player)
 end
 
 local function GbBetsPlacedTimer()
-	scriptMsg ("No More Bets.")
+	outputMsg(g_Root, Styles.gambling, "No More Bets.")
 	g_BetsTimer = false
 end
 
@@ -272,7 +272,7 @@ function GbStartBets()
 	local bet_min_players = Settings.bet_min_players
 	if(bet_time > 0 and g_PlayersCount >= bet_min_players) then
 		g_BetsTimer = setTimer(GbBetsPlacedTimer, bet_time * 1000, 1)
-		scriptMsg("Place Your Bets!")
+		outputMsg(g_Root, Styles.gambling, "Place Your Bets!")
 	end
 end
 

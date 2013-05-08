@@ -57,12 +57,14 @@ local function CmdModInfo(msg, arg)
 			scriptMsg("%s is a Moderator.", player:getName())
 		elseif(isObjectInACLGroup(objStr, g_SuperModGroup)) then
 			scriptMsg("%s is a Super Moderator.", player:getName())
+		else
+			scriptMsg("%s is not a Moderator.", player:getName())
 		end
 	else
 		privMsg(source, "Usage: %s", arg[1].." <name>")
 	end
 end
-CmdRegister("givemod", CmdModInfo, "resource."..g_ResName..".modinfo")
+CmdRegister("modinfo", CmdModInfo, "resource."..g_ResName..".modinfo")
 
 local function onPlayerLogin(prevAccount, account)
 	local timestamp = getAccountData(account, "toxic.tempModLimit")

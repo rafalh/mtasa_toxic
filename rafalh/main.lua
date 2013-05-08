@@ -14,7 +14,8 @@ Styles = {
 	maps = {"#80FFC0", "#FFFFFF"},
 	red = {"#FF0000", "#FF8080"},
 	green = {"#00FF00", "#80FF80"},
-	poll = "#80FFC0"
+	poll = "#80FFC0",
+	gambling = {"#FFC000", "#FFE080"},
 }
 
 addEvent("main.onPlayerReady", true)
