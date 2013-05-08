@@ -13,6 +13,12 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 		return
 	end
 	
+	local joinMsg = self.accountData.joinmsg
+	if(joinMsg and joinMsg ~= "") then
+		local r, g, b = getPlayerNametagColor(self.el)
+		outputChatBox("(JOINMSG) "..getPlayerName(self.el)..": #EBDDB2"..joinMsg, g_Root, r, g, b, true)
+	end
+	
 	local accountName = not isGuestAccount(account) and getAccountName(account)
 	triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
 	triggerClientEvent(self.el, "main.onAccountChange", g_ResRoot, accountName, self.id)

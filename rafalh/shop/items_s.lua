@@ -3,7 +3,8 @@
 --------------
 
 #include "include/internal_events.lua"
-addEvent ( "onBuyNextMapReq", true )
+
+addEvent("onBuyNextMapReq", true)
 
 local JoinMsgItem = {
 	id = "joinmsg",
@@ -20,13 +21,6 @@ function JoinMsgItem.onSell ( player, val )
 end
 
 ShpRegisterItem(JoinMsgItem)
-
-function JmPlayerJoin(player, joinMsg)
-	if(not isElement(player)) then return end
-	
-	local r, g, b = getPlayerNametagColor(player)
-	outputChatBox("(JOINMSG) "..getPlayerName(player)..": #EBDDB2"..joinMsg, g_Root, r, g, b, true)
-end
 
 local HealthItem = {
 	id = "health100",
@@ -375,7 +369,7 @@ ShpRegisterItem(NextMapItem)
 
 local VipItem = {
 	id = "vip1w",
-	cost = 2200000,
+	cost = 2500000,
 	onBuy = function ( player )
 		local res = getResourceFromName ( "rafalh_vip" )
 		local success = res and call ( res, "giveVip", player, 7 )
@@ -400,8 +394,8 @@ local function ShpSetJoinMsgRequest(str)
 	end
 end
 
-local function ShpMapStop ()
-	for player, pdata in pairs ( g_Players ) do
+local function ShpMapStop()
+	for player, pdata in pairs(g_Players) do
 		pdata.invisible = nil
 	end
 end

@@ -59,16 +59,8 @@ local function onPlayerJoin()
 		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", player:getName(true))
 	end
 	
-	local rows = DbQuery("SELECT joinmsg, pmuted FROM rafalh_players WHERE serial=? LIMIT 1", player:getSerial())
-	
-	local joinMsg = rows and rows[1] and rows[1].joinmsg
-	--local joinMsg = player.accountData:get("joinmsg")
-	if(joinMsg and joinMsg ~= "") then
-		setTimer(JmPlayerJoin, 100, 1, source, joinMsg) -- show joinmsg after auto-login
-	end
-	
+	local rows = DbQuery("SELECT pmuted FROM rafalh_players WHERE serial=? LIMIT 1", player:getSerial())
 	local pmuted = rows and rows[1] and rows[1].pmuted
-	--local pmuted = player.accountData:get("pmuted")
 	if(pmuted == 1) then
 		outputMsg(g_Root, Styles.red, "%s has got permanent mute!", player:getName(true))
 		mutePlayer(player, 0, false, true)
@@ -119,21 +111,7 @@ local function onPlayerChangeNick(oldNick, newNick)
 	end
 end
 
---[[local function onSetNameRequest(name)
-	name = tostring(name)
-	if(getPlayerFromName(name)) then return end
-	
-	-- Note: Cancelling event after setPlayerName doesn't work
-	local oldPlainName = getPlayerName(client):gsub("#%x%x%x%x%x%x", "")
-	local plainName = name:gsub("#%x%x%x%x%x%x", "")
-	if(plainName == oldPlainName or isNickChangeAllowed(client, name)) then
-		setPlayerName(client, name)
-	end
-end]]
-
 local function onPlayerChat(message, messageType)
-	if(wasEventCancelled()) then return end
-	
 	local message2 = message:gsub("#%x%x%x%x%x%x", "")
 	if(message2:gsub(" ", "") == "") then
 		cancelEvent()
@@ -145,8 +123,8 @@ local function onPlayerChat(message, messageType)
 	
 	local str = cmd:match("[^%w]?(%w)")
 	if((str == "login" or str == "register") and arg[2]) then -- never display someone's password
-		privMsg ( source, "DON'T USE \""..arg[1].."\" anymore!!! It could show your password to everybody. Type /"..str.." <password> instead." )
-		cancelEvent ()
+		privMsg(source, "DON'T USE \""..arg[1].."\" anymore!!! It could show your password to everybody. Type /"..str.." <password> instead.")
+		cancelEvent()
 		return
 	end
 	
@@ -273,7 +251,6 @@ addInitFunc(function()
 	addEventHandler("onPlayerChat", g_Root, onPlayerChat)
 	addEventHandler("main.onPlayerReady", g_ResRoot, onPlayerReady)
 	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
-	--addInternalEventHandler($(EV_SET_NAME_REQUEST), onSetNameRequest)
 end)
 
 Settings.register

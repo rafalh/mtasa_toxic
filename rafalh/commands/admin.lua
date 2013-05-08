@@ -105,6 +105,9 @@ local function CmdUnmute(message, arg)
 	local admin = Player.fromEl(source)
 	
 	if(player) then
+		if(player.id) then -- hackfix
+			DbQuery("UPDATE rafalh_players SET pmuted=0 WHERE serial=?", player:getSerial())
+		end
 		if(player.accountData.pmuted == 1) then
 			player.accountData.pmuted = 0
 			outputMsg(g_Root, Styles.green, "%s has been unpmuted by %s!", player:getName(true), admin:getName(true))
@@ -120,7 +123,7 @@ end
 CmdRegister("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and voice-chat")
 
 local function CmdWarn(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len () + 2)))
+	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
 	
 	if(player) then
 		local warns = player.accountData:get("warnings") + 1
