@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Login GUI" author="rafalh" version="2.61" />
+	
+	<script src="login_c.lua" type="client" />
+	<script src="register_c.lua" type="client" />
+	<script src="changePw_c.lua" type="client" />
+	<script src="changeEmail_c.lua" type="client" />
+	<script src="accounts_s.lua" type="server" />
+	<file src="img/login.png" />
+	<file src="img/register.png" />
+	<file src="img/chgPw.png" />
+	<file src="img/chgEmail.png" />
+</meta>

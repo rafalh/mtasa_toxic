@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Players" author="rafalh" version="2.61" />
+	
+	<script src="pm_c.lua" type="client" />
+	<script src="listGui_c.lua" type="client" />
+	<file src="img/icon.png" />
+	<file src="img/pm.png" />
+</meta>

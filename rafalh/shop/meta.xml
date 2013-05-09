@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Shop" author="rafalh" version="2.61" />
+	
+	<script src="main_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+	<script src="items_s.lua" type="server" />
+	<script src="items_c.lua" type="client" />
+	<script src="gui_c.lua" type="client" />
+	<file src="img/icon.png" />
+	<file src="img/coins.png" />
+	<file src="img/beer.png" />
+	<file src="img/repair.png" />
+	<file src="img/mine.png" />
+	<file src="img/oil.png" />
+	<file src="img/joinmsg.png" />
+	<file src="img/flip.png" />
+	<file src="img/thunder.png" />
+	<file src="img/ghost.png" />
+	<file src="img/selfdestr.png" />
+	<file src="img/godmode.png" />
+	<file src="img/smoke.png" />
+	<file src="img/nextmap.png" />
+	
+	<settings>
+		<setting group="Shop" name="*bidlvl_price" accept="0-1000000" value="25000" desc="Price of 1 bidlevel. Next bidlevels will cost this price * level. For example level 2 will cost this number * 2." friendlyname="Bidlevel price" />
+		<setting group="Shop" name="*minBuyMapPlayerDelay" accept="0-1000000" value="600" desc="Minimal delay for player to buy a map after buying another one" friendlyname="Minimal buy map delay for player" />
+		<setting group="Shop" name="*minBuyMapDelay" accept="0-1000000" value="1800" desc="Minimal delay for map to be bought again after being placed in queue" friendlyname="Minimal buy map delay per map" />
+	</settings>
+</meta>

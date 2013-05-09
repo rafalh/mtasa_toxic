@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Map Rating" author="rafalh" version="2.61" />
+	
+	<script src="rate_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+	<script src="gui_c.lua" type="client" />
+	
+	<settings>
+		<setting group="Ratings" name="*allow_rate_change" accept="false,true" value="true" desc="Allow changing rate for map by player." friendlyname="Allow rate change" />
+	</settings>
+</meta>

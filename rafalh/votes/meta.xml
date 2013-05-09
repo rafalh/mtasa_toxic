@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Votes" author="rafalh" version="2.61" />
+	
+	<script src="autovotes_s.lua" type="server" />
+	<script src="betweenMaps_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+	<script src="votenext_s.lua" type="server" />
+	
+	<settings>
+		<setting group="Votes" name="*votenext_enabled" accept="false,true" value="true" desc="Enables or disables vote for next map. If vote is accepted next map is set and opened after current map end." friendlyname="Votenext" />
+		<setting group="Votes" name="*votenext_allowchange" accept="false,true" value="true" friendlyname="Votenext allow change" />
+		<setting group="Votes" name="*votenext_percentage" accept="1-100" value="67" friendlyname="Votenext percentage" />
+		<setting group="Votes" name="*votenext_timeout" accept="0-60" value="10" friendlyname="Votenext timeout" />
+		<setting group="Votes" name="*votenext_locktime" accept="0-3600" value="180" friendlyname="Votenext locktime" />
+		<setting group="Votes" name="*auto_votekick" accept="false,true" value="false" desc="If set to true votekick is enabled only, when noone can use !kick command, otherwise votekick is disabled." friendlyname="Auto-enable votekick" />
+		<setting group="Votes" name="*auto_votemap" accept="false,true" value="false" desc="If set to true votemap is enabled only if noone can use !map command, otherwise votemap is disabled." friendlyname="Auto-enable votemap" />
+		<setting group="Votes" name="*vote_between_maps" accept="0-3" value="0" desc="If set to 1, map ratings are shown. If set to 2, in vote are only two options: Random and Play again. If set to 3, in vote are options: DD, DM, Race, Other and Play again. If set to 0, vote is not modified." friendlyname="Vote between maps" />
+	</settings>
+</meta>

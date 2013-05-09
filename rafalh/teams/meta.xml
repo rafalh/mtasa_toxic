@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Teams" author="rafalh" version="2.61" />
+	
+	<script src="teams_s.lua" type="server" />
+	<script src="admin_s.lua" type="server" />
+	<script src="admin_c.lua" type="client" />
+	
+	<settings>
+		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Player with tags will have they own teams" friendlyname="Clan teams" />
+	</settings>
+</meta>

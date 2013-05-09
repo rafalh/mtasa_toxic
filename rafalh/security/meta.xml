@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Security" author="rafalh" version="2.61" />
+	
+	<script src="anticamp_s.lua" type="server" />
+	<script src="anticheat_s.lua" type="server" />
+	<script src="antilag_s.lua" type="server" />
+	<script src="antispam_s.lua" type="server" />
+	<script src="censor_s.lua" type="server" />
+	<script src="nickBlocker_s.lua" type="server" />
+	<config src="../conf/banned_names.xml" type="server" />
+	<config src="../conf/censor.xml" type="server" />
+	
+	<settings>
+		<setting group="General" name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." friendlyname="Kill AFK players" />
+		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />
+		
+		<setting group="Antispam" name="*spam_interval" accept="0-2000" value="500" desc="The minimal number of miliseconds between messages, which are not a spam." friendlyname="Spam interval" />
+		<setting group="Antispam" name="*spammer_kick" accept="false,true" value="false" desc="Set to true if script should kick spammers. If it is false, script mutes them for 60 seconds." friendlyname="Kicking for spam" />
+		<setting group="Antispam" name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." friendlyname="Minimum nick change delay" />
+		
+		<setting group="Antilag" name="*max_ping" accept="0-10000" value="500" desc="If not equal 0, script kick laggers with ping bigger than this value." friendlyname="Maximal ping" />
+		<setting group="Antilag" name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." friendlyname="Maximal ping time" />
+		<setting group="Antilag" name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS divisor" />
+		<setting group="Antilag" name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS" />
+		
+		<setting group="Anticheat" name="*max_viel" accept="0-10000" value="300" desc="Max speed of players in horizontal plane. If 0 detecting of speed cheaters will be disabled." friendlyname="Max vielocity" />
+		<setting group="Anticheat" name="*max_viel_kick" accept="false,true" value="false" desc="If true players with too big speed will be kicked. Otherwise only chat message will be generated." friendlyname="Kicking speed cheaters" />
+		<setting group="Anticheat" name="*fps_anticheat" accept="false,true" value="true" desc="Kick player if he has got FPS above the limit." friendlyname="FPS Anticheat" />
+		<setting group="Anticheat" name="*show_ac_msgs" accept="false,true" value="true" desc="If set to true and no online player has access to AC messages, they are sent to everybody." friendlyname="Show AC messages" />
+	</settings>
+</meta>

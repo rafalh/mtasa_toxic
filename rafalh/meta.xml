@@ -57,194 +57,29 @@
 	<script src="gui/onOffBtn_c.lua" type="client" />
 	
 	<!-- MODULES -->
-	<script src="maps/maps_s.lua" type="server" />
-	<script src="maps/map_s.lua" type="server" />
-	<script src="maps/mapQueue_s.lua" type="server" />
-	<script src="maps/adminCmd_s.lua" type="server" />
-	<script src="maps/mapOptionsCmd_s.lua" type="server" />
-	<script src="maps/mapFixingCmd_s.lua" type="server" />
-	<script src="maps/mapInfoCmd_s.lua" type="server" />
-	<script src="maps/mapInfoGui_c.lua" type="client" />
-	<script src="maps/mapsListGui_c.lua" type="client" />
-	<script src="maps/http_s.lua" type="server" />
-	<config src="conf/map_types.xml" type="server" />
-	<export function="getMaps" http="true" />
-	<export function="getMapInfo" http="true" />
-	
-	<script src="alias/alias_s.lua" type="server" />
-	<script src="alias/cmd_s.lua" type="server" />
-	
-	<script src="stats/stats_s.lua" type="server" />
-	<script src="stats/cmd_s.lua" type="server" />
-	<script src="stats/adminCmd_s.lua" type="server" />
-	<script src="stats/gui_c.lua" type="client" />
-	<script src="stats/stats_panel_c.lua" type="client" />
-	<script src="stats/http_s.lua" type="server" />
-	<file src="stats/icon.png" />
-	<config src="conf/ranks.xml" type="server" />
-	<export function="getPlayersStats" http="true" />
-	
-	<script src="achievements/main_s.lua" type="server" />
-	<script src="achievements/gui_c.lua" type="client" />
-	<script src="achievements/list_sc.lua" type="shared" />
-	<file src="achievements/img/icon.png" />
-	<file src="achievements/img/locked.png" />
-	<file src="achievements/img/unlocked.png" />
-	
-	<script src="best_times/main_s.lua" type="server" />
-	<script src="best_times/cmd_s.lua" type="server" />
-	<script src="best_times/adminCmd_s.lua" type="server" />
-	<script src="best_times/rec_s.lua" type="server" />
-	<script src="best_times/rec_c.lua" type="client" />
-	<export function="getTopTime" />
-	
-	<script src="players/pm_c.lua" type="client" />
-	<script src="players/listGui_c.lua" type="client" />
-	<file src="players/img/icon.png" />
-	<file src="players/img/pm.png" />
-	
-	<script src="chat_icon/chat_s.lua" type="server" />
-	<script src="chat_icon/chat_c.lua" type="client" />
-	<file src="chat_icon/chat.png" />
-	
-	<script src="effects/carhide_c.lua" type="client" />
-	<script src="effects/effects_c.lua" type="client" />
-	<script src="effects/ghostAlpha_c.lua" type="client" />
-	<script src="effects/glass_c.lua" type="client" />
-	<script src="effects/winAnim_c.lua" type="client" />
-	<file src="effects/broken_glass.png" />
-	
-	<script src="gambling/main_s.lua" type="server" />
-	<script src="gambling/bets_cmd_s.lua" type="server" />
-	<script src="gambling/cmd_s.lua" type="server" />
-	
-	<script src="invitations/main_s.lua" type="server" />
-	<script src="invitations/cmd_s.lua" type="server" />
-	
-	<script src="login/login_c.lua" type="client" />
-	<script src="login/register_c.lua" type="client" />
-	<script src="login/changePw_c.lua" type="client" />
-	<script src="login/changeEmail_c.lua" type="client" />
-	<script src="login/accounts_s.lua" type="server" />
-	<file src="login/img/login.png" />
-	<file src="login/img/register.png" />
-	<file src="login/img/chgPw.png" />
-	<file src="login/img/chgEmail.png" />
-	
-	<script src="map_rating/rate_s.lua" type="server" />
-	<script src="map_rating/cmd_s.lua" type="server" />
-	<script src="map_rating/gui_c.lua" type="client" />
-	
-	<script src="mui/mui_s.lua" type="server" />
-	<script src="mui/mui_c.lua" type="client" />
-	<script src="mui/langs_s.lua" type="server" />
-	<script src="mui/localeList_sc.lua" type="shared" />
-	<script src="mui/setting_c.lua" type="client" />
-	<script src="mui/admin_s.lua" type="server" />
-	<script src="mui/admin_c.lua" type="client" />
-	<config src="conf/languages.xml" type="server" />
-	<config src="conf/languages.xml" type="client" />
-	
-	<script src="profile/main_s.lua" type="server" />
-	<script src="profile/cmd_s.lua" type="server" />
-	<script src="profile/editProfile_c.lua" type="client" />
-	<script src="profile/viewProfile_c.lua" type="client" />
-	<file src="profile/icon.png" />
-	<config src="conf/profile_fields.xml" type="server" />
-	<export function="getPlayerProfile" http="true" />
-	
-	<script src="radio/gui_c.lua" type="client" />
-	<file src="radio/img/icon.png" />
-	<file src="radio/img/volume.png" />
-	<file src="radio/img/muted.png" />
-	<file src="radio/img/channels/rmffm.png" />
-	<file src="radio/img/channels/rmf_maxxx.jpg" />
-	<file src="radio/img/channels/eskarock.jpg" />
-	<file src="radio/img/channels/wawa.jpg" />
-	<file src="radio/img/channels/zloteprzeboje.jpg" />
-	<file src="radio/img/channels/radiozet.jpg" />
-	<file src="radio/img/channels/jedynka.jpg" />
-	<file src="radio/img/channels/dwojka.jpg" />
-	<file src="radio/img/channels/trojka.jpg" />
-	<file src="radio/img/channels/czworka.jpg" />
-	<file src="radio/img/channels/tokfm.jpg" />
-	<file src="radio/img/channels/chilliz.png" />
-	<file src="radio/img/channels/radioparty.png" />
-	<file src="radio/img/channels/eska.jpg" />
-	<file src="radio/img/channels/DiscoParty.png" />
-	<file src="radio/img/channels/polskastacja.jpg" />
-	<file src="radio/img/channels/przeboje80and90.png" />
-	<file src="radio/img/channels/bassdrive.png" />
-	<file src="radio/img/channels/dubstepfm.jpg" />
-	<file src="radio/img/channels/DiscoPoloClassicOpenFM.png" />
-	<file src="radio/img/channels/DupstepOpenFM.png" />
-	<file src="radio/img/channels/ClubMusic24.png" />
-	<file src="radio/img/channels/All4Music.png" />
-	<file src="radio/img/channels/equestriafm.png" />
-	<file src="radio/img/channels/HipHopPLOpenFM.png" />
-	<file src="radio/img/channels/WesolyHanys.png" />
-	<file src="radio/img/channels/RadioPiekary.jpg" />
-	<file src="radio/img/channels/CiezkieBrzmienia.png" />
-	<file src="radio/img/channels/00sHitsOpenFM.png" />
-	<file src="radio/img/channels/KidsOpenFM.png" />
-	<file src="radio/img/channels/SkaRootsReggaeOpenFM.png" />
-	<file src="radio/img/channels/ClubParty.jpg" />
-	<config src="conf/radio.xml" type="client" />
-	
-	<script src="security/anticamp_s.lua" type="server" />
-	<script src="security/anticheat_s.lua" type="server" />
-	<script src="security/antilag_s.lua" type="server" />
-	<script src="security/antispam_s.lua" type="server" />
-	<script src="security/censor_s.lua" type="server" />
-	<script src="security/nickBlocker_s.lua" type="server" />
-	<config src="conf/banned_names.xml" type="server" />
-	<config src="conf/censor.xml" type="server" />
-	
-	<script src="shop/main_s.lua" type="server" />
-	<script src="shop/cmd_s.lua" type="server" />
-	<script src="shop/items_s.lua" type="server" />
-	<script src="shop/items_c.lua" type="client" />
-	<script src="shop/gui_c.lua" type="client" />
-	<file src="shop/img/icon.png" />
-	<file src="shop/img/coins.png" />
-	<file src="shop/img/beer.png" />
-	<file src="shop/img/repair.png" />
-	<file src="shop/img/mine.png" />
-	<file src="shop/img/oil.png" />
-	<file src="shop/img/joinmsg.png" />
-	<file src="shop/img/flip.png" />
-	<file src="shop/img/thunder.png" />
-	<file src="shop/img/ghost.png" />
-	<file src="shop/img/selfdestr.png" />
-	<file src="shop/img/godmode.png" />
-	<file src="shop/img/smoke.png" />
-	<file src="shop/img/nextmap.png" />
-	
-	<script src="teams/teams_s.lua" type="server" />
-	<script src="teams/admin_s.lua" type="server" />
-	<script src="teams/admin_c.lua" type="client" />
-	
-	<script src="translator/main_s.lua" type="server" />
-	<script src="translator/cmd_s.lua" type="server" />
-	<script src="translator/gui_c.lua" type="client" />
-	<file src="translator/icon.png" />
-	
-	<script src="vip/gui_c.lua" type="client" />
-	<file src="vip/enabled.png" />
-	<file src="vip/disabled.png" />
-	
-	<script src="settings/gui_c.lua" type="client" />
-	<file src="settings/icon.png" />
-	
-	<script src="votes/autovotes_s.lua" type="server" />
-	<script src="votes/betweenMaps_s.lua" type="server" />
-	<script src="votes/cmd_s.lua" type="server" />
-	<script src="votes/votenext_s.lua" type="server" />
-	
-	<script src="about/gui_c.lua" type="client" />
-	<file src="about/icon.png" />
-	<file src="about/logo.jpg" />
-	<config src="conf/about.xml" type="client" />
+	<module src="maps" />
+	<module src="alias" />
+	<module src="stats" />
+	<module src="achievements" />
+	<module src="best_times" />
+	<module src="players" />
+	<module src="chat_icon" />
+	<module src="effects" />
+	<module src="gambling" />
+	<module src="invitations" />
+	<module src="login" />
+	<module src="map_rating" />
+	<module src="mui" />
+	<module src="profile" />
+	<module src="radio" />
+	<module src="security" />
+	<module src="shop" />
+	<module src="teams" />
+	<module src="translator" />
+	<module src="vip" />
+	<module src="settings" />
+	<module src="votes" />
+	<module src="about" />
 	<!-- MODULES END -->
 	
 	<script src="stop.lua" type="server" />
@@ -295,59 +130,10 @@
 	<min_mta_version client="1.3.0-9.04431" server="1.3.0-9.04431" />
 	
 	<settings>
-		<setting group="Antispam" name="*spam_interval" accept="0-2000" value="500" desc="The minimal number of miliseconds between messages, which are not a spam." friendlyname="Spam interval" />
-		<setting group="Antispam" name="*spammer_kick" accept="false,true" value="false" desc="Set to true if script should kick spammers. If it is false, script mutes them for 60 seconds." friendlyname="Kicking for spam" />
-		<setting group="Antispam" name="*min_nick_change_delay" accept="0-1000" value="0" desc="Minimal delay between changing nick in seconds." friendlyname="Minimum nick change delay" />
-		
-		<setting group="Antilag" name="*max_ping" accept="0-10000" value="500" desc="If not equal 0, script kick laggers with ping bigger than this value." friendlyname="Maximal ping" />
-		<setting group="Antilag" name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." friendlyname="Maximal ping time" />
-		<setting group="Antilag" name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS divisor" />
-		<setting group="Antilag" name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS" />
-		
-		<setting group="Ratings" name="*allow_rate_change" accept="false,true" value="true" desc="Allow changing rate for map by player." friendlyname="Allow rate change" />
-		
-		<setting group="General" name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." friendlyname="Kill AFK players" />
 		<setting group="General" name="*mute_time" accept="0-3600" value="60" desc="Number of seconds, during which player is muted after /mute command. If it equals 0, mute stop working when player quit." friendlyname="Mute time" />
-		<setting group="General" name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." friendlyname="Chat messages above players" />
 		<setting group="General" name="*max_warns" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." friendlyname="Maximum warnings" />
-		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Player with tags will have they own teams" friendlyname="Clan teams" />
-		<setting group="General" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor" />
 		<setting group="General" name="*loginWnd" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" friendlyname="Login window" />
 		<!--setting group="General" name="*stunt_bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." friendlyname="Stunt bonus" /-->
-		
-		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
-		<setting group="Maps" name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." friendlyname="Ghostmode OFF warning time" />
-		
-		<setting group="Shop" name="*bidlvl_price" accept="0-1000000" value="25000" desc="Price of 1 bidlevel. Next bidlevels will cost this price * level. For example level 2 will cost this number * 2." friendlyname="Bidlevel price" />
-		<setting group="Shop" name="*minBuyMapPlayerDelay" accept="0-1000000" value="600" desc="Minimal delay for player to buy a map after buying another one" friendlyname="Minimal buy map delay for player" />
-		<setting group="Shop" name="*minBuyMapDelay" accept="0-1000000" value="1800" desc="Minimal delay for map to be bought again after being placed in queue" friendlyname="Minimal buy map delay per map" />
-		
-		<setting group="Betting" name="*bet_time" accept="0-3600" value="60" desc="Number of seconds after map start, in which player can bet. Value of 0 disables betting." friendlyname="Betting time" />
-		<setting group="Betting" name="*max_bet" accept="0-1000000" value="1000" desc="Maximal bet for 1st bidlevel. For next bidlevels it will be this value multiplied by level." friendlyname="Maxbet for 1st bidlevel" />
-		<setting group="Betting" name="*bet_min_players" accept="0-128" value="2" desc="Minimal number of players needed to enable betting." friendlyname="Players for betting" />
-	
-		<setting group="Anticheat" name="*max_viel" accept="0-10000" value="300" desc="Max speed of players in horizontal plane. If 0 detecting of speed cheaters will be disabled." friendlyname="Max vielocity" />
-		<setting group="Anticheat" name="*max_viel_kick" accept="false,true" value="false" desc="If true players with too big speed will be kicked. Otherwise only chat message will be generated." friendlyname="Kicking speed cheaters" />
-		<setting group="Anticheat" name="*fps_anticheat" accept="false,true" value="true" desc="Kick player if he has got FPS above the limit." friendlyname="FPS Anticheat" />
-		<setting group="Anticheat" name="*show_ac_msgs" accept="false,true" value="true" desc="If set to true and no online player has access to AC messages, they are sent to everybody." friendlyname="Show AC messages" />
-		
-		<setting group="Lottery" name="*lotto_limit" accept="1-1000000" value="50000" desc="Amount of cash in fund, needed to finish the lottery." friendlyname="Lottery limit" />
-		<setting group="Lottery" name="*max_tickets" accept="1-1000000" value="1000" desc="Maximal number of lottery tickets, which player can buy." friendlyname="Max tickets per player" />
-		<setting group="Lottery" name="*fund_inc_interval" accept="0-1000000" value="60" desc="Number of seconds after which script increase lottery fund. Set to 0 to disable automatical fund increase" friendlyname="Fund increase interval" />
-		<setting group="Lottery" name="*max_fund_inc" accept="1-1000000" value="20000" desc="Maximal amount of cash, which can be added automatically to lottery fund." friendlyname="Maximal fund increase" />
-		
-		<setting group="Votes" name="*votenext_enabled" accept="false,true" value="true" desc="Enables or disables vote for next map. If vote is accepted next map is set and opened after current map end." friendlyname="Votenext" />
-		<setting group="Votes" name="*votenext_allowchange" accept="false,true" value="true" friendlyname="Votenext allow change" />
-		<setting group="Votes" name="*votenext_percentage" accept="1-100" value="67" friendlyname="Votenext percentage" />
-		<setting group="Votes" name="*votenext_timeout" accept="0-60" value="10" friendlyname="Votenext timeout" />
-		<setting group="Votes" name="*votenext_locktime" accept="0-3600" value="180" friendlyname="Votenext locktime" />
-		<setting group="Votes" name="*auto_votekick" accept="false,true" value="false" desc="If set to true votekick is enabled only, when noone can use !kick command, otherwise votekick is disabled." friendlyname="Auto-enable votekick" />
-		<setting group="Votes" name="*auto_votemap" accept="false,true" value="false" desc="If set to true votemap is enabled only if noone can use !map command, otherwise votemap is disabled." friendlyname="Auto-enable votemap" />
-		<setting group="Votes" name="*vote_between_maps" accept="0-3" value="0" desc="If set to 1, map ratings are shown. If set to 2, in vote are only two options: Random and Play again. If set to 3, in vote are options: DD, DM, Race, Other and Play again. If set to 0, vote is not modified." friendlyname="Vote between maps" />
-		
-		<setting group="Recording" name="*recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps." friendlyname="Record top times" />
-		<setting group="Recording" name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." friendlyname="Record top times CPs" />
-		<setting group="Recording" name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." friendlyname="Show ghost" />
 		
 		<setting group="Debugging" name="*debug" accept="false,true" value="false" type="shared" desc="Scripts debugging" friendlyname="Debugging" />
 		<setting group="Debugging" name="*perfDebug" accept="false,true" value="false" type="shared" desc="Scripts debugging" friendlyname="Check perfomance" />

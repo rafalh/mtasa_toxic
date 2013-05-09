@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Chat Icon" author="rafalh" version="2.61" />
+	
+	<script src="chat_s.lua" type="server" />
+	<script src="chat_c.lua" type="client" />
+	<file src="chat.png" />
+	
+	<settings>
+		<setting group="General" name="*msgs_above_players" accept="false,true" value="true" desc="If set to true, script will show all chat messages above players for 5 seconds." friendlyname="Chat messages above players" />
+	</settings>
+</meta>

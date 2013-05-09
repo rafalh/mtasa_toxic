@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Settings" author="rafalh" version="2.61" />
+	
+	<script src="gui_c.lua" type="client" />
+	<file src="icon.png" />
+</meta>

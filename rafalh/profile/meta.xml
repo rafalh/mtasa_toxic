@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Profile" author="rafalh" version="2.61" />
+	
+	<script src="main_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+	<script src="editProfile_c.lua" type="client" />
+	<script src="viewProfile_c.lua" type="client" />
+	<file src="icon.png" />
+	<config src="../conf/profile_fields.xml" type="server" />
+	<export function="getPlayerProfile" http="true" />
+</meta>

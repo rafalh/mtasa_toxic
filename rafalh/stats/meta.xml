@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Statistics" author="rafalh" version="2.61" />
+	
+	<script src="stats_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+	<script src="adminCmd_s.lua" type="server" />
+	<script src="gui_c.lua" type="client" />
+	<script src="stats_panel_c.lua" type="client" />
+	<script src="http_s.lua" type="server" />
+	<file src="icon.png" />
+	<config src="../conf/ranks.xml" type="server" />
+	<export function="getPlayersStats" http="true" />
+</meta>

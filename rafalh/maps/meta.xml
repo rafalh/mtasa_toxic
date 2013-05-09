@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Maps" author="rafalh" version="2.61" />
+	
+	<script src="maps_s.lua" type="server" />
+	<script src="map_s.lua" type="server" />
+	<script src="mapQueue_s.lua" type="server" />
+	<script src="adminCmd_s.lua" type="server" />
+	<script src="mapOptionsCmd_s.lua" type="server" />
+	<script src="mapFixingCmd_s.lua" type="server" />
+	<script src="mapInfoCmd_s.lua" type="server" />
+	<script src="mapInfoGui_c.lua" type="client" />
+	<script src="mapsListGui_c.lua" type="client" />
+	<script src="http_s.lua" type="server" />
+	<config src="../conf/map_types.xml" type="server" />
+	<export function="getMaps" http="true" />
+	<export function="getMapInfo" http="true" />
+	
+	<settings>
+		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
+		<setting group="Maps" name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." friendlyname="Ghostmode OFF warning time" />
+	</settings>
+</meta>

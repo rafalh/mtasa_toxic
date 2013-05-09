@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Effects" author="rafalh" version="2.61" />
+	
+	<script src="carhide_c.lua" type="client" />
+	<script src="effects_c.lua" type="client" />
+	<script src="ghostAlpha_c.lua" type="client" />
+	<script src="glass_c.lua" type="client" />
+	<script src="winAnim_c.lua" type="client" />
+	<file src="broken_glass.png" />
+</meta>

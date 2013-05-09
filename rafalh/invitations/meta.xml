@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Invitations" author="rafalh" version="2.61" />
+	
+	<script src="main_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+</meta>

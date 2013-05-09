@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Best Times" author="rafalh" version="2.61" />
+	
+	<script src="main_s.lua" type="server" />
+	<script src="cmd_s.lua" type="server" />
+	<script src="adminCmd_s.lua" type="server" />
+	<script src="rec_s.lua" type="server" />
+	<script src="rec_c.lua" type="client" />
+	<export function="getTopTime" />
+	
+	<settings>
+		<setting group="Recording" name="*recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps." friendlyname="Record top times" />
+		<setting group="Recording" name="*cp_recorder" accept="false,true" value="true" desc="Enables or disables recording of top times in Race and DM maps (CPs)." friendlyname="Record top times CPs" />
+		<setting group="Recording" name="*ghost" accept="false,true" value="true" desc="Shows or hides ghost of top time in Race and DM maps." friendlyname="Show ghost" />
+	</settings>
+</meta>
