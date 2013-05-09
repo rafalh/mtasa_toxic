@@ -4,70 +4,74 @@ AccountData.onChangeHandlers = {}
 AccountData.map = {}
 setmetatable(AccountData.map, {__mode = "v"}) -- weak table
 
-local AccountDataFields = {
---   name              type           flags                 default value
-	{"player",         "INT UNSIGNED",       "PRIMARY KEY NOT NULL", 0,           autoInc = true},
-	{"serial",         "VARCHAR(32)",        "NOT NULL",             ""},
-	{"account",        "VARCHAR(255)",       "UNIQUE",               ""},
-	{"cash",           "INT",                "DEFAULT 0 NOT NULL",   0},
-	{"points",         "MEDIUMINT",          "DEFAULT 0 NOT NULL",   0},
-	{"warnings",       "TINYINT UNSIGNED",   "DEFAULT 0 NOT NULL",   0},
-	{"dm",             "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"dm_wins",        "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"first",          "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"second",         "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"third",          "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"time_here",      "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
-	{"first_visit",    "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
-	{"last_visit",     "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
-	{"bidlvl",         "SMALLINT UNSIGNED",  "DEFAULT 1 NOT NULL",   1},
-	{"ip",             "VARCHAR(16)",        "DEFAULT '' NOT NULL",  ""},
-	{"name",           "VARCHAR(32)",        "DEFAULT '' NOT NULL",  ""},
-	{"joinmsg",        "VARCHAR(128)",       "DEFAULT NULL",         false},
-	{"pmuted",         "BOOL",               "DEFAULT 0 NOT NULL",   0},
-	{"toptimes_count", "SMALLINT UNSIGNED",  "DEFAULT 0 NOT NULL",   0},
-	{"online",         "BOOL",               "DEFAULT 0 NOT NULL",   0},
-	{"exploded",       "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"drowned",        "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL",   0},
-	{"locked_nick",    "BOOL",               "DEFAULT 0 NOT NULL",   0},
-	{"invitedby",      "INT UNSIGNED",       "DEFAULT 0 NOT NULL",   0},
-	{"achievements",   "BLOB",               "DEFAULT x'' NOT NULL", ""},
-	{"mapBoughtTimestamp", "INT UNSIGNED",   "DEFAULT 0 NOT NULL",   0},
-	{"email",          "VARCHAR(128)",       "DEFAULT '' NOT NULL",  ""},
+-- Note: default is always used for guests (even if database would ignore it)
+PlayersTable = Database.Table{
+	name = "players",
+	{"player",         "INT UNSIGNED",       pk = true, default = 0},
+	{"serial",         "VARCHAR(32)",        default = ""},
+	{"account",        "VARCHAR(255)",       default = ""},
+	{"cash",           "INT",                default = 0},
+	{"points",         "MEDIUMINT",          default = 0},
+	{"warnings",       "TINYINT UNSIGNED",   default = 0},
+	{"dm",             "MEDIUMINT UNSIGNED", default = 0},
+	{"dm_wins",        "MEDIUMINT UNSIGNED", default = 0},
+	{"first",          "MEDIUMINT UNSIGNED", default = 0},
+	{"second",         "MEDIUMINT UNSIGNED", default = 0},
+	{"third",          "MEDIUMINT UNSIGNED", default = 0},
+	{"time_here",      "INT UNSIGNED",       default = 0},
+	{"first_visit",    "INT UNSIGNED",       default = 0},
+	{"last_visit",     "INT UNSIGNED",       default = 0},
+	{"bidlvl",         "SMALLINT UNSIGNED",  default = 1},
+	{"ip",             "VARCHAR(16)",        default = ""},
+	{"name",           "VARCHAR(32)",        default = ""},
+	{"joinmsg",        "VARCHAR(128)",       default = false},
+	{"pmuted",         "BOOL",               default = 0},
+	{"toptimes_count", "SMALLINT UNSIGNED",  default = 0},
+	{"online",         "BOOL",               default = 0},
+	{"exploded",       "MEDIUMINT UNSIGNED", default = 0},
+	{"drowned",        "MEDIUMINT UNSIGNED", default = 0},
+	{"locked_nick",    "BOOL",               default = 0},
+	{"invitedby",      "INT UNSIGNED",       default = 0},
+	{"achievements",   "BLOB",               default = ""},
+	{"mapBoughtTimestamp", "INT UNSIGNED",   default = 0},
+	{"email",          "VARCHAR(128)",       default = ""},
 	
 	-- New stats
-	{"maxWinStreak",  "SMALLINT UNSIGNED",  "DEFAULT 0 NOT NULL", 0},
-	{"mapsPlayed",    "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"mapsBought",    "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"mapsRated",     "SMALLINT UNSIGNED",  "DEFAULT 0 NOT NULL", 0},
-	{"huntersTaken",  "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"dmVictories",   "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"ddVictories",   "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"raceVictories", "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"racesFinished", "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"dmPlayed",      "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"ddPlayed",      "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"racesPlayed",   "MEDIUMINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"achvCount",     "TINYINT UNSIGNED",   "DEFAULT 0 NOT NULL", 0},
+	{"maxWinStreak",  "SMALLINT UNSIGNED",  default = 0},
+	{"mapsPlayed",    "MEDIUMINT UNSIGNED", default = 0},
+	{"mapsBought",    "MEDIUMINT UNSIGNED", default = 0},
+	{"mapsRated",     "SMALLINT UNSIGNED",  default = 0},
+	{"huntersTaken",  "MEDIUMINT UNSIGNED", default = 0},
+	{"dmVictories",   "MEDIUMINT UNSIGNED", default = 0},
+	{"ddVictories",   "MEDIUMINT UNSIGNED", default = 0},
+	{"raceVictories", "MEDIUMINT UNSIGNED", default = 0},
+	{"racesFinished", "MEDIUMINT UNSIGNED", default = 0},
+	{"dmPlayed",      "MEDIUMINT UNSIGNED", default = 0},
+	{"ddPlayed",      "MEDIUMINT UNSIGNED", default = 0},
+	{"racesPlayed",   "MEDIUMINT UNSIGNED", default = 0},
+	{"achvCount",     "TINYINT UNSIGNED",   default = 0},
 	
 	-- Shop
-	{"health100",    "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"selfdestr",    "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"mines",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"oil",          "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"beers",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"invisibility", "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"godmodes30",   "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"flips",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"thunders",     "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
-	{"smoke",        "TINYINT UNSIGNED", "DEFAULT 0 NOT NULL", 0},
+	{"health100",    "TINYINT UNSIGNED", default = 0},
+	{"selfdestr",    "TINYINT UNSIGNED", default = 0},
+	{"mines",        "TINYINT UNSIGNED", default = 0},
+	{"oil",          "TINYINT UNSIGNED", default = 0},
+	{"beers",        "TINYINT UNSIGNED", default = 0},
+	{"invisibility", "TINYINT UNSIGNED", default = 0},
+	{"godmodes30",   "TINYINT UNSIGNED", default = 0},
+	{"flips",        "TINYINT UNSIGNED", default = 0},
+	{"thunders",     "TINYINT UNSIGNED", default = 0},
+	{"smoke",        "TINYINT UNSIGNED", default = 0},
 	
 	-- Effectiveness
-	{"efectiveness",      "FLOAT", "DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_dd",   "FLOAT", "DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_dm",   "FLOAT", "DEFAULT 0 NOT NULL", 0},
-	{"efectiveness_race", "FLOAT", "DEFAULT 0 NOT NULL", 0}
+	{"efectiveness",      "FLOAT", default = 0},
+	{"efectiveness_dd",   "FLOAT", default = 0},
+	{"efectiveness_dm",   "FLOAT", default = 0},
+	{"efectiveness_race", "FLOAT", default = 0},
+	
+	{"players_idx", unique = {"account"}},
 }
+
 local DefaultData = {}
 local FieldsMap = {}
 
@@ -201,22 +205,13 @@ function AccountData.__mt.__newindex(self, k, v)
 end
 
 local function init()
-	for i, fieldInfo in ipairs(AccountDataFields) do
-		DefaultData[fieldInfo[1]] = fieldInfo[4]
-		FieldsMap[fieldInfo[1]] = fieldInfo
-	end
-end
-
-function AccountData.getDbTableFields()
-	local fields = {}
-	for i, fieldInfo in ipairs(AccountDataFields) do
-		local fieldDef = fieldInfo[1].." "..fieldInfo[2].." "..fieldInfo[3]
-		if(fieldInfo.autoInc and DbGetType() == "mysql") then
-			fieldDef = fieldDef.."AUTO_INCREMENT"
+	for i, fieldInfo in ipairs(PlayersTable) do
+		if(#fieldInfo >= 2) then
+			assert(fieldInfo.default ~= nil)
+			DefaultData[fieldInfo[1]] = fieldInfo.default
+			FieldsMap[fieldInfo[1]] = fieldInfo
 		end
-		table.insert(fields, fieldDef)
 	end
-	return table.concat(fields, ", ")
 end
 
 init() -- Do it now (don't use addInitFunc)

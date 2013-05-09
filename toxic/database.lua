@@ -1,6 +1,11 @@
-local g_Connection, g_Ready = false, false
+local g_Connection, g_Ready, g_Driver = false, false, false
 local g_Config = {}
 local SQLITE_DB_PATH = "conf/db.sqlite"
+
+Database = {}
+Database.tblList = {}
+Database.tblMap = {}
+Database.Drivers = {}
 
 DbPrefix = ""
 
@@ -47,23 +52,84 @@ function DbRedefineTable(table_name, definition)
 end
 
 function DbQuery(query, ...)
-	local qh = dbQuery(g_Connection, query, ...)
-	assert(qh)
-	local result, numrows, errmsg = dbPoll(qh, -1)
-	
-	if(result) then
-		return result
-	end
-	
-	outputDebugString("SQL query failed: "..errmsg, 2)
-	--outputDebugString("Query: "..query, 2)
-	DbgTraceBack()
-	return false
+	if(not g_Driver) then return false end
+	return g_Driver:query(query, ...)
 end
 
------------------ SQLite -----------------
+----------------- Database.Table -----------------
 
-local function DbBackupSQLite()
+Database.Table = {}
+Database.Table.__mt = {__index = {}}
+
+function Database.Table.__mt.__index:addColumns(cols)
+	for i, col in ipairs(cols) do
+		assert(col[1])
+		table.insert(self, col)
+		self.colMap[col[1]] = col
+	end
+end
+
+function Database.Table:create(args)
+	assert(args.name)
+	
+	local self = setmetatable({}, Database.Table.__mt)
+	self.name = args.name
+	self.colMap = {}
+	self:addColumns(args)
+	
+	table.insert(Database.tblList, self)
+	Database.tblMap[self.name] = self
+	return self
+end
+
+function Database.Table.__mt:__tostring(tbl)
+	return DbPrefix..self.name
+end
+
+function Database.Table.__mt:__concat(v)
+	return DbPrefix..self.name..tostring(v)
+end
+
+setmetatable(Database.Table, {__call = Database.Table.create})
+
+----------------- Common Driver -----------------
+
+Database.Drivers._common = {}
+function Database.Drivers._common:getColDef(col, constr)
+	local colDef = col[1].." "..col[2]
+	if(not col.null) then
+		colDef = colDef.." NOT NULL"
+	end
+	if(col.default ~= nil) then
+		local defVal = col.default
+		if(col.null and col.default == false) then
+			defVal = "NULL"
+		elseif(col[2]:upper() == "BLOB") then
+			defVal = DbBlob(defVal)
+		elseif(type(col.default) == "string") then
+			defVal = DbStr(defVal)
+		else
+			defVal = tostring(defVal)
+		end
+		colDef = colDef.." DEFAULT "..defVal
+	end
+	
+	if(col.fk) then
+		-- Check it here because when original table is defined foreign table can be not existant
+		local foreignTbl = Database.tblMap[col.fk[1]]
+		assert(foreignTbl and foreignTbl.colMap[col.fk[2]])
+		table.insert(constr, "FOREIGN KEY("..col[1]..") REFERENCES "..DbPrefix..col.fk[1].."("..col.fk[2]..")")
+	end
+	
+	return colDef
+end
+
+----------------- SQLite Driver -----------------
+
+Database.Drivers.SQLite = {}
+Database.Drivers.SQLite.getColDef = Database.Drivers._common.getColDef
+
+function Database.Drivers.SQLite:makeBackup()
 	-- remove backup if there is too many
 	local maxBackups = touint(g_Config.maxBackups, 0)
 	if(maxBackups > 0) then
@@ -99,19 +165,19 @@ local function DbBackupSQLite()
 	g_Connection = dbConnect("sqlite", SQLITE_DB_PATH)
 end
 
-local function DbAutoBackupSQLite()
+local function Database_Drivers_SQLite_AutoBackup()
 	local now = getRealTime().timestamp
 	
 	local backupsInt = touint(g_Config.backupInterval, 0) * 3600 * 24
 	if(backupsInt > 1000 and now - Settings.backupTimestamp < backupsInt - 1000) then return end
 	
 	outputDebugString("Auto-backup...", 3)
-	DbBackupSQLite()
+	Database.Drivers.SQLite:makeBackup()
 	
 	Settings.backupTimestamp = now
 end
 
-local function DbInitSQLite()
+function Database.Drivers.SQLite:init()
 	--fileCopy("backups/db1.sqlite", SQLITE_DB_PATH)
 	g_Connection = dbConnect("sqlite", SQLITE_DB_PATH)
 	if(not g_Connection) then
@@ -121,21 +187,61 @@ local function DbInitSQLite()
 	
 	local backupsInt = touint(g_Config.backupInterval, 0) * 3600 * 24
 	if(backupsInt > 0) then
-		setTimer(DbAutoBackupSQLite, 5000, 1) -- make backup just after start
-		setTimer(DbAutoBackupSQLite, backupsInt, 0)
+		setTimer(Database_Drivers_SQLite_AutoBackup, 5000, 1) -- make backup just after start
+		setTimer(Database_Drivers_SQLite_AutoBackup, backupsInt, 0)
 	end
 	
 	CmdRegister("dbbackup", function()
-		DbBackupSqlite()
+		Database.Drivers.SQLite.makeBackup()
 		privMsg(source, "Backup saved!")
 	end, true)
 	
 	return true
 end
 
------------------ MySQL -----------------
+function Database.Drivers.SQLite:query(query, ...)
+	local qh = dbQuery(g_Connection, query, ...)
+	assert(qh)
+	local result, numrows, errmsg = dbPoll(qh, -1)
+	
+	if(result) then
+		return result
+	end
+	
+	outputDebugString("SQL query failed: "..errmsg, 2)
+	DbgTraceBack()
+	return false
+end
 
-local function DbInitMySQL()
+function Database.Drivers.SQLite:createTable(tbl)
+	local cols, constr = {}, {}
+	for i, col in ipairs(tbl) do
+		if(col[2]) then -- normal column
+			if(col.pk) then -- Primary Key
+				-- AUTO_INCREMENT is not needed for SQLite (and is called different)
+				local colDef = col[1].." INTEGER PRIMARY KEY"
+				table.insert(cols, colDef)
+			else
+				local colDef = self:getColDef(col, constr)
+				table.insert(cols, colDef)
+			end
+		elseif(col.unique) then -- unique constraint
+			table.insert(constr, "CONSTRAINT "..DbPrefix..col[1].." UNIQUE("..table.concat(col.unique, ", ")..")")
+		end
+	end
+	
+	local query = "CREATE TABLE IF NOT EXISTS "..tbl.." ("..
+		table.concat(cols, ", ")..((#cols > 0 and #constr > 0) and ", " or "")..table.concat(constr, ", ")..")"
+	--outputDebugString(query, 3)
+	return self:query(query)
+end
+
+----------------- MySQL Driver -----------------
+
+Database.Drivers.MySQL = {}
+Database.Drivers.MySQL.getColDef = Database.Drivers._common.getColDef
+
+function Database.Drivers.MySQL:init()
 	if(not g_Config.host or not g_Config.dbname or not g_Config.username or not g_Config.password) then
 		outputDebugString("Required setting for MySQL connection has not been found (host, dbname, username, password)", 1)
 		return false
@@ -156,6 +262,52 @@ local function DbInitMySQL()
 	
 	return true
 end
+
+function Database.Drivers.MySQL:query(query, ...)
+	local qh = dbQuery(g_Connection, query, ...)
+	assert(qh)
+	local result, numrows, errmsg = dbPoll(qh, -1)
+	
+	if(result) then
+		return result
+	end
+	
+	outputDebugString("SQL query failed: "..errmsg, 2)
+	DbgTraceBack()
+	return false
+end
+
+function Database.Drivers.MySQL:createTable(tbl)
+	local cols, constr = {}, {}
+	for i, col in ipairs(tbl) do
+		if(col[2]) then -- normal column
+			if(col.pk) then -- Primary Key
+				local colDef = col[1].." "..col[2].." NOT NULL AUTO_INCREMENT PRIMARY KEY"
+				table.insert(cols, colDef)
+			else
+				local colDef = self:getColDef(col, constr)
+				table.insert(cols, colDef)
+			end
+		elseif(col.unique) then -- unique constraint
+			table.insert(constr, "CONSTRAINT "..DbPrefix..col[1].." UNIQUE("..table.concat(col.unique, ", ")..")")
+		end
+	end
+	
+	local query = "CREATE TABLE IF NOT EXISTS "..tbl.." ("..
+		table.concat(cols, ", ")..((#cols > 0 and #constr > 0) and ", " or "")..table.concat(constr, ", ")..")"
+	--outputDebugString(query, 3)
+	return self:query(query)
+end
+
+----------------- MTA Internal Driver -----------------
+
+Database.Drivers.Internal = {}
+
+function Database.Drivers.Internal:query(query, ...)
+	return executeSQLQuery(query, ...)
+end
+
+Database.Drivers.Internal.createTable = Database.Drivers.SQLite.createTable
 
 ----------------- End -----------------
 
@@ -181,25 +333,36 @@ function DbInit()
 		return false
 	end
 	
-	local success = true
+	g_Driver = false
 	if(g_Config.type == "builtin") then
-		DbQuery = executeSQLQuery
+		g_Driver = Database.Drivers.Internal
 	elseif(g_Config.type == "sqlite") then
-		success = DbInitSQLite()
+		g_Driver = Database.Drivers.SQLite
 	elseif(g_Config.type == "mysql") then
-		success = DbInitMySQL()
-	else
+		g_Driver = Database.Drivers.MySQL
+	end
+	
+	if(not g_Driver) then
 		outputDebugString("Unknown database type "..tostring(g_Config.type), 1)
 		return false
 	end
 	
 	DbPrefix = g_Config.tblprefix or ""
 	
-	if(success) then
-		g_Ready = true
+	if(g_Driver.init and not g_Driver:init()) then
+		return false
 	end
 	
-	return success
+	for i, tbl in ipairs(Database.tblList) do
+		local success = g_Driver:createTable(tbl)
+		if(not success) then
+			outputDebugString("Failed to create "..tbl.name.." table", 1)
+			return false
+		end
+	end
+	
+	g_Ready = true
+	return true
 end
 
 function DbIsReady()

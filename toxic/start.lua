@@ -1,6 +1,54 @@
 local g_InitFuncs = {}
 local _addEventHandler
 
+local function createTables()
+	NamesTable = Database.Table{
+		name = "names",
+		{"player", "INT UNSIGNED", fk = {"players", "player"}},
+		{"name", "VARCHAR(32)"},
+		{"names_idx", unique = {"player", "name"}},
+	}
+	
+	MapsTable = Database.Table{
+		name = "maps",
+		{"map", "INT UNSIGNED", pk = true},
+		{"name", "VARCHAR(255)"},
+		{"played", "MEDIUMINT UNSIGNED", default = 0},
+		{"rates", "MEDIUMINT UNSIGNED", default = 0},
+		{"rates_count", "SMALLINT UNSIGNED", default = 0},
+		{"removed", "VARCHAR(255)", default = ""},
+		{"played_timestamp", "INT UNSIGNED", default = 0},
+		{"added_timestamp", "INT UNSIGNED", default = 0},
+	}
+	
+	RatesTable = Database.Table{
+		name = "rates",
+		{"player", "INT UNSIGNED", fk = {"players", "player"}},
+		{"map", "INT UNSIGNED", fk = {"maps", "map"}},
+		{"rate", "TINYINT UNSIGNED"},
+		{"rates_idx", unique = {"map", "player"}},
+	}
+	
+	BestTimesTable = Database.Table{
+		name = "besttimes",
+		{"player", "INT UNSIGNED", fk = {"players", "player"}},
+		{"map", "INT UNSIGNED", fk = {"maps", "map"}},
+		{"time", "INT UNSIGNED"},
+		{"rec", "BLOB", default = ""},
+		{"cp_times", "BLOB", default = ""},
+		{"timestamp", "INT UNSIGNED"},
+		{"besttimes_idx", unique = {"map", "time", "player"}},
+		{"besttimes_idx2", unique = {"map", "player"}},
+	}
+	
+	ProfilesTable = Database.Table{
+		name = "profiles",
+		{"player", "INT UNSIGNED", fk = {"players", "player"}},
+		{"field", "VARCHAR(64)"},
+		{"value", "VARCHAR(255)"},
+	}
+end
+
 local function setupDatabase()
 	if(not DbInit()) then
 		return false
@@ -10,77 +58,9 @@ local function setupDatabase()
 		return false
 	end
 	
-	local err = false
---TODO: unique index <> normal index!!!
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."players ("..
-			AccountData.getDbTableFields()..","..
-			"CONSTRAINT "..DbPrefix.."players_idx UNIQUE(account))")) then
-		err = "Cannot create players table."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."names ("..
-			"player INT UNSIGNED NOT NULL,"..
-			"name VARCHAR(32) NOT NULL,"..
-			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
-			"CONSTRAINT "..DbPrefix.."names_idx UNIQUE(player))")) then
-		err = "Cannot create names table."
-	end
-	
-	-- AUTO_INCREMENT is not needed for SQLite (and is called different)
-	local autoInc = DbGetType() == "mysql" and "AUTO_INCREMENT" or ""
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."maps ("..
-			"map INT UNSIGNED PRIMARY KEY "..autoInc.." NOT NULL,"..
-			"name VARCHAR(255) NOT NULL,"..
-			"played MEDIUMINT UNSIGNED DEFAULT 0 NOT NULL,"..
-			"rates MEDIUMINT UNSIGNED DEFAULT 0 NOT NULL,"..
-			"rates_count SMALLINT UNSIGNED DEFAULT 0 NOT NULL,"..
-			"removed VARCHAR(255) DEFAULT '' NOT NULL,"..
-			"played_timestamp INT UNSIGNED DEFAULT 0 NOT NULL,"..
-			"added_timestamp INT UNSIGNED DEFAULT 0 NOT NULL,"..
-			"CONSTRAINT "..DbPrefix.."maps_idx UNIQUE(name))")) then
-		err = "Cannot create maps table."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."rates ("..
-			"player INT UNSIGNED NOT NULL,"..
-			"map INT UNSIGNED NOT NULL,"..
-			"rate TINYINT UNSIGNED NOT NULL,"..
-			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
-			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map),"..
-			"CONSTRAINT "..DbPrefix.."rates_idx UNIQUE(map, player))")) then
-		err = "Cannot create rates table."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."besttimes ("..
-			"player INT UNSIGNED NOT NULL,"..
-			"map INT UNSIGNED NOT NULL,"..
-			"time INT UNSIGNED NOT NULL,"..
-			"rec BLOB DEFAULT x'' NOT NULL,"..
-			"cp_times BLOB DEFAULT x'' NOT NULL,"..
-			"timestamp INT UNSIGNED,"..
-			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player),"..
-			"FOREIGN KEY(map) REFERENCES "..DbPrefix.."maps(map),"..
-			"CONSTRAINT "..DbPrefix.."besttimes_idx UNIQUE(map, time, player),"..
-			"CONSTRAINT "..DbPrefix.."besttimes_idx2 UNIQUE(map, player))")) then
-		err = "Cannot create besttimes table."
-	end
-	
-	if(not err and not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."profiles ("..
-			"player INT UNSIGNED NOT NULL,"..
-			"field VARCHAR(64) NOT NULL,"..
-			"value VARCHAR(255) NOT NULL,"..
-			"FOREIGN KEY(player) REFERENCES "..DbPrefix.."players(player))")) then
-		err = "Cannot create profiles table."
-	end
-	
 	Settings.createDbTbl()
 	
+	local err = false
 	local currentVer = 148
 	local ver = Settings.version
 	if(ver == 0) then
@@ -90,11 +70,6 @@ local function setupDatabase()
 	end
 	
 	if(ver < currentVer) then
-		if(not err and ver < 146) then
-			if(not DbQuery("ALTER TABLE "..DbPrefix.."maps ADD COLUMN added_timestamp INT DEFAULT 0 NOT NULL")) then
-				err = "Failed to add added_timestamp column."
-			end
-		end
 		if(not err and ver < 147) then
 			if(not DbQuery("ALTER TABLE "..DbPrefix.."players ADD COLUMN achvCount INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add achvCount column."
@@ -252,6 +227,8 @@ end
 local function init()
 	math.randomseed(getTickCount())
 	createElement("TXC413b9d90", "TXC413b9d90")
+	
+	createTables()
 	
 	-- Enable addEventHandler function
 	addEventHandler = _addEventHandler
