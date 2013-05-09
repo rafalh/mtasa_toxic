@@ -23,7 +23,6 @@ addEvent("race.onRankChange")
 addEvent("race.onSpecPrev")
 addEvent("race.onSpecNext")
 addEvent("race.onSpecTargetChange")
-addEvent("race.onStartHurry")
 
 addEventHandler('onClientResourceStart', g_ResRoot,
 	function()
@@ -590,10 +589,6 @@ function checkpointReached(elem)
         triggerEvent('onClientPlayerFinish', g_Me)
 		toggleAllControls(false, true, false)
 	end
-end
-
-function startHurry()
-	triggerEvent("race.onStartHurry", resourceRoot, isPlayerFinished(g_Me))
 end
 
 function setTimeLeft(timeLeft)

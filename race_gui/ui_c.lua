@@ -230,6 +230,17 @@ addEventHandler("race.onRaceLaunch", root, function(duration)
 	end
 end)
 
+local function startHurry()
+	if not g_Finished then
+		local screenWidth, screenHeight = guiGetScreenSize()
+		g_GUI.hurry = guiCreateStaticImage(screenWidth/2 - g_Images.hurry.w/2, screenHeight - g_Images.hurry.h - 40, g_Images.hurry.w, g_Images.hurry.h, g_Images.hurry.path, false, nil)
+		guiSetAlpha(g_GUI.hurry, 0)
+		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeIn(800))
+		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiPulse(1000))
+	end
+	guiLabelSetColor(g_GUI.timeleft, 255, 0, 0)
+end
+
 function updateTime()
 	local tick = getTickCount()
 	local msPassed = tick - g_StartTick
@@ -257,18 +268,6 @@ addEvent("onClientSetNextMap", true)
 addEventHandler("onClientSetNextMap", root, function(mapName)
 	g_NextMap = mapName
 	g_dxGUI.nextdisplay:text("Next map: "..g_HudValueColor..(mapName or "not set"))
-end)
-
-addEvent("race.onStartHurry")
-addEventHandler("race.onStartHurry", root, function(finished)
-	if not finished then
-		local screenWidth, screenHeight = guiGetScreenSize()
-		g_GUI.hurry = guiCreateStaticImage(screenWidth/2 - g_Images.hurry.w/2, screenHeight - g_Images.hurry.h - 40, g_Images.hurry.w, g_Images.hurry.h, g_Images.hurry.path, false, nil)
-		guiSetAlpha(g_GUI.hurry, 0)
-		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiFadeIn(800))
-		Animation.createAndPlay(g_GUI.hurry, Animation.presets.guiPulse(1000))
-	end
-	guiLabelSetColor(g_GUI.timeleft, 255, 0, 0)
 end)
 
 addEvent("race.onRankChange")

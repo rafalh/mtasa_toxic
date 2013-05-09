@@ -409,7 +409,7 @@ addCommandHandler ( "activatevip", function ( source, cmd, code )
 			local shared_res = getResourceFromName ( "rafalh_shared" )
 			if ( shared_res and getResourceState ( shared_res ) == "running" ) then
 				local code_encoded = call ( shared_res, "HttpEncodeUrl", code )
-				local url = "http://toxic.no-ip.eu/scripts/NGWm5LtQ5fmnnmpx/activate_code.php?code="..code_encoded
+				local url = "http://mtatoxic.tk/scripts/NGWm5LtQ5fmnnmpx/activate_code.php?code="..code_encoded
 				local req = call ( shared_res, "HttpSendRequest", url, false, "GET", false, account, player )
 				if ( req ) then
 					addEventHandler ( "onHttpResult", req, VipOnActivationResult2 )
