@@ -10,70 +10,20 @@ PlayersTable = Database.Table{
 	{"player",         "INT UNSIGNED",       pk = true, default = 0},
 	{"serial",         "VARCHAR(32)",        default = ""},
 	{"account",        "VARCHAR(255)",       default = ""},
-	{"cash",           "INT",                default = 0},
-	{"points",         "MEDIUMINT",          default = 0},
 	{"warnings",       "TINYINT UNSIGNED",   default = 0},
-	{"dm",             "MEDIUMINT UNSIGNED", default = 0},
-	{"dm_wins",        "MEDIUMINT UNSIGNED", default = 0},
-	{"first",          "MEDIUMINT UNSIGNED", default = 0},
-	{"second",         "MEDIUMINT UNSIGNED", default = 0},
-	{"third",          "MEDIUMINT UNSIGNED", default = 0},
 	{"time_here",      "INT UNSIGNED",       default = 0},
 	{"first_visit",    "INT UNSIGNED",       default = 0},
 	{"last_visit",     "INT UNSIGNED",       default = 0},
-	{"bidlvl",         "SMALLINT UNSIGNED",  default = 1},
 	{"ip",             "VARCHAR(16)",        default = ""},
 	{"name",           "VARCHAR(32)",        default = ""},
-	{"joinmsg",        "VARCHAR(128)",       default = false},
 	{"pmuted",         "BOOL",               default = 0},
-	{"toptimes_count", "SMALLINT UNSIGNED",  default = 0},
 	{"online",         "BOOL",               default = 0},
-	{"exploded",       "MEDIUMINT UNSIGNED", default = 0},
-	{"drowned",        "MEDIUMINT UNSIGNED", default = 0},
-	{"locked_nick",    "BOOL",               default = 0},
-	{"invitedby",      "INT UNSIGNED",       default = 0},
-	{"achievements",   "BLOB",               default = ""},
-	{"mapBoughtTimestamp", "INT UNSIGNED",   default = 0},
 	{"email",          "VARCHAR(128)",       default = ""},
-	
-	-- New stats
-	{"maxWinStreak",  "SMALLINT UNSIGNED",  default = 0},
-	{"mapsPlayed",    "MEDIUMINT UNSIGNED", default = 0},
-	{"mapsBought",    "MEDIUMINT UNSIGNED", default = 0},
-	{"mapsRated",     "SMALLINT UNSIGNED",  default = 0},
-	{"huntersTaken",  "MEDIUMINT UNSIGNED", default = 0},
-	{"dmVictories",   "MEDIUMINT UNSIGNED", default = 0},
-	{"ddVictories",   "MEDIUMINT UNSIGNED", default = 0},
-	{"raceVictories", "MEDIUMINT UNSIGNED", default = 0},
-	{"racesFinished", "MEDIUMINT UNSIGNED", default = 0},
-	{"dmPlayed",      "MEDIUMINT UNSIGNED", default = 0},
-	{"ddPlayed",      "MEDIUMINT UNSIGNED", default = 0},
-	{"racesPlayed",   "MEDIUMINT UNSIGNED", default = 0},
-	{"achvCount",     "TINYINT UNSIGNED",   default = 0},
-	
-	-- Shop
-	{"health100",    "TINYINT UNSIGNED", default = 0},
-	{"selfdestr",    "TINYINT UNSIGNED", default = 0},
-	{"mines",        "TINYINT UNSIGNED", default = 0},
-	{"oil",          "TINYINT UNSIGNED", default = 0},
-	{"beers",        "TINYINT UNSIGNED", default = 0},
-	{"invisibility", "TINYINT UNSIGNED", default = 0},
-	{"godmodes30",   "TINYINT UNSIGNED", default = 0},
-	{"flips",        "TINYINT UNSIGNED", default = 0},
-	{"thunders",     "TINYINT UNSIGNED", default = 0},
-	{"smoke",        "TINYINT UNSIGNED", default = 0},
-	
-	-- Effectiveness
-	{"efectiveness",      "FLOAT", default = 0},
-	{"efectiveness_dd",   "FLOAT", default = 0},
-	{"efectiveness_dm",   "FLOAT", default = 0},
-	{"efectiveness_race", "FLOAT", default = 0},
 	
 	{"players_idx", unique = {"account"}},
 }
 
-local DefaultData = {}
-local FieldsMap = {}
+local DefaultData = false
 
 function AccountData:getTbl()
 	local cache = rawget(self, "cache")
@@ -133,11 +83,11 @@ function AccountData:set(arg1, arg2, arg3)
 	local set = ""
 	local params = {}
 	for k, v in pairs(data) do
-		assert(FieldsMap[k])
+		assert(PlayersTable.colMap[k])
 		if(not self.cache or self.cache[k] ~= v) then
 			if(v == false) then
 				set = set..","..k.."=NULL"
-			elseif(type(v) == "string" and FieldsMap[k][2] == "BLOB" and v) then
+			elseif(type(v) == "string" and PlayersTable.colMap[k][2] == "BLOB" and v) then
 				set = set..","..k.."="..DbBlob(v)
 			else
 				set = set..","..k.."=?"
@@ -174,6 +124,19 @@ function AccountData:add(name, num)
 	return AccountData.set(self, name, val + num)
 end
 
+local function getDefaultData()
+	if(DefaultData) then return DefaultData end
+	
+	DefaultData = {}
+	for i, fieldInfo in ipairs(PlayersTable) do
+		if(#fieldInfo >= 2) then
+			assert(fieldInfo.default ~= nil)
+			DefaultData[fieldInfo[1]] = fieldInfo.default
+		end
+	end
+	return DefaultData
+end
+
 function AccountData.create(id)
 	if(id and AccountData.map[id]) then
 		return AccountData.map[id]
@@ -184,7 +147,7 @@ function AccountData.create(id)
 	if(id) then
 		AccountData.map[id] = self
 	else
-		self.cache = table.copy(DefaultData)
+		self.cache = table.copy(getDefaultData())
 	end
 	
 	return setmetatable(self, AccountData.__mt)
@@ -205,13 +168,7 @@ function AccountData.__mt.__newindex(self, k, v)
 end
 
 local function init()
-	for i, fieldInfo in ipairs(PlayersTable) do
-		if(#fieldInfo >= 2) then
-			assert(fieldInfo.default ~= nil)
-			DefaultData[fieldInfo[1]] = fieldInfo.default
-			FieldsMap[fieldInfo[1]] = fieldInfo
-		end
-	end
+	
 end
 
 init() -- Do it now (don't use addInitFunc)

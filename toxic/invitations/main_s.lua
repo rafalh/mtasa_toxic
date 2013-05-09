@@ -1,3 +1,7 @@
+PlayersTable:addColumns{
+	{"invitedby",      "INT UNSIGNED",       default = 0},
+}
+
 local function IvTimerProc ( player )
 	-- give award for player who invited
 	local pdata = Player.fromEl(player)

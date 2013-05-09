@@ -8,6 +8,40 @@ local g_Stats = {
 	"maxWinStreak", "toptimes_count",
 	"bidlvl", "time_here", "exploded", "drowned"}
 
+PlayersTable:addColumns{
+	-- Old stats
+	{"cash",           "INT",                default = 0},
+	{"points",         "MEDIUMINT",          default = 0},
+	{"dm",             "MEDIUMINT UNSIGNED", default = 0},
+	{"dm_wins",        "MEDIUMINT UNSIGNED", default = 0},
+	{"first",          "MEDIUMINT UNSIGNED", default = 0},
+	{"second",         "MEDIUMINT UNSIGNED", default = 0},
+	{"third",          "MEDIUMINT UNSIGNED", default = 0},
+	{"exploded",       "MEDIUMINT UNSIGNED", default = 0},
+	{"drowned",        "MEDIUMINT UNSIGNED", default = 0},
+	
+	-- New stats
+	{"maxWinStreak",  "SMALLINT UNSIGNED",  default = 0},
+	{"mapsPlayed",    "MEDIUMINT UNSIGNED", default = 0},
+	{"mapsBought",    "MEDIUMINT UNSIGNED", default = 0},
+	{"mapsRated",     "SMALLINT UNSIGNED",  default = 0},
+	{"huntersTaken",  "MEDIUMINT UNSIGNED", default = 0},
+	{"dmVictories",   "MEDIUMINT UNSIGNED", default = 0},
+	{"ddVictories",   "MEDIUMINT UNSIGNED", default = 0},
+	{"raceVictories", "MEDIUMINT UNSIGNED", default = 0},
+	{"racesFinished", "MEDIUMINT UNSIGNED", default = 0},
+	{"dmPlayed",      "MEDIUMINT UNSIGNED", default = 0},
+	{"ddPlayed",      "MEDIUMINT UNSIGNED", default = 0},
+	{"racesPlayed",   "MEDIUMINT UNSIGNED", default = 0},
+	{"achvCount",     "TINYINT UNSIGNED",   default = 0},
+	
+	-- Effectiveness
+	{"efectiveness",      "FLOAT", default = 0},
+	{"efectiveness_dd",   "FLOAT", default = 0},
+	{"efectiveness_dm",   "FLOAT", default = 0},
+	{"efectiveness_race", "FLOAT", default = 0},
+}
+
 local function StAccountDataChange(accountData, name, newValue)
 	if(not table.find(g_Stats, name)) then return end -- not a stat
 	

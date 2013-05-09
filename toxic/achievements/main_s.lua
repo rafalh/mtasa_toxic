@@ -4,6 +4,10 @@ local g_NameToAchv = {}
 addEvent("main.onAchvActivate", true)
 --addEvent("main.onAchvListReq", true)
 
+PlayersTable:addColumns{
+	{"achievements", "BLOB", default = ""},
+}
+
 function AchvGetCount()
 	return #g_Achievements
 end

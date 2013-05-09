@@ -1,3 +1,7 @@
+PlayersTable:addColumns{
+	{"locked_nick", "BOOL", default = 0},
+}
+
 function NlCheckPlayer(player, name, change)
 	name = name:lower():gsub("#%x%x%x%x%x%x", "") -- FIXME
 	

@@ -7,6 +7,10 @@ local g_MapInfo = false
 local g_TopTimes = false
 local g_PlayerTimes = {}
 
+PlayersTable:addColumns{
+	{"toptimes_count", "SMALLINT UNSIGNED", default = 0},
+}
+
 function addPlayerTime(player_id, map_id, time)
 	local wasInTop = false
 	local now = getRealTime().timestamp

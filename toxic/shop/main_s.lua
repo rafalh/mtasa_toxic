@@ -17,6 +17,23 @@ local VIP_PRICE = 0.6
 	-- field - database field
 g_ShopItems = {}
 
+PlayersTable:addColumns{
+	{"bidlvl", "SMALLINT UNSIGNED", default = 1},
+	{"mapBoughtTimestamp", "INT UNSIGNED", default = 0},
+	{"joinmsg", "VARCHAR(128)", default = false},
+	
+	{"health100",    "TINYINT UNSIGNED", default = 0},
+	{"selfdestr",    "TINYINT UNSIGNED", default = 0},
+	{"mines",        "TINYINT UNSIGNED", default = 0},
+	{"oil",          "TINYINT UNSIGNED", default = 0},
+	{"beers",        "TINYINT UNSIGNED", default = 0},
+	{"invisibility", "TINYINT UNSIGNED", default = 0},
+	{"godmodes30",   "TINYINT UNSIGNED", default = 0},
+	{"flips",        "TINYINT UNSIGNED", default = 0},
+	{"thunders",     "TINYINT UNSIGNED", default = 0},
+	{"smoke",        "TINYINT UNSIGNED", default = 0},
+}
+
 local function ShpGetInventoryRequest ()
 	local inventory = {}
 	local pdata = Player.fromEl(client)
