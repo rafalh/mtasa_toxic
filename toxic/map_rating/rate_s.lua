@@ -14,24 +14,24 @@ function RtPlayerRate(rate)
 	
 	rate = rate * 2
 	local map_id = map:getId()
-	local rows = DbQuery("SELECT rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local rows = DbQuery("SELECT rates, rates_count FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 	local mapData = rows and rows[1]
 	
-	local rows = DbQuery("SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
+	local rows = DbQuery("SELECT rate FROM "..RatesTable.." WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
 	local oldRate = rows and rows[1] and rows[1].rate
 	if(not oldRate or Settings.allow_rate_change) then
 		if(oldRate) then
 			assert(mapData.rates_count > 0 and mapData.rates > 0)
 			mapData.rates = mapData.rates - oldRate + rate
-			DbQuery("UPDATE rafalh_rates SET rate=? WHERE player=? AND map=?", rate, pdata.id, map_id)
+			DbQuery("UPDATE "..RatesTable.." SET rate=? WHERE player=? AND map=?", rate, pdata.id, map_id)
 		else
 			mapData.rates_count = mapData.rates_count + 1
 			mapData.rates = mapData.rates + rate
-			DbQuery("INSERT INTO rafalh_rates (player, map, rate) VALUES(?, ?, ?)", pdata.id, map_id, rate)
+			DbQuery("INSERT INTO "..RatesTable.." (player, map, rate) VALUES(?, ?, ?)", pdata.id, map_id, rate)
 			pdata.accountData:add("mapsRated", 1)
 		end
 		
-		DbQuery("UPDATE rafalh_maps SET rates=?, rates_count=? WHERE map=?", mapData.rates, mapData.rates_count, map_id)
+		DbQuery("UPDATE "..MapsTable.." SET rates=?, rates_count=? WHERE map=?", mapData.rates, mapData.rates_count, map_id)
 		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates / mapData.rates_count)
 		
 		BtSendMapInfo(false)
@@ -44,7 +44,7 @@ local function RtShowGuiForPlayer(player, map_id)
 	local pdata = Player.fromEl(player)
 	if(not pdata.id) then return end
 	
-	local rows = DbQuery("SELECT rate FROM rafalh_rates WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
+	local rows = DbQuery("SELECT rate FROM "..RatesTable.." WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
 	if(not rows or not rows[1]) then
 		triggerClientEvent(player, "onClientSetRateGuiVisibleReq", g_Root, true)
 	end

@@ -11,7 +11,7 @@ local function CmdAlias(message, arg)
 		local pdata = Player.fromEl(player)
 		local aliases = ""
 		if(pdata.id) then
-			local rows = DbQuery("SELECT name FROM rafalh_names WHERE player=?", pdata.id)
+			local rows = DbQuery("SELECT name FROM "..NamesTable.." WHERE player=?", pdata.id)
 			for i, data in ipairs(rows) do
 				if(aliases ~= "") then
 					aliases = aliases..", "

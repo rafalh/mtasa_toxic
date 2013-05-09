@@ -79,7 +79,7 @@ function AccountData:getTbl()
 	local cache = rawget(self, "cache")
 	if(not cache) then
 		assert(self.id)
-		local rows = DbQuery("SELECT * FROM rafalh_players WHERE player=? LIMIT 1", self.id)
+		local rows = DbQuery("SELECT * FROM "..PlayersTable.." WHERE player=? LIMIT 1", self.id)
 		cache = rows[1] or false
 		rawset(self, "cache", cache)
 	end
@@ -161,7 +161,7 @@ function AccountData:set(arg1, arg2, arg3)
 		-- because unpack has to be on the last place. If it's not only one element from table is used.
 		table.insert(params, self.id)
 		
-		return DbQuery("UPDATE rafalh_players SET "..set:sub(2).." WHERE player=?", unpack(params))
+		return DbQuery("UPDATE "..PlayersTable.." SET "..set:sub(2).." WHERE player=?", unpack(params))
 	else
 		return true
 	end

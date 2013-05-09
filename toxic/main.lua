@@ -60,7 +60,7 @@ local function onPlayerJoin()
 		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", player:getName(true))
 	end
 	
-	local rows = DbQuery("SELECT pmuted FROM rafalh_players WHERE serial=? LIMIT 1", player:getSerial())
+	local rows = DbQuery("SELECT pmuted FROM "..PlayersTable.." WHERE serial=? LIMIT 1", player:getSerial())
 	local pmuted = rows and rows[1] and rows[1].pmuted
 	if(pmuted == 1) then
 		outputMsg(g_Root, Styles.red, "%s has got permanent mute!", player:getName(true))

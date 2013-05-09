@@ -86,7 +86,7 @@ local function onPollStarting ( poll )
 							elseif ( show_ratings ) then
 								local map = Map.create(opt[4])
 								local map_id = map:getId()
-								local rows = DbQuery ( "SELECT rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id )
+								local rows = DbQuery ( "SELECT rates, rates_count FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id )
 								opt[1] = map:getName()
 								
 								if(rows[1].rates_count > 0) then

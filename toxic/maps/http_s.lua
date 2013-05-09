@@ -21,10 +21,10 @@ function getMaps ( map, order, desc, limit, start )
 		end
 	end
 	
-	local rows = DbQuery ( "SELECT COUNT(*) AS c FROM rafalh_maps"..where )
+	local rows = DbQuery ( "SELECT COUNT(*) AS c FROM "..MapsTable..where )
 	local maps_count = rows[1].c
 	
-	local query = "SELECT map, name, played, rates, rates_count FROM rafalh_maps"..where
+	local query = "SELECT map, name, played, rates, rates_count FROM "..MapsTable..where
 	if ( order ) then
 		query = query.." ORDER BY "..tostring ( order )..( ( desc and " DESC" ) or "" )
 	end
@@ -51,7 +51,7 @@ function getMapInfo(mapId)
 	mapId = tonumber(mapId)
 	if(not mapId) then return false end
 	
-	local rows = DbQuery("SELECT * FROM rafalh_maps WHERE map=?", mapId)
+	local rows = DbQuery("SELECT * FROM "..MapsTable.." WHERE map=?", mapId)
 	local data = rows and rows[1]
 	if(not data) then return false end
 	
@@ -61,7 +61,7 @@ function getMapInfo(mapId)
 		data.author = getResourceInfo(mapRes, "author")
 	end
 	
-	local rows = DbQuery("SELECT bt.player, bt.time, p.name FROM rafalh_besttimes bt, rafalh_players p WHERE bt.map=? AND p.player=bt.player ORDER BY bt.time LIMIT 8", mapId)
+	local rows = DbQuery("SELECT bt.player, bt.time, p.name FROM "..BestTimesTable.." bt, "..PlayersTable.." p WHERE bt.map=? AND p.player=bt.player ORDER BY bt.time LIMIT 8", mapId)
 	if(rows) then
 		for i, data in ipairs(rows) do
 			data.name = data.name:gsub("#%x%x%x%x%x%x", "")

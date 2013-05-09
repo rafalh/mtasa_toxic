@@ -23,7 +23,7 @@ local function CmdTop (message, arg)
 	if (db_tops[top_type]) then
 		local field = db_tops[top_type][2]
 		scriptMsg ("Top "..db_tops[top_type][1]..":")
-		rows = DbQuery ("SELECT name, "..field.." FROM rafalh_players WHERE online=1 AND serial<>'0' ORDER BY "..field.." DESC LIMIT 3")
+		rows = DbQuery ("SELECT name, "..field.." FROM "..PlayersTable.." WHERE online=1 AND serial<>'0' ORDER BY "..field.." DESC LIMIT 3")
 		for i, data in ipairs (rows) do
 			if (db_tops[top_type][3]) then
 				data[field] = db_tops[top_type][3] (data[field])
@@ -69,7 +69,7 @@ local function CmdGlobalTop (message, arg)
 	if (db_tops[top_type]) then
 		local field = db_tops[top_type][2]
 		scriptMsg ("Global Top "..db_tops[top_type][1]..":")
-		rows = DbQuery ("SELECT name, "..field.." FROM rafalh_players WHERE serial<>'0' ORDER BY "..field.." DESC LIMIT 3")
+		rows = DbQuery ("SELECT name, "..field.." FROM "..PlayersTable.." WHERE serial<>'0' ORDER BY "..field.." DESC LIMIT 3")
 		for i, data in ipairs (rows) do
 			if (db_tops[top_type][3]) then
 				data[field] = db_tops[top_type][3] (data[field])

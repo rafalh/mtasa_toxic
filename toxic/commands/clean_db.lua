@@ -23,7 +23,7 @@ end
 
 local function RemoveUnknownPlayers(fix)
 	local idList = {}
-	local rows = DbQuery("SELECT player FROM rafalh_players")
+	local rows = DbQuery("SELECT player FROM "..PlayersTable)
 	for i, data in ipairs(rows) do
 		table.insert(idList, data.player)
 	end
@@ -31,7 +31,7 @@ local function RemoveUnknownPlayers(fix)
 	local idListStr = table.concat(idList, ",")
 	
 	local rowsCount = 0
-	local tables = { "rafalh_names", "rafalh_rates", "rafalh_besttimes", "rafalh_profiles" }
+	local tables = { NamesTable, RatesTable, BestTimesTable, ProfilesTable }
 	for i, tblName in ipairs(tables) do
 		local rows = DbQuery ("SELECT player FROM "..tblName.." WHERE player NOT IN ("..idListStr..")")
 		if(rows and #rows > 0) then
@@ -72,10 +72,10 @@ local function RemoveUnknownTables(fix)
 end
 
 local function RemoveTempPlayers(fix)
-	local rows = DbQuery("SELECT count(player) AS c FROM rafalh_players")
+	local rows = DbQuery("SELECT count(player) AS c FROM "..PlayersTable)
 	local totalPlayersCount = rows[1].c
 	
-	local rows = DbQuery("SELECT player FROM rafalh_players WHERE time_here < 60 AND online=0 AND toptimes_count=0")
+	local rows = DbQuery("SELECT player FROM "..PlayersTable.." WHERE time_here < 60 AND online=0 AND toptimes_count=0")
 	local tempPlayersCount = #rows
 	if(fix and #rows > 0) then
 		local idList = {}
@@ -84,21 +84,21 @@ local function RemoveTempPlayers(fix)
 		end
 		
 		local idListStr = table.concat(idList, ",")
-		DbQuery ("DELETE FROM rafalh_players WHERE player IN ("..idListStr..")")
-		DbQuery ("DELETE FROM rafalh_names WHERE player IN ("..idListStr..")")
-		DbQuery ("DELETE FROM rafalh_rates WHERE player IN ("..idListStr..")")
-		DbQuery ("DELETE FROM rafalh_besttimes WHERE player IN ("..idListStr..")")
-		DbQuery ("DELETE FROM rafalh_profiles WHERE player IN ("..idListStr..")")
+		DbQuery ("DELETE FROM "..PlayersTable.." WHERE player IN ("..idListStr..")")
+		DbQuery ("DELETE FROM "..NamesTable.." WHERE player IN ("..idListStr..")")
+		DbQuery ("DELETE FROM "..RatesTable.." WHERE player IN ("..idListStr..")")
+		DbQuery ("DELETE FROM "..BestTimesTable.." WHERE player IN ("..idListStr..")")
+		DbQuery ("DELETE FROM "..ProfilesTable.." WHERE player IN ("..idListStr..")")
 	end
 	
 	privMsg(source, "Temp players"..(fix and " (fixed)" or "")..": %u/%u", tempPlayersCount, totalPlayersCount)
 end
 
 local function RemoveUnknownMaps(fix)
-	local rows = DbQuery("SELECT count(map) AS c FROM rafalh_maps")
+	local rows = DbQuery("SELECT count(map) AS c FROM "..MapsTable)
 	local totalMapsCount = rows[1].c
 	
-	local rows = DbQuery("SELECT map, name FROM rafalh_maps")
+	local rows = DbQuery("SELECT map, name FROM "..MapsTable)
 	local unkMaps = {}
 	for i, data in ipairs (rows) do
 		if(not getResourceFromName(data.name)) then
@@ -109,7 +109,7 @@ local function RemoveUnknownMaps(fix)
 	if(fix and #unkMaps > 0) then
 		for i, mapId in ipairs(unkMaps) do
 			-- Decrement Top Times count
-			local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3", mapId)
+			local rows = DbQuery("SELECT player FROM "..BestTimesTable.." WHERE map=? ORDER BY time LIMIT 3", mapId)
 			for j, data in ipairs(rows) do
 				local accountData = AccountData.create(data.player)
 				accountData:add("toptimes_count", -1)
@@ -117,22 +117,22 @@ local function RemoveUnknownMaps(fix)
 		end
 		
 		local unkMapsStr = table.concat(unkMaps, ",")
-		DbQuery("DELETE FROM rafalh_maps WHERE map IN ("..unkMapsStr..")")
-		DbQuery("DELETE FROM rafalh_besttimes WHERE map IN ("..unkMapsStr..")")
-		DbQuery("DELETE FROM rafalh_rates WHERE map IN ("..unkMapsStr..")")
+		DbQuery("DELETE FROM "..MapsTable.." WHERE map IN ("..unkMapsStr..")")
+		DbQuery("DELETE FROM "..BestTimesTable.." WHERE map IN ("..unkMapsStr..")")
+		DbQuery("DELETE FROM "..RatesTable.." WHERE map IN ("..unkMapsStr..")")
 	end
 	
 	privMsg(source, "Unknown maps"..(fix and " (fixed)" or "")..": %u/%u", #unkMaps, totalMapsCount)
 end
 
 local function RecalcTopTimesCount()
-	DbQuery("UPDATE rafalh_players SET toptimes_count=0")
+	DbQuery("UPDATE "..PlayersTable.." SET toptimes_count=0")
 	
-	local rows = DbQuery("SELECT map FROM rafalh_maps")
+	local rows = DbQuery("SELECT map FROM "..MapsTable)
 	for i, data in ipairs (rows) do
-		local rows2 = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3", data.map)
+		local rows2 = DbQuery("SELECT player FROM "..BestTimesTable.." WHERE map=? ORDER BY time LIMIT 3", data.map)
 		for j, data2 in ipairs (rows2) do
-			DbQuery("UPDATE rafalh_players SET toptimes_count=toptimes_count+1 WHERE player=?", data2.player)
+			DbQuery("UPDATE "..PlayersTable.." SET toptimes_count=toptimes_count+1 WHERE player=?", data2.player)
 		end
 	end
 	
@@ -140,11 +140,11 @@ local function RecalcTopTimesCount()
 end
 
 local function CheckAchievements(fix)
-	local rows = DbQuery("SELECT count(player) AS c FROM rafalh_players")
+	local rows = DbQuery("SELECT count(player) AS c FROM "..PlayersTable.."")
 	local totalPlayersCount = rows[1].c
 	local rowsCount = 0
 	
-	local rows = DbQuery("SELECT player, achievements FROM rafalh_players WHERE achievements<>x''")
+	local rows = DbQuery("SELECT player, achievements FROM "..PlayersTable.." WHERE achievements<>x''")
 	for i, data in ipairs(rows) do
 		local achvStr = data.achievements
 		local achvList = {string.byte(achvStr, 1, achvStr:len())}

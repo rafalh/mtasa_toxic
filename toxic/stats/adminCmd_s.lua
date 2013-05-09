@@ -46,7 +46,7 @@ local function CmdResetStats(message, arg)
 	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))
 	local pdata = player and Player.fromEl(player)
 	if(pdata and pdata.id) then
-		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", pdata.id)
+		DbQuery("DELETE FROM "..BestTimesTable.." WHERE player=?", pdata.id)
 		local stats = {
 			cash = 0, bidlvl = 0, points = 0, dm = 0, dm_wins = 0,
 			first = 0, second = 0, third = 0, toptimes_count = 0 }

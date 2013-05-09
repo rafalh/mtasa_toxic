@@ -310,7 +310,7 @@ local function FixMapResName(map)
 		end
 	end
 	
-	DbQuery("UPDATE rafalh_maps SET name=? WHERE name=?", new_map_res_name, map_res_name)
+	DbQuery("UPDATE "..MapsTable.." SET name=? WHERE name=?", new_map_res_name, map_res_name)
 	
 	return 1, "Renamed "..map_res_name.." to "..new_map_res_name
 end

@@ -17,7 +17,7 @@ local function CmdRating(message, arg)
 	if(map) then
 		local map_id = map:getId()
 		local map_name = map:getName()
-		local rows = DbQuery("SELECT rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+		local rows = DbQuery("SELECT rates, rates_count FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 		local rating = 0
 		if(rows[1].rates_count > 0) then
 			rating = rows[1].rates / rows[1].rates_count

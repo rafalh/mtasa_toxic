@@ -49,7 +49,7 @@ function getPlayerProfile(playerId)
 	end
 	
 	-- Query database
-	local rows = DbQuery("SELECT * FROM rafalh_profiles WHERE player=?", playerId)
+	local rows = DbQuery("SELECT * FROM "..ProfilesTable.." WHERE player=?", playerId)
 	if(not rows) then return false end
 	
 	local result = {}
@@ -86,9 +86,9 @@ function setPlayerProfile(id, data)
 			end
 			data[field] = value
 			if(value) then
-				DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field=?", id, field)
+				DbQuery("DELETE FROM "..ProfilesTable.." WHERE player=? AND field=?", id, field)
 				if(value ~= "") then
-					DbQuery("INSERT INTO rafalh_profiles (player, field, value) VALUES(?, ?, ?)", id, field, value)
+					DbQuery("INSERT INTO "..ProfilesTable.." (player, field, value) VALUES(?, ?, ?)", id, field, value)
 				end
 			end
 		else

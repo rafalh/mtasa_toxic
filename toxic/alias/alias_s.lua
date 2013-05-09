@@ -3,9 +3,9 @@ local function AlAddPlayerAlias(player, name)
 	local pdata = Player.fromEl(player)
 	if(not pdata.id) then return end -- guest
 	
-	local rows = DbQuery("SELECT player FROM rafalh_names WHERE player=? AND name=? LIMIT 1", pdata.id, name)
+	local rows = DbQuery("SELECT player FROM "..NamesTable.." WHERE player=? AND name=? LIMIT 1", pdata.id, name)
 	if(not rows or not rows[1]) then
-		DbQuery("INSERT INTO rafalh_names (player, name) VALUES (?, ?)", pdata.id, name)
+		DbQuery("INSERT INTO "..NamesTable.." (player, name) VALUES (?, ?)", pdata.id, name)
 	end
 end
 

@@ -67,7 +67,7 @@ function Player:setAccount(account)
 	
 	local id = false
 	if(account) then
-		local rows = DbQuery("SELECT player, online FROM rafalh_players WHERE account=? LIMIT 1", account)
+		local rows = DbQuery("SELECT player, online FROM "..PlayersTable.." WHERE account=? LIMIT 1", account)
 		local data = rows and rows[1]
 		if(data and data.online == 1) then return false end
 		id = data and data.player
@@ -80,8 +80,8 @@ function Player:setAccount(account)
 	self.id = id
 	if(account) then
 		if(not self.id) then
-			DbQuery("INSERT INTO rafalh_players (account, serial, first_visit) VALUES (?, ?, ?)", account, self:getSerial(), now)
-			rows = DbQuery("SELECT player FROM rafalh_players WHERE account=? LIMIT 1", account)
+			DbQuery("INSERT INTO "..PlayersTable.." (account, serial, first_visit) VALUES (?, ?, ?)", account, self:getSerial(), now)
+			rows = DbQuery("SELECT player FROM "..PlayersTable.." WHERE account=? LIMIT 1", account)
 			self.id = rows and rows[1] and rows[1].player
 		end
 		

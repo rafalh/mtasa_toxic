@@ -16,7 +16,7 @@ local function CmdProfileGet (message, arg)
 	end
 	local pdata = Player.fromEl(player)
 	
-	local rows = pdata.id and DbQuery("SELECT value FROM rafalh_profiles WHERE player=? AND field=? LIMIT 1", pdata.id, field)
+	local rows = pdata.id and DbQuery("SELECT value FROM "..ProfilesTable.." WHERE player=? AND field=? LIMIT 1", pdata.id, field)
 	if (rows and rows[1]) then
 		scriptMsg("%s's %s: %s", getPlayerName(player), g_ProfileFields[field].longname, rows[1].value)
 	else

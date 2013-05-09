@@ -15,7 +15,7 @@ local function CmdRemMap (message, arg)
 	reason = reason.." (removed by "..getAccountName(account)..")"
 	
 	local map_id = map:getId()
-	DbQuery("UPDATE rafalh_maps SET removed=? WHERE map=?", reason, map_id)
+	DbQuery("UPDATE "..MapsTable.." SET removed=? WHERE map=?", reason, map_id)
 	
 	local map_name = map:getName()
 	outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map_name, admin:getName(true))
@@ -34,7 +34,7 @@ local function CmdRestoreMap (message, arg)
 		if(map) then
 			local map_name = map:getName()
 			local map_id = map:getId()
-			DbQuery("UPDATE rafalh_maps SET removed='' WHERE map=?", map_id)
+			DbQuery("UPDATE "..MapsTable.." SET removed='' WHERE map=?", map_id)
 			outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map_name, admin:getName(true))
 		else privMsg(source, "Cannot find map \"%s\" or it has not been removed!", str) end
 	else privMsg(source, "Usage: %s", arg[1].." <map>") end
@@ -58,7 +58,7 @@ local function CmdMap (message, arg)
 		if (map) then
 			local map_name = map:getName()
 			local map_id = map:getId()
-			local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+			local rows = DbQuery ("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 			
 			if (rows[1].removed ~= "") then
 				privMsg (source, "%s has been removed!", map_name)
@@ -79,7 +79,7 @@ CmdRegister("map", CmdMap, "command.setmap", "Changes current map")
 
 local function AddMapToQueue(room, map)
 	local map_id = map:getId()
-	local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local rows = DbQuery ("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 	if (rows[1].removed ~= "") then
 		local map_name = map:getName()
 		privMsg(source, "%s has been removed!", map_name)

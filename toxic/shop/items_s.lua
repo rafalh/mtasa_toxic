@@ -439,7 +439,7 @@ local function ShpBuyNextMap(mapResName)
 	end
 	
 	local map_id = map:getId()
-	local rows = DbQuery("SELECT played_timestamp FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local rows = DbQuery("SELECT played_timestamp FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 	
 	local minDelayForMap = Settings.minBuyMapDelay
 	local dt = now - rows[1].played_timestamp

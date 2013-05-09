@@ -4,7 +4,7 @@ Account data:
 	-Not saved in rafalh database (no backups)
 	-No autologin - can check all accounts to find that one (or client-side)
 
-rafalh_players:
+Players table:
 	+Backups
 	+Easy autologin
 	+Selecting of players without account
@@ -20,6 +20,6 @@ Now script needs to attach player id with each account
 Account data:
 	Saves variable name for each account (stupid).
 	
-rafalh_players:
+Players table:
 	Not unique
 	

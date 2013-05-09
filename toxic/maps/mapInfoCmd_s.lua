@@ -33,7 +33,7 @@ local function CmdMapInfo(message, arg)
 	if(map) then
 		local map_name = map:getName()
 		local map_id = map:getId()
-		local rows = DbQuery("SELECT played, rates, rates_count, removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+		local rows = DbQuery("SELECT played, rates, rates_count, removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 		local rating = rows[1].rates_count > 0 and(("%.1f"):format(rows[1].rates/rows[1].rates_count)) or 0
 		
 		scriptMsg("Map name: %s - Played: %u - Rating: %.1f (rated by %u players)%s",
@@ -72,7 +72,7 @@ end
 CmdRegister("maps", CmdMaps, false, "Shows maps count")
 
 local function CmdMapStats(message, arg)
-	local rows = DbQuery("SELECT map, removed, rates, rates_count, played FROM rafalh_maps")
+	local rows = DbQuery("SELECT map, removed, rates, rates_count, played FROM "..MapsTable)
 	local maps_data = {}
 	for i, data in ipairs(rows) do
 		maps_data[data.map] = data
@@ -122,7 +122,7 @@ local function CmdPlayed(message, arg)
 	
 	if(map) then
 		local map_id = map:getId()
-		local rows = DbQuery("SELECT played FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+		local rows = DbQuery("SELECT played FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 		local map_name = map:getName()
 		
 		scriptMsg("Map %s played %u times.", map_name, rows[1].played)
@@ -143,7 +143,7 @@ local function CmdCheckMap(message, arg)
 			if(map_name:lower():find(pattern, 1, true)) then
 				buf = buf..((buf ~= "" and ", ") or "")..map_name
 				local map_id = map:getId()
-				local data = DbQuery("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+				local data = DbQuery("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 				
 				if(data[1].removed ~= "") then
 					buf = buf.." (removed)"

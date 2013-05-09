@@ -106,7 +106,7 @@ local function CmdUnmute(message, arg)
 	
 	if(player) then
 		if(player.id) then -- hackfix
-			DbQuery("UPDATE rafalh_players SET pmuted=0 WHERE serial=?", player:getSerial())
+			DbQuery("UPDATE "..PlayersTable.." SET pmuted=0 WHERE serial=?", player:getSerial())
 		end
 		if(player.accountData.pmuted == 1) then
 			player.accountData.pmuted = 0
@@ -190,7 +190,7 @@ CmdRegister("account", CmdAccount, false, "Shows player account ID")
 local function CmdFindAccountsIp(message, arg)
 	if(#arg >= 2) then
 		local buf = ""
-		local rows = DbQuery("SELECT player FROM rafalh_players WHERE ip LIKE ?", arg[2].."%")
+		local rows = DbQuery("SELECT player FROM "..PlayersTable.." WHERE ip LIKE ?", arg[2].."%")
 		local found = {}
 		
 		for i, data in ipairs (rows) do
@@ -248,15 +248,15 @@ local function CmdMergeAccounts(message, arg)
 		-- remove duplicated names
 		local names = {}
 		local questionMarks = {}
-		local rows = DbQuery("SELECT n1.name FROM rafalh_names n1, rafalh_names n2 WHERE n1.player=? AND n2.player=? AND n1.name=n2.name", player.id, id)
+		local rows = DbQuery("SELECT n1.name FROM "..NamesTable.." n1, "..NamesTable.." n2 WHERE n1.player=? AND n2.player=? AND n1.name=n2.name", player.id, id)
 		for i, data in ipairs(rows) do
 			table.insert(names, data.name)
 			table.insert(questionMarks, "?")
 		end
 		
 		local questionMarksStr = table.concat(questionMarks, ",")
-		DbQuery("DELETE FROM rafalh_names WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names)) -- remove duplicates
-		DbQuery("UPDATE rafalh_names SET player=? WHERE player=?", player.id, id) -- change all names owner
+		DbQuery("DELETE FROM "..NamesTable.." WHERE player=? AND name IN ("..questionMarksStr..")", id, unpack(names)) -- remove duplicates
+		DbQuery("UPDATE "..NamesTable.." SET player=? WHERE player=?", player.id, id) -- change all names owner
 		
 		-- update stats
 		local newData = {}
@@ -299,7 +299,7 @@ local function CmdMergeAccounts(message, arg)
 		end
 		
 		-- Rates
-		local rows = DbQuery("SELECT r1.map FROM rafalh_rates r1, rafalh_rates r2 WHERE r1.player=? AND r2.player=? AND r1.map=r2.map", player.id, id)
+		local rows = DbQuery("SELECT r1.map FROM "..RatesTable.." r1, "..RatesTable.." r2 WHERE r1.player=? AND r2.player=? AND r1.map=r2.map", player.id, id)
 		local maps = {}
 		local questionMarks = {}
 		for i, data in ipairs(rows) do
@@ -308,14 +308,14 @@ local function CmdMergeAccounts(message, arg)
 		end
 		if(#maps > 0) then
 			local questionMarksStr = table.concat(questionMarks, ",")
-			DbQuery("DELETE FROM rafalh_rates WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(maps)) -- remove duplicates
+			DbQuery("DELETE FROM "..RatesTable.." WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(maps)) -- remove duplicates
 		end
-		DbQuery("UPDATE rafalh_rates SET player=? WHERE player=?", player.id, id) -- set new rates owner
-		local rows = DbQuery("SELECT COUNT(map) AS c FROM rafalh_rates WHERE player=?", player.id)
+		DbQuery("UPDATE "..RatesTable.." SET player=? WHERE player=?", player.id, id) -- set new rates owner
+		local rows = DbQuery("SELECT COUNT(map) AS c FROM "..RatesTable.." WHERE player=?", player.id)
 		newData.mapsRated = rows[1].c
 		
 		-- Best times
-		local rows = DbQuery("SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM rafalh_besttimes bt1, rafalh_besttimes bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map", player.id, id)
+		local rows = DbQuery("SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM "..BestTimesTable.." bt1, "..BestTimesTable.." bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map", player.id, id)
 		local mapsSrc, mapsDst = {}, {}
 		local questionMarksSrc, questionMarksDst = {}, {}
 		newData.toptimes_count = player.accountData.toptimes_count + src_data.toptimes_count
@@ -330,23 +330,23 @@ local function CmdMergeAccounts(message, arg)
 				table.insert(questionMarksSrc, "?")
 			end
 			
-			local rows = DbQuery("SELECT COUNT(player) AS pos FROM rafalh_besttimes WHERE map=? AND time<=?", data.map, delTime)
+			local rows = DbQuery("SELECT COUNT(player) AS pos FROM "..BestTimesTable.." WHERE map=? AND time<=?", data.map, delTime)
 			if(rows[1].pos <= 3) then
 				newData.toptimes_count = newData.toptimes_count - 1
 			end
 		end
 		if(#mapsDst > 0) then
 			local questionMarksStr = table.concat(questionMarksDst, ",")
-			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", player.id, unpack(mapsDst)) -- remove duplicates
+			DbQuery("DELETE FROM "..BestTimesTable.." WHERE player=? AND map IN ("..questionMarksStr..")", player.id, unpack(mapsDst)) -- remove duplicates
 		end
 		if(#mapsSrc > 0) then
 			local questionMarksStr = table.concat(questionMarksSrc, ",")
-			DbQuery("DELETE FROM rafalh_besttimes WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(mapsSrc)) -- remove duplicates
+			DbQuery("DELETE FROM "..BestTimesTable.." WHERE player=? AND map IN ("..questionMarksStr..")", id, unpack(mapsSrc)) -- remove duplicates
 		end
-		DbQuery("UPDATE rafalh_besttimes SET player=? WHERE player=?", player.id, id) -- set new best times owner
+		DbQuery("UPDATE "..BestTimesTable.." SET player=? WHERE player=?", player.id, id) -- set new best times owner
 		
 		-- Profile fields
-		local rows = DbQuery("SELECT p1.field FROM rafalh_profiles p1, rafalh_profiles p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field", player.id, id)
+		local rows = DbQuery("SELECT p1.field FROM "..ProfilesTable.." p1, "..ProfilesTable.." p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field", player.id, id)
 		local fields = {}
 		local questionMarks = {}
 		for i, data in ipairs(rows) do
@@ -354,12 +354,12 @@ local function CmdMergeAccounts(message, arg)
 			table.insert(questionMarks, "?")
 		end
 		local questionMarksStr = table.concat(questionMarks, ",")
-		DbQuery("DELETE FROM rafalh_profiles WHERE player=? AND field IN ("..questionMarksStr..")", id, unpack(fields)) -- remove duplicates
-		DbQuery("UPDATE rafalh_profiles SET player=? WHERE player=?", player.id, id) -- set new profile fields owner
+		DbQuery("DELETE FROM "..ProfilesTable.." WHERE player=? AND field IN ("..questionMarksStr..")", id, unpack(fields)) -- remove duplicates
+		DbQuery("UPDATE "..ProfilesTable.." SET player=? WHERE player=?", player.id, id) -- set new profile fields owner
 		
 		-- Set new account data and delete old account
 		player.accountData:set(newData, true)
-		DbQuery("DELETE FROM rafalh_players WHERE player=?", id)
+		DbQuery("DELETE FROM "..PlayersTable.." WHERE player=?", id)
 		AchvInvalidateCache(player.el)
 		
 		scriptMsg("Accounts has been merged. Old account has been removed...")
@@ -377,11 +377,11 @@ local function CmdDelAcc(message, arg)
 			return
 		end
 		
-		DbQuery("DELETE FROM rafalh_names WHERE player=?", playerId)
-		DbQuery("DELETE FROM rafalh_rates WHERE player=?", playerId)
-		DbQuery("DELETE FROM rafalh_besttimes WHERE player=?", playerId)
-		DbQuery("DELETE FROM rafalh_profiles WHERE player=?", playerId)
-		DbQuery("DELETE FROM rafalh_players WHERE player=?", playerId)
+		DbQuery("DELETE FROM "..NamesTable.." WHERE player=?", playerId)
+		DbQuery("DELETE FROM "..RatesTable.." WHERE player=?", playerId)
+		DbQuery("DELETE FROM "..BestTimesTable.." WHERE player=?", playerId)
+		DbQuery("DELETE FROM "..ProfilesTable.." WHERE player=?", playerId)
+		DbQuery("DELETE FROM "..PlayersTable.." WHERE player=?", playerId)
 		
 		scriptMsg("Account %u has been deleted!", playerId)
 	else privMsg(source, "Usage: %s", arg[1].." <account ID>") end

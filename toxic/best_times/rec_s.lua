@@ -160,7 +160,7 @@ local function RcOnRecording(map_id, recording)
 	--outputDebugString("RcOnRecording", 3)
 	
 	if(Settings.recorder) then
-		local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
+		local rows = DbQuery("SELECT player FROM "..BestTimesTable.." WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
 		
 		-- check if player has a toptime
 		local found = false
@@ -177,9 +177,9 @@ local function RcOnRecording(map_id, recording)
 			local encoded = RcEncodeTrace(recording)
 			encoded = zlibCompress(encoded)
 			local blob = DbBlob(encoded)
-			DbQuery("UPDATE rafalh_besttimes SET rec="..blob.." WHERE player=? AND map=?", pdata.id, map_id)
+			DbQuery("UPDATE "..BestTimesTable.." SET rec="..blob.." WHERE player=? AND map=?", pdata.id, map_id)
 			if(rows[$(MAX_RECORDINGS+1)]) then
-				DbQuery("UPDATE rafalh_besttimes SET rec=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
+				DbQuery("UPDATE "..BestTimesTable.." SET rec=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
 			end
 		else
 			outputDebugString("Invalid player: "..getPlayerName(client), 2)
@@ -200,7 +200,7 @@ function RcStartRecording(room, map_id)
 		end
 	end
 	
-	local rows = DbQuery("SELECT player, time, rec FROM rafalh_besttimes WHERE map=? AND length(rec)>0 ORDER BY time LIMIT 1", map_id)
+	local rows = DbQuery("SELECT player, time, rec FROM "..BestTimesTable.." WHERE map=? AND length(rec)>0 ORDER BY time LIMIT 1", map_id)
 	local rec, rec_title = false, nil
 	if(rows and rows[1] and Settings.ghost) then
 		outputDebugString ("Showing ghost", 3)
@@ -208,7 +208,7 @@ function RcStartRecording(room, map_id)
 		if(not data) then outputDebugString("Failed to uncompress", 2) end
 		rec = RcDecodeTrace(data)
 		
-		local rows2 = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<? LIMIT 1", map_id, rows[1].time)
+		local rows2 = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE map=? AND time<? LIMIT 1", map_id, rows[1].time)
 		rec_title = "Top "..(rows2[1].c + 1)
 	end
 	
@@ -240,7 +240,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	
 	if(pdata.recording) then
 		assert(pdata.id)
-		local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)", map_id, pdata.id)
+		local rows = DbQuery("SELECT player, time FROM "..BestTimesTable.." WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)", map_id, pdata.id)
 		
 		local found = false
 		for i, data in ipairs(rows) do
@@ -261,7 +261,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	
 	if(pdata.cp_times) then
 		assert(pdata.id)
-		local rows = DbQuery("SELECT player, time FROM rafalh_besttimes WHERE map=? AND (length(cp_times)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
+		local rows = DbQuery("SELECT player, time FROM "..BestTimesTable.." WHERE map=? AND (length(cp_times)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
 		
 		local found = false
 		for i, data in ipairs(rows) do
@@ -281,9 +281,9 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			end
 			buf = buf..("%x"):format(time - prev_time)
 			buf = zlibCompress(buf)
-			DbQuery("UPDATE rafalh_besttimes SET cp_times="..DbBlob(buf).." WHERE player=? AND map=?", pdata.id, map_id)
+			DbQuery("UPDATE "..BestTimesTable.." SET cp_times="..DbBlob(buf).." WHERE player=? AND map=?", pdata.id, map_id)
 			if(rows[$(MAX_RECORDINGS+1)]) then
-				DbQuery("UPDATE rafalh_besttimes SET cp_times=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
+				DbQuery("UPDATE "..BestTimesTable.." SET cp_times=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
 			end
 		end
 		

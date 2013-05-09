@@ -45,7 +45,7 @@ function findMap (str, removed)
 		for i, mapPath in ipairs(maps) do
 			local map = Map.create(mapPath)
 			if(removed ~= nil) then
-				local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map:getId())
+				local rows = DbQuery ("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map:getId())
 				local isRemoved = (rows[1].removed ~= "")
 				if(isRemoved == removed) then
 					return map
@@ -83,7 +83,7 @@ function findMap (str, removed)
 		end
 		
 		if(matches and removed ~= nil) then
-			local rows = DbQuery ("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map:getId())
+			local rows = DbQuery ("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map:getId())
 			if((rows[1].removed ~= "") ~= removed) then
 				matches = false
 			end
@@ -105,7 +105,7 @@ function getRandomMap()
 	local map
 	while(maps:getCount() > 0) do
 		map = maps:get(i)
-		local rows = DbQuery("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map:getId())
+		local rows = DbQuery("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map:getId())
 		if(rows[1].removed == "") then
 			break
 		end
@@ -146,7 +146,7 @@ local function onMapStart(map, room)
 	assert(getmetatable(map) == Map.__mt)
 	
 	local map_id = map:getId()
-	local rows = DbQuery("SELECT removed FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+	local rows = DbQuery("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 	local map_name = map:getName()
 	
 	if (room.lastMap == map) then
@@ -166,7 +166,7 @@ local function onMapStart(map, room)
 		local map_type = map:getType()
 		
 		local now = getRealTime().timestamp
-		DbQuery("UPDATE rafalh_maps SET played=played+1, played_timestamp=? WHERE map=?", now, map_id)
+		DbQuery("UPDATE "..MapsTable.." SET played=played+1, played_timestamp=? WHERE map=?", now, map_id)
 		
 		local mapTypeCounter = false
 		if(room.isRace) then
@@ -432,7 +432,7 @@ local function onMapListReq()
 		mapsList[mapResName] = {mapName, mapAuthor, 0, 0}
 	end
 	
-	local rows = DbQuery("SELECT name, played, rates, rates_count FROM rafalh_maps", map)
+	local rows = DbQuery("SELECT name, played, rates, rates_count FROM "..MapsTable)
 	for i, data in ipairs (rows) do
 		if(mapsList[data.name]) then
 			mapsList[data.name][3] = data.played

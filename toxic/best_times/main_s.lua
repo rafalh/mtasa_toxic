@@ -11,33 +11,33 @@ function addPlayerTime(player_id, map_id, time)
 	local wasInTop = false
 	local now = getRealTime().timestamp
 	
-	local rows = DbQuery("SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", player_id, map_id)
+	local rows = DbQuery("SELECT time FROM "..BestTimesTable.." WHERE player=? AND map=? LIMIT 1", player_id, map_id)
 	local besttime = rows and rows[1]
 	if(besttime) then
 		if (besttime.time < time) then -- new time is worse
 			return -1
 		else
-			local rows2 = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<?", map_id, besttime.time)
+			local rows2 = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE map=? AND time<?", map_id, besttime.time)
 			wasInTop = (rows2[1].c < 3) -- were we in the top?
 			
-			DbQuery("UPDATE rafalh_besttimes SET time=?, timestamp=? WHERE player=? AND map=?", time, now, player_id, map_id)
+			DbQuery("UPDATE "..BestTimesTable.." SET time=?, timestamp=? WHERE player=? AND map=?", time, now, player_id, map_id)
 		end
 	else
-		DbQuery("INSERT INTO rafalh_besttimes (player, map, time, timestamp) VALUES(?, ?, ?, ?)", player_id, map_id, time, now)
+		DbQuery("INSERT INTO "..BestTimesTable.." (player, map, time, timestamp) VALUES(?, ?, ?, ?)", player_id, map_id, time, now)
 	end
 	
-	local rows = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE map=? AND time<=?", map_id, time)
+	local rows = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE map=? AND time<=?", map_id, time)
 	local pos = rows[1].c
 	
 	if(pos <= 8) then
 		if(pos <= 3 and not wasInTop) then -- player joined to the top
 			AccountData.create(player_id):add("toptimes_count", 1)
 			
-			local rows = DbQuery("SELECT player FROM rafalh_besttimes WHERE map=? ORDER BY time LIMIT 3,1", map_id)
+			local rows = DbQuery("SELECT player FROM "..BestTimesTable.." WHERE map=? ORDER BY time LIMIT 3,1", map_id)
 			if(rows and rows[1]) then -- someone left the top
 				local pl4_id = rows[1].player
 				AccountData.create(pl4_id):add("toptimes_count", -1)
-				DbQuery("UPDATE rafalh_besttimes SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
+				DbQuery("UPDATE "..BestTimesTable.." SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
 			end
 		end
 		
@@ -59,8 +59,8 @@ function BtSendMapInfo(room, show, player)
 		--for i = 1, 100, 1 do
 			g_TopTimes = DbQuery(
 				"SELECT bt.player, bt.time, p.name "..
-				"FROM rafalh_besttimes bt "..
-				"INNER JOIN rafalh_players p ON bt.player=p.player "..
+				"FROM "..BestTimesTable.." bt "..
+				"INNER JOIN "..PlayersTable.." p ON bt.player=p.player "..
 				"WHERE bt.map=? ORDER BY time LIMIT 8", map_id)
 		--end
 		for i, data in ipairs(g_TopTimes) do
@@ -70,7 +70,7 @@ function BtSendMapInfo(room, show, player)
 	end
 	
 	if(not g_MapInfo) then
-		local rows = DbQuery("SELECT played, rates, rates_count FROM rafalh_maps WHERE map=? LIMIT 1", map_id)
+		local rows = DbQuery("SELECT played, rates, rates_count FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
 		g_MapInfo = rows and rows[1]
 		g_MapInfo.name = map:getName()
 		g_MapInfo.rating = (g_MapInfo.rates_count > 0 and g_MapInfo.rates/g_MapInfo.rates_count) or 0
@@ -95,9 +95,9 @@ function BtSendMapInfo(room, show, player)
 	if(#idList > 0) then
 		local rows = DbQuery(
 			"SELECT bt1.player, bt1.time, ("..
-				"SELECT COUNT(*) FROM rafalh_besttimes AS bt2 "..
+				"SELECT COUNT(*) FROM "..BestTimesTable.." AS bt2 "..
 				"WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos "..
-			"FROM rafalh_besttimes bt1 "..
+			"FROM "..BestTimesTable.." bt1 "..
 			"WHERE bt1.map=? AND bt1.player IN (??)", map_id, table.concat(idList, ","))
 		for i, data in ipairs(rows) do
 			if(data.time) then -- hacky...
@@ -141,7 +141,7 @@ function getTopTime(map_res, cp_times)
 	
 	local rows
 	if(cp_times) then
-		rows = DbQuery("SELECT cp_times, time FROM rafalh_besttimes WHERE map=? AND length(cp_times)>0 ORDER BY time LIMIT 1", map_id)
+		rows = DbQuery("SELECT cp_times, time FROM "..BestTimesTable.." WHERE map=? AND length(cp_times)>0 ORDER BY time LIMIT 1", map_id)
 		for i, data in ipairs(rows) do
 			assert(data.cp_times:len() > 0)
 			local buf = data.cp_times
@@ -154,7 +154,7 @@ function getTopTime(map_res, cp_times)
 	end
 	
 	if(rows and rows[1]) then
-		local rows2 = DbQuery("SELECT count(player) AS c FROM rafalh_besttimes WHERE time<? AND map=?", rows[1].time, map_id)
+		local rows2 = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE time<? AND map=?", rows[1].time, map_id)
 		rows[1].rank = rows2[1].c + 1
 	end
 	
@@ -164,7 +164,7 @@ end
 function BtPrintTimes(room, map_id)
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room and pdata.id) then
-			local rows = DbQuery("SELECT time FROM rafalh_besttimes WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
+			local rows = DbQuery("SELECT time FROM "..BestTimesTable.." WHERE player=? AND map=? LIMIT 1", pdata.id, map_id)
 			local data = rows and rows[1]
 			if(data) then
 				local timeStr = formatTimePeriod(data.time / 1000)
