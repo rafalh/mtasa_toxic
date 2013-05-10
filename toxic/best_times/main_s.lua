@@ -7,6 +7,18 @@ local g_MapInfo = false
 local g_TopTimes = false
 local g_PlayerTimes = {}
 
+BestTimesTable = Database.Table{
+	name = "besttimes",
+	{"player", "INT UNSIGNED", fk = {"players", "player"}},
+	{"map", "INT UNSIGNED", fk = {"maps", "map"}},
+	{"time", "INT UNSIGNED"},
+	{"rec", "BLOB", default = ""},
+	{"cp_times", "BLOB", default = ""},
+	{"timestamp", "INT UNSIGNED"},
+	{"besttimes_idx", unique = {"map", "time", "player"}},
+	{"besttimes_idx2", unique = {"map", "player"}},
+}
+
 PlayersTable:addColumns{
 	{"toptimes_count", "SMALLINT UNSIGNED", default = 0},
 }

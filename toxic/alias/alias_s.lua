@@ -1,3 +1,10 @@
+NamesTable = Database.Table{
+	name = "names",
+	{"player", "INT UNSIGNED", fk = {"players", "player"}},
+	{"name", "VARCHAR(32)"},
+	{"names_idx", unique = {"player", "name"}},
+}
+
 local function AlAddPlayerAlias(player, name)
 	name = name:gsub("#%x%x%x%x%x%x", "")
 	local pdata = Player.fromEl(player)

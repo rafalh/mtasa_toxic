@@ -52,8 +52,11 @@ function DbRedefineTable(table_name, definition)
 end
 
 function DbQuery(query, ...)
-	if(not g_Driver) then return false end
-	return g_Driver:query(query, ...)
+	return g_Driver and g_Driver:query(query, ...)
+end
+
+function Database.createTable(tbl)
+	return g_Driver and g_Driver:createTable(tbl)
 end
 
 ----------------- Database.Table -----------------
@@ -67,6 +70,10 @@ function Database.Table.__mt.__index:addColumns(cols)
 		table.insert(self, col)
 		self.colMap[col[1]] = col
 	end
+end
+
+function Database.Table.__mt.__index:insertDefault()
+	return g_Driver and g_Driver:insertDefault(self)
 end
 
 function Database.Table:create(args)
@@ -236,6 +243,12 @@ function Database.Drivers.SQLite:createTable(tbl)
 	return self:query(query)
 end
 
+function Database.Drivers.SQLite:insertDefault(tbl)
+	-- Note: DEFAULT VALUES is sqlite only
+	self:query("INSERT INTO "..tbl.." DEFAULT VALUES")
+end
+
+
 ----------------- MySQL Driver -----------------
 
 Database.Drivers.MySQL = {}
@@ -299,6 +312,10 @@ function Database.Drivers.MySQL:createTable(tbl)
 	return self:query(query)
 end
 
+function Database.Drivers.MySQL:insertDefault(tbl)
+	self:query("INSERT INTO "..self.." () VALUES ()")
+end
+
 ----------------- MTA Internal Driver -----------------
 
 Database.Drivers.Internal = {}
@@ -308,6 +325,7 @@ function Database.Drivers.Internal:query(query, ...)
 end
 
 Database.Drivers.Internal.createTable = Database.Drivers.SQLite.createTable
+Database.Drivers.Internal.insertDefault = Database.Drivers.SQLite.insertDefault
 
 ----------------- End -----------------
 
@@ -358,6 +376,8 @@ function DbInit()
 		if(not success) then
 			outputDebugString("Failed to create "..tbl.name.." table", 1)
 			return false
+		else
+			outputDebugString("Created "..tbl.name.." table", 3)
 		end
 	end
 	
@@ -367,10 +387,6 @@ end
 
 function DbIsReady()
 	return g_Ready
-end
-
-function DbGetType()
-	return g_Config.type
 end
 
 Settings.register

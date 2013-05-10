@@ -1,5 +1,13 @@
 local g_Poll = false
 
+RatesTable = Database.Table{
+	name = "rates",
+	{"player", "INT UNSIGNED", fk = {"players", "player"}},
+	{"map", "INT UNSIGNED", fk = {"maps", "map"}},
+	{"rate", "TINYINT UNSIGNED"},
+	{"rates_idx", unique = {"map", "player"}},
+}
+
 addEvent("onPollStarting")
 addEvent("onPlayerRate", true)
 addEvent("onClientSetRateGuiVisibleReq", true)

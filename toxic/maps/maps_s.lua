@@ -1,5 +1,17 @@
 g_RootRoom = false
 
+MapsTable = Database.Table{
+	name = "maps",
+	{"map", "INT UNSIGNED", pk = true},
+	{"name", "VARCHAR(255)"},
+	{"played", "MEDIUMINT UNSIGNED", default = 0},
+	{"rates", "MEDIUMINT UNSIGNED", default = 0},
+	{"rates_count", "SMALLINT UNSIGNED", default = 0},
+	{"removed", "VARCHAR(255)", default = ""},
+	{"played_timestamp", "INT UNSIGNED", default = 0},
+	{"added_timestamp", "INT UNSIGNED", default = 0},
+}
+
 addEvent("onPlayerFinish")
 addEvent("onPlayerWinDD")
 addEvent("onRoomMapStart")

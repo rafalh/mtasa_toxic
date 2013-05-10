@@ -15,6 +15,17 @@ local g_Patterns = { -- -FoH-S#808080treetch
 	"^>([^<][^<]?[^<]?[^<]?[^<]?[^<]?)<",
 }
 
+TeamsTable = Database.Table{
+	name = "teams",
+	{"id", "INT UNSIGNED", pk = true},
+	{"name", "VARCHAR(255)"},
+	{"tag", "VARCHAR(255)", default = ""},
+	{"aclGroup", "VARCHAR(255)", default = ""},
+	{"color", "VARCHAR(7)", default = ""},
+	{"priority", "INT"},
+	{"lastUsage INT UNSIGNED DEFAULT 0", default = 0},
+}
+
 addEvent("onPlayerChangeTeam")
 
 local function Teams_getClanFromName(name)
@@ -56,7 +67,7 @@ local function Teams_updatePlayerTeam(player, name)
 	
 	if(foundTeamInfo) then
 		local now = getRealTime().timestamp
-		DbQuery("UPDATE "..DbPrefix.."teams SET lastUsage=? WHERE id=?", now, foundTeamInfo.id)
+		DbQuery("UPDATE "..TeamsTable.." SET lastUsage=? WHERE id=?", now, foundTeamInfo.id)
 		local team = getTeamFromName(foundTeamInfo.name)
 		if(not team) then
 			local r, g, b = getColorFromString(foundTeamInfo.color)
@@ -108,23 +119,6 @@ local function Teams_onPlayerQuit()
 	Teams_destroyEmpty()
 end
 
-local function Teams_initDatabase()
-	local autoInc = DbGetType() == "mysql" and "AUTO_INCREMENT" or "AUTOINCREMENT"
-	if(not DbQuery(
-			"CREATE TABLE IF NOT EXISTS "..DbPrefix.."teams ("..
-			"id INTEGER PRIMARY KEY "..autoInc.." NOT NULL,"..
-			"name VARCHAR(255) NOT NULL,"..
-			"tag VARCHAR(255) DEFAULT '' NOT NULL,"..
-			"aclGroup VARCHAR(255) DEFAULT '' NOT NULL,"..
-			"color VARCHAR(7) DEFAULT '' NOT NULL,"..
-			"priority INT NOT NULL,"..
-			"lastUsage INT UNSIGNED DEFAULT 0 NOT NULL)")) then
-		return false, "Cannot create teams table."
-	end
-	
-	return true
-end
-
 local function Teams_loadFromXML()
 	local node, i = xmlLoadFile("conf/teams.xml"), 0
 	if(not node) then return false end
@@ -159,19 +153,17 @@ end
 allowRPC('Teams.updateAllPlayers')
 
 local function Teams_initDelayed()
-	if(not Teams_initDatabase()) then return end
-	
 	local oldTeams = Teams_loadFromXML()
 	if(oldTeams) then
 		fileDelete("conf/teams.xml")
-		local cnt = DbQuery("SELECT COUNT(id) AS c FROM "..DbPrefix.."teams")[1].c
+		local cnt = DbQuery("SELECT COUNT(id) AS c FROM "..TeamsTable)[1].c
 		for i, teamInfo in ipairs(oldTeams) do
-			if(not DbQuery("INSERT INTO "..DbPrefix.."teams (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)",
+			if(not DbQuery("INSERT INTO "..TeamsTable.." (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)",
 				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, cnt + 1)) then break end
 			cnt = cnt + 1
 		end
 	end
-	Teams.list = DbQuery("SELECT * FROM "..DbPrefix.."teams ORDER BY priority")
+	Teams.list = DbQuery("SELECT * FROM "..TeamsTable.." ORDER BY priority")
 	
 	for i, teamInfo in ipairs(Teams.list) do
 		Teams.fromName[teamInfo.name] = teamInfo

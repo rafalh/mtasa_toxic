@@ -74,16 +74,20 @@ end
 
 function Settings.createDbTbl()
 	local fields, defValues = {}, {}
+	
+	SettingsTable = Database.Table{
+		name = "settings",
+	}
+	
 	for key, item in pairs(Settings.items) do
 		if(item.priv) then
-			table.insert(fields, item.name.." "..item.type.." DEFAULT ? NOT NULL")
-			table.insert(defValues, item.default)
+			SettingsTable:addColumns{
+				{item.name, item.type, default = item.default},
+			}
 		end
 	end
 	
-	local success = DbQuery("CREATE TABLE IF NOT EXISTS "..DbPrefix.."settings "..
-		"("..table.concat(fields, ",")..")", unpack(defValues))
-	return success
+	return Database.createTable(SettingsTable)
 end
 
 function Settings.loadPrivate()
@@ -92,14 +96,10 @@ function Settings.loadPrivate()
 		return false
 	end
 	
-	local rows = DbQuery("SELECT * FROM rafalh_settings LIMIT 1")
+	local rows = DbQuery("SELECT * FROM "..SettingsTable.." LIMIT 1")
 	if(not rows[1]) then
-		if(DbGetType() == "mysql") then
-			DbQuery("INSERT INTO rafalh_settings () VALUES ()") -- Note: DEFAULT VALUES is sqlite only
-		else
-			DbQuery("INSERT INTO rafalh_settings DEFAULT VALUES") -- Note: DEFAULT VALUES is sqlite only
-		end
-		rows = DbQuery("SELECT * FROM rafalh_settings LIMIT 1")
+		SettingsTable:insertDefault()
+		rows = DbQuery("SELECT * FROM "..SettingsTable.." LIMIT 1")
 	end
 	for key, val in pairs(rows[1]) do
 		local item = Settings.items[key]

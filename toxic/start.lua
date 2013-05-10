@@ -1,54 +1,6 @@
 local g_InitFuncs = {}
 local _addEventHandler
 
-local function createTables()
-	NamesTable = Database.Table{
-		name = "names",
-		{"player", "INT UNSIGNED", fk = {"players", "player"}},
-		{"name", "VARCHAR(32)"},
-		{"names_idx", unique = {"player", "name"}},
-	}
-	
-	MapsTable = Database.Table{
-		name = "maps",
-		{"map", "INT UNSIGNED", pk = true},
-		{"name", "VARCHAR(255)"},
-		{"played", "MEDIUMINT UNSIGNED", default = 0},
-		{"rates", "MEDIUMINT UNSIGNED", default = 0},
-		{"rates_count", "SMALLINT UNSIGNED", default = 0},
-		{"removed", "VARCHAR(255)", default = ""},
-		{"played_timestamp", "INT UNSIGNED", default = 0},
-		{"added_timestamp", "INT UNSIGNED", default = 0},
-	}
-	
-	RatesTable = Database.Table{
-		name = "rates",
-		{"player", "INT UNSIGNED", fk = {"players", "player"}},
-		{"map", "INT UNSIGNED", fk = {"maps", "map"}},
-		{"rate", "TINYINT UNSIGNED"},
-		{"rates_idx", unique = {"map", "player"}},
-	}
-	
-	BestTimesTable = Database.Table{
-		name = "besttimes",
-		{"player", "INT UNSIGNED", fk = {"players", "player"}},
-		{"map", "INT UNSIGNED", fk = {"maps", "map"}},
-		{"time", "INT UNSIGNED"},
-		{"rec", "BLOB", default = ""},
-		{"cp_times", "BLOB", default = ""},
-		{"timestamp", "INT UNSIGNED"},
-		{"besttimes_idx", unique = {"map", "time", "player"}},
-		{"besttimes_idx2", unique = {"map", "player"}},
-	}
-	
-	ProfilesTable = Database.Table{
-		name = "profiles",
-		{"player", "INT UNSIGNED", fk = {"players", "player"}},
-		{"field", "VARCHAR(64)"},
-		{"value", "VARCHAR(255)"},
-	}
-end
-
 local function setupDatabase()
 	if(not DbInit()) then
 		return false
@@ -227,8 +179,6 @@ end
 local function init()
 	math.randomseed(getTickCount())
 	createElement("TXC413b9d90", "TXC413b9d90")
-	
-	createTables()
 	
 	-- Enable addEventHandler function
 	addEventHandler = _addEventHandler

@@ -1,6 +1,13 @@
 g_ProfileFields = {}
 local g_ProfileCats = {}
 
+ProfilesTable = Database.Table{
+	name = "profiles",
+	{"player", "INT UNSIGNED", fk = {"players", "player"}},
+	{"field", "VARCHAR(64)"},
+	{"value", "VARCHAR(255)"},
+}
+
 local function PfLoadCat(node, cat)
 	local i = 0
 	while (true) do
