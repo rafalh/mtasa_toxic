@@ -377,7 +377,7 @@ function DbInit()
 			outputDebugString("Failed to create "..tbl.name.." table", 1)
 			return false
 		else
-			outputDebugString("Created "..tbl.name.." table", 3)
+			--outputDebugString("Created "..tbl.name.." table", 3)
 		end
 	end
 	

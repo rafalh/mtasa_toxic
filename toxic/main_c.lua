@@ -6,7 +6,7 @@
 
 Styles = {
 	joinQuit = {"#00BB00", "#EEEEEE"},
-	help = {"#FF6464", "#FFD0D0"},
+	help = {"#FF6464", "#EEEEEE"},
 	pm = "#FF6060",
 }
 

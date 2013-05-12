@@ -66,6 +66,34 @@ local function CmdModInfo(msg, arg)
 end
 CmdRegister("modinfo", CmdModInfo, "resource."..g_ResName..".modinfo")
 
+local function CmdCheckMods(msg, arg)
+	local objList = aclGroupListObjects(g_TempModGroup)
+	local vipGroup = aclGetGroup("VIP")
+	local now = getRealTime().timestamp
+	local msg = true
+	
+	for i, obj in ipairs(objList) do
+		local accountName = obj:match("^user%.(.+)$")
+		local account = accountName and getAccount(accountName)
+		local modLimit = account and getAccountData(account, "toxic.tempModLimit")
+		local vipLimit = account and getAccountData(account, "rafalh_vip_time")
+		local isTempMod = modLimit and modLimit > now
+		local isVip = account and isObjectInACLGroup("user."..accountName, vipGroup) and (not vipLimit or vipLimit > now)
+		
+		if(account and not isTempMod and not isVip) then
+			privMsg(source, "%s's Premium Moderator has expired!", accountName)
+			msg = false
+		end
+		
+		--outputDebugString(accountName.." - "..tostring(account).." "..tostring(isTempMod).." "..tostring(isVip), 3)
+	end
+	
+	if(msg) then
+		privMsg(source, "Everything is alright!")
+	end
+end
+CmdRegister("checkmods", CmdCheckMods, true)
+
 local function onPlayerLogin(prevAccount, account)
 	local timestamp = getAccountData(account, "toxic.tempModLimit")
 	if(not timestamp) then return end
