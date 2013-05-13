@@ -13,7 +13,7 @@
 		
 		<setting group="Lottery" name="*lotto_limit" accept="1-1000000" value="50000" desc="Amount of cash in fund, needed to finish the lottery." friendlyname="Lottery limit" />
 		<setting group="Lottery" name="*max_tickets" accept="1-1000000" value="1000" desc="Maximal number of lottery tickets, which player can buy." friendlyname="Max tickets per player" />
-		<setting group="Lottery" name="*fund_inc_interval" accept="0-1000000" value="60" desc="Number of seconds after which script increase lottery fund. Set to 0 to disable automatical fund increase" friendlyname="Fund increase interval" />
+		<setting group="Lottery" name="*fund_inc_interval" accept="0-1000000" value="3600" desc="Number of seconds after which script increase lottery fund. Set to 0 to disable automatical fund increase" friendlyname="Fund increase interval" />
 		<setting group="Lottery" name="*max_fund_inc" accept="1-1000000" value="20000" desc="Maximal amount of cash, which can be added automatically to lottery fund." friendlyname="Maximal fund increase" />
 	</settings>
 </meta>

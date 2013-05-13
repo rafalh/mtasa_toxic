@@ -93,8 +93,12 @@ function Database.Table.__mt:__tostring(tbl)
 	return DbPrefix..self.name
 end
 
-function Database.Table.__mt:__concat(v)
-	return DbPrefix..self.name..tostring(v)
+function Database.Table.__mt.__concat(a, b)
+	if(type(a) == "table") then
+		return DbPrefix..a.name..tostring(b)
+	else
+		return tostring(a)..DbPrefix..b.name
+	end
 end
 
 setmetatable(Database.Table, {__call = Database.Table.create})

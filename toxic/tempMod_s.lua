@@ -81,7 +81,11 @@ local function CmdCheckMods(msg, arg)
 		local isVip = account and isObjectInACLGroup("user."..accountName, vipGroup) and (not vipLimit or vipLimit > now)
 		
 		if(account and not isTempMod and not isVip) then
-			privMsg(source, "%s's Premium Moderator has expired!", accountName)
+			local modLimitDate = modLimit and getRealTime(modLimit)
+			local vipLimitDate = vipLimit and getRealTime(vipLimit)
+			local modLimitDateStr = modLimitDate and ("%d-%d-%d"):format(modLimitDate.monthday, modLimitDate.month + 1, modLimitDate.year + 1900)
+			local vipLimitDateStr = vipLimitDate and ("%d-%d-%d"):format(vipLimitDate.monthday, vipLimitDate.month + 1, vipLimitDate.year + 1900)
+			privMsg(source, "%s's Premium Moderator has expired (VIP: %s, Mod: %s)!", accountName, vipLimitDateStr or "no", modLimitDateStr or "no")
 			msg = false
 		end
 		
