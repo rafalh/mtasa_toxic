@@ -8,6 +8,7 @@ Styles = {
 	joinQuit = {"#00BB00", "#EEEEEE"},
 	help = {"#FF6464", "#EEEEEE"},
 	pm = "#FF6060",
+	red = {"#FF0000", "#EEEEEE"},
 }
 
 g_Ready = false

@@ -3,6 +3,7 @@
 	<info name="VIP Support" author="rafalh" version="2.61" />
 	
 	<script src="gui_c.lua" type="client" />
+	<script src="cmd_s.lua" type="server" />
 	<file src="enabled.png" />
 	<file src="disabled.png" />
 </meta>

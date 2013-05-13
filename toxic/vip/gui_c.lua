@@ -1,12 +1,14 @@
 
 #include "include/internal_events.lua"
 
+local VIP_INFO_URL = "http://mtatoxic.tk/vip/"
+
 addEvent("vip.onStatus")
 
 local VipPanel = {
 	name = "VIP Panel",
 	img = "vip/disabled.png",
-	tooltip = "You don't have VIP account. More info: /vip",
+	tooltip = "You don't have VIP account. More info: "..VIP_INFO_URL,
 	noWnd = true,
 	onShow = function()
 		local vipRes = getResourceFromName("rafalh_vip")
@@ -16,7 +18,7 @@ local VipPanel = {
 		end
 		
 		if(not call(vipRes, "openVipPanel")) then
-			outputChatBox("You don't have VIP account. More info: /vip", 255, 0, 0)
+			outputMsg(Styles.red, "You don't have VIP account. More info: %s", VIP_INFO_URL)
 			return false
 		end
 		
@@ -28,7 +30,7 @@ UpRegister(VipPanel)
 
 local function onVipStatus(isVip)
 	VipPanel.img = isVip and "vip/enabled.png" or "vip/disabled.png"
-	VipPanel.tooltip = isVip and "Press G to open VIP Panel" or "You don't have VIP account. More info: /vip"
+	VipPanel.tooltip = isVip and "Press G to open VIP Panel" or "You don't have VIP account. More info: "..VIP_INFO_URL
 	UpUpdate(VipPanel)
 end
 

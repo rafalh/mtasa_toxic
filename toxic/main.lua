@@ -12,10 +12,11 @@ Styles = {
 	joinQuit = {"#00BB00", "#EEEEEE"},
 	stats = {"#FF6464", "#EEEEEE"},
 	maps = {"#80FFC0", "#EEEEEE"},
-	red = {"#FF0000", "#FF8080"},
+	red = {"#FF0000", "#EEEEEE"},
 	green = {"#00FF00", "#80FF80"},
 	poll = "#80FFC0",
 	gambling = {"#FFC000", "#FFE080"},
+	info = {"#FFC000", "#FFFFFF"}
 }
 
 addEvent("main.onPlayerReady", true)
