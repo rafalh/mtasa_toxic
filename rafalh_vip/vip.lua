@@ -27,9 +27,9 @@ local g_VipGroup = aclGetGroup("VIP")
 -- Custom events --
 -------------------
 
-addEvent("onClientRafalhVip", true)
-addEvent("onRafalhVipStart", true)
-addEvent("onRafalhVipSettings", true)
+addEvent("vip.onVerified", true)
+addEvent("vip.onReady", true)
+addEvent("vip.onSettings", true)
 addEvent("onPlayerPickUpRacePickup")
 
 --------------------------------
@@ -70,12 +70,6 @@ local function VipDestroyNeon(player)
 	--outputDebugString("VipDestroyNeon("..getPlayerName(player)..")")
 end
 
-local function VipInit()
-	if(not g_VipGroup) then
-		g_VipGroup = aclCreateGroup("VIP")
-	end
-end
-
 local function VipCleanup()
 	for player, pdata in pairs(g_Players) do
 		if(pdata.neon) then
@@ -91,11 +85,11 @@ local function VipOnRafalhVipStart()
 	g_Players[client] = {}
 	local is_vip, timestamp = isVip(client, getPlayerAccount(client))
 	if(is_vip) then
-		triggerClientEvent(client, "onClientRafalhVip", g_Root, timestamp)
+		triggerClientEvent(client, "vip.onVerified", g_Root, timestamp)
 	end
 	if(VipIsPromoActive()) then
-		addEvent("onClientShowVipPromoBanner", true)
-		triggerClientEvent(client, "onClientShowVipPromoBanner", g_Root)
+		addEvent("vip.onShowPromoBannerReq", true)
+		triggerClientEvent(client, "vip.onShowPromoBannerReq", g_Root)
 	end
 end
 
@@ -272,7 +266,7 @@ local function VipOnPlayerLogin(thePreviousAccount, theCurrentAccount)
 	local is_vip, timestamp = isVip(source, theCurrentAccount)
 	if(is_vip and g_Players[source]) then
 		g_Players[source].settings = nil
-		triggerClientEvent(source, "onClientRafalhVip", g_Root, timestamp)
+		triggerClientEvent(source, "vip.onVerified", g_Root, timestamp)
 	end
 end
 
@@ -376,7 +370,7 @@ local function VipOnActivationResult2(data, account)
 	if(player) then
 		outputChatBox("PM: "..msg, player, 255, 96, 96, true)
 		if(g_Players[player].synced) then
-			triggerClientEvent(player, "onClientRafalhVip", g_Root, timestamp)
+			triggerClientEvent(player, "vip.onVerified", g_Root, timestamp)
 		end
 	end
 end
@@ -497,6 +491,23 @@ addCommandHandler("isvip", function(source, cmd, name)
 	end
 end, false, false)
 
+local function VipInit()
+	if(not g_VipGroup) then
+		g_VipGroup = aclCreateGroup("VIP")
+	end
+	
+	addEventHandler("vip.onReady", g_Root, VipOnRafalhVipStart)
+	addEventHandler("vip.onSettings", g_Root, VipOnPlayerSettings)
+	addEventHandler("onResourceStop", g_ResRoot, VipCleanup)
+	addEventHandler("onPlayerQuit", g_Root, VipOnPlayerQuit)
+	addEventHandler("onPlayerLogin", g_Root, VipOnPlayerLogin)
+	addEventHandler("onPlayerVehicleEnter", g_Root, VipOnPlayerVehicleEnter)
+	addEventHandler("onPlayerVehicleExit", g_Root, VipOnPlayerVehicleExit)
+	addEventHandler("onPlayerWasted", g_Root, VipOnPlayerWasted)
+	addEventHandler("onElementDestroy", g_Root, VipOnElementDestroy)
+	addEventHandler("onPlayerPickUpRacePickup", g_Root, VipOnPlayerPickUpRacePickup)
+end
+
 ----------------------
 -- Global functions --
 ----------------------
@@ -521,7 +532,7 @@ function giveVip(player, days)
 	outputServerLog("VIP rank activated for "..getAccountName(account)..". It will be active untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute))
 	
 	if(timestamp > now) then
-		triggerClientEvent(player, "onClientRafalhVip", g_Root, timestamp)
+		triggerClientEvent(player, "vip.onVerified", g_Root, timestamp)
 	end
 	
 	return true
@@ -562,14 +573,4 @@ end
 -- Events --
 ------------
 
-addEventHandler("onRafalhVipStart", g_Root, VipOnRafalhVipStart)
-addEventHandler("onRafalhVipSettings", g_Root, VipOnPlayerSettings)
 addEventHandler("onResourceStart", g_ResRoot, VipInit)
-addEventHandler("onResourceStop", g_ResRoot, VipCleanup)
-addEventHandler("onPlayerQuit", g_Root, VipOnPlayerQuit)
-addEventHandler("onPlayerLogin", g_Root, VipOnPlayerLogin)
-addEventHandler("onPlayerVehicleEnter", g_Root, VipOnPlayerVehicleEnter)
-addEventHandler("onPlayerVehicleExit", g_Root, VipOnPlayerVehicleExit)
-addEventHandler("onPlayerWasted", g_Root, VipOnPlayerWasted)
-addEventHandler("onElementDestroy", g_Root, VipOnElementDestroy)
-addEventHandler("onPlayerPickUpRacePickup", g_Root, VipOnPlayerPickUpRacePickup)

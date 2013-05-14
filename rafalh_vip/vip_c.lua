@@ -38,12 +38,12 @@ local g_Skins = {}
 -- Custom events --
 -------------------
 
-addEvent ( "onRafalhVipSettings", true )
-addEvent ( "onRafalhVipStart", true )
-addEvent ( "onClientRafalhVip", true )
-addEvent ( "onRafalhAddWidget" )
-addEvent ( "onRafalhGetWidgets" )
-addEvent ( "onRafalhColorDlgClose" )
+addEvent("vip.onSettings", true)
+addEvent("vip.onReady", true)
+addEvent("vip.onVerified", true)
+addEvent("onRafalhAddWidget")
+addEvent("onRafalhGetWidgets")
+addEvent("onRafalhColorDlgClose")
 addEvent("vip.onStatus")
 
 --------------------------------
@@ -153,7 +153,7 @@ local function VipLoadSettings ()
 end
 
 local function VipInit()
-	triggerServerEvent("onRafalhVipStart", g_Me)
+	triggerServerEvent("vip.onReady", g_Me)
 	VipLoadSkins()
 	VipLoadSettings()
 end
@@ -382,7 +382,7 @@ local function VipSaveSettings ()
 		xmlUnloadFile ( node )
 	end
 	
-	triggerServerEvent ( "onRafalhVipSettings", g_Me, g_Settings )
+	triggerServerEvent ( "vip.onSettings", g_Me, g_Settings )
 end
 
 local function onWidgetWndMove ()
@@ -706,7 +706,7 @@ local function VipOnClientVip(timestamp)
 	
 	outputChatBox("You are a VIP! Press \"g\" to access VIP settings.", 255, 0, 0)
 	
-	triggerServerEvent("onRafalhVipSettings", g_Me, g_Settings)
+	triggerServerEvent("vip.onSettings", g_Me, g_Settings)
 	
 	VipApplySettings()
 	
@@ -761,7 +761,7 @@ end
 ------------
 
 #VERIFY_SERVER_BEGIN("391B3F7ABE5BE708D973349E47113A5C")
-	addEventHandler("onClientRafalhVip", g_Root, VipOnClientVip)
+	addEventHandler("vip.onVerified", g_Root, VipOnClientVip)
 	addEventHandler("onRafalhAddWidget", g_Root, VipOnAddWidget)
 	VipInit()
 #VERIFY_SERVER_END ()
