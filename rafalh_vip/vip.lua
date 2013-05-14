@@ -323,53 +323,56 @@ local function VipGetPlayerFromAccount(account)
 	return false
 end
 
-local function VipOnActivationResult2(data, account)
-	local account_name = account and getAccountName(account)
-	if(not account_name) then
-		outputChatBox("Error! VIP activation failed (account is invalid). Please contact administrator.", g_Root, 255, 0, 0)
+local function VipOnActivationResult(data, account)
+	local accName = account and getAccountName(account)
+	if(not accName) then
+		outputChatBox("Error! VIP activation failed: account is invalid. Please contact administrator.", g_Root, 255, 0, 0)
 		return
 	end
 	
 	local player = VipGetPlayerFromAccount(account)
-	local activated, descr = fromJSON(data)
+	local days, statusMsg = fromJSON(data)
 	
+	local days = tonumber(days)
 	local err = false
-	if(activated == nil) then
-		err = tostring(data):gsub("<[^>]+>", "")
-	elseif(not activated) then
-		err = tostring(descr)
+	if(not days or days <= 0 or days > 100) then
+		if(statusMsg) then
+			err = tostring(statusMsg)
+		else
+			err = tostring(data):gsub("<[^>]+>", "")
+		end
 	elseif(not g_VipGroup) then
 		err = "VipGroup does not exist"
 	end
 	
 	if(err) then
-		outputChatBox("PM: VIP activation failed ("..err:sub(1, 64).."). Please contact administrator.", player or g_Root, 255, 96, 96, true)
+		outputChatBox("Error! VIP activation failed: "..err:sub(1, 64)..". Please contact administrator.", player or g_Root, 255, 0, 0)
 		return
 	end
 	
 	local msg, timestamp
 	local tm = getRealTime()
 	
-	aclGroupAddObject(g_VipGroup, "user."..account_name)
+	aclGroupAddObject(g_VipGroup, "user."..accName)
 	timestamp = math.max(getAccountData(account, "rafalh_vip_time") or tm.timestamp, tm.timestamp)
+	timestamp = timestamp + days*24*3600
 	
 	if(tm.year*12*31 + tm.month*31 + tm.monthday >= $((PROMO_YEAR1-1900)*12*31+(PROMO_MONTH1-1)*31+PROMO_DAY1) and tm.year*12*31 + tm.month*31 + tm.monthday <= $((PROMO_YEAR2-1900)*12*31+(PROMO_MONTH2-1)*31+PROMO_DAY2)) then
-		timestamp = timestamp + (1 + $(PROMO_MONTHS))*30*24*60*60
-		tm = getRealTime(timestamp)
-		msg = "#00FF00Vip activated successfully! $(PROMO_TEXT) Rank will be valid untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
+		timestamp = timestamp + $(PROMO_MONTHS)*30*24*3600
+		msg = "VIP activated successfully! $(PROMO_TEXT) Rank will be valid untill "
 	else
-		timestamp = timestamp + 30*24*60*60
-		tm = getRealTime(timestamp)
-		msg = "#00FF00Vip activated successfully! Rank will be valid untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
+		msg = "VIP activated successfully! Rank will be valid untill "
 	end
 	
 	setAccountData(account, "rafalh_vip_time", timestamp)
 	
-	outputServerLog("VIP rank activated for "..account_name..". It will be valid untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute))
+	tm = getRealTime(timestamp)
+	local limitStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
+	outputServerLog("VIP rank activated for "..accName..". It will be valid untill "..limitStr)
 	
 	if(player) then
-		outputChatBox("PM: "..msg, player, 255, 96, 96, true)
-		if(g_Players[player].synced) then
+		outputChatBox(msg..limitStr, player, 0, 255, 0)
+		if(g_Players[player]) then
 			triggerClientEvent(player, "vip.onVerified", g_Root, timestamp)
 		end
 	end
@@ -385,17 +388,18 @@ addCommandHandler("activatevip", function(source, cmd, code)
 			if(getAccountData(account, "rafalh_vip_promo")) then
 				outputChatBox("PM: You have already used VIP promotion code.", source, 255, 96, 96)
 			elseif(g_VipGroup) then
+				local accName = getAccountName(account)
 				setAccountData(account, "rafalh_vip_promo", 1)
-				aclGroupAddObject(g_VipGroup, "user."..getAccountName(account))
-				local tm = getRealTime ()
+				aclGroupAddObject(g_VipGroup, "user."..accName)
+				local tm = getRealTime()
 				local t = math.max(getAccountData(account, "rafalh_vip_time") or tm.timestamp, tm.timestamp)
 				t = t + 60*60
 				setAccountData(account, "rafalh_vip_time", t)
 				
 				local tm = getRealTime(t)
-				
-				outputServerLog("VIP rank activated for "..getAccountName(account)..". It will be valid untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute))
-				outputChatBox("#00FF00Vip activated successfully! It will be valid for 1 hour untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute), source, 255, 96, 96)
+				local limitStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+				outputServerLog("VIP rank activated for "..accName..". It will be valid untill "..limitStr)
+				outputChatBox("VIP activated successfully! It will be valid for 1 hour untill "..limitStr, source, 0, 255, 0)
 			end
 		else
 			local err = false
@@ -406,7 +410,7 @@ addCommandHandler("activatevip", function(source, cmd, code)
 				local url = "http://mtatoxic.tk/scripts/NGWm5LtQ5fmnnmpx/activate_code.php?code="..code_encoded
 				local req = call(shared_res, "HttpSendRequest", url, false, "GET", false, account, player)
 				if(req) then
-					addEventHandler("onHttpResult", req, VipOnActivationResult2)
+					addEventHandler("onHttpResult", req, VipOnActivationResult)
 				else
 					err = 2
 				end
@@ -455,8 +459,9 @@ addCommandHandler("givevip", function(source, cmd, name, days)
 			local tm = timestamp and getRealTime(timestamp)
 			local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
 			
-			outputChatBox("PM: VIP rank successfully given to "..name.."! It will be valid untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute), source, 255, 96, 96, true)
-			outputChatBox("#00FF00Vip activated successfully! It will be valid untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute), player, 255, 96, 96, true)
+			local limitStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+			outputChatBox("PM: VIP rank successfully given to "..name.."! It will be valid untill "..limitStr, source, 255, 96, 96, true)
+			outputChatBox("VIP activated successfully! It will be valid untill "..limitStr, player, 0, 255, 0)
 		else
 			outputChatBox("PM: Usage: /givevip <name> [<days>]", source, 255, 96, 96)
 		end
@@ -560,9 +565,10 @@ function isVip(player, account)
 		end
 		
 		if(timestamp and timestamp < now) then
-			aclGroupRemoveObject(g_VipGroup, "user."..getAccountName(account))
-			outputServerLog("VIP rank disactivated for "..getAccountName(account)..".")
-			outputChatBox("PM: Your VIP rank has been disactivated.", player, 255, 0, 0)
+			local accName = getAccountName(account)
+			aclGroupRemoveObject(g_VipGroup, "user."..accName)
+			outputServerLog("VIP rank disactivated for "..accName..".")
+			outputChatBox("Your VIP rank has been disactivated!", player, 255, 0, 0)
 		end
 	end
 	
