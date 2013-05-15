@@ -99,7 +99,7 @@ local function createGUI(address)
 	local redirBtn = guiCreateButton(150, y + 85, 200, 20, btnTitle, false, wnd)
 	addEventHandler("onClientGUIClick", redirBtn, redirect, false)
 	
-	guiSetInputEnabled(true)
+	showCursor(true)
 	guiBringToFront(wnd)
 	
 	g_StartTime = getTickCount()

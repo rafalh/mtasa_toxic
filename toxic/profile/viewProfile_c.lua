@@ -20,7 +20,7 @@ end
 
 function ProfileView:destroy(ignoreEl)
 	self.statsView:destroy(ignoreEl)
-	guiSetInputEnabled(false)
+	showCursor(false)
 	g_WndToObj[self.wnd] = nil
 	g_IdToObj[self.id] = nil
 	
@@ -57,7 +57,7 @@ function ProfileView.create(id, name)
 	
 	self.statsView:show()
 	GaFadeIn(self.wnd, 200)
-	guiSetInputEnabled(true)
+	showCursor(true)
 	
 	RPC("getPlayerProfile", id):onResult(ProfileView.onProfile):setCallbackArgs(id):exec()
 	g_WndToObj[self.wnd] = self

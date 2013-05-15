@@ -5,12 +5,6 @@
 #include "../../include/serv_verification.lua"
 #include "../../include/widgets.lua"
 
------------------
--- Definitions --
------------------
-
-local SERVER_WEBSITE = "toxic.no-ip.eu"
-
 ---------------------
 -- Local variables --
 ---------------------

@@ -82,7 +82,7 @@ end
 
 function closeRegisterWnd()
 	if(g_GUI) then
-		guiSetInputEnabled(false)
+		showCursor(false)
 		g_GUI:destroy()
 		g_GUI = false
 	end
@@ -92,7 +92,7 @@ function openRegisterWnd()
 	closeRegisterWnd()
 	
 	g_GUI = GUI.create("registerWnd")
-	guiSetInputEnabled(true)
+	showCursor(true)
 	
 	addEventHandler("onClientGUIClick", g_GUI.regBtn, onRegisterClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.backBtn, onBackClick, false)

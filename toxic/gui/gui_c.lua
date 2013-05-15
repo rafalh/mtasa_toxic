@@ -1,5 +1,5 @@
 GUI = {}
-GUI.__mt = {__index = GUI}
+GUI.__mt = {__index = {}}
 GUI.templates = false
 GUI.wndToObj = {}
 
@@ -8,6 +8,7 @@ local g_ScrW, g_ScrH = guiGetScreenSize()
 function GUI.loadNode(node)
 	local ctrl = xmlNodeGetAttributes(node)
 	ctrl.type = xmlNodeGetName(node)
+	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local child = GUI.loadNode(subnode)
 		table.insert(ctrl, child)
@@ -48,28 +49,28 @@ function GUI.getTemplate(tplID)
 end
 
 function GUI.computeCtrlPlacement(tpl, parent)
-	local pw, ph
+	local parentSize
 	if(parent) then
-		pw, ph = guiGetSize(parent, false)
+		parentSize = Vector2(guiGetSize(parent, false))
 	else
-		pw, ph = g_ScrW, g_ScrH
+		parentSize = Vector2(g_ScrW, g_ScrH)
 	end
 	
 	local x, y = tpl.x or 0, tpl.y or 0
 	local w, h = tpl.w or 0, tpl.h or 0
-	x = x + (tpl.rx or 0) * pw / 100
-	y = y + (tpl.ry or 0) * ph / 100
-	w = w + (tpl.rw or 0) * pw / 100
-	h = h + (tpl.rh or 0) * ph / 100
+	x = x + (tpl.rx or 0) * parentSize[1] / 100
+	y = y + (tpl.ry or 0) * parentSize[2] / 100
+	w = w + (tpl.rw or 0) * parentSize[1] / 100
+	h = h + (tpl.rh or 0) * parentSize[2] / 100
 	
 	return x, y, w, h
 end
 
-function GUI:createControl(tpl, parent)
+function GUI.__mt.__index:createControl(tpl, parent)
 	local x, y, w, h = GUI.computeCtrlPlacement(tpl, parent)
 	
 	local ctrl
-	if ( tpl.type == "window") then
+	if(tpl.type == "window") then
 		ctrl = guiCreateWindow(x, y, w, h, tpl.title or "", false)
 		if(tpl.sizeable == "false") then
 			guiWindowSetSizable(ctrl, false)
@@ -144,7 +145,7 @@ function GUI:createControl(tpl, parent)
 	return ctrl
 end
 
-function GUI:createControls(tpl, parent)
+function GUI.__mt.__index:createControls(tpl, parent)
 	local wnd = self:createControl(tpl, parent)
 	for i, childTpl in ipairs(tpl) do
 		local ctrl = self:createControls(childTpl, wnd)
@@ -155,7 +156,7 @@ function GUI:createControls(tpl, parent)
 	return wnd
 end
 
-function GUI:destroy(ignoreEl)
+function GUI.__mt.__index:destroy(ignoreEl)
 	if(not ignoreEl) then
 		destroyElement(self.wnd)
 	end

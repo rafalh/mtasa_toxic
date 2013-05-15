@@ -24,6 +24,7 @@ addEvent("main.onAccountChange", true)
 --------------------------------
 
 local function init(res)
+	guiSetInputMode("no_binds_when_editing")
 	Settings.load()
 	
 	triggerServerEvent("main.onPlayerReady", g_ResRoot, Settings.locale)
@@ -62,8 +63,6 @@ local function clearChat()
 	for i = 1, chatLayout.chat_lines do
 		outputChatBox("")
 	end
-	
-outputMsg(Styles.joinQuit, "%s has been kicked from the game.", "TEST")
 end
 
 addCommandHandler("clearchat", clearChat, false)

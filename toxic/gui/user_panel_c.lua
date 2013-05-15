@@ -54,7 +54,7 @@ local function UpHide()
 		end
 	end
 	
-	guiSetInputEnabled(false)
+	showCursor(false)
 	g_Hiding = true
 end
 
@@ -171,7 +171,7 @@ local function UpShow()
 	
 	AchvActivate("Open User Panel")
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
-	guiSetInputEnabled(true)
+	showCursor(true)
 	g_Hiding = false
 	
 	if(VIEW_W > 0) then

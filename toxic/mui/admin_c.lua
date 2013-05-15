@@ -8,13 +8,13 @@ addEvent("main.onLocaleData", true)
 local function closePanel()
 	g_GUI:destroy()
 	g_GUI = false
-	guiSetInputEnabled(false)
+	showCursor(false)
 end
 
 local function closeEditWnd()
 	g_EditGui:destroy()
 	g_EditGui = false
-	guiSetInputEnabled(false)
+	showCursor(false)
 end
 
 local function refreshLocale()
@@ -59,7 +59,7 @@ end
 local function prepareEditWnd(row)
 	if(not g_EditGui) then
 		g_EditGui = GUI.create("transEdit")
-		guiSetInputEnabled(true)
+		showCursor(true)
 		addEventHandler("onClientGUIClick", g_EditGui.ok, acceptEditWnd, false)
 		addEventHandler("onClientGUIClick", g_EditGui.cancel, closeEditWnd, false)
 	end
@@ -155,7 +155,7 @@ local function openPanel(langCodes)
 	if(not g_GUI) then
 		initGui(langCodes)
 		
-		guiSetInputEnabled(true)
+		showCursor(true)
 	end
 end
 

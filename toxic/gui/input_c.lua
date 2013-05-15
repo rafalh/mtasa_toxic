@@ -1,18 +1,22 @@
 local g_Counter = 0
 
-local _guiSetInputEnabled = guiSetInputEnabled
-function guiSetInputEnabled ( enabled )
-	if ( enabled ) then
+local _showCursor = showCursor
+function showCursor(visible)
+	if(visible) then
 		g_Counter = g_Counter + 1
-		if ( g_Counter > 0 ) then
-			_guiSetInputEnabled ( true )
+		if(g_Counter > 0) then
+			_showCursor(true)
 		end
 	else
 		g_Counter = g_Counter - 1
-		if ( g_Counter <= 0 ) then
-			_guiSetInputEnabled ( false )
+		if(g_Counter <= 0) then
+			_showCursor(false)
 		end
 		
 		assert(g_Counter >= 0, tostring(g_Counter))
 	end
+end
+
+function guiSetInputEnabled()
+	assert(false, "guiSetInputEnabled is deprecated")
 end

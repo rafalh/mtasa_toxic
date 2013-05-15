@@ -112,7 +112,6 @@ end
 function closeLoginWnd()
 	if(not g_GUI) then return end
 	
-	guiSetInputEnabled(false)
 	showCursor(false)
 	g_GUI:destroy()
 	g_GUI = false
@@ -141,7 +140,6 @@ function openLoginWnd(loginFailed)
 		x = x + imgW + spaceW
 	end
 	
-	guiSetInputEnabled(true)
 	showCursor(true)
 	addEventHandler("onClientGUIClick", g_GUI.logBtn, onLoginClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.regBtn, onRegisterClick, false)

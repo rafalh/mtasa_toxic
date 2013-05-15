@@ -44,7 +44,7 @@ end
 local function closeTeamsAdmin()
 	g_GUI:destroy()
 	g_GUI = false
-	guiSetInputEnabled(false)
+	showCursor(false)
 end
 
 local function onDelResult(row, success)
@@ -202,7 +202,7 @@ function openTeamsAdmin(teams)
 	addEventHandler("onClientGUIClick", g_GUI.update, onUpdateClick, false)
 	addEventHandler("onClientGUIDoubleClick", g_GUI.teamsList, onListDblClick, false)
 	
-	guiSetInputEnabled(true)
+	showCursor(true)
 	
 	updateList(teams)
 end

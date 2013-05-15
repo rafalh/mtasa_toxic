@@ -30,7 +30,7 @@ local function ShpOnJoinMsgUse ( v )
 	local edit = guiCreateEdit ( 10, 40, 230, 20, v or "", false, g_JoinMsgWnd )
 	guiSetProperty ( edit, "MaxTextLength", "128" )
 	
-	guiSetInputEnabled ( true )
+	showCursor ( true )
 	
 	local btn = guiCreateButton ( 70, 70, 50, 25, "OK", false, g_JoinMsgWnd )
 	addEventHandler ( "onClientGUIClick", btn, function ()
@@ -41,14 +41,14 @@ local function ShpOnJoinMsgUse ( v )
 		end
 		destroyElement ( getElementParent ( source ) )
 		g_JoinMsgWnd = false
-		guiSetInputEnabled ( false )
+		showCursor ( false )
 	end, false )
 	
 	local btn = guiCreateButton ( 130, 70, 50, 25, "Cancel", false, g_JoinMsgWnd )
 	addEventHandler ( "onClientGUIClick", btn, function ()
 		destroyElement ( getElementParent ( source ) )
 		g_JoinMsgWnd = false
-		guiSetInputEnabled ( false )
+		showCursor ( false )
 	end, false )
 end
 

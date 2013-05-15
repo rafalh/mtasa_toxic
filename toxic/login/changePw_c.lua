@@ -20,7 +20,7 @@ function closeChangePwGui()
 	if(not g_Gui) then return end
 	
 	g_Gui:destroy()
-	guiSetInputEnabled(false)
+	showCursor(false)
 	g_Gui = false
 end
 
@@ -60,7 +60,7 @@ function openChangePasswordGui()
 	if(g_Gui) then return end
 	
 	g_Gui = GUI.create("changePw")
-	guiSetInputEnabled(true)
+	showCursor(true)
 	
 	addEventHandler("onClientGUIChanged", g_Gui.pw, onChgPwEditChange, false)
 	addEventHandler("onClientGUIClick", g_Gui.ok, onChgPwOkClick, false)

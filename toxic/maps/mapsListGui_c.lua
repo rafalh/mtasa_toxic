@@ -54,7 +54,7 @@ local function MlstClose ()
 	destroyElement ( wnd )
 	gui.cb ( false )
 	
-	guiSetInputEnabled ( false )
+	showCursor ( false )
 end
 
 local function MlstResize ()
@@ -81,7 +81,7 @@ local function MlstAccept ()
 		destroyElement ( gui.wnd )
 		gui.cb ( data )
 		
-		guiSetInputEnabled ( false )
+		showCursor ( false )
 	end
 end
 
@@ -128,7 +128,7 @@ function MlstDisplay ( title, btn_name, callback )
 	
 	g_GuiList[gui.wnd] = gui
 	guiBringToFront ( gui.search_edit )
-	guiSetInputEnabled ( true )
+	showCursor ( true )
 	
 	return gui.wnd
 end

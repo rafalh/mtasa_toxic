@@ -692,7 +692,8 @@ local function VipOpenSettings ()
 	g_Gui.avatar = guiCreateEdit ( 10, y + 25, w - 20, 25, g_Settings.avatar, false, tab )
 	y = y + 60
 	
-	showCursor ( true )
+	guiSetInputMode("no_binds_when_editing")
+	showCursor(true)
 end
 
 local function VipOnClientVip(timestamp)

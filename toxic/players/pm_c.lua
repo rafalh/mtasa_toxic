@@ -45,7 +45,7 @@ end
 local function PmToBackground(player)
 	local chatInfo = g_Chats[player]
 	guiSetAlpha(chatInfo.wnd, 0.3)
-	guiSetInputEnabled(false)
+	showCursor(false)
 	guiSetText(chatInfo.bgBtn, "Restore")
 	chatInfo.enabled = false
 end
@@ -53,7 +53,7 @@ end
 local function PmRestore(player)
 	local chatInfo = g_Chats[player]
 	guiSetAlpha(chatInfo.wnd, 0.75)
-	guiSetInputEnabled(true)
+	showCursor(true)
 	guiSetText(chatInfo.bgBtn, "In background")
 	guiBringToFront(chatInfo.input)
 	chatInfo.enabled = true
@@ -76,7 +76,7 @@ local function PmCloseBtnClick()
 	for player, chatInfo in pairs(g_Chats) do
 		if(chatInfo.closeBtn == source) then
 			if(chatInfo.enabled) then
-				guiSetInputEnabled(false)
+				showCursor(false)
 			end
 			chatInfo:destroy()
 			g_Chats[player] = nil
@@ -123,7 +123,7 @@ local function PmCmdHandler(command, nick, ...)
 		PmRestore(player)
 	else
 		PmCreateGui(player)
-		guiSetInputEnabled(true)
+		showCursor(true)
 	end
 end
 

@@ -46,7 +46,6 @@ function ChatRoom:openInput()
 	guiEditSetReadOnly(self.inputBox, true)
 	addEventHandler("onClientGUIAccepted", self.inputBox, ChatRoom.onAccept)
 	guiBringToFront(self.inputBox)
-	guiSetInputEnabled(true)
 	addEventHandler("onClientRender", g_Root, ChatRoom.render)
 	ChatRoom.visibleRoom = self
 	
@@ -61,7 +60,6 @@ function ChatRoom:closeInput()
 	destroyElement(self.inputBox)
 	self.inputBox = false
 	ChatRoom.visibleRoom = false
-	guiSetInputEnabled(false)
 	
 	triggerServerEvent("onPlayerChatting", g_Me, false)
 end
@@ -86,7 +84,6 @@ function ChatRoom.render()
 		return
 	end
 	guiBringToFront(self.inputBox)
-	guiSetInputEnabled(true)
 	
 	local chatbox_layout = getChatboxLayout()
 	local font = g_ChatFonts[chatbox_layout.chat_font] or "default"
@@ -162,4 +159,5 @@ end
 
 #VERIFY_SERVER_BEGIN("4D61E3FEBAC07FBBE5539F4C2E332743")
 	triggerServerEvent("chatext.onReady", resourceRoot)
+	guiSetInputMode("no_binds_when_editing")
 #VERIFY_SERVER_END()

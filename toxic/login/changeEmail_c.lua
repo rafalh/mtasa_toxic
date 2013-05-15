@@ -4,7 +4,7 @@ function closeChangeEmailGui()
 	if(not g_Gui) then return end
 	
 	g_Gui:destroy()
-	guiSetInputEnabled(false)
+	showCursor(false)
 	g_Gui = false
 end
 
@@ -49,7 +49,7 @@ function openChangeEmailGui()
 	if(g_Gui) then return end
 	
 	g_Gui = GUI.create("changeEmail")
-	guiSetInputEnabled(true)
+	showCursor(true)
 	
 	addEventHandler("onClientGUIClick", g_Gui.ok, onOkClick, false)
 	addEventHandler("onClientGUIClick", g_Gui.cancel, closeChangeEmailGui, false)
