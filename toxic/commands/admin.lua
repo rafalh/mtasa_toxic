@@ -22,7 +22,6 @@ local function CmdBan1m(message, arg)
 	
 	if(player) then
 		local accountName = getAccountName(getPlayerAccount(source))
-		local player = Player.fromEl(playerEl)
 		local admin = Player.fromEl(source)
 		
 		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player:getName(true), admin:getName(true))
