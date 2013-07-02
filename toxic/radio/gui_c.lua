@@ -149,7 +149,7 @@ local function createGui(panel)
 	addEventHandler("onClientGUIClick", g_VolumeImg, onVolumeClick, false)
 	g_VolumeBar = guiCreateScrollBar(95, 32, w - 105, 20, true, false, panel)
 	guiScrollBarSetScrollPosition(g_VolumeBar, g_Volume)
-	addEventHandler("onClientGUIScroll", g_VolumeBar, onVolumeChange)
+	addEventHandler("onClientGUIScroll", g_VolumeBar, onVolumeChange, false)
 	
 	g_SearchBox = guiCreateEdit(10, 65, 150, 25, MuiGetMsg("Search..."), false, panel)
 	addEventHandler("onClientGUIFocus", g_SearchBox, onFilterFocus, false)
