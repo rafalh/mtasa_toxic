@@ -11,6 +11,7 @@
 	<script src="utils/outputChat_c.lua" type="client" />
 	<script src="utils/vector2_c.lua" type="client" />
 	<script src="utils/vector3_c.lua" type="client" />
+	<script src="utils/rect_c.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />
 	<script src="utils/timers.lua" type="server" />
 	<script src="utils/binary.lua" type="server" />

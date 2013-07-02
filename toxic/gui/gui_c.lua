@@ -3,16 +3,26 @@ GUI.__mt = {__index = {}}
 GUI.templates = false
 GUI.wndToObj = {}
 
-local g_ScrW, g_ScrH = guiGetScreenSize()
+local g_ScrSize = Vector2(guiGetScreenSize())
 
 function GUI.loadNode(node)
 	local ctrl = xmlNodeGetAttributes(node)
 	ctrl.type = xmlNodeGetName(node)
 	
+	-- Prepare rect
+	local absRect = Rect(Vector2(ctrl.x or 0, ctrl.y or 0), Vector2(ctrl.w or 0, ctrl.h or 0))
+	local relRect = Rect(Vector2(ctrl.rx or 0, ctrl.ry or 0), Vector2(ctrl.rw or 0, ctrl.rh or 0))
+	ctrl.rc = RelRect(absRect, relRect)
+	
+	-- Unset position members
+	ctrl.x, ctrl.y, ctrl.w, ctrl.h = nil, nil, nil, nil
+	ctrl.rx, ctrl.ry, ctrl.rw, ctrl.rh = nil, nil, nil, nil
+	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local child = GUI.loadNode(subnode)
 		table.insert(ctrl, child)
 	end
+	
 	return ctrl
 end
 
@@ -53,21 +63,15 @@ function GUI.computeCtrlPlacement(tpl, parent)
 	if(parent) then
 		parentSize = Vector2(guiGetSize(parent, false))
 	else
-		parentSize = Vector2(g_ScrW, g_ScrH)
+		parentSize = g_ScrSize
 	end
 	
-	local x, y = tpl.x or 0, tpl.y or 0
-	local w, h = tpl.w or 0, tpl.h or 0
-	x = x + (tpl.rx or 0) * parentSize[1] / 100
-	y = y + (tpl.ry or 0) * parentSize[2] / 100
-	w = w + (tpl.rw or 0) * parentSize[1] / 100
-	h = h + (tpl.rh or 0) * parentSize[2] / 100
-	
-	return x, y, w, h
+	return tpl.rc:resolve(parentSize)
 end
 
 function GUI.__mt.__index:createControl(tpl, parent)
-	local x, y, w, h = GUI.computeCtrlPlacement(tpl, parent)
+	local rc = GUI.computeCtrlPlacement(tpl, parent)
+	local x, y, w, h = rc[1][1], rc[1][2], rc[2][1], rc[2][2]
 	
 	local ctrl
 	if(tpl.type == "window") then
@@ -186,7 +190,8 @@ function GUI.onResize()
 	
 	for ctrl, tpl in pairs(self.ctrlList) do
 		local parent = getElementParent(ctrl)
-		local x, y, w, h = GUI.computeCtrlPlacement(tpl, parent)
+		local rc = GUI.computeCtrlPlacement(tpl, parent)
+		local x, y, w, h = rc[1][1], rc[1][2], rc[2][1], rc[2][2]
 		guiSetPosition(ctrl, x, y, false)
 		guiSetSize(ctrl, w, h, false)
 	end

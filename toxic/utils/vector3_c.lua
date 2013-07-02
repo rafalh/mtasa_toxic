@@ -1,19 +1,19 @@
-Vector = {}
-Vector.__mt = {__index = {}}
+Vector3 = {}
+Vector3.__mt = {__index = {cls = Vector3}}
 
-function Vector.__mt.__index:len()
+function Vector3.__mt.__index:len()
 	return (self[1]^2 + self[2]^2 + self[3]^2)^0.5
 end
 
-function Vector.__mt.__index:len2()
+function Vector3.__mt.__index:len2()
 	return self[1]^2 + self[2]^2 + self[3]^2
 end
 
-function Vector.__mt.__index:dist(vec)
+function Vector3.__mt.__index:dist(vec)
 	return ((self[1] - vec[1])^2 + (self[2] - vec[2])^2 + (self[3] - vec[3])^2)^0.5
 end
 
-function Vector.__mt.__index:distFromSeg(a, b)
+function Vector3.__mt.__index:distFromSeg(a, b)
 	-- Based on http://www.softsurfer.com/Archive/algorithm_0102/algorithm_0102.htm
 	local v = b - a
     local w = self - a
@@ -33,48 +33,54 @@ function Vector.__mt.__index:distFromSeg(a, b)
     return self:dist(Pb)
 end
 
-function Vector.__mt.__index:dot(vec)
+function Vector3.__mt.__index:dot(vec)
 	return self[1]*vec[1] + self[2]*vec[2] + self[3]*vec[3]
 end
 
-function Vector.create(x, y, z)
-	return setmetatable({x or 0, y or 0, z or 0}, Vector.__mt)
+function Vector3.__mt:__add(vec)
+	return Vector3(self[1] + vec[1], self[2] + vec[2], self[3] + vec[3])
 end
 
-function Vector.__mt:__add(vec)
-	return Vector.create(self[1] + vec[1], self[2] + vec[2], self[3] + vec[3])
+function Vector3.__mt:__sub(vec)
+	return Vector3(self[1] - vec[1], self[2] - vec[2], self[3] - vec[3])
 end
 
-function Vector.__mt:__sub(vec)
-	return Vector.create(self[1] - vec[1], self[2] - vec[2], self[3] - vec[3])
-end
-
-function Vector.__mt.__mul(a, b)
-	if(type(a) == "table") then
-		return Vector.create(a[1]*b, a[2]*b, a[3]*b)
+function Vector3.__mt.__mul(a, b)
+	if(type(b) ~= "table") then
+		return Vector3(a[1]*b, a[2]*b, a[3]*b)
+	elseif(type(a) ~= "table") then
+		return Vector3(b[1]*a, b[2]*a, b[3]*a)
 	else
-		return Vector.create(b[1]*a, b[2]*a, b[3]*a)
+		--assert(a.cls == Vector3 and b.cls == Vector3, tostring(a.cls).." "..tostring(b.cls))
+		return Vector3(a[1]*b[1], a[2]*b[2], a[3]*b[3])
 	end
 end
 
-function Vector.__mt:__div(a)
-	return Vector.create(self[1]/a, self[2]/a, self[3]/a)
+function Vector3.__mt:__div(a)
+	return Vector3(self[1]/a, self[2]/a, self[3]/a)
 end
 
-function Vector.__mt:__eq(vec)
+function Vector3.__mt:__eq(vec)
 	return self[1] == vec[1] and self[2] == vec[2] and self[3] == vec[3]
 end
 
-function Vector.__mt:__tostring()
+function Vector3.__mt:__tostring()
 	return "("..tostring(self[1]).." "..tostring(self[2]).." "..tostring(self[3])..")"
 end
 
--- Allow creating vectors by calling Vector(x, y, z)
+function Vector3.__mt.__concat(a, b)
+	return tostring(a)..tostring(b)
+end
+
+-- Allow creating vectors by calling Vector3(x, y, z)
 local mt = {}
 function mt:__call(x, y, z)
-	return Vector.create(x, y, z)
+	return setmetatable({x or 0, y or 0, z or 0}, Vector3.__mt)
 end
-setmetatable(Vector, mt)
+function mt:__tostring()
+	return "Vector3"
+end
+setmetatable(Vector3, mt)
 
 -- Simple test
---assert(((Vector(1, 0, 0) + Vector(0, 1, 0)) * 2) == Vector(2, 2, 0))
+--assert(((Vector3(1, 0, 0) + Vector3(0, 1, 0)) * 2) == Vector3(2, 2, 0))

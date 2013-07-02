@@ -239,8 +239,8 @@ function ShpThunderEffect.onRender ()
 	
 	local src = getPedOccupiedVehicle(ShpThunderEffect.source) or ShpThunderEffect.source
 	local dst = getPedOccupiedVehicle(ShpThunderEffect.target) or ShpThunderEffect.target
-	local vecBegin = Vector(getElementPosition(src))
-	local vecEnd = Vector(getElementPosition(dst))
+	local vecBegin = Vector3(getElementPosition(src))
+	local vecEnd = Vector3(getElementPosition(dst))
 	
 	local vecDir = vecEnd - vecBegin
 	vecDir = vecDir * 0.1

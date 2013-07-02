@@ -1,9 +1,9 @@
 local function updateAlpha()
 	if(not Settings.hideNearbyCars) then return end
 	
-	local cameraPos = Vector.create(getCameraMatrix())
+	local cameraPos = Vector3(getCameraMatrix())
 	local target = getCameraTarget()
-	local targetPos = target and Vector.create(getElementPosition(target))
+	local targetPos = target and Vector3(getElementPosition(target))
 	local targetDim = target and getElementDimension(target) or getElementDimension(g_Me)
 	
 	for i, player in ipairs(getElementsByType("player")) do
@@ -14,7 +14,7 @@ local function updateAlpha()
 			if(veh == target) then
 				a = 254
 			elseif(targetPos) then
-				local pos = Vector.create(getElementPosition(veh or player))
+				local pos = Vector3(getElementPosition(veh or player))
 				local dist = pos:distFromSeg(cameraPos, targetPos)
 				a = math.min(1 + dist * 20, 112)
 			else
