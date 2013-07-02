@@ -118,7 +118,9 @@ function EditProfilePanel.onShow(panel)
 		initGui()
 	end
 	
-	RPC("getPlayerProfile", g_MyId):onResult(onProfileData):exec()
+	if(g_MyId) then
+		RPC("getPlayerProfile", g_MyId):onResult(onProfileData):exec()
+	end
 end
 
 UpRegister(EditProfilePanel)

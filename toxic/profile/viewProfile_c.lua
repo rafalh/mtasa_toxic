@@ -30,6 +30,8 @@ function ProfileView:destroy(ignoreEl)
 end
 
 function ProfileView.create(id, name)
+	assert(id)
+	
 	local self = setmetatable({}, ProfileView.__mt)
 	self.id = id
 	
