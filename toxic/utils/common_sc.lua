@@ -73,6 +73,7 @@ function table.copy(tbl, full)
 			ret[k] = v
 		end
 	end
+	setmetatable(ret, getmetatable(tbl))
 	return ret
 end
 

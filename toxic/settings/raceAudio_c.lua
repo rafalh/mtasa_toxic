@@ -6,6 +6,7 @@ Settings.register
 	onChange = function(oldVal, newVal)
 		local res = getResourceFromName("race_audio")
 		if(res) then
+			--outputDebugString("Changing race audio volume to "..newVal/200, 3)
 			call(res, "setRaceAudioVolume", newVal/200) -- normally its 0.5
 		else
 			outputChatBox("Failed to set Race Audio volume!", 255, 0, 0)

@@ -7,5 +7,7 @@
 	<script src="ghostAlpha_c.lua" type="client" />
 	<script src="glass_c.lua" type="client" />
 	<script src="winAnim_c.lua" type="client" />
+	<script src="podium_s.lua" type="server" />
+	<script src="podium_c.lua" type="client" />
 	<file src="broken_glass.png" />
 </meta>

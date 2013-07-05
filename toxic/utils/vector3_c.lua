@@ -45,6 +45,10 @@ function Vector3.__mt:__sub(vec)
 	return Vector3(self[1] - vec[1], self[2] - vec[2], self[3] - vec[3])
 end
 
+function Vector3.__mt:__unm()
+	return Vector3(-self[1], -self[2], -self[3])
+end
+
 function Vector3.__mt.__mul(a, b)
 	if(type(b) ~= "table") then
 		return Vector3(a[1]*b, a[2]*b, a[3]*b)
