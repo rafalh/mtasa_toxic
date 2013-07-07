@@ -126,6 +126,51 @@
 	<file src="img/flags/ru.png" />
 	<file src="img/flags/lt.png" />
 	
+	<!-- Sound commands -->
+	<html src="commands/sounds/aleurwal.mp3" raw="true" />
+	<html src="commands/sounds/baby.mp3" raw="true" />
+	<html src="commands/sounds/bambo.mp3" raw="true" />
+	<html src="commands/sounds/baranina.mp3" raw="true" />
+	<html src="commands/sounds/buty.mp3" raw="true" />
+	<html src="commands/sounds/chlop.mp3" raw="true" />
+	<html src="commands/sounds/chlopaki.mp3" raw="true" />
+	<html src="commands/sounds/czarny.mp3" raw="true" />
+	<html src="commands/sounds/dziendobry.mp3" raw="true" />
+	<html src="commands/sounds/eksplozja.mp3" raw="true" />
+	<html src="commands/sounds/fikasz.mp3" raw="true" />
+	<html src="commands/sounds/gangster.mp3" raw="true" />
+	<html src="commands/sounds/gogus.mp3" raw="true" />
+	<html src="commands/sounds/hardkor.mp3" raw="true" />
+	<html src="commands/sounds/holywood.mp3" raw="true" />
+	<html src="commands/sounds/jaja.mp3" raw="true" />
+	<html src="commands/sounds/kadet.mp3" raw="true" />
+	<html src="commands/sounds/komunikat.mp3" raw="true" />
+	<html src="commands/sounds/kopany.mp3" raw="true" />
+	<html src="commands/sounds/kupa.mp3" raw="true" />
+	<html src="commands/sounds/litr.mp3" raw="true" />
+	<html src="commands/sounds/lysy.mp3" raw="true" />
+	<html src="commands/sounds/miota.mp3" raw="true" />
+	<html src="commands/sounds/mort.mp3" raw="true" />
+	<html src="commands/sounds/mudzyn.mp3" raw="true" />
+	<html src="commands/sounds/niema.mp3" raw="true" />
+	<html src="commands/sounds/niewszedl.mp3" raw="true" />
+	<html src="commands/sounds/otochodzi.mp3" raw="true" />
+	<html src="commands/sounds/placki.mp3" raw="true" />
+	<html src="commands/sounds/popierdolka.mp3" raw="true" />
+	<html src="commands/sounds/rks.mp3" raw="true" />
+	<html src="commands/sounds/siemaheniu.mp3" raw="true" />
+	<html src="commands/sounds/taksamo.mp3" raw="true" />
+	<html src="commands/sounds/trololo.mp3" raw="true" />
+	<html src="commands/sounds/uwaga.mp3" raw="true" />
+	<html src="commands/sounds/waldus.mp3" raw="true" />
+	<html src="commands/sounds/wezdwie.mp3" raw="true" />
+	<html src="commands/sounds/widze.mp3" raw="true" />
+	<html src="commands/sounds/winda.mp3" raw="true" />
+	<html src="commands/sounds/wscieklizna.mp3" raw="true" />
+	<html src="commands/sounds/zaskoczenie.mp3" raw="true" />
+	<html src="commands/sounds/zlestanal.mp3" raw="true" />
+	<html src="commands/sounds/zpolki.mp3" raw="true" />
+	
 	<export function="parseCommand" />
 	
 	<include resource="rafalh_shared" />

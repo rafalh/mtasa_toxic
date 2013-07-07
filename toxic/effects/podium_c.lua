@@ -1,10 +1,66 @@
-local POS = Vector3(2489.6, -1668.5, 13.3)
-local VEH_OFFSETS = {
-	Vector3(0, 0, 0),
-	Vector3(5, -1, 0),
-	Vector3(-5, -1, 0),
+local LOCATIONS = {
+	{ -- Grove street
+		pos = Vector3(2495, -1668, 13.3),
+		vehOff = {
+			Vector3(0, 0, 0),
+			Vector3(1, 5, 0),
+			Vector3(1, -5, 0),
+		},
+		camOff = Vector3(-50, 50, 30),
+		vehRotZ = 90,
+	},
+	{ -- sea
+		pos = Vector3(1019.6, -2308.1, 13),
+		vehOff = {
+			Vector3(0, 0, 0),
+			Vector3(-1, -5, 0),
+			Vector3(-1, 5, 0),
+		},
+		camOff = Vector3(50, -50, 30),
+		vehRotZ = 270,
+	},
+	{
+		pos = Vector3(1135.3, -2037.0, 68.9),
+		vehOff = {
+			Vector3(0, 0, 0),
+			Vector3(-1, -5, 0),
+			Vector3(-1, 5, 0),
+		},
+		camOff = Vector3(50, -50, 30),
+		vehRotZ = 270,
+	},
+	{ -- hill
+		pos = Vector3(910, -592.6, 114.2),
+		vehOff = {
+			Vector3(0, 0, 0),
+			Vector3(-5, -3, 0),
+			Vector3(3, 5, 0),
+		},
+		camOff = Vector3(0, -70, 30),
+		vehRotZ = 225,
+	},
+	{ -- parking
+		pos = Vector3(2325.8, 1440.5, 42.6),
+		vehOff = {
+			Vector3(0, 0, 0),
+			Vector3(-1, -5, 0),
+			Vector3(-1, 5, 0),
+		},
+		camOff = Vector3(50, -50, 30),
+		vehRotZ = 270,
+	},
+	{
+		pos = Vector3(-789, 2427.2, 157),
+		vehOff = {
+			Vector3(0, 0, 0),
+			Vector3(-5, 1, 0),
+			Vector3(5, 1, 0),
+		},
+		camOff = Vector3(-50, -50, 30),
+		vehRotZ = 180,
+	},
 }
-local CAMERA_OFFSET = Vector3(30, 50, 30)
+
 local MIN_DIST_A = 0.2
 local ANIM_TIME = 1500
 local VEHICLE_MODEL = 411 -- Infernus
@@ -19,15 +75,16 @@ local NAME_SCALE = 2
 local g_StartTicks
 local g_Vehicles
 local g_Winners
+local g_Loc = LOCATIONS[6]
 
 local function PodiumRender()
 	-- Setup camera first
-	local pos = table.copy(POS)
-	local lookAt = table.copy(POS)
 	local dt = getTickCount() - g_StartTicks
 	local a = MIN_DIST_A + (ANIM_TIME/(ANIM_TIME + dt))
-	pos = pos + CAMERA_OFFSET*a
-	setCameraMatrix(pos[1], pos[2], pos[3], lookAt[1], lookAt[2], lookAt[3])
+	local q = Quaternion.fromRot(Vector3(0, 0, 1), 0.3/a)
+	local offset = q:transform(g_Loc.camOff)
+	local pos = g_Loc.pos + offset*a
+	setCameraMatrix(pos[1], pos[2], pos[3], g_Loc.pos[1], g_Loc.pos[2], g_Loc.pos[3])
 	
 	-- Draw infoboxes over vehicles
 	for i, veh in ipairs(g_Vehicles) do
@@ -56,14 +113,21 @@ local function PodiumRender()
 end
 
 -- Called by RPC
-function PodiumStart(winners)
+function PodiumStart(winners, n)
+	if(g_StartTicks) then
+		outputDebugString("Ignoring PodiumStart request", 2)
+		return
+	end
+	
 	g_Winners = winners
+	g_Loc = LOCATIONS[n]
 	g_Vehicles = {}
 	for i, player in ipairs(winners) do
-		local pos = POS + VEH_OFFSETS[i]
-		local veh = createVehicle(VEHICLE_MODEL, pos[1], pos[2], pos[3])
+		local pos = g_Loc.pos + g_Loc.vehOff[i]
+		local veh = createVehicle(VEHICLE_MODEL, pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
 		table.insert(g_Vehicles, veh)
 	end
+	
 	g_StartTicks = getTickCount()
 	addEventHandler("onClientRender", root, PodiumRender)
 end
@@ -80,3 +144,9 @@ function PodiumStop()
 	g_Winners = {}
 	g_Vehicles = {}
 end
+
+--[[setTimer(function()
+	if(Settings.debug) then
+		PodiumStart({"test", "test2", "test3"}, math.random(1, 6))
+	end
+end, 1000, 1)]]

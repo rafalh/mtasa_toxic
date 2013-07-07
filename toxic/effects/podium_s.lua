@@ -1,9 +1,10 @@
+local LOC_COUNT = 6
+
 local g_Winners = {}
-local DEBUG = true
 
 local function onRaceStateChange(state)
 	if(state == 'PostFinish') then
-		RPC('PodiumStart', g_Winners):exec()
+		RPC('PodiumStart', g_Winners, math.random(1, LOC_COUNT)):exec()
 	elseif(state == 'LoadingMap') then
 		RPC('PodiumStop'):exec()
 		g_Winners = {}
@@ -20,6 +21,4 @@ addInitFunc(function()
 	addEventHandler('onRaceStateChanging', root, onRaceStateChange)
 	addEventHandler('onPlayerFinish', root, onPlayerFinish)
 	addEventHandler('onPlayerFinishDD', root, onPlayerFinish)
-	
-	
 end)

@@ -225,9 +225,7 @@ function GUI.create(tpl, x, y, w, h, parent)
 	
 	if(x and y and w and h) then
 		tpl = table.copy(tpl)
-		tpl.x, tpl.y = x, y
-		tpl.w, tpl.h = w, h
-		tpl.rx, tpl.ry, tpl.rh, tpl.rw = 0, 0, 0, 0
+		tpl.rc = RelRect(Rect(Vector2(x, y), Vector2(w, h)))
 	end
 	
 	local self = setmetatable({}, GUI.__mt)
