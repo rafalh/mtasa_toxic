@@ -31,7 +31,7 @@ local function ShpUpdateButtons ( itemId )
 	local item = g_ShopItems[itemId]
 	local buy, sell, use = item.getAllowedAct ( g_Inventory[itemId] )
 	local cost = item.cost
-	if(g_IsVip) then
+	if(g_IsVip and not item.noDiscount) then
 		cost = cost * VIP_COST
 	end
 	
@@ -51,11 +51,11 @@ local function ShpUpdateCostLabel(itemId)
 	local item = g_ShopItems[itemId]
 	if(item) then
 		local cost = item.cost
-		if(g_IsVip) then
+		if(g_IsVip and not item.noDiscount) then
 			cost = cost * VIP_COST
 		end
 		costStr = costStr.." "..formatMoney(cost)
-		if(g_IsVip) then
+		if(g_IsVip and not item.noDiscount) then
 			costStr = costStr.." ("..MuiGetMsg("%u%% price reduction for VIP"):format(100 - VIP_COST*100)..")"
 		end
 	end

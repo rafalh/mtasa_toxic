@@ -75,7 +75,7 @@ local function McInit()
 			
 			assert(attr.cmd and attr.msg)
 			g_MsgCommands[attr.cmd] = {text = attr.msg, sound = attr.sound}
-			CmdRegister(attr.cmd, McHandleCommand, false, "Says: "..attr.msg)
+			CmdRegister(attr.cmd, McHandleCommand, false, "Says: "..attr.msg..(attr.sound and " If invoked by a VIP player, plays a short sound in background." or ""))
 		end
 		xmlUnloadFile(node)
 	else

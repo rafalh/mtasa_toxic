@@ -123,8 +123,9 @@ function ShpUseItem(item_id, player)
 end
 
 function ShpGetItemPrice(item_id, player)
-	local price = g_ShopItems[item_id].cost
-	if(player) then
+	local item = g_ShopItems[item_id]
+	local price = item.cost
+	if(player and not item.noDiscount) then
 		local vipRes = getResourceFromName("rafalh_vip")
 		local isVip = vipRes and getResourceState(vipRes) == "running" and call(vipRes, "isVip", player)
 		if(isVip) then

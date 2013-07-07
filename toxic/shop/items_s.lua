@@ -369,7 +369,8 @@ ShpRegisterItem(NextMapItem)
 
 local VipItem = {
 	id = "vip1w",
-	cost = 2500000,
+	cost = 2600000,
+	noDiscount = true,
 	onBuy = function ( player )
 		local res = getResourceFromName ( "rafalh_vip" )
 		local success = res and call ( res, "giveVip", player, 7 )
