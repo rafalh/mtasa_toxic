@@ -77,11 +77,14 @@ end
 CmdRegister("ban24h", CmdBan24h, "resource."..g_ResName..".ban24h", "Bans player for 24 hours")
 
 local function CmdMute(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
+	local player = (#arg >= 2 and Player.find(arg[2]))
+	local sec = tonumber(arg[3]) or Settings.mute_time
 	local admin = Player.fromEl(source)
-	
 	if(player) then
-		mutePlayer(player, tonumber(arg[3]) or Settings.mute_time, admin)
+		local reason = "Muted by "..admin:getAccountName()
+		if(player:mute(sec, reason)) then
+			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", player:getName(true), admin:getName(true))
+		end
 	else privMsg(source, "Usage: %s", arg[1].." <player> [<time>]") end
 end
 
@@ -92,8 +95,10 @@ local function CmdPMute(message, arg)
 	local admin = Player.fromEl(source)
 	
 	if(player) then
-		player.accountData.pmuted = 1
-		mutePlayer(player, false, admin)
+		local reason = "Muted by "..admin:getAccountName()
+		if(player:mute(0, reason)) then
+			outputMsg(g_Root, Styles.red, "%s has been permanently muted by %s!", player:getName(true), admin:getName(true))
+		end
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 
@@ -104,18 +109,10 @@ local function CmdUnmute(message, arg)
 	local admin = Player.fromEl(source)
 	
 	if(player) then
-		if(player.id) then -- hackfix
-			DbQuery("UPDATE "..PlayersTable.." SET pmuted=0 WHERE serial=?", player:getSerial())
-		end
-		if(player.accountData.pmuted == 1) then
-			player.accountData.pmuted = 0
-			outputMsg(g_Root, Styles.green, "%s has been unpmuted by %s!", player:getName(true), admin:getName(true))
-		elseif(isPlayerMuted(player.el)) then
+		if(isPlayerMuted(player.el)) then
 			outputMsg(g_Root, Styles.green, "%s has been unmuted by %s!", player:getName(true), admin:getName(true))
 		end
-		
-		setPlayerMuted(player.el, false)
-		setPlayerVoiceMuted(player.el, false)
+		player:unmute()
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end
 

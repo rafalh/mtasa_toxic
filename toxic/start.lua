@@ -13,7 +13,7 @@ local function setupDatabase()
 	Settings.createDbTbl()
 	
 	local err = false
-	local currentVer = 148
+	local currentVer = 149
 	local ver = Settings.version
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
@@ -31,6 +31,14 @@ local function setupDatabase()
 			if(not DbQuery("ALTER TABLE "..DbPrefix.."settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add backupTimestamp column."
 			end
+		end
+		if(not err and ver < 149) then
+			local rows = DbQuery("SELECT DISTINCT serial FROM "..PlayersTable.." WHERE pmuted=1")
+			local now = getRealTime().timestamp
+			for i, data in ipairs(rows) do
+				DbQuery("INSERT INTO "..MutesTable.." (serial, timestamp, duration) VALUES(?, ?, ?)", data.serial, now, 3600*24*31)
+			end
+			outputDebugString(#rows.." pmutes updated", 3)
 		end
 		
 		if(not err) then

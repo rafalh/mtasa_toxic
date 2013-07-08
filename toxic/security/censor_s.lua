@@ -47,7 +47,10 @@ function CsProcessMsg(msg, player)
 	
 	if(mute) then
 		local pdata = Player.fromEl(player)
-		mutePlayer(pdata, 60)
+		local sec = 60
+		if(pdata:mute(sec, "Censor")) then
+			outputMsg(g_Root, Styles.red, "%s has been muted by Censor (%u seconds)!", pdata:getName(true), sec)
+		end
 	end
 	
 	return fine, msg

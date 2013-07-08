@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="Toxic" author="rafalh" version="2.62" description="Rafalh Scripts System" />
+	<info type="misc" name="Toxic" author="rafalh" version="2.63" description="Rafalh Scripts System" />
 	
 	<script src="debug.lua" type="shared" />
 	
@@ -40,6 +40,7 @@
 	<script src="spectators.lua" type="server" />
 	<script src="water_fix_c.lua" type="client" />
 	<script src="tempMod_s.lua" type="server" />
+	<script src="mute_s.lua" type="server" />
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />

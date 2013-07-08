@@ -1,5 +1,5 @@
 Player = {}
-Player.__mt = {__index = Player}
+Player.__mt = {__index = {}}
 Player.idMap = {}
 Player.elMap = {}
 g_Players = Player.elMap -- FIXME
@@ -8,7 +8,7 @@ addEvent("onPlayerChangeRoom")
 addEvent("onPlayerChangeTeam")
 addEvent("main.onAccountChange")
 
-function Player:getSerial()
+function Player.__mt.__index:getSerial()
 	if(self.is_console) then
 		return "0"
 	else
@@ -16,7 +16,7 @@ function Player:getSerial()
 	end
 end
 
-function Player:getIP()
+function Player.__mt.__index:getIP()
 	if(self.is_console) then
 		return ""
 	else
@@ -24,7 +24,7 @@ function Player:getIP()
 	end
 end
 
-function Player:getName(colorCodes)
+function Player.__mt.__index:getName(colorCodes)
 	local name = getPlayerName(self.el)
 	
 	if(not colorCodes) then
@@ -41,11 +41,15 @@ function Player:getName(colorCodes)
 	return name
 end
 
-function Player:getPlayTime()
+function Player.__mt.__index:getAccountName()
+	return getAccountName(getPlayerAccount(self.el))
+end
+
+function Player.__mt.__index:getPlayTime()
 	return getRealTime().timestamp - self.loginTimestamp + self.accountData:get("time_here")
 end
 
-function Player:disconnectFromAccount()
+function Player.__mt.__index:disconnectFromAccount()
 	self.accountData:set("online", 0)
 	
 	local now = getRealTime().timestamp
@@ -58,7 +62,7 @@ function Player:disconnectFromAccount()
 	end
 end
 
-function Player:setAccount(account)
+function Player.__mt.__index:setAccount(account)
 	local now = getRealTime().timestamp
 	
 	if(type(account) == "userdata") then
@@ -114,7 +118,7 @@ function Player.onTeamChange(team)
 	self.accountData:set("name", fullName)
 end
 
-function Player:destroy()
+function Player.__mt.__index:destroy()
 	self:disconnectFromAccount()
 	
 	Player.elMap[self.el] = nil
@@ -181,11 +185,15 @@ function Player.create(el)
 end
 
 function Player.fromId(id)
-	return Player.idMap[id]
+	local pl = Player.idMap[id]
+	--if(not pl) then outputDebugString("Failed to find player by ID: "..tostring(id), 2) DbgTraceBack() end
+	return pl
 end
 
 function Player.fromEl(el)
-	return Player.elMap[el]
+	local pl = Player.elMap[el]
+	--if(not pl) then outputDebugString("Failed to find player by element: "..tostring(el), 2) DbgTraceBack() end
+	return pl
 end
 
 function Player.find(name)
@@ -193,6 +201,16 @@ function Player.find(name)
 	if(not el) then return false end
 	return Player.fromEl(el)
 end
+
+setmetatable(Player, {
+	__call = function(tbl, arg)
+		if(type(arg) == "userdata") then
+			return Player.fromEl(arg)
+		else
+			return Player.fromId(arg)
+		end
+	end}
+)
 
 addInitFunc(function()
 	addEventHandler("onPlayerChangeRoom", g_Root, Player.onRoomChange)

@@ -32,7 +32,9 @@ local function GbRollTimer(player)
 		privMsg(player, "You rolled %u, %s added to your cash.", n, formatMoney(cashadd))
 	elseif(n == 3) then
 		privMsg(player, "You rolled %u, which is mute.", n, player)
-		mutePlayer(pdata, 60)
+		if(pdata:mute(60, "Roll")) then
+			outputMsg(g_Root, Styles.red, "%s has been muted after rolling a dice.", pdata:getName(true))
+		end
 	elseif(n == 4) then
 		local cashsub = math.min(math.random(1000, 4000), pdata.accountData.cash)
 		pdata.accountData:add("cash", -cashsub)

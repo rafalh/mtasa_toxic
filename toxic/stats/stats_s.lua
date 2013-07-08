@@ -80,7 +80,7 @@ end
 
 local function StPlayerStatsSyncCallback(idOrPlayer)
 	local id = touint(idOrPlayer)
-	local player = Player.fromId(id) or Player.fromEl(idOrPlayer)
+	local player = (id and Player.fromId(id)) or Player.fromEl(idOrPlayer)
 	
 	local accountData
 	if(player) then

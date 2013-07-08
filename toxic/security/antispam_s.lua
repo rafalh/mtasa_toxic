@@ -10,8 +10,10 @@ function AsProcessMsg(player)
 				scriptMsg("%s has been kicked for spamming.", name)
 				kickPlayer(player, "Spam")
 			else
-				outputMsg(g_Root, Styles.red, "%s has been muted for spamming.", name)
-				mutePlayer(pdata, 60, false, true)
+				local sec = 60
+				if(pdata:mute(sec, "Spam")) then
+					outputMsg(g_Root, Styles.red, "%s has been muted for spamming.", pdata:getName(true))
+				end
 			end
 			return true
 		else

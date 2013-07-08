@@ -16,7 +16,6 @@ PlayersTable = Database.Table{
 	{"last_visit",     "INT UNSIGNED",       default = 0},
 	{"ip",             "VARCHAR(16)",        default = ""},
 	{"name",           "VARCHAR(32)",        default = ""},
-	{"pmuted",         "BOOL",               default = 0},
 	{"online",         "BOOL",               default = 0},
 	{"email",          "VARCHAR(128)",       default = ""},
 	

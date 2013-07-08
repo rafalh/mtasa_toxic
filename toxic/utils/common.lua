@@ -44,8 +44,8 @@ function findPlayer(str)
 	end
 	
 	local player = getPlayerFromName(str) -- returns player or false
-	if(Player.fromEl(player)) then
-		return player
+	if(player) then
+		return Player.fromEl(player)
 	end
 	
 	str = str:lower()
@@ -111,46 +111,6 @@ function removeScreenMsg(msgItem, player)
 	assert(index)
 	table.remove(Player.fromEl(player).scrMsgs, index)
 	textDestroyTextItem(msgItem)
-end
-
-function setPlayerVoiceMuted(player, muted)
-	local voiceRes = getResourceFromName("voice")
-	if(voiceRes and getResourceState(voiceRes) == "running") then
-		return call(voiceRes, "setPlayerVoiceMuted", player, muted)
-	end
-	return false
-end
-
-local function unmuteTimerProc(playerEl)
-	local player = Player.fromEl(playerEl)
-	if(isPlayerMuted(player.el)) then
-		setPlayerMuted(player.el, false)
-		outputMsg(g_Root, Styles.green, "%s has been unmuted by Script!", player:getName(true))
-	end
-	setPlayerVoiceMuted(player.el, false)
-end
-
-function mutePlayer(player, sec, admin, quiet)
-	assert(type(player) == "table")
-	
-	setPlayerMuted(player.el, true)
-	setPlayerVoiceMuted(player.el, true)
-	
-	if(not quiet) then
-		if(admin) then
-			if(type(admin) ~= "table") then
-				admin = Player.fromEl(admin)
-			end
-			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", player:getName(true), admin:getName(true))
-		else
-			outputMsg(g_Root, Styles.red, "%s has been muted by Script!", player:getName(true))
-		end
-	end
-	
-	sec = touint(sec, 0)
-	if(sec > 0) then
-		setPlayerTimer(unmuteTimerProc, sec * 1000, 1, player.el)
-	end
 end
 
 function addInternalEventHandler(eventtype, handler)

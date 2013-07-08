@@ -1,6 +1,6 @@
 addEvent("main.onSetLocaleReq", true)
 
-function Player:setLocale(localeId)
+function Player.__mt.__index:setLocale(localeId)
 	if(self.lang == localeId) then return end
 	
 	self.lang = localeId

@@ -1,8 +1,8 @@
 Room = {}
-Room.__mt = {__index = Room}
+Room.__mt = {__index = {}}
 Room.elMap = {}
 
-function Room:destroy()
+function Room.__mt.__index:destroy()
 	Room.elMap[self.el] = nil
 end
 
