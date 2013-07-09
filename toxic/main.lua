@@ -19,6 +19,12 @@ Styles = {
 	info = {"#FFC000", "#FFFFFF"}
 }
 
+BlobsTable = Database.Table{
+	name = "blobs",
+	{"id", "INT UNSIGNED", pk = true},
+	{"data", "BLOB", default = ""},
+}
+
 addEvent("main.onPlayerReady", true)
 
 local function isNickChangeAllowed(player, name)

@@ -1,5 +1,6 @@
 local g_InitFuncs = {}
 local _addEventHandler
+local g_Co, g_CoTicks
 
 local function setupDatabase()
 	if(not DbInit()) then
@@ -13,7 +14,7 @@ local function setupDatabase()
 	Settings.createDbTbl()
 	
 	local err = false
-	local currentVer = 149
+	local currentVer = 151
 	local ver = Settings.version
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
@@ -22,11 +23,6 @@ local function setupDatabase()
 	end
 	
 	if(ver < currentVer) then
-		if(not err and ver < 147) then
-			if(not DbQuery("ALTER TABLE "..DbPrefix.."players ADD COLUMN achvCount INT DEFAULT 0 NOT NULL")) then
-				err = "Failed to add achvCount column."
-			end
-		end
 		if(not err and ver < 148) then
 			if(not DbQuery("ALTER TABLE "..DbPrefix.."settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL")) then
 				err = "Failed to add backupTimestamp column."
@@ -39,6 +35,36 @@ local function setupDatabase()
 				DbQuery("INSERT INTO "..MutesTable.." (serial, timestamp, duration) VALUES(?, ?, ?)", data.serial, now, 3600*24*31)
 			end
 			outputDebugString(#rows.." pmutes updated", 3)
+		end
+		if(not err and ver < 150) then
+			local rows = DbQuery("SELECT map, player, rec, cp_times FROM "..BestTimesTable.." WHERE length(rec)>0 OR length(cp_times)>0")
+			DbQuery("UPDATE "..BestTimesTable.." SET rec=0 WHERE length(rec)=0")
+			DbQuery("UPDATE "..BestTimesTable.." SET cp_times=0 WHERE length(cp_times)=0")
+			for i, data in ipairs(rows) do
+				if(data.rec ~= "") then
+					DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.rec)..")")
+					local id = Database.getLastInsertID()
+					if(id == 0) then outputDebugString("last insert ID == 0", 2) end
+					DbQuery("UPDATE "..BestTimesTable.." SET rec=? WHERE map=? AND player=?", id, data.map, data.player)
+				end
+				if(data.cp_times ~= "") then
+					DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.cp_times)..")")
+					local id = Database.getLastInsertID()
+					if(id == 0) then outputDebugString("last insert ID == 0", 2) end
+					DbQuery("UPDATE "..BestTimesTable.." SET cp_times=? WHERE map=? AND player=?", id, data.map, data.player)
+				end
+				
+				coroutine.yield()
+			end
+			outputDebugString(#rows.." best times updated", 3)
+			Settings.version = 150
+		end
+		if(not err and ver < 151) then
+			DbQuery("UPDATE "..BestTimesTable.." SET timestamp=0 WHERE timestamp IS NULL")
+			
+			if(not DbRecreateTable(BestTimesTable)) then
+				err = "Failed to recreate best times table"
+			end
 		end
 		
 		if(not err) then
@@ -184,13 +210,7 @@ local function onResStart(res)
 	end
 end
 
-local function init()
-	math.randomseed(getTickCount())
-	createElement("TXC413b9d90", "TXC413b9d90")
-	
-	-- Enable addEventHandler function
-	addEventHandler = _addEventHandler
-	
+local function initRountine()
 	if(not setupDatabase() or not setupACL()) then
 		cancelEvent()
 		return
@@ -227,6 +247,43 @@ local function init()
 	end
 	
 	outputDebugString("rafalh script has started!", 3)
+end
+
+function continueCoRountine(notFirst)
+	while(getTickCount() - g_CoTicks < 2000 and coroutine.status(g_Co) ~= "dead") do
+		local success, msg = coroutine.resume(g_Co)
+		if(not success) then
+			outputDebugString("Worker failed: "..msg, 2)
+			if(not notFirst) then
+				cancelEvent()
+			end
+			return false
+		end
+	end
+	
+	if(coroutine.status(g_Co) ~= "dead") then
+		if(not notFirst) then
+			outputDebugString("Please wait while script is initializing...", 3)
+		else
+			outputDebugString("Still working... Please wait.", 3)
+		end
+		
+		g_CoTicks = getTickCount()
+		setTimer(continueCoRountine, 50, 1, true)
+	end
+	return true
+end
+
+local function init()
+	math.randomseed(getTickCount())
+	createElement("TXC413b9d90", "TXC413b9d90")
+	
+	-- Enable addEventHandler function
+	addEventHandler = _addEventHandler
+	
+	g_Co = coroutine.create(initRountine)
+	g_CoTicks = getTickCount()
+	continueCoRountine()
 end
 
 function addInitFunc(func)

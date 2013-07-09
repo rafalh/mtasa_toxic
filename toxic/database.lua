@@ -22,31 +22,35 @@ function DbBlob(data)
 	return "X'"..table.concat(tbl).."'"
 end
 
-function DbRedefineTable(table_name, definition)
-	local fields = definition:gsub("([%w_]+)%s*[^,]+,", "%1,"):gsub(",[%s]*([%w_]+)%s+[^,]+", ",%1")
+function DbRecreateTable(tbl)
+	--[[local fields = definition:gsub("([%w_]+)%s*[^,]+,", "%1,"):gsub(",[%s]*([%w_]+)%s+[^,]+", ",%1")
 	if(definition == fields) then -- there is no ","
 		fields = definition:gsub("([%w_]+)[^,]+", "%1")
-	end
+	end]]
 	
-	-- MTA SUCKS: TRANSACTIONs doesn't work :/
+	local fields = tbl:getColumnsList()
+	local fieldsStr = table.concat(fields, ",")
 	
-	if(not DbQuery("ALTER TABLE "..table_name.." RENAME TO __"..table_name)) then
+	if(not DbQuery("ALTER TABLE "..tbl.." RENAME TO __"..tbl)) then
 		return false
 	end
 	
-	if(not DbQuery("CREATE TABLE IF NOT EXISTS "..table_name.." ("..definition..")")) then
-		DbQuery("ALTER TABLE __"..table_name.." RENAME TO "..table_name)
+	local success = g_Driver:createTable(tbl)
+	if(not success) then
+		outputDebugString("Failed to recreate "..tbl.name.." table", 1)
+		DbQuery("ALTER TABLE __"..tbl.." RENAME TO "..tbl)
 		return false
 	end
 	
-	if(not DbQuery("INSERT INTO "..table_name.." SELECT "..fields.." FROM __"..table_name)) then
-		--scriptMsg ( "query: ".."INSERT INTO "..table_name.." SELECT "..fields.." FROM __"..table_name )
-		DbQuery("DROP TABLE "..table_name)
-		DbQuery("ALTER TABLE __"..table_name.." RENAME TO "..table_name)
+	outputDebugString("Copying ".."INSERT INTO "..tbl.." SELECT "..fieldsStr.." FROM __"..tbl, 3)
+	if(not DbQuery("INSERT INTO "..tbl.." SELECT "..fieldsStr.." FROM __"..tbl)) then
+		outputDebugString("Failed to copy rows when recreating "..tbl.name, 1)
+		DbQuery("DROP TABLE "..tbl)
+		DbQuery("ALTER TABLE __"..tbl.." RENAME TO "..tbl)
 		return false
 	end
 	
-	DbQuery("DROP TABLE __"..table_name)
+	DbQuery("DROP TABLE __"..tbl)
 	
 	return true
 end
@@ -57,6 +61,10 @@ end
 
 function Database.createTable(tbl)
 	return g_Driver and g_Driver:createTable(tbl)
+end
+
+function Database.getLastInsertID()
+	return g_Driver and g_Driver:getLastInsertID()
 end
 
 ----------------- Database.Table -----------------
@@ -74,6 +82,16 @@ end
 
 function Database.Table.__mt.__index:insertDefault()
 	return g_Driver and g_Driver:insertDefault(self)
+end
+
+function Database.Table.__mt.__index:getColumnsList()
+	local ret = {}
+	for i, col in ipairs(self) do
+		if(col[2]) then
+			table.insert(ret, col[1])
+		end
+	end
+	return ret
 end
 
 function Database.Table:create(args)
@@ -252,6 +270,10 @@ function Database.Drivers.SQLite:insertDefault(tbl)
 	self:query("INSERT INTO "..tbl.." DEFAULT VALUES")
 end
 
+function Database.Drivers.SQLite:getLastInsertID()
+	local rows = self:query("SELECT last_insert_rowid() AS id")
+	return rows[1].id
+end
 
 ----------------- MySQL Driver -----------------
 
@@ -320,6 +342,11 @@ function Database.Drivers.MySQL:insertDefault(tbl)
 	self:query("INSERT INTO "..self.." () VALUES ()")
 end
 
+function Database.Drivers.MySQL:getLastInsertID()
+	local rows = self:query("SELECT LAST_INSERT_ID() AS id")
+	return rows[1].id
+end
+
 ----------------- MTA Internal Driver -----------------
 
 Database.Drivers.Internal = {}
@@ -330,6 +357,7 @@ end
 
 Database.Drivers.Internal.createTable = Database.Drivers.SQLite.createTable
 Database.Drivers.Internal.insertDefault = Database.Drivers.SQLite.insertDefault
+Database.Drivers.Internal.getLastInsertID = Database.Drivers.SQLite.getLastInsertID
 
 ----------------- End -----------------
 

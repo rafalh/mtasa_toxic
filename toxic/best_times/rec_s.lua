@@ -160,29 +160,39 @@ local function RcOnRecording(map_id, recording)
 	--outputDebugString("RcOnRecording", 3)
 	
 	if(Settings.recorder) then
-		local rows = DbQuery("SELECT player FROM "..BestTimesTable.." WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
+		local rows = DbQuery("SELECT player, rec FROM "..BestTimesTable.." WHERE map=? AND (rec<>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
 		
 		-- check if player has a toptime
-		local found = false
+		local foundRow = false
 		for i, data in ipairs(rows) do
 			if(i <= $(MAX_RECORDINGS) and data.player == pdata.id) then
-				found = true
+				foundRow = data
 				break
 			end
 		end
 		
 		-- if player just get this besttime or there is fewer than 3 recordings
-		if(found or #rows < $(MAX_RECORDINGS)) then
-			outputDebugString("Saving ghost trace (stage 2): "..getPlayerName(client), 3)
+		if(foundRow or #rows < $(MAX_RECORDINGS)) then
+			outputDebugString("Saving ghost trace (stage 2): "..pdata:getName(), 3)
 			local encoded = RcEncodeTrace(recording)
 			encoded = zlibCompress(encoded)
 			local blob = DbBlob(encoded)
-			DbQuery("UPDATE "..BestTimesTable.." SET rec="..blob.." WHERE player=? AND map=?", pdata.id, map_id)
-			if(rows[$(MAX_RECORDINGS+1)]) then
-				DbQuery("UPDATE "..BestTimesTable.." SET rec=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
+			if(foundRow and foundRow.rec ~= 0) then
+				DbQuery("UPDATE "..BlobsTable.." SET data="..blob.." WHERE id=?", foundRow.rec)
+			else
+				DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..blob..")")
+				local id = Database.getLastInsertID()
+				if(id == 0) then outputDebugString("last insert ID == 0", 2) end
+				DbQuery("UPDATE "..BestTimesTable.." SET rec=? WHERE map=? AND player=?", id, map_id, pdata.id)
+			end
+			
+			local rowAfterTop = rows[$(MAX_RECORDINGS+1)]
+			if(rowAfterTop) then
+				DbQuery("DELETE FROM "..BlobsTable.." WHERE id=?", rowAfterTop.rec)
+				DbQuery("UPDATE "..BestTimesTable.." SET rec=0 WHERE player=? AND map=?", rowAfterTop.player, map_id)
 			end
 		else
-			outputDebugString("Invalid player: "..getPlayerName(client), 2)
+			outputDebugString("Invalid player: "..pdata:getName(), 2)
 		end
 	end
 end
@@ -200,19 +210,20 @@ function RcStartRecording(room, map_id)
 		end
 	end
 	
-	local rows = DbQuery("SELECT player, time, rec FROM "..BestTimesTable.." WHERE map=? AND length(rec)>0 ORDER BY time LIMIT 1", map_id)
-	local rec, rec_title = false, nil
-	if(rows and rows[1] and Settings.ghost) then
-		outputDebugString ("Showing ghost", 3)
-		local data = zlibUncompress(rows[1].rec)
-		if(not data) then outputDebugString("Failed to uncompress", 2) end
-		rec = RcDecodeTrace(data)
+	local rows = DbQuery("SELECT bt.player, bt.time, b.data FROM "..BestTimesTable.." bt, "..BlobsTable.." b WHERE bt.map=? AND b.id=bt.rec ORDER BY bt.time LIMIT 1", map_id)
+	local rec, recTitle = false, nil
+	local row = rows and rows[1]
+	if(row and Settings.ghost) then
+		outputDebugString("Showing ghost", 3)
+		local recCompr = zlibUncompress(row.data)
+		if(not recCompr) then outputDebugString("Failed to uncompress", 2) end
+		rec = RcDecodeTrace(recCompr)
 		
-		local rows2 = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE map=? AND time<? LIMIT 1", map_id, rows[1].time)
-		rec_title = "Top "..(rows2[1].c + 1)
+		local rows2 = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE map=? AND time<? LIMIT 1", map_id, row.time)
+		recTitle = "Top "..(rows2[1].c + 1)
 	end
 	
-	triggerClientInternalEvent(room.el, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id, rec, rec_title)
+	triggerClientInternalEvent(room.el, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id, rec, recTitle)
 end
 
 function RcStopRecording(room)
@@ -240,7 +251,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	
 	if(pdata.recording) then
 		assert(pdata.id)
-		local rows = DbQuery("SELECT player, time FROM "..BestTimesTable.." WHERE map=? AND (length(rec)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)", map_id, pdata.id)
+		local rows = DbQuery("SELECT player, time FROM "..BestTimesTable.." WHERE map=? AND (rec<>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)", map_id, pdata.id)
 		
 		local found = false
 		for i, data in ipairs(rows) do
@@ -250,8 +261,8 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			end
 		end
 		
-		if(found or #rows < 3) then -- if player just get this besttime or there is fewer than 3 recordings
-			outputDebugString("Saving ghost trace (stage 1): "..getPlayerName(player), 3)
+		if(found or #rows < $(MAX_RECORDINGS)) then -- if player just get this besttime or there is fewer than 3 recordings
+			outputDebugString("Saving ghost trace (stage 1): "..pdata:getName(), 3)
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), player, map_id)
 		else
 			--outputDebugString("Ghost trace won't be saved", 3)
@@ -261,29 +272,41 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	
 	if(pdata.cp_times) then
 		assert(pdata.id)
-		local rows = DbQuery("SELECT player, time FROM "..BestTimesTable.." WHERE map=? AND (length(cp_times)>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
+		local rows = DbQuery("SELECT player, time, cp_times FROM "..BestTimesTable.." WHERE map=? AND (cp_times<>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)", map_id, pdata.id)
 		
-		local found = false
+		local foundRow = false
 		for i, data in ipairs(rows) do
-			if(i < $(MAX_RECORDINGS+1) and data.player == pdata.id and data.time == time) then
-				found = true
+			if(i <= $(MAX_RECORDINGS) and data.player == pdata.id and data.time == time) then
+				foundRow = data
 				break
 			end
 		end
 		
-		if(found or #rows < $(MAX_RECORDINGS)) then -- if player just get this besttime or there is fewer than 3 cp recordings
-			--outputDebugString("saving cp rec for "..getPlayerName ( player ), 3)
+		if(foundRow or #rows < $(MAX_RECORDINGS)) then -- if player just get this besttime or there is fewer than 3 cp recordings
+			--outputDebugString("saving cp rec for "..pdata:getName(), 3)
 			local buf = ""
-			local prev_time = 0
+			local prevTime = 0
 			for i, t in ipairs(pdata.cp_times) do
-				buf = buf..("%x,"):format(t - prev_time)
-				prev_time = t
+				buf = buf..("%x,"):format(t - prevTime)
+				prevTime = t
 			end
-			buf = buf..("%x"):format(time - prev_time)
+			buf = buf..("%x"):format(time - prevTime)
 			buf = zlibCompress(buf)
-			DbQuery("UPDATE "..BestTimesTable.." SET cp_times="..DbBlob(buf).." WHERE player=? AND map=?", pdata.id, map_id)
-			if(rows[$(MAX_RECORDINGS+1)]) then
-				DbQuery("UPDATE "..BestTimesTable.." SET cp_times=x'' WHERE player=? AND map=?", rows[$(MAX_RECORDINGS+1)].player, map_id)
+			local blob = DbBlob(buf)
+			
+			if(foundRow.cp_times ~= 0) then
+				DbQuery("UPDATE "..BlobsTable.." SET data="..blob.." WHERE id=?", foundRow.cp_times)
+			else
+				DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..blob..")")
+				local id = Database.getLastInsertID()
+				if(id == 0) then outputDebugString("last insert ID == 0", 2) end
+				DbQuery("UPDATE "..BestTimesTable.." SET cp_times=? WHERE map=? AND player=?", id, map_id, pdata.id)
+			end
+			
+			local rowAfterTop = rows[$(MAX_RECORDINGS+1)]
+			if(rowAfterTop) then
+				DbQuery("DELETE FROM "..BlobsTable.." WHERE id=?", rowAfterTop.cp_times)
+				DbQuery("UPDATE "..BestTimesTable.." SET cp_times=0 WHERE map=? AND player=?", map_id, rowAfterTop.player)
 			end
 		end
 		

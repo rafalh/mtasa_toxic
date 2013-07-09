@@ -12,8 +12,8 @@ BestTimesTable = Database.Table{
 	{"player", "INT UNSIGNED", fk = {"players", "player"}},
 	{"map", "INT UNSIGNED", fk = {"maps", "map"}},
 	{"time", "INT UNSIGNED"},
-	{"rec", "BLOB", default = ""},
-	{"cp_times", "BLOB", default = ""},
+	{"rec", "INT UNSIGNED", default = 0, fk = {"blobs", "id"}},
+	{"cp_times", "INT UNSIGNED", default = 0, fk = {"blobs", "id"}},
 	{"timestamp", "INT UNSIGNED"},
 	{"besttimes_idx", unique = {"map", "time", "player"}},
 	{"besttimes_idx2", unique = {"map", "player"}},
@@ -49,11 +49,12 @@ function addPlayerTime(player_id, map_id, time)
 		if(pos <= 3 and not wasInTop) then -- player joined to the top
 			AccountData.create(player_id):add("toptimes_count", 1)
 			
-			local rows = DbQuery("SELECT player FROM "..BestTimesTable.." WHERE map=? ORDER BY time LIMIT 3,1", map_id)
-			if(rows and rows[1]) then -- someone left the top
-				local pl4_id = rows[1].player
-				AccountData.create(pl4_id):add("toptimes_count", -1)
-				DbQuery("UPDATE "..BestTimesTable.." SET rec=x'', cp_times=x'' WHERE player=? AND map=?", pl4_id, map_id)
+			local rows = DbQuery("SELECT player, rec, cp_times FROM "..BestTimesTable.." WHERE map=? ORDER BY time LIMIT 3,1", map_id)
+			local data = rows and rows[1]
+			if(data) then -- someone left the top
+				AccountData.create(data.player):add("toptimes_count", -1)
+				DbQuery("DELETE FROM "..BlobsTable.." WHERE id=? OR id=?", data.rec, data.cp_times)
+				DbQuery("UPDATE "..BestTimesTable.." SET rec=0, cp_times=0 WHERE player=? AND map=?", data.player, map_id)
 			end
 		end
 		
@@ -157,14 +158,14 @@ function getTopTime(map_res, cp_times)
 	
 	local rows
 	if(cp_times) then
-		rows = DbQuery("SELECT cp_times, time FROM "..BestTimesTable.." WHERE map=? AND length(cp_times)>0 ORDER BY time LIMIT 1", map_id)
-		for i, data in ipairs(rows) do
-			assert(data.cp_times:len() > 0)
-			local buf = data.cp_times
-			data.cp_times = zlibUncompress(data.cp_times)
-			if(not data.cp_times) then
-				outputDebugString("Failed to uncompress "..buf:len(), 2)
-				data.cp_times = {}
+		rows = DbQuery("SELECT bt.time, b.data AS cp_times FROM "..BestTimesTable.." bt, "..BlobsTable.." b "..
+			"WHERE bt.map=? AND b.id=bt.cp_times ORDER BY bt.time LIMIT 1", map_id)
+		for i, row in ipairs(rows) do
+			assert(row.cp_times:len() > 0)
+			row.cp_times = zlibUncompress(row.cp_times)
+			if(not row.cp_times) then
+				outputDebugString("Failed to uncompress "..row.cp_times:len(), 2)
+				row.cp_times = {}
 			end
 		end
 	end
