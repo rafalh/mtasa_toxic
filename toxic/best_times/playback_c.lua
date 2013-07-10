@@ -1,9 +1,12 @@
+local TITLE_COLOR = tocolor(196, 196, 196, 96)
+local USE_INTERPOLATION = true
+
+local g_Waiting, g_Playback
+
 Playback = {}
 Playback.__mt = {__index = {cls = Playback}}
-Playback.list = {}
 Playback.count = 0
 Playback.map = {}
-Playback.waitingCount = 0
 
 -- Note: Don't use onClientMapStopping and onGamemodeMapStart because race
 --       gamemode is stupid and triggers the first after the second
@@ -16,8 +19,6 @@ Playback.waitingCount = 0
 #RD_RY = 6
 #RD_RZ = 7
 #RD_MODEL = 8
-
-local TITLE_COLOR = tocolor(196, 196, 196, 96)
 
 function Playback.renderTitle()
 	local cx, cy, cz = getCameraMatrix()
@@ -33,88 +34,70 @@ function Playback.renderTitle()
 	end
 end
 
---[[local function moveVeh(el, ms, x, y, z, drx, dry, drz)
-	local old_x, old_y, old_z = getElementPosition(el)
-	local old_rx, old_ry, old_rz = getElementRotation(el)
-	local current_ms = 0
-	
-	local function interpolate(dt)
-		current_ms = current_ms + dt
-		if(current_ms >= ms) then
-			removeEventHandler("onClientPreRender", g_Root, interpolate)
-		end
-		
-		local new_m = current_ms / ms
-		local old_m = 1 - new_m
-		
-		local new_x = x * new_m + old_x * old_m
-		local new_y = y * new_m + old_y * old_m
-		local new_z = z * new_m + old_z * old_m
-		setElementPosition(el, new_x, new_y, new_z)
-		
-		--local new_rx = old_rx + new_m * drx
-		--local new_ry = old_ry + new_m * dry
-		--local new_rz = old_rz + new_m * drz
-		--setElementRotation(el, new_rx, new_ry, new_rz)
-	end
-	
-	addEventHandler("onClientPreRender", g_Root, interpolate)
-end]]
-
-function Playback.timerProc(id)
-	local self = Playback.map[id]
-	--outputDebugString("pos = "..self.x.." "..self.y.." "..self.z..", rot: "..self.rotX.." "..self.rotY.." "..self.rotZ)
-	
-	-- move from self.curFrameIdx-1 to self.curFrameIdx
-	
+function Playback.__mt.__index:update()
 	local ticks = getTickCount()
-	local time_offset = (ticks - self.ticks) - self.ticksOffset -- offset wzgledem czasu nagrania self.curFrameIdx
+	local dt = ticks - self.ticks
+	self.ticks = ticks
+	
+	dt = dt + self.dt
 	local frame = self.data[self.curFrameIdx]
+	local nextFrame = self.data[self.curFrameIdx + 1]
+	while(nextFrame and dt >= nextFrame[$(RD_TIME)]) do
+		self.x = self.x + frame[$(RD_X)]/100
+		self.y = self.y + frame[$(RD_Y)]/100
+		self.z = self.z + frame[$(RD_Z)]/100
+		self.rotX = self.rotX + frame[$(RD_RX)]
+		self.rotY = self.rotY + frame[$(RD_RY)]
+		self.rotZ = self.rotZ + frame[$(RD_RZ)]
+		
+		dt = dt - nextFrame[$(RD_TIME)]
+		self.curFrameIdx = self.curFrameIdx + 1
+		frame = self.data[self.curFrameIdx]
+		nextFrame = self.data[self.curFrameIdx + 1]
+	end
+	self.dt = dt
 	
-	--outputDebugString("step: "..self.curFrameIdx..", time: "..self.data[self.curFrameIdx][$(RD_TIME)].." time_offset: "..time_offset)
-	
-	local vx = frame[$(RD_X)]/100/frame[$(RD_TIME)]
-	local vy = frame[$(RD_Y)]/100/frame[$(RD_TIME)]
-	local vz = frame[$(RD_Z)]/100/frame[$(RD_TIME)]
-	--local vrx = self.data[self.curFrameIdx][$(RD_RX)]/self.data[self.curFrameIdx][$(RD_TIME)]
-	--local vry = self.data[self.curFrameIdx][$(RD_RY)]/self.data[self.curFrameIdx][$(RD_TIME)]
-	--local vrz = self.data[self.curFrameIdx][$(RD_RZ)]/self.data[self.curFrameIdx][$(RD_TIME)]
-	
-	--outputDebugString("step: "..self.curFrameIdx..", vx: "..vx..", vy: "..vy..", vrx: "..vrx..", vry: "..vry..", vrz: "..vrz..", time_offset: "..time_offset)
+	if(not nextFrame) then
+		-- Playback has finished
+		return false
+	end
 	
 	if(frame[$(RD_MODEL)]) then
 		setElementModel(self.veh, frame[$(RD_MODEL)])
 	end
 	
-	--if(self.curFrameIdx%20 == 0) then
-		setElementPosition(self.veh, self.x+vx*time_offset, self.y+vy*time_offset, self.z+vz*time_offset)
-	--end
-	--setElementRotation(self.veh, self.rotZ+vrz*time_offset, self.rotY+vry*time_offset, self.rotX+vrx*time_offset)
-	setElementRotation(self.veh, self.rotX, self.rotY, self.rotZ)
-	setElementVelocity(self.veh, vx*20.7, vy*20.7, vz*20.7)
-	setVehicleTurnVelocity(self.veh, 0, 0, 0)
-	--setVehicleTurnVelocity(self.veh, vrx/10, vry/10, vrz/10)
+	local a = dt / nextFrame[$(RD_TIME)]
+	local x = self.x + nextFrame[$(RD_X)]/100*a
+	local y = self.y + nextFrame[$(RD_Y)]/100*a
+	local z = self.z + nextFrame[$(RD_Z)]/100*a
+	local rx = self.rotX + nextFrame[$(RD_RX)]*a
+	local ry = self.rotY + nextFrame[$(RD_RY)]*a
+	local rz = self.rotZ + nextFrame[$(RD_RZ)]*a
+	--outputDebugString("a "..a, 3)
+	setElementPosition(self.veh, x, y, z)
+	setElementRotation(self.veh, rx, ry, rz)
 	
-	setElementRotation(self.veh, self.rotX, self.rotY, self.rotZ)
-	self.x = self.x + frame[$(RD_X)]/100
-	self.y = self.y + frame[$(RD_Y)]/100
-	self.z = self.z + frame[$(RD_Z)]/100
-	self.rotX = self.rotX + frame[$(RD_RX)]
-	self.rotY = self.rotY + frame[$(RD_RY)]
-	self.rotZ = self.rotZ + frame[$(RD_RZ)]
+	if(not USE_INTERPOLATION) then
+		local vx = frame[$(RD_X)]/100/frame[$(RD_TIME)]
+		local vy = frame[$(RD_Y)]/100/frame[$(RD_TIME)]
+		local vz = frame[$(RD_Z)]/100/frame[$(RD_TIME)]
+		setElementVelocity(self.veh, vx*20.7, vy*20.7, vz*20.7)
+		--setVehicleTurnVelocity(self.veh, vrx/10, vry/10, vrz/10)
+	end
 	
-	-- moveObject doesnt work for vehicles
-	--[[setElementFrozen(self.veh, true )
-	moveVeh(self.veh, math.max(self.data[self.curFrameIdx][$(RD_TIME)] - time_offset, 50),
-		self.x, self.y, self.z,
-		frame[$(RD_RX)], frame[$(RD_RY)], frame[$(RD_RZ)])]]
+	local msToNextFrame = nextFrame[$(RD_TIME)] - self.dt
+	return msToNextFrame
+end
+
+function Playback.timerProc(id)
+	assert(false)
+	local self = Playback.map[id]
+	--outputDebugString("pos = "..self.x.." "..self.y.." "..self.z..", rot: "..self.rotX.." "..self.rotY.." "..self.rotZ)
 	
-	self.curFrameIdx = self.curFrameIdx + 1
-	
-	if(self.data[self.curFrameIdx]) then
-		self.ticks = ticks
-		self.ticksOffset = math.max(self.data[self.curFrameIdx][$(RD_TIME)] - time_offset, 50)
-		self.timer = setTimer(Playback.timerProc, self.ticksOffset, 1, self.id)
+	local msToNextFrame = self:update()
+	if(msToNextFrame) then
+		msToNextFrame = math.max(msToNextFrame, 50)
+		self.timer = setTimer(Playback.timerProc, msToNextFrame, 1, self.id)
 	else
 		self.timer = false
 		self:destroy()
@@ -127,34 +110,36 @@ function Playback.__mt.__index:start()
 	-- Setup object state
 	self.ticks = getTickCount()
 	self.ticksOffset = 0
-	self.curFrameIdx = 2
+	self.curFrameIdx = 1
 	
 	-- Update vehicle
-	Playback.timerProc(self.id)
+	if(not USE_INTERPOLATION) then
+		Playback.timerProc(self.id)
+	end
 end
 
 function Playback.preRender()
-	local veh = getPedOccupiedVehicle(g_Me)
-	if(not veh or isVehicleFrozen(veh)) then return end
-	
-	for id, playback in pairs(Playback.map) do
-		if(playback.waiting) then
-			playback.waiting = false
-			playback:start()
+	if(g_Waiting) then
+		local veh = getPedOccupiedVehicle(g_Me)
+		if(veh and not isVehicleFrozen(veh)) then
+			assert(g_Playback)
+			g_Playback:start()
+			g_Waiting = false
+			
+			if(not USE_INTERPOLATION) then
+				removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
+			end
 		end
 	end
 	
-	Playback.waitingCount = 0
-	removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
-end
-
-function Playback.__mt.__index:startAfterCountdown()
-	-- Wait for countdown end
-	self.waiting = true
-	Playback.waitingCount = Playback.waitingCount + 1
-	
-	if(Playback.waitingCount == 1) then
-		addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+	if(USE_INTERPOLATION) then
+		for id, playback in pairs(Playback.map) do
+			if(playback.ticks) then
+				if(not playback:update()) then
+					playback:destroy()
+				end
+			end
+		end
 	end
 end
 
@@ -168,18 +153,14 @@ function Playback.__mt.__index:destroy()
 	destroyElement(self.veh)
 	self.data = false
 	
-	if(self.waiting) then
-		Playback.waitingCount = Playback.waitingCount - 1
-		assert(Playback.waitingCount >= 0)
-		
-		if(Playback.waitingCount == 0) then
-			removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
-		end
-	end
-	
 	Playback.map[self.id] = nil
 	Playback.count = Playback.count - 1
 	assert(Playback.count >= 0)
+	
+	if(USE_INTERPOLATION and Playback.count == 0) then
+		removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
+	end
+	
 	if(Playback.count == 0) then
 		removeEventHandler("onClientRender", g_Root, Playback.renderTitle)
 	end
@@ -189,34 +170,48 @@ function Playback.create(data, title)
 	local self = setmetatable({}, Playback.__mt)
 	self.data = data
 	self.title = title
+	self.dt = 0
+	
+	self.x = 0
+	self.y = 0
+	self.z = 0
+	self.rotX = 0
+	self.rotY = 0
+	self.rotZ = 0
 	
 	local firstFrame = data[1]
-	self.x = firstFrame[$(RD_X)]/100
-	self.y = firstFrame[$(RD_Y)]/100
-	self.z = firstFrame[$(RD_Z)]/100
-	self.rotX = firstFrame[$(RD_RX)]
-	self.rotY = firstFrame[$(RD_RY)]
-	self.rotZ = firstFrame[$(RD_RZ)]
-	
-	self.veh = createVehicle(
-		firstFrame[$(RD_MODEL)],
-		self.x, self.y, self.z,
-		firstFrame[$(RD_RX)], firstFrame[$(RD_RY)], firstFrame[$(RD_RZ)])
-	setVehicleGravity(self.veh, 0, 0, -0.1)
-	setElementCollisionsEnabled(self.veh, false)
-	setElementPosition(self.veh, self.x, self.y, self.z) -- reposition again after disabling collisions
+	local x, y, z = firstFrame[$(RD_X)]/100, firstFrame[$(RD_Y)]/100, firstFrame[$(RD_Z)]/100
+	local rx, ry, rz = firstFrame[$(RD_RX)], firstFrame[$(RD_RY)], firstFrame[$(RD_RZ)]
+	self.veh = createVehicle(firstFrame[$(RD_MODEL)], x, y, z, rx, ry, rz)
 	setElementAlpha(self.veh, 102)
+	if(USE_INTERPOLATION) then
+		setElementFrozen(self.veh, true)
+	else
+		setVehicleGravity(self.veh, 0, 0, -0.1)
+		setElementCollisionsEnabled(self.veh, false)
+		setElementPosition(self.veh, x, y, z) -- reposition again after disabling collisions
+	end
 	
 	self.blip = createBlipAttachedTo(self.veh, 0, 1, 150, 150, 150, 50)
 	setElementParent(self.blip, self.veh)
 	
-	outputDebugString("Playback: frames = "..#data..", pos = ("..self.x.." "..self.y.." "..self.z.."), rot: ("..self.rotX.." "..self.rotY.." "..self.rotZ.."), veh: "..tostring(self.veh))
+	outputDebugString("Playback: frames = "..#data..", pos = ("..x.." "..y.." "..z.."), rot: ("..rx.." "..ry.." "..rz..")")
+	
+	--[[for i = 2, #data do
+		data[i][$(RD_X)] = -1000
+		data[i][$(RD_Y)] = 0
+		data[i][$(RD_Z)] = 0
+		data[i][$(RD_TIME)] = (i-1)*1000
+	end]]
 	
 	self.id = #Playback.map + 1
 	Playback.map[self.id] = self
 	Playback.count = Playback.count + 1
 	if(Playback.count == 1) then
 		addEventHandler("onClientRender", g_Root, Playback.renderTitle)
+		if(USE_INTERPOLATION) then
+			addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+		end
 	end
 	
 	return self
@@ -229,6 +224,10 @@ function Playback.stop()
 		g_Playback:destroy()
 		g_Playback = false
 	end
+	
+	if(g_Waiting) then
+		removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
+	end
 end
 
 -- Used by RPC
@@ -239,5 +238,8 @@ function Playback.startAfterCountdown(playback, title)
 	end
 	
 	g_Playback = Playback.create(playback, title)
-	g_Playback:startAfterCountdown()
+	g_Waiting = true
+	if(not USE_INTERPOLATION) then
+		addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+	end
 end

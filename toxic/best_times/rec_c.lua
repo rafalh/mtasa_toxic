@@ -1,12 +1,8 @@
---------------
--- Includes --
---------------
+Recorder = {}
+Recorder.__mt = {__index = {cls = Recorder}}
+Recorder.map = {}
 
 #include "include/internal_events.lua"
-
--------------
--- Defines --
--------------
 
 #RECORDING_INTERVAL = 250
 
@@ -19,125 +15,122 @@
 #RD_RZ = 7
 #RD_MODEL = 8
 
----------------------
--- Local variables --
----------------------
+local g_Rec, g_MapID
+local g_Waiting
 
-local g_Timer = nil
-local g_WaitingForCountdown = false
-local g_Recording = {}
-local g_MapID = 0
-
-local g_X, g_Y, g_Z
-local g_RX, g_RY, g_RZ
-local g_VX, g_VY, g_VZ
-local g_Model
-local g_Time
-
---------------------------------
--- Local function definitions --
---------------------------------
-
-local function RcRecordingTimer()
+function Recorder.timerProc(id)
+	local self = Recorder.map[id]
+	
 	local veh = getPedOccupiedVehicle(g_Me)
 	if(not isElement(veh)) then return end
 	
 	local x, y, z = getElementPosition(veh)
-	x, y, z = math.floor(x*100), math.floor(y*100), math.floor(z*100)
-	local dx, dy, dz = x - g_X, y - g_Y, z - g_Z
+	local rx, ry, rz = getElementRotation(veh) -- default rotation order for vehicles
+	local model = getElementModel(veh)
+	local ticks = getTickCount()
 	
+	x, y, z = math.floor(x*100), math.floor(y*100), math.floor(z*100)
+	local dx, dy, dz = x - self.x, y - self.y, z - self.z
 	if(dx ~= 0 or dy ~= 0 or dz ~= 0) then
-		local rx, ry, rz = getElementRotation(veh) -- default rotation order for vehicles
 		rx, ry, rz = math.floor(rx), math.floor(ry), math.floor(rz)
-		--local vx, vy, vz = getElementVelocity ( veh )
-		local model = getElementModel(veh)
-		local ticks = getTickCount()
+		local drx, dry, drz = rx - self.rx, ry - self.ry, rz - self.rz
 		
 		local data = {
-			ticks - g_Time,
-			dx, dy, dz, -- x, y, z
-			rx - g_RX, ry - g_RY, rz - g_RZ, -- rx, ry, rz
-			--math.floor ( ( vx - g_VX ) * 100 ), math.floor ( ( vy - g_VY ) * 100 ), math.floor ( ( vz - g_VZ ) * 100 ) -- vx, vy, vz
+			ticks - self.ticks,
+			dx, dy, dz, -- pos
+			drx, dry, drz, -- rot
 		}
-		if(model ~= g_Model) then
+		if(model ~= self.model) then
 			table.insert(data, model)
 		end
 		
-		table.insert(g_Recording, data)
+		table.insert(self.data, data)
 		
-		g_X, g_Y, g_Z = x, y, z
-		g_RX, g_RY, g_RZ = rx, ry, rz
-		g_VX, g_VY, g_VZ = vx, vy, vz
-		g_Model = model
-		g_Time = ticks
+		self.x, self.y, self.z = x, y, z
+		self.rx, self.ry, self.rz = rx, ry, rz
+		self.model = model
+		self.ticks = ticks
 	end
 end
 
-local function RcStartRecording()
-	g_Recording = {}
-	g_X, g_Y, g_Z = 0, 0, 0
-	g_RX, g_RY, g_RZ = 0, 0, 0
-	g_VX, g_VY, g_VZ = 0, 0, 0
-	g_Model = 0
-	g_Time = getTickCount()
-	RcRecordingTimer()
-	g_Timer = setTimer(RcRecordingTimer, $(RECORDING_INTERVAL), 0)
+function Recorder.__mt.__index:start()
+	self.data = {}
+	self.x, self.y, self.z = 0, 0, 0
+	self.rx, self.ry, self.rz = 0, 0, 0
+	self.model = 0
+	self.ticks = getTickCount()
+	Recorder.timerProc(self.id)
+	self.timer = setTimer(Recorder.timerProc, $(RECORDING_INTERVAL), 0, self.id)
 end
 
-local function RcPreRender() -- checks for countdown end
-	assert(g_WaitingForCountdown)
+function Recorder.__mt.__index:destroy()
+	if(self.timer) then
+		killTimer(self.timer)
+	end
+	self.data = {}
+	Recorder.map[self.id] = nil
+end
+
+function Recorder.create()
+	local self = setmetatable({}, Recorder.__mt)
+	self.id = #Recorder.map + 1
+	Recorder.map[self.id] = self
+	return self
+end
+
+function Recorder.preRender() -- checks for countdown end
+	assert(g_Rec and g_Waiting)
 	
 	local veh = getPedOccupiedVehicle(g_Me)
 	if(not veh or isVehicleFrozen(veh)) then return end
 	
 	--outputDebugString("Countdown has finished", 3)
-	g_WaitingForCountdown = false
-	removeEventHandler("onClientPreRender", g_Root, RcPreRender)
+	removeEventHandler("onClientPreRender", g_Root, Recorder.preRender)
 	
-	RcStartRecording()
+	g_Waiting = false
+	g_Rec:start()
 end
 
-local function RcCleanupRecording()
-	if(g_Timer) then
-		killTimer(g_Timer)
-		g_Timer = false
-	elseif(g_WaitingForCountdown) then
-		g_WaitingForCountdown = false
-		removeEventHandler("onClientPreRender", g_Root, RcPreRender)
+function Recorder.startReq(map_id)
+	--outputDebugString("Recorder.startReq", 3)
+	
+	if(g_Rec) then
+		g_Rec:destroy()
 	end
 	
-	g_Recording = {}
-end
-
-local function RcStartRecordingReq(map_id)
-	--outputDebugString("RcStartRecordingReq", 3)
-	
-	RcCleanupRecording()
-	
-	-- Remember map ID
 	g_MapID = map_id
-	
-	-- Wait for countdown end
-	g_WaitingForCountdown = true
-	addEventHandler("onClientPreRender", g_Root, RcPreRender)
+	g_Rec = Recorder.create()
+	if(not g_Waiting) then
+		addEventHandler("onClientPreRender", g_Root, Recorder.preRender)
+		g_Waiting = true
+	end
 end
 
-local function RcStopRecordingReq()
-	outputDebugString("RcStopRecordingReq", 3)
+function Recorder.stopReq()
+	outputDebugString("Recorder.stopReq", 3)
 	
-	RcCleanupRecording()
+	if(g_Rec) then
+		g_Rec:destroy()
+		g_Rec = false
+	end
+	
+	if(g_Waiting) then
+		removeEventHandler("onClientPreRender", g_Root, Recorder.preRender)
+	end
 end
 
-local function RcStopSendRecordingReq(map_id)
-	outputDebugString("RcStopSendRecordingReq", 3)
+function Recorder.stopSendReq(mapId)
+	outputDebugString("Recorder.stopSendReq", 3)
+	assert(g_Rec and not g_Waiting)
 	
-	if(map_id == g_MapID) then
-		triggerServerInternalEvent($(EV_RECORDING), g_Me, g_MapID, g_Recording)
+	if(mapId == g_MapID) then
+		triggerServerInternalEvent($(EV_RECORDING), g_Me, g_MapID, g_Rec.data)
 	else
 		outputDebugString("Wrong map ID: "..tostring(map_id).."<>"..tostring(g_MapID), 3)
 	end
 	
-	RcCleanupRecording()
+	g_Rec:destroy()
+	g_Rec = false
 end
 
 ------------
@@ -145,9 +138,24 @@ end
 ------------
 
 local function RcInit()
-	addInternalEventHandler($(EV_CLIENT_START_RECORDING_REQUEST), RcStartRecordingReq)
-	addInternalEventHandler($(EV_CLIENT_STOP_RECORDING_REQUEST), RcStopRecordingReq)
-	addInternalEventHandler($(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), RcStopSendRecordingReq)
+	addInternalEventHandler($(EV_CLIENT_START_RECORDING_REQUEST), Recorder.startReq)
+	addInternalEventHandler($(EV_CLIENT_STOP_RECORDING_REQUEST), Recorder.stopReq)
+	addInternalEventHandler($(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), Recorder.stopSendReq)
 end
 
 addEventHandler("onClientResourceStart", g_ResRoot, RcInit)
+
+--[[addCommandHandler("testrec", function()
+	outputChatBox("Testing recording!")
+	local veh = getPedOccupiedVehicle(g_Me)
+	local x, y, z = getElementPosition(veh)
+	local rec = Recorder.create()
+	rec:start()
+	setTimer(function()
+		outputChatBox("Recording finished ("..#rec.data.." frames)...")
+		local playback = Playback.create(rec.data, "TEST")
+		rec:destroy()
+		playback:start()
+		setElementPosition(veh, x, y, z)
+	end, 5000, 1)
+end)]]
