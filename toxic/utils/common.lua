@@ -45,7 +45,7 @@ function findPlayer(str)
 	
 	local player = getPlayerFromName(str) -- returns player or false
 	if(player) then
-		return Player.fromEl(player)
+		return player
 	end
 	
 	str = str:lower()

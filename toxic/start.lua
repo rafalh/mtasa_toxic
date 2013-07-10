@@ -23,11 +23,6 @@ local function setupDatabase()
 	end
 	
 	if(ver < currentVer) then
-		if(not err and ver < 148) then
-			if(not DbQuery("ALTER TABLE "..DbPrefix.."settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL")) then
-				err = "Failed to add backupTimestamp column."
-			end
-		end
 		if(not err and ver < 149) then
 			local rows = DbQuery("SELECT DISTINCT serial FROM "..PlayersTable.." WHERE pmuted=1")
 			local now = getRealTime().timestamp
@@ -57,7 +52,6 @@ local function setupDatabase()
 				coroutine.yield()
 			end
 			outputDebugString(#rows.." best times updated", 3)
-			Settings.version = 150
 		end
 		if(not err and ver < 151) then
 			DbQuery("UPDATE "..BestTimesTable.." SET timestamp=0 WHERE timestamp IS NULL")

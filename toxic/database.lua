@@ -42,7 +42,6 @@ function DbRecreateTable(tbl)
 		return false
 	end
 	
-	outputDebugString("Copying ".."INSERT INTO "..tbl.." SELECT "..fieldsStr.." FROM __"..tbl, 3)
 	if(not DbQuery("INSERT INTO "..tbl.." SELECT "..fieldsStr.." FROM __"..tbl)) then
 		outputDebugString("Failed to copy rows when recreating "..tbl.name, 1)
 		DbQuery("DROP TABLE "..tbl)
