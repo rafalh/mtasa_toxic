@@ -257,9 +257,10 @@ local function onMapStart(map, room)
 end
 
 local function onMapStop(room)
+	outputDebugString("onMapStop serverside", 3)
 	if (room.recording) then
 		room.recording = false
-		RcStopRecording (room)
+		RcStopRecording(room)
 	end
 	
 	GbFinishBets ()

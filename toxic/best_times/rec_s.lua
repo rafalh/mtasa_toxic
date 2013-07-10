@@ -122,32 +122,6 @@ end
 	return buf:sub(2)
 end]]
 
-function RcDecodeTraceOld(data)
-	local rec = split(data, (","):byte())
-	
-	for i, v in ipairs(rec) do
-		rec[i] = split(v, (" "):byte())
-		
-		-- decode hexadecimal numbers
-		for j, v in ipairs(rec[i]) do
-			if(v:sub ( 1, 1 ) == "-") then
-				rec[i][j] = -tonumber("0x"..v:sub(2))
-			else
-				rec[i][j] = tonumber("0x"..v)
-			end
-		end
-		
-		-- make angles (-180, 180)
-		for j = 5, 7, 1 do
-			if(rec[i][j] > 180) then
-				rec[i][j] = rec[i][j] - 360
-			end
-		end
-	end
-	
-	return rec
-end
-
 local function RcOnRecording(map_id, recording)
 	map_id = touint(map_id, 0)
 	local pdata = Player.fromEl(client)
@@ -211,23 +185,24 @@ function RcStartRecording(room, map_id)
 	end
 	
 	local rows = DbQuery("SELECT bt.player, bt.time, b.data FROM "..BestTimesTable.." bt, "..BlobsTable.." b WHERE bt.map=? AND b.id=bt.rec ORDER BY bt.time LIMIT 1", map_id)
-	local rec, recTitle = false, nil
 	local row = rows and rows[1]
 	if(row and Settings.ghost) then
 		outputDebugString("Showing ghost", 3)
 		local recCompr = zlibUncompress(row.data)
 		if(not recCompr) then outputDebugString("Failed to uncompress", 2) end
-		rec = RcDecodeTrace(recCompr)
+		local rec = RcDecodeTrace(recCompr)
 		
 		local rows2 = DbQuery("SELECT count(player) AS c FROM "..BestTimesTable.." WHERE map=? AND time<? LIMIT 1", map_id, row.time)
-		recTitle = "Top "..(rows2[1].c + 1)
+		local recTitle = "Top "..(rows2[1].c + 1)
+		
+		RPC("Playback.startAfterCountdown", rec, recTitle):setClient(room.el):exec()
 	end
 	
-	triggerClientInternalEvent(room.el, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id, rec, recTitle)
+	triggerClientInternalEvent(room.el, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id)
 end
 
 function RcStopRecording(room)
-	--outputDebugString ( "recording stoped", 3 )
+	--outputDebugString("recording stoped", 3)
 	
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room) then
@@ -235,6 +210,7 @@ function RcStopRecording(room)
 		end
 	end
 	
+	RPC("Playback.stop"):setClient(room.el):exec()
 	triggerClientInternalEvent(room.el, $(EV_CLIENT_STOP_RECORDING_REQUEST), g_Root)
 end
 
