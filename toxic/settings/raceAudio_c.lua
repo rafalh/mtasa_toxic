@@ -13,7 +13,8 @@ Settings.register
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
-		local label = guiCreateLabel(x, y, w, 15, "Race Audio Volume: "..Settings.raceVolume.."%", false, wnd)
+		local text = MuiGetMsg("Race Audio Volume: %u%%"):format(Settings.raceVolume)
+		local label = guiCreateLabel(x, y, w, 15, text, false, wnd)
 		local bar = guiCreateScrollBar(x, y + 18, w - 50, 22, true, false, wnd)
 		setElementData(bar, "tooltip", "Changes volume for Count Down, Checkpoints and Race Voice sounds")
 		guiScrollBarSetScrollPosition(bar, Settings.raceVolume)
@@ -24,7 +25,8 @@ Settings.register
 	end,
 	acceptGui = function(info)
 		local vol = guiScrollBarGetScrollPosition(info[2])
-		guiSetText(info[1], "Race Audio Volume: "..vol.."%")
+		local text = MuiGetMsg("Race Audio Volume: %u%%"):format(vol)
+		guiSetText(info[1], text)
 		Settings.raceVolume = vol
 	end,
 }

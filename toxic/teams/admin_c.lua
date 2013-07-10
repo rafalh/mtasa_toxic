@@ -1,5 +1,6 @@
 local g_GUI = false
 local g_Teams = {}
+local g_CtxEdit
 
 local function updateRow(row, teamInfo)
 	local tagOrGroup = teamInfo.tag == "" and teamInfo.aclGroup or teamInfo.tag
@@ -23,7 +24,7 @@ local function updateRow(row, teamInfo)
 		elseif(days == 1) then
 			lastUsageStr = "yesterday"
 		else
-			lastUsageStr = days.." days ago"
+			lastUsageStr = MuiGetMsg("%u days ago"):format(days)
 		end
 	end
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.lastUsageCol, lastUsageStr, false, false)
@@ -44,6 +45,12 @@ end
 local function closeTeamsAdmin()
 	g_GUI:destroy()
 	g_GUI = false
+	
+	if(g_CtxEdit) then
+		destroyElement(g_CtxEdit)
+		g_CtxEdit = false
+	end
+	
 	showCursor(false)
 end
 
@@ -128,6 +135,7 @@ local function onEditAccepted()
 	RPC("Teams.updateItem", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
 	
 	destroyElement(source)
+	g_CtxEdit = false
 end
 
 local function onTypeClick()
@@ -149,13 +157,21 @@ local function onTypeClick()
 	RPC("Teams.updateItem", teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
 	
 	destroyElement(source)
+	g_CtxEdit = false
 end
 
 local function destroyOnBlur()
 	destroyElement(source)
+	g_CtxEdit = false
 end
 
 local function onListDblClick(btn, state, absX, absY)
+	-- Use g_CtxEdit variable because sometimes MTA doesn't send onBlur event when opening Menu
+	if(g_CtxEdit) then
+		destroyElement(g_CtxEdit)
+		g_CtxEdit = false
+	end
+	
 	local row, col = guiGridListGetSelectedItem(g_GUI.teamsList)
 	if(not row or row == -1) then return end
 	
@@ -172,6 +188,7 @@ local function onListDblClick(btn, state, absX, absY)
 		guiBringToFront(edit)
 		addEventHandler("onClientGUIAccepted", edit, onEditAccepted, false)
 		addEventHandler("onClientGUIBlur", edit, destroyOnBlur, false)
+		g_CtxEdit = edit
 	else
 		local list = guiCreateGridList(absX, absY, 200, 100, false)
 		local col = guiGridListAddColumn(list, "Type", 0.9)
@@ -183,6 +200,7 @@ local function onListDblClick(btn, state, absX, absY)
 		guiBringToFront(list)
 		addEventHandler("onClientGUIDoubleClick", list, onTypeClick, false)
 		addEventHandler("onClientGUIBlur", list, destroyOnBlur, false)
+		g_CtxEdit = list
 	end
 end
 

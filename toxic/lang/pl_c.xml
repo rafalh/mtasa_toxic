@@ -11,6 +11,10 @@
 	<msg id="Color">Kolor</msg>
 	<msg id="On">Wł.</msg>
 	<msg id="Off">Wył.</msg>
+	<msg id="Add">Dodaj</msg>
+	<msg id="Delete">Usuń</msg>
+	<msg id="Up">Góra</msg>
+	<msg id="Down">Dół</msg>
 	
     <msg id="Usage: %s">Użycie: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
@@ -151,6 +155,7 @@
 	<msg id="Display chat messages above players">Wyświetlaj wiadomości z czatu nad graczami</msg>
 	<msg id="Broken glass after huge damage">Zbita szyba po poważnym uszkodzeniu</msg>
 	<msg id="Screen flashes red after huge damage">Ekran miga na czerwono po poważnym uszkodzeniu</msg>
+	<msg id="Race Audio Volume: %u%%">Głośność Race Audio: %u%%</msg>
 	<msg id="Effects:">Efekty:</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
 	
@@ -207,4 +212,13 @@
 	
 	<msg id="Player profile">Profil gracza</msg>
 	<msg id="Information">Informacje</msg>
+	
+	<msg id="Teams Admin Panel">Panel administracyjny drużyn</msg>
+	<msg id="Name">Nazwa</msg>
+	<msg id="Type">Typ</msg>
+	<msg id="Last Usage">Ostatnie użycie</msg>
+	<msg id="today">dziś</msg>
+	<msg id="yesterday">wczoraj</msg>
+	<msg id="%u days ago">%u dni temu</msg>
+	<msg id="Update players">Aktualizuj graczy</msg>
 </strings>

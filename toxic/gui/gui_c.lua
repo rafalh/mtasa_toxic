@@ -118,7 +118,7 @@ function GUI.__mt.__index:createControl(tpl, parent)
 			guiGridListSetSortingEnabled(ctrl, false)
 		end
 	elseif(tpl.type == "column") then
-		ctrl = guiGridListAddColumn(parent, tpl.text or "", tpl.w or 0.5)
+		ctrl = guiGridListAddColumn(parent, tpl.text or "", w == 0 and 0.5 or w)
 	else
 		assert(false)
 	end
