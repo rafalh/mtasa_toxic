@@ -1,4 +1,5 @@
 local TITLE_COLOR = tocolor(196, 196, 196, 96)
+local VEH_ALPHA = 102
 local USE_INTERPOLATION = true
 
 local g_Waiting, g_Playback
@@ -122,13 +123,18 @@ function Playback.__mt.__index:start()
 	
 	-- Setup object state
 	self.ticks = getTickCount()
-	self.ticksOffset = 0
 	self.curFrameIdx = 1
 	
 	-- Update vehicle
+	setElementAlpha(self.veh, VEH_ALPHA)
 	if(not USE_INTERPOLATION) then
 		Playback.timerProc(self.id)
 	end
+end
+
+function Playback.__mt.__index:stop()
+	self.ticks = false
+	setElementAlpha(self.veh, 0)
 end
 
 function Playback.preRender()
@@ -149,7 +155,7 @@ function Playback.preRender()
 		for id, playback in pairs(Playback.map) do
 			if(playback.ticks) then
 				if(not playback:update()) then
-					playback:destroy()
+					playback:stop()
 				end
 			end
 		end
@@ -194,6 +200,8 @@ function Playback.__mt.__index:destroy()
 	if(Playback.count == 0) then
 		removeEventHandler("onClientRender", g_Root, Playback.renderTitle)
 	end
+	
+	self.destroyed = true
 end
 
 function Playback.create(data, title)
@@ -210,7 +218,7 @@ function Playback.create(data, title)
 	self.rotX, self.rotY, self.rotZ = rx, ry, rz
 	
 	self.veh = createVehicle(firstFrame[$(RD_MODEL)], x, y, z, rx, ry, rz)
-	setElementAlpha(self.veh, 102)
+	setElementAlpha(self.veh, VEH_ALPHA)
 	if(USE_INTERPOLATION) then
 		setElementFrozen(self.veh, true)
 	else
