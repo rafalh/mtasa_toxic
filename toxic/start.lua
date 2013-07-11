@@ -13,69 +13,25 @@ local function setupDatabase()
 	
 	Settings.createDbTbl()
 	
-	local err = false
-	local currentVer = 152
+	local currentVer = Updater.currentVer
 	local ver = Settings.version
 	if(ver == 0) then
-		ver = touint(get("version")) or currentVer
-		Settings.version = currentVer
+		Settings.version = Updater.currentVer
 		outputDebugString("Version: "..ver, 2)
-	end
-	
-	if(ver < currentVer) then
-		if(not err and ver < 149) then
-			local rows = DbQuery("SELECT DISTINCT serial FROM "..PlayersTable.." WHERE pmuted=1")
-			local now = getRealTime().timestamp
-			for i, data in ipairs(rows) do
-				DbQuery("INSERT INTO "..MutesTable.." (serial, timestamp, duration) VALUES(?, ?, ?)", data.serial, now, 3600*24*31)
-			end
-			outputDebugString(#rows.." pmutes updated", 3)
-		end
-		if(not err and ver < 150) then
-			local rows = DbQuery("SELECT map, player, rec, cp_times FROM "..BestTimesTable.." WHERE length(rec)>0 OR length(cp_times)>0")
-			DbQuery("UPDATE "..BestTimesTable.." SET rec=0 WHERE length(rec)=0")
-			DbQuery("UPDATE "..BestTimesTable.." SET cp_times=0 WHERE length(cp_times)=0")
-			for i, data in ipairs(rows) do
-				if(data.rec ~= "") then
-					DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.rec)..")")
-					local id = Database.getLastInsertID()
-					if(id == 0) then outputDebugString("last insert ID == 0", 2) end
-					DbQuery("UPDATE "..BestTimesTable.." SET rec=? WHERE map=? AND player=?", id, data.map, data.player)
+	elseif(ver < currentVer) then
+		for i, upd in ipairs(Updater.list) do
+			if(upd.ver > ver) then
+				local err = upd.func()
+				if(err) then
+					outputDebugString("Database update ("..ver.." -> "..upd.ver..") failed: "..tostring(err), 1)
+					return false
+				else
+					outputDebugString("Database update ("..ver.." -> "..upd.ver..") succeeded!", 3)
+					ver = upd.ver
+					Settings.version = ver
 				end
-				if(data.cp_times ~= "") then
-					DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.cp_times)..")")
-					local id = Database.getLastInsertID()
-					if(id == 0) then outputDebugString("last insert ID == 0", 2) end
-					DbQuery("UPDATE "..BestTimesTable.." SET cp_times=? WHERE map=? AND player=?", id, data.map, data.player)
-				end
-				
-				coroutine.yield()
-			end
-			outputDebugString(#rows.." best times updated", 3)
-		end
-		if(not err and ver < 151) then
-			DbQuery("UPDATE "..BestTimesTable.." SET timestamp=0 WHERE timestamp IS NULL")
-			
-			if(not DbRecreateTable(BestTimesTable)) then
-				err = "Failed to recreate best times table"
 			end
 		end
-		if(not err and ver < 152) then
-			DbQuery("UPDATE "..PlayersTable.." SET account=NULL WHERE account=''")
-			if(not DbRecreateTable(PlayersTable)) then
-				err = "Failed to recreate players table"
-			end
-		end
-		
-		if(not err) then
-			Settings.version = currentVer
-			outputDebugString("Database update (ver "..ver.." -> "..currentVer..") succeeded", 2)
-		end
-	end
-	
-	if(err) then
-		outputDebugString("Database init (ver "..ver.." -> "..currentVer..") failed: "..tostring(err), 1)
-		return false
 	end
 	
 	return true

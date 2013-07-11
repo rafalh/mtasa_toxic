@@ -41,6 +41,7 @@
 	<script src="water_fix_c.lua" type="client" />
 	<script src="tempMod_s.lua" type="server" />
 	<script src="mute_s.lua" type="server" />
+	<script src="updater_s.lua" type="server" />
 	
 	<script src="commands/accounts.lua" />
 	<script src="commands/admin.lua" />
