@@ -24,12 +24,14 @@ Playback.map = {}
 function Playback.renderTitle()
 	local cx, cy, cz = getCameraMatrix()
 	for id, playback in pairs(Playback.map) do
-		local x, y, z = getElementPosition(playback.veh)
-		local scale = 18/getDistanceBetweenPoints3D(cx, cy, cz, x, y, z)
-		if(scale > 0.3) then
-			local scrX, scrY = getScreenFromWorldPosition(x, y, z + 1)
-			if(scrX) then
-				dxDrawText(playback.title, scrX, scrY, scrX, scrY, TITLE_COLOR, scale, "default", "center")
+		if(not self.hidden) then
+			local x, y, z = getElementPosition(playback.veh)
+			local scale = 18/getDistanceBetweenPoints3D(cx, cy, cz, x, y, z)
+			if(scale > 0.3) then
+				local scrX, scrY = getScreenFromWorldPosition(x, y, z + 1)
+				if(scrX) then
+					dxDrawText(playback.title, scrX, scrY, scrX, scrY, TITLE_COLOR, scale, "default", "center")
+				end
 			end
 		end
 	end
@@ -127,6 +129,7 @@ function Playback.__mt.__index:start()
 	
 	-- Update vehicle
 	setElementAlpha(self.veh, VEH_ALPHA)
+	self.hidden = false
 	if(not USE_INTERPOLATION) then
 		Playback.timerProc(self.id)
 	end
@@ -134,6 +137,7 @@ end
 
 function Playback.__mt.__index:stop()
 	self.ticks = false
+	self.hidden = true
 	setElementAlpha(self.veh, 0)
 end
 
