@@ -266,16 +266,9 @@ local function CmdMergeAccounts(message, arg)
 			newData.email = src_data.email
 		end
 		
-		-- Old statistics
-		newData.dm = player.accountData.dm + src_data.dm
-		newData.dm_wins= player.accountData.dm_wins + src_data.dm_wins
-		newData.first = player.accountData.first + src_data.first
-		newData.second = player.accountData.second + src_data.second
-		newData.third = player.accountData.third + src_data.third
+		-- Statistics
 		newData.exploded = player.accountData.exploded + src_data.exploded
 		newData.drowned = player.accountData.drowned + src_data.drowned
-		
-		-- New statistics
 		newData.maxWinStreak = math.max(player.accountData.maxWinStreak, src_data.maxWinStreak)
 		newData.mapsPlayed = player.accountData.mapsPlayed + src_data.mapsPlayed
 		newData.mapsBought = player.accountData.mapsBought + src_data.mapsBought

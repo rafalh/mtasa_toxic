@@ -14,7 +14,7 @@ local function setupDatabase()
 	Settings.createDbTbl()
 	
 	local err = false
-	local currentVer = 151
+	local currentVer = 152
 	local ver = Settings.version
 	if(ver == 0) then
 		ver = touint(get("version")) or currentVer
@@ -58,6 +58,12 @@ local function setupDatabase()
 			
 			if(not DbRecreateTable(BestTimesTable)) then
 				err = "Failed to recreate best times table"
+			end
+		end
+		if(not err and ver < 152) then
+			DbQuery("UPDATE "..PlayersTable.." SET account=NULL WHERE account=''")
+			if(not DbRecreateTable(PlayersTable)) then
+				err = "Failed to recreate players table"
 			end
 		end
 		

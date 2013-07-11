@@ -9,7 +9,7 @@ PlayersTable = Database.Table{
 	name = "players",
 	{"player",         "INT UNSIGNED",       pk = true, default = 0},
 	{"serial",         "VARCHAR(32)",        default = ""},
-	{"account",        "VARCHAR(255)",       default = ""},
+	{"account",        "VARCHAR(255)",       default = "", null = true},
 	{"warnings",       "TINYINT UNSIGNED",   default = 0},
 	{"time_here",      "INT UNSIGNED",       default = 0},
 	{"first_visit",    "INT UNSIGNED",       default = 0},

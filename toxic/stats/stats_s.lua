@@ -12,11 +12,6 @@ PlayersTable:addColumns{
 	-- Old stats
 	{"cash",           "INT",                default = 0},
 	{"points",         "MEDIUMINT",          default = 0},
-	{"dm",             "MEDIUMINT UNSIGNED", default = 0},
-	{"dm_wins",        "MEDIUMINT UNSIGNED", default = 0},
-	{"first",          "MEDIUMINT UNSIGNED", default = 0},
-	{"second",         "MEDIUMINT UNSIGNED", default = 0},
-	{"third",          "MEDIUMINT UNSIGNED", default = 0},
 	{"exploded",       "MEDIUMINT UNSIGNED", default = 0},
 	{"drowned",        "MEDIUMINT UNSIGNED", default = 0},
 	

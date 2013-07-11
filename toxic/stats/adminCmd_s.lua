@@ -47,9 +47,7 @@ local function CmdResetStats(message, arg)
 	local pdata = player and Player.fromEl(player)
 	if(pdata and pdata.id) then
 		DbQuery("DELETE FROM "..BestTimesTable.." WHERE player=?", pdata.id)
-		local stats = {
-			cash = 0, bidlvl = 0, points = 0, dm = 0, dm_wins = 0,
-			first = 0, second = 0, third = 0, toptimes_count = 0 }
+		local stats = {cash = 0, bidlvl = 0, points = 0, toptimes_count = 0} -- TODO: reset all stats
 		pdata.accountData:set(stats)
 		scriptMsg("Statistics has been reset for %s!", getPlayerName(player))
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end

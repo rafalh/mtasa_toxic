@@ -372,11 +372,6 @@ local function onPlayerFinish(rank, ms)
 	local map = getCurrentMap(pdata.room)
 	local map_id = map:getId()
 	
-	if(rank <= 3) then
-		local rank_str = ({"first", "second", "third"})[rank]
-		pdata.accountData:add(rank_str, 1)
-	end
-	
 	pdata.accountData:add("racesFinished", 1)
 	
 	local n = handlePlayerTime(source, ms)
@@ -389,18 +384,15 @@ end
 
 local function onPlayerWinDD()
 	local pdata = Player.fromEl(source)
-	pdata.accountData:add("dm_wins", 1)
 	
 	--local game_weight = 0.007 * g_PlayersCount / 32
 	
-	for player, pdata in pairs(g_Players) do
-		pdata.accountData:add("dm", 1)
-		
-		--local efectiveness_dd = pdata.accountData.efectiveness_dd
-		--local rank = (player == source) and 1 or g_PlayersCount
-		--efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
-		--pdata.accountData:set("efectiveness_dd", efectiveness_dd)
-	end
+	--[[for player, pdata in pairs(g_Players) do
+		local efectiveness_dd = pdata.accountData.efectiveness_dd
+		local rank = (player == source) and 1 or g_PlayersCount
+		efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
+		pdata.accountData:set("efectiveness_dd", efectiveness_dd)
+	end]]
 	
 	setPlayerFinalRank(source, 1)
 	triggerClientEvent(root, "main.onPlayerWinDD", source)

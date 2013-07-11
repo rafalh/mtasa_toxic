@@ -20,7 +20,7 @@ g_ShopItems = {}
 PlayersTable:addColumns{
 	{"bidlvl", "SMALLINT UNSIGNED", default = 1},
 	{"mapBoughtTimestamp", "INT UNSIGNED", default = 0},
-	{"joinmsg", "VARCHAR(128)", default = false},
+	{"joinmsg", "VARCHAR(128)", default = false, null = true},
 	
 	{"health100",    "TINYINT UNSIGNED", default = 0},
 	{"selfdestr",    "TINYINT UNSIGNED", default = 0},
