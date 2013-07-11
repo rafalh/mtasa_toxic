@@ -43,13 +43,14 @@
 	<script src="mute_s.lua" type="server" />
 	<script src="updater_s.lua" type="server" />
 	
-	<script src="commands/accounts.lua" />
-	<script src="commands/admin.lua" />
-	<script src="commands/admin2.lua" />
-	<script src="commands/clean_db.lua" />
-	<script src="commands/general.lua" />
-	<script src="commands/msg_cmd.lua" />
-	<script src="commands/trace.lua" />
+	<script src="commands/accounts.lua" type="server" />
+	<script src="commands/admin.lua" type="server" />
+	<script src="commands/admin2.lua" type="server" />
+	<script src="commands/clean_db.lua" type="server" />
+	<script src="commands/general.lua" type="server" />
+	<script src="commands/msg_cmd.lua" type="server" />
+	<script src="commands/msgCmd_c.lua" type="client" />
+	<script src="commands/trace.lua" type="server" />
 	
 	<script src="gui/gui_c.lua" type="client" />
 	<script src="gui/input_c.lua" type="client" />

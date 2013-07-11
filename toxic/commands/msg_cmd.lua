@@ -3,6 +3,7 @@
 ----------------------
 
 local g_MsgCommands = {}
+
 local MODIFY_MSG_CMD = false
 
 --------------------------
@@ -56,7 +57,7 @@ local function McHandleCommand(message, arg)
 			local servAddr = get("mapmusic.server_address")
 			local url =  "http://"..servAddr.."/"..getResourceName(resource).."/commands/sounds/"..msg.sound
 			--outputChatBox(url)
-			RPC("playSound", url):exec()
+			RPC("McPlaySound", url):exec()
 		end
 	end
 	
@@ -90,9 +91,9 @@ local function CmdAddCom(message, arg)
 	end
 	
 	if(#arg >= 3) then
-		arg[2] = arg[2]:lower ()
-		if (not g_MsgCommands[arg[2]]) then
-			local node = xmlLoadFile ("conf\\msg_cmd.xml")
+		arg[2] = arg[2]:lower()
+		if(not g_MsgCommands[arg[2]]) then
+			local node = xmlLoadFile("conf\\msg_cmd.xml")
 			if (node) then
 				local subnode = xmlCreateChild (node, "command")
 				if(subnode) then
@@ -110,20 +111,20 @@ local function CmdAddCom(message, arg)
 	else privMsg(source, "Usage: %s", arg[1].." <command> <message>") end
 end
 
-CmdRegister ("addcom", CmdAddCom, "resource."..g_ResName..".addcom", "Adds a custom command")
+CmdRegister("addcom", CmdAddCom, "resource."..g_ResName..".addcom", "Adds a custom command")
 
-local function CmdRemCom (message, arg)
+local function CmdRemCom(message, arg)
 	if(not MODIFY_MSG_CMD) then
-		privMsg (source, "Command is disabled!")
+		privMsg(source, "Command is disabled!")
 		return
 	end
 	
-	if (#arg >= 2) then
-		arg[2] = arg[2]:lower ()
-		local node = xmlLoadFile ("conf\\msg_cmd.xml")
-		if (node) then
+	if(#arg >= 2) then
+		arg[2] = arg[2]:lower()
+		local node = xmlLoadFile("conf\\msg_cmd.xml")
+		if(node) then
 			local i = 0
-			while (xmlFindChild (node, "command", i) ~= false) do
+			while(xmlFindChild (node, "command", i) ~= false) do
 				local subnode = xmlFindChild (node, "command", i)
 				local handler = xmlNodeGetAttribute (subnode, "handler")
 				if (handler == arg[2]) then
@@ -131,52 +132,52 @@ local function CmdRemCom (message, arg)
 				end
 				i = i + 1
 			end
-			if (g_MsgCommands[arg[2]]) then
-				xmlSaveFile (node)
+			if(g_MsgCommands[arg[2]]) then
+				xmlSaveFile(node)
 				g_MsgCommands[arg[2]] = nil
-				CmdUnregister (arg[2])
+				CmdUnregister(arg[2])
 				scriptMsg("Removed command: %s", arg[2])
 			end
-			xmlUnloadFile (node)
+			xmlUnloadFile(node)
 		end
 	else privMsg(source, "Usage: %s", arg[1].." <command>") end
 end
 
 CmdRegister("remcom", CmdRemCom, "resource."..g_ResName..".remcom", "Removes a custom command")
 
-local function CmdEditCom (message, arg)
+local function CmdEditCom(message, arg)
 	if(not MODIFY_MSG_CMD) then
-		privMsg (source, "Command is disabled!")
+		privMsg(source, "Command is disabled!")
 		return
 	end
 	
-	if (#arg >= 3) then
-		arg[2] = arg[2]:lower ()
-		local msg = message:sub ((arg[1]..arg[2]):len () + 3)
+	if(#arg >= 3) then
+		arg[2] = arg[2]:lower()
+		local msg = message:sub((arg[1]..arg[2]):len () + 3)
 		if(g_MsgCommands[arg[2]]) then
-			local node = xmlLoadFile ("conf\\msg_cmd.xml")
+			local node = xmlLoadFile("conf\\msg_cmd.xml")
 			if (node) then
 				local i = 0
-				while (xmlFindChild (node, "command", i) ~= false) do
-					local subnode = xmlFindChild (node, "command", i)
-					local handler = xmlNodeGetAttribute (subnode, "handler")
-					if (handler == arg[2]) then
-						xmlDestroyNode (subnode)
+				while(xmlFindChild(node, "command", i) ~= false) do
+					local subnode = xmlFindChild(node, "command", i)
+					local handler = xmlNodeGetAttribute(subnode, "handler")
+					if(handler == arg[2]) then
+						xmlDestroyNode(subnode)
 					end
 					i = i + 1
 				end
-				local subnode = xmlCreateChild (node, "command")
+				local subnode = xmlCreateChild(node, "command")
 				if (subnode) then
-					xmlNodeSetAttribute (subnode, "handler", arg[2])
-					xmlNodeSetAttribute (subnode, "msg", msg)
-					xmlSaveFile (node)
+					xmlNodeSetAttribute(subnode, "handler", arg[2])
+					xmlNodeSetAttribute(subnode, "msg", msg)
+					xmlSaveFile(node)
 					g_MsgCommands[arg[2]] = msg
-					scriptMsg ("Changed command: %s", arg[2])
+					scriptMsg("Changed command: %s", arg[2])
 				end
-				xmlUnloadFile (node)
+				xmlUnloadFile(node)
 			end
-		else privMsg (source, "Command doesn't exists!") end
-	else privMsg (source, "Usage: %s", arg[1].." <command> <message>") end
+		else privMsg(source, "Command doesn't exists!") end
+	else privMsg(source, "Usage: %s", arg[1].." <command> <message>") end
 end
 
 CmdRegister("editcom", CmdEditCom, "resource."..g_ResName..".addcom", "Changes custom command message")
