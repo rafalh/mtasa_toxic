@@ -21,7 +21,7 @@ local function RcOnPlayerReachCheckpoint(checkpoint, time)
 	end
 end
 
-function RcEncodeTrace(rec)
+local function RcEncodeTrace(rec)
 	local longFmtCnt = 0
 	local buf = ""
 	for i, data in ipairs(rec) do
@@ -64,7 +64,7 @@ function RcEncodeTrace(rec)
 	return buf
 end
 
-function RcDecodeTrace(buf)
+local function RcDecodeTrace(buf)
 	local rec = {}
 	local i = 1
 	while(i <= buf:len()) do
@@ -100,27 +100,6 @@ function RcDecodeTrace(buf)
 	
 	return rec
 end
-
---[[function RcEncodeTraceOld(rec)
-	local buf = ""
-	for i, data in ipairs(rec) do
-		if(#data >= 7 and #data <= 8) then -- check
-			buf = buf..","
-			for i, v in ipairs(data) do
-				local n = tonumber(v) or 0
-				if(n < 0) then
-					buf = buf.."-"
-				end
-				n = math.abs(n)
-				buf = buf..("%x"):format(n)
-				
-				buf = buf..((i < #data and " ") or "")
-			end
-		end
-	end
-	
-	return buf:sub(2)
-end]]
 
 local function RcOnRecording(map_id, recording)
 	map_id = touint(map_id, 0)
@@ -219,7 +198,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	assert(pdata and map_id)
 	
 	if(not improvedBestTime) then
-		if (pdata.recording) then
+		if(pdata.recording) then
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_RECORDING_REQUEST), player, map_id)
 		end
 		return

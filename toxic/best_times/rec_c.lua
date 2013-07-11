@@ -157,5 +157,10 @@ addEventHandler("onClientResourceStart", g_ResRoot, RcInit)
 		rec:destroy()
 		playback:start()
 		setElementPosition(veh, x, y, z)
+		if(playback.render) then
+			addEventHandler("onClientRender", root, function()
+				playback:render()
+			end)
+		end
 	end, 5000, 1)
 end)]]

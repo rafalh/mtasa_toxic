@@ -26,12 +26,22 @@ function Playback.renderTitle()
 		local x, y, z = getElementPosition(playback.veh)
 		local scale = 18/getDistanceBetweenPoints3D(cx, cy, cz, x, y, z)
 		if(scale > 0.3) then
-			local scr_x, scr_y = getScreenFromWorldPosition(x, y, z + 1)
-			if(scr_x) then
-				dxDrawText(playback.title, scr_x, scr_y, scr_x, scr_y, TITLE_COLOR, scale, "default", "center")
+			local scrX, scrY = getScreenFromWorldPosition(x, y, z + 1)
+			if(scrX) then
+				dxDrawText(playback.title, scrX, scrY, scrX, scrY, TITLE_COLOR, scale, "default", "center")
 			end
 		end
 	end
+end
+
+function Playback.calcAngle(rot, dr, a)
+	if(dr > 180) then
+		dr = dr - 360
+	elseif(dr < -180) then
+		dr = dr + 360
+	end
+	
+	return rot + dr*a
 end
 
 function Playback.__mt.__index:update()
@@ -43,12 +53,12 @@ function Playback.__mt.__index:update()
 	local frame = self.data[self.curFrameIdx]
 	local nextFrame = self.data[self.curFrameIdx + 1]
 	while(nextFrame and dt >= nextFrame[$(RD_TIME)]) do
-		self.x = self.x + frame[$(RD_X)]/100
-		self.y = self.y + frame[$(RD_Y)]/100
-		self.z = self.z + frame[$(RD_Z)]/100
-		self.rotX = self.rotX + frame[$(RD_RX)]
-		self.rotY = self.rotY + frame[$(RD_RY)]
-		self.rotZ = self.rotZ + frame[$(RD_RZ)]
+		self.x = self.x + nextFrame[$(RD_X)]/100
+		self.y = self.y + nextFrame[$(RD_Y)]/100
+		self.z = self.z + nextFrame[$(RD_Z)]/100
+		self.rotX = self.rotX + nextFrame[$(RD_RX)]
+		self.rotY = self.rotY + nextFrame[$(RD_RY)]
+		self.rotZ = self.rotZ + nextFrame[$(RD_RZ)]
 		
 		dt = dt - nextFrame[$(RD_TIME)]
 		self.curFrameIdx = self.curFrameIdx + 1
@@ -67,15 +77,18 @@ function Playback.__mt.__index:update()
 	end
 	
 	local a = dt / nextFrame[$(RD_TIME)]
+	--assert(a >= 0 and a <= 1)
+	
 	local x = self.x + nextFrame[$(RD_X)]/100*a
 	local y = self.y + nextFrame[$(RD_Y)]/100*a
 	local z = self.z + nextFrame[$(RD_Z)]/100*a
-	local rx = self.rotX + nextFrame[$(RD_RX)]*a
-	local ry = self.rotY + nextFrame[$(RD_RY)]*a
-	local rz = self.rotZ + nextFrame[$(RD_RZ)]*a
-	--outputDebugString("a "..a, 3)
+	local rx = Playback.calcAngle(self.rotX, nextFrame[$(RD_RX)], a)
+	local ry = Playback.calcAngle(self.rotY, nextFrame[$(RD_RY)], a)
+	local rz = Playback.calcAngle(self.rotZ, nextFrame[$(RD_RZ)], a)
 	setElementPosition(self.veh, x, y, z)
 	setElementRotation(self.veh, rx, ry, rz)
+	
+	--self.curPos = Vector3(x, y, z)
 	
 	if(not USE_INTERPOLATION) then
 		local vx = frame[$(RD_X)]/100/frame[$(RD_TIME)]
@@ -143,6 +156,23 @@ function Playback.preRender()
 	end
 end
 
+--[[function Playback.__mt.__index:render()
+	local myPos = Vector3(getElementPosition(localPlayer))
+	local prevPos = false
+	for i, frame in ipairs(self.data) do
+		local curPos = (prevPos or Vector3()) + Vector3(frame[$(RD_X)], frame[$(RD_Y)], frame[$(RD_Z)])/100
+		
+		if(prevPos and myPos:dist(curPos) < 100) then
+			dxDrawLine3D(prevPos[1], prevPos[2], prevPos[3], curPos[1], curPos[2], curPos[3], tocolor(255, 0, 0), 3)
+			dxDrawLine3D(curPos[1], curPos[2], curPos[3]-0.1, curPos[1], curPos[2], curPos[3]+0.1, tocolor(0, 0, 255), 3)
+		end
+		prevPos = curPos
+	end
+	if(self.curPos) then
+		dxDrawLine3D(self.curPos[1], self.curPos[2], self.curPos[3]-0.1, self.curPos[1], self.curPos[2], self.curPos[3]+0.1, tocolor(0, 255, 0), 3)
+	end
+end]]
+
 function Playback.__mt.__index:destroy()
 	if(self.timer) then
 		killTimer(self.timer)
@@ -151,7 +181,7 @@ function Playback.__mt.__index:destroy()
 	
 	destroyElement(self.blip)
 	destroyElement(self.veh)
-	self.data = false
+	--self.data = false
 	
 	Playback.map[self.id] = nil
 	Playback.count = Playback.count - 1
@@ -172,16 +202,13 @@ function Playback.create(data, title)
 	self.title = title
 	self.dt = 0
 	
-	self.x = 0
-	self.y = 0
-	self.z = 0
-	self.rotX = 0
-	self.rotY = 0
-	self.rotZ = 0
-	
 	local firstFrame = data[1]
 	local x, y, z = firstFrame[$(RD_X)]/100, firstFrame[$(RD_Y)]/100, firstFrame[$(RD_Z)]/100
 	local rx, ry, rz = firstFrame[$(RD_RX)], firstFrame[$(RD_RY)], firstFrame[$(RD_RZ)]
+	
+	self.x, self.y, self.z = x, y, z
+	self.rotX, self.rotY, self.rotZ = rx, ry, rz
+	
 	self.veh = createVehicle(firstFrame[$(RD_MODEL)], x, y, z, rx, ry, rz)
 	setElementAlpha(self.veh, 102)
 	if(USE_INTERPOLATION) then
