@@ -155,6 +155,7 @@
 	<msg id="Display chat messages above players">Wyświetlaj wiadomości z czatu nad graczami</msg>
 	<msg id="Broken glass after huge damage">Zbita szyba po poważnym uszkodzeniu</msg>
 	<msg id="Screen flashes red after huge damage">Ekran miga na czerwono po poważnym uszkodzeniu</msg>
+	<msg id="Top Time Playback">Odtwarzanie najszybszego przejazdu</msg>
 	<msg id="Race Audio Volume: %u%%">Głośność Race Audio: %u%%</msg>
 	<msg id="Commands Volume: %u%%">Głośność komend: %u%%</msg>
 	<msg id="Map Music Volume: %u%%">Głośność muzyki w mapach: %u%%</msg>

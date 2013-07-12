@@ -144,23 +144,3 @@ local function RcInit()
 end
 
 addEventHandler("onClientResourceStart", g_ResRoot, RcInit)
-
---[[addCommandHandler("testrec", function()
-	outputChatBox("Testing recording!")
-	local veh = getPedOccupiedVehicle(g_Me)
-	local x, y, z = getElementPosition(veh)
-	local rec = Recorder.create()
-	rec:start()
-	setTimer(function()
-		outputChatBox("Recording finished ("..#rec.data.." frames)...")
-		local playback = Playback.create(rec.data, "TEST")
-		rec:destroy()
-		playback:start()
-		setElementPosition(veh, x, y, z)
-		if(playback.render) then
-			addEventHandler("onClientRender", root, function()
-				playback:render()
-			end)
-		end
-	end, 5000, 1)
-end)]]

@@ -194,7 +194,7 @@ function Map:isForbidden(room)
 	local mapId = self:getId()
 	local rows = DbQuery ("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", mapId)
 	
-	if (rows[1].removed ~= "") then
+	if(rows[1].removed ~= "") then
 		return "This map has been removed!"
 	end
 	

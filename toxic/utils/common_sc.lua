@@ -146,29 +146,15 @@ function isPedDead(player)
 	return(state and state ~= "alive") or _isPedDead (player)
 end
 
+function trimStr(str)
+	str = str:gsub("^%s+", "")
+	str = str:gsub("%s+$", "")
+	return str
+end
+
 function isPlayerAdmin(player)
 	local adminGroup = aclGetGroup("Admin")
 	local account = getPlayerAccount(player)
 	local accountName = getAccountName(account)
 	return (adminGroup and account and isObjectInACLGroup("user."..accountName, adminGroup))
-end
-
-local function fileCopy(srcPath, dstPath)
-	local success = false
-	local dstFile = fileCreate(dstPath)
-	if(dstFile) then
-		local srcFile = fileOpen(srcPath, true)
-		if(srcFile) then
-			while(not fileIsEOF(srcFile)) do
-				local buf = fileRead(srcFile, 4096)
-				fileWrite(dstFile, buf)
-			end
-			success = true
-			fileClose(srcFile)
-		end
-		
-		fileClose(dstFile)
-	end
-	
-	return success
 end

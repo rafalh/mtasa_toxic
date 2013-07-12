@@ -1,6 +1,11 @@
 local TITLE_COLOR = tocolor(196, 196, 196, 96)
 local VEH_ALPHA = 102
 local USE_INTERPOLATION = true
+local DEBUG = false
+
+if(DEBUG) then
+	VEH_ALPHA = 0
+end
 
 local g_Waiting, g_Playback
 
@@ -24,7 +29,7 @@ Playback.map = {}
 function Playback.renderTitle()
 	local cx, cy, cz = getCameraMatrix()
 	for id, playback in pairs(Playback.map) do
-		if(not self.hidden) then
+		if(not playback.hidden) then
 			local x, y, z = getElementPosition(playback.veh)
 			local scale = 18/getDistanceBetweenPoints3D(cx, cy, cz, x, y, z)
 			if(scale > 0.3) then
@@ -47,51 +52,76 @@ function Playback.calcAngle(rot, dr, a)
 	return rot + dr*a
 end
 
+--[[local function getBezierControlPoints(pt0, pt1, pt2, t)
+	-- Based on: http://scaledinnovation.com/analytics/splines/aboutSplines.html
+    local d01 = pt1.dist(pt0)
+    local d12 = pt1.dist(pt2)
+    local fa = t*d01 / (d01 + d12)   -- scaling factor for triangle Ta
+    local fb = t*d12 / (d01 + d12)   -- ditto for Tb, simplifies to fb=t-fa
+	
+	local cp1 = pt1 - fa*(pt2-pt0) -- x2-x0 is the width of triangle T
+	local cp2 = pt1 + fb*(pt2-pt0) -- y2-y0 is the height of T
+    return cp1, cp2
+end
+
+local function bezierCurve(pt1, pt2, cp1, cp2, t)
+	local t2 = 1 - t
+	return (t2^3)*pt1 + 3*(t2^2)*t*cp1 + 3*t2*(t^2)*cp2 + (t^3)*pt2
+end]]
+
+function Playback.__mt.__index:loadNextFrame()
+	self.curFrameIdx = self.curFrameIdx + 1
+	local frame = self.data[self.curFrameIdx]
+	if(self.nextPos) then
+		self.pos = self.nextPos
+	else
+		self.pos = self.pos + Vector3(frame[$(RD_X)], frame[$(RD_Y)], frame[$(RD_Z)])/100
+	end
+	self.rot = self.rot + Vector3(frame[$(RD_RX)], frame[$(RD_RY)], frame[$(RD_RZ)])
+	
+	local nextFrame = self.data[self.curFrameIdx + 1]
+	if(nextFrame) then
+		self.nextPos = self.pos + Vector3(nextFrame[$(RD_X)], nextFrame[$(RD_Y)], nextFrame[$(RD_Z)])/100
+	end
+end
+
 function Playback.__mt.__index:update()
 	local ticks = getTickCount()
-	local dt = ticks - self.ticks
+	local dt = (ticks - self.ticks)*self.speed
 	self.ticks = ticks
+	self.dt = self.dt + dt
 	
-	dt = dt + self.dt
-	local frame = self.data[self.curFrameIdx]
 	local nextFrame = self.data[self.curFrameIdx + 1]
-	while(nextFrame and dt >= nextFrame[$(RD_TIME)]) do
-		self.x = self.x + nextFrame[$(RD_X)]/100
-		self.y = self.y + nextFrame[$(RD_Y)]/100
-		self.z = self.z + nextFrame[$(RD_Z)]/100
-		self.rotX = self.rotX + nextFrame[$(RD_RX)]
-		self.rotY = self.rotY + nextFrame[$(RD_RY)]
-		self.rotZ = self.rotZ + nextFrame[$(RD_RZ)]
-		
-		dt = dt - nextFrame[$(RD_TIME)]
-		self.curFrameIdx = self.curFrameIdx + 1
-		frame = self.data[self.curFrameIdx]
+	while(nextFrame and self.dt >= nextFrame[$(RD_TIME)]) do
+		self.dt = self.dt - nextFrame[$(RD_TIME)]
+		self:loadNextFrame()
 		nextFrame = self.data[self.curFrameIdx + 1]
 	end
-	self.dt = dt
 	
 	if(not nextFrame) then
 		-- Playback has finished
 		return false
 	end
 	
+	local frame = self.data[self.curFrameIdx]
 	if(frame[$(RD_MODEL)]) then
 		setElementModel(self.veh, frame[$(RD_MODEL)])
 	end
 	
-	local a = dt / nextFrame[$(RD_TIME)]
+	local a = self.dt / nextFrame[$(RD_TIME)]
 	--assert(a >= 0 and a <= 1)
 	
-	local x = self.x + nextFrame[$(RD_X)]/100*a
-	local y = self.y + nextFrame[$(RD_Y)]/100*a
-	local z = self.z + nextFrame[$(RD_Z)]/100*a
-	local rx = Playback.calcAngle(self.rotX, nextFrame[$(RD_RX)], a)
-	local ry = Playback.calcAngle(self.rotY, nextFrame[$(RD_RY)], a)
-	local rz = Playback.calcAngle(self.rotZ, nextFrame[$(RD_RZ)], a)
-	setElementPosition(self.veh, x, y, z)
+	--[[local cp1 = self.pos
+	local cp2 = self.nextPos
+	local pos = bezierCurve(self.pos, self.nextPos, cp1, cp2, a)]]
+	local pos = self.pos*(1-a) + self.nextPos*a
+	local rx = Playback.calcAngle(self.rot[1], nextFrame[$(RD_RX)], a)
+	local ry = Playback.calcAngle(self.rot[2], nextFrame[$(RD_RY)], a)
+	local rz = Playback.calcAngle(self.rot[3], nextFrame[$(RD_RZ)], a)
+	setElementPosition(self.veh, pos[1], pos[2], pos[3])
 	setElementRotation(self.veh, rx, ry, rz)
 	
-	--self.curPos = Vector3(x, y, z)
+	self.curPos = pos
 	
 	if(not USE_INTERPOLATION) then
 		local vx = frame[$(RD_X)]/100/frame[$(RD_TIME)]
@@ -108,7 +138,7 @@ end
 function Playback.timerProc(id)
 	assert(false)
 	local self = Playback.map[id]
-	--outputDebugString("pos = "..self.x.." "..self.y.." "..self.z..", rot: "..self.rotX.." "..self.rotY.." "..self.rotZ)
+	--outputDebugString("pos = "..self.pos..", rot = "..self.rot)
 	
 	local msToNextFrame = self:update()
 	if(msToNextFrame) then
@@ -120,12 +150,20 @@ function Playback.timerProc(id)
 	end
 end
 
+function Playback.__mt.__index:reset()
+	self.curFrameIdx = 0
+	self.nextPos = false
+	self.pos = Vector3()
+	self.rot = Vector3()
+	self:loadNextFrame()
+end
+
 function Playback.__mt.__index:start()
 	assert(not self.ticks)
 	
 	-- Setup object state
 	self.ticks = getTickCount()
-	self.curFrameIdx = 1
+	self:reset()
 	
 	-- Update vehicle
 	setElementAlpha(self.veh, VEH_ALPHA)
@@ -166,7 +204,8 @@ function Playback.preRender()
 	end
 end
 
---[[function Playback.__mt.__index:render()
+if(DEBUG) then
+function Playback.__mt.__index:render()
 	local myPos = Vector3(getElementPosition(localPlayer))
 	local prevPos = false
 	for i, frame in ipairs(self.data) do
@@ -181,7 +220,8 @@ end
 	if(self.curPos) then
 		dxDrawLine3D(self.curPos[1], self.curPos[2], self.curPos[3]-0.1, self.curPos[1], self.curPos[2], self.curPos[3]+0.1, tocolor(0, 255, 0), 3)
 	end
-end]]
+end
+end
 
 function Playback.__mt.__index:destroy()
 	if(self.timer) then
@@ -212,14 +252,15 @@ function Playback.create(data, title)
 	local self = setmetatable({}, Playback.__mt)
 	self.data = data
 	self.title = title
+	self.speed = 1
 	self.dt = 0
 	
 	local firstFrame = data[1]
 	local x, y, z = firstFrame[$(RD_X)]/100, firstFrame[$(RD_Y)]/100, firstFrame[$(RD_Z)]/100
 	local rx, ry, rz = firstFrame[$(RD_RX)], firstFrame[$(RD_RY)], firstFrame[$(RD_RZ)]
 	
-	self.x, self.y, self.z = x, y, z
-	self.rotX, self.rotY, self.rotZ = rx, ry, rz
+	self.pos = Vector3(x, y, z)
+	self.rot = Vector3(rx, ry, rz)
 	
 	self.veh = createVehicle(firstFrame[$(RD_MODEL)], x, y, z, rx, ry, rz)
 	setElementAlpha(self.veh, VEH_ALPHA)
@@ -235,13 +276,6 @@ function Playback.create(data, title)
 	setElementParent(self.blip, self.veh)
 	
 	outputDebugString("Playback: frames = "..#data..", pos = ("..x.." "..y.." "..z.."), rot: ("..rx.." "..ry.." "..rz..")")
-	
-	--[[for i = 2, #data do
-		data[i][$(RD_X)] = -1000
-		data[i][$(RD_Y)] = 0
-		data[i][$(RD_Z)] = 0
-		data[i][$(RD_TIME)] = (i-1)*1000
-	end]]
 	
 	self.id = #Playback.map + 1
 	Playback.map[self.id] = self
@@ -276,9 +310,52 @@ function Playback.startAfterCountdown(playback, title)
 		g_Playback:destroy()
 	end
 	
-	g_Playback = Playback.create(playback, title)
-	g_Waiting = true
-	if(not USE_INTERPOLATION) then
-		addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+	if(Settings.playback) then
+		g_Playback = Playback.create(playback, title)
+		g_Waiting = true
+		if(not USE_INTERPOLATION) then
+			addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+		end
 	end
 end
+
+if(DEBUG) then
+addCommandHandler("testrec", function()
+	outputChatBox("Testing recording!")
+	local veh = getPedOccupiedVehicle(g_Me)
+	local x, y, z = getElementPosition(veh)
+	local rec = Recorder.create()
+	rec:start()
+	setTimer(function()
+		outputChatBox("Recording finished ("..#rec.data.." frames)...")
+		local playback = Playback.create(rec.data, "TEST")
+		rec:destroy()
+		playback.speed = 0.2
+		playback:start()
+		setElementPosition(veh, x, y, z)
+		if(playback.render) then
+			addEventHandler("onClientRender", root, function()
+				playback:render()
+			end)
+		end
+	end, 5000, 1)
+end)
+end
+
+
+Settings.register
+{
+	name = "playback",
+	default = true,
+	cast = tobool,
+	createGui = function(wnd, x, y, w, onChange)
+		local cb = guiCreateCheckBox(x, y, w, 20, "Top Time Playback", Settings.playback, false, wnd)
+		if(onChange) then
+			addEventHandler("onClientGUIClick", cb, onChange, false)
+		end
+		return 20, cb
+	end,
+	acceptGui = function(cb)
+		Settings.playback = guiCheckBoxGetSelected(cb)
+	end,
+}
