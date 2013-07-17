@@ -135,4 +135,6 @@
     <msg id="Vote cancelled by %s!">Głosowanie anulowane przez %s!</msg>
     <msg id="No vote in progress!">Żadne głosowanie nie jest aktywne!</msg>
     <msg id="Aliases for %s:">Aliasy gracza %s:</msg>
+	<msg id="You cannot use sound commands so often!">Nie możesz tak często używać komend dźwiękowych!</msg>
+	
 </strings>

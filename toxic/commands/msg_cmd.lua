@@ -16,6 +16,7 @@ local function McHandleCommand(message, arg)
 	local text = msg.text
 	local name = getPlayerName(source)
 	local namePlain = name:gsub("#%x%x%x%x%x%x", "")
+	local pdata = Player.fromEl(source)
 	
 	-- Handle '%m'
 	local text = text:gsub("%%m", namePlain):gsub("%%%%", "%%")
@@ -57,7 +58,15 @@ local function McHandleCommand(message, arg)
 			local servAddr = get("mapmusic.server_address")
 			local url =  "http://"..servAddr.."/"..getResourceName(resource).."/commands/sounds/"..msg.sound
 			--outputChatBox(url)
-			RPC("McPlaySound", url):exec()
+			
+			local now = getRealTime().timestamp
+			local limit = Settings.soundCmdLimit
+			if(not pdata.lastSoundCmd or now - pdata.lastSoundCmd >= limit) then
+				pdata.lastSoundCmd = now
+				RPC("McPlaySound", url, source):exec()
+			else
+				outputMsg(pdata, Styles.red, "You cannot use sound commands so often!")
+			end
 		end
 	end
 	
@@ -74,7 +83,7 @@ local function McInit()
 		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 			local attr = xmlNodeGetAttributes(subnode)
 			
-			assert(attr.cmd and attr.msg)
+			assert(attr.cmd and attr.msg, tostring(attr.cmd))
 			g_MsgCommands[attr.cmd] = {text = attr.msg, sound = attr.sound}
 			CmdRegister(attr.cmd, McHandleCommand, false, "Says: "..attr.msg..(attr.sound and " If invoked by a VIP player, plays a short sound in background." or ""))
 		end
