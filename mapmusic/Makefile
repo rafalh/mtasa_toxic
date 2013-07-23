@@ -1,6 +1,4 @@
-include ../config.mk
-
 PROJECT_NAME := mapmusic
-OUTPUT := $(RESOURCES_PATH)$(PROJECT_NAME)
+PROJECT_DIR  := 
 
-include ../generic.mk
+include $(TXBUILD)/generic.mak

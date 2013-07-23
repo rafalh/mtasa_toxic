@@ -1,5 +1,4 @@
 @echo off
 call "..\config.bat"
-pause
-%MAKE% toxic_clean
+%CLEAN_PROJECT%
 pause

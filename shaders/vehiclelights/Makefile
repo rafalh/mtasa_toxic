@@ -1,6 +1,4 @@
-include $(CURDIR)/../../config.mk
-
 PROJECT_NAME := vehiclelights
-OUTPUT := $(RESOURCES_PATH)[shaders]/$(PROJECT_NAME)
+PROJECT_DIR := [shaders]
 
-include $(CURDIR)/../../generic.mk
+include $(TXBUILD)/generic.mak

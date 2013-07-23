@@ -1,4 +1,4 @@
 @echo off
-call "..\config.bat"
-%MAKE% rafalh_radar
+call "..\..\config.bat"
+%CLEAN_PROJECT%
 pause

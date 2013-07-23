@@ -1,4 +1,4 @@
 @echo off
 call "..\..\config.bat"
-%MAKE% shader_water_clean
+%CLEAN_PROJECT%
 pause

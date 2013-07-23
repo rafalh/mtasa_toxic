@@ -1,4 +1,4 @@
 @echo off
 call "..\config.bat"
-%MAKE% rafalh_particles_clean
+%CLEAN_PROJECT%
 pause

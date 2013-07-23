@@ -1,6 +1,4 @@
-include $(CURDIR)/../config.mk
-
 PROJECT_NAME := redirection
-OUTPUT := $(RESOURCES_PATH)$(PROJECT_NAME)
+PROJECT_DIR  := 
 
-include $(CURDIR)/../generic.mk
+include $(TXBUILD)/generic.mak

@@ -1,6 +1,4 @@
-include $(CURDIR)/../config.mk
-
 PROJECT_NAME := race_delay_indicator
-OUTPUT := $(RESOURCES_PATH)[gamemodes]/[race]/$(PROJECT_NAME)
+PROJECT_DIR  := 
 
-include $(CURDIR)/../generic.mk
+include $(TXBUILD)/generic.mak

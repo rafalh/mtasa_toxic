@@ -1,6 +1,4 @@
-include $(CURDIR)/../../config.mk
-
 PROJECT_NAME := rafalh_server_logo
-OUTPUT := $(RESOURCES_PATH)[widgets]/$(PROJECT_NAME)
+PROJECT_DIR := [widgets]
 
-include $(CURDIR)/../../generic.mk
+include $(TXBUILD)/generic.mak
