@@ -6,7 +6,7 @@ ifeq ($(wildcard $(CURDIR)/build/Makefile.auto),)
 	$(MAKE)
 
  $(CURDIR)/build:
-	@mkdir "$(call native_path,$(CURDIR)/build)"
+	@mkdir "$(call nativePath,$(CURDIR)/build)"
 
  $(CURDIR)/build/Makefile.auto: $(CURDIR)/meta.xml $(CURDIR)/build
 	$(META2MAKEFILE) -o $(CURDIR)/build/Makefile.auto -t $(PROJECT_NAME)_ $(CURDIR)/meta.xml

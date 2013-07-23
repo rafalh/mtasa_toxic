@@ -5,6 +5,7 @@
 	<script src="music.lua" />
 	<script src="effect_c.lua" type="client" />
 	
+	<export function="setMusicVolume" type="client" />
 	<export function="setEffectEnabled" type="client" />
 	<export function="isEffectEnabled" type="client" />
 	

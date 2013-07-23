@@ -4,6 +4,7 @@ local g_Me = getLocalPlayer()
 local g_MusicEnabled = false
 local g_Sound = false
 local g_SoundUrl = false
+local g_Volume = 100
 
 g_AutoStart = true
 
@@ -81,6 +82,13 @@ local function startMusicReq(url)
 	outputChatBox(msg:format("#ffffffM#ffff00"), 255, 255, 0, true)
 	
 	setMusicEnabled(g_AutoStart)
+end
+
+function setMusicVolume(volume)
+	g_Volume = volume
+	if(g_MusicEnabled and g_Sound) then
+		setSoundVolume ( g_Sound, g_Volume/100 )
+	end
 end
 
 local function stopMusicReq()
