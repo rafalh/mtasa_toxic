@@ -73,7 +73,7 @@ local TITLE_SCALE = 1.5
 local NAME_SCALE = 2
 
 local g_StartTicks
-local g_Vehicles
+local g_Vehicles, g_Peds
 local g_Winners
 local g_Loc = LOCATIONS[6]
 
@@ -122,10 +122,15 @@ function PodiumStart(winners, n)
 	g_Winners = winners
 	g_Loc = LOCATIONS[n]
 	g_Vehicles = {}
+	g_Peds = {}
 	for i, player in ipairs(winners) do
 		local pos = g_Loc.pos + g_Loc.vehOff[i]
 		local veh = createVehicle(VEHICLE_MODEL, pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
+		local ped = createPed(0, pos[1], pos[2], pos[3])
+		warpPedIntoVehicle(ped, veh)
+		setElementParent(ped, veh)
 		table.insert(g_Vehicles, veh)
+		table.insert(g_Peds, ped)
 	end
 	
 	g_StartTicks = getTickCount()
@@ -139,6 +144,9 @@ function PodiumStop()
 	removeEventHandler("onClientRender", root, PodiumRender)
 	for i, veh in ipairs(g_Vehicles) do
 		destroyElement(veh)
+	end
+	for i, ped in ipairs(g_Peds) do
+		assert(not isElement(ped))
 	end
 	g_StartTicks = false
 	g_Winners = {}

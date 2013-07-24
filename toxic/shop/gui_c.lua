@@ -157,7 +157,6 @@ local function ShpUpdateShopList()
 end
 
 local function ShpCreateGui(panel)
-	DbgPerfInit()
 	local w, h = guiGetSize(panel, false)
 	
 	guiCreateStaticImage(10, 10, 32, 32, "img/shop/coins.png", false, panel)
@@ -209,8 +208,6 @@ local function ShpCreateGui(panel)
 		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
 		addEventHandler("onClientGUIClick", btn, UpBack, false)
 	end
-	
-	DbgPerfCp("Shop GUI creation")
 end
 
 function ShopPanel.onShow(panel)

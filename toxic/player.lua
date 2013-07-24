@@ -9,11 +9,29 @@ addEvent("onPlayerChangeTeam")
 addEvent("main.onAccountChange")
 
 function Player.__mt.__index:getSerial()
-	if(self.is_console) then
-		return "0"
-	else
-		return getPlayerSerial(self.el)
+	if(not self.serial) then
+		if(self.is_console) then
+			self.serial = "0"
+		else
+			self.serial = getPlayerSerial(self.el)
+		end
 	end
+	return self.serial
+end
+
+function Player.__mt.__index:getSerialID()
+	if(not self.serialID) then
+		local serial = self:getSerial()
+		local rows = DbQuery("SELECT id FROM "..SerialsTable.." WHERE serial=?", serial)
+		local row = rows and rows[1]
+		if(row) then
+			self.serialID = row.id
+		else
+			DbQuery("INSERT INTO "..SerialsTable.." (serial) VALUES(?)", serial)
+			self.serialID = Database.getLastInsertID()
+		end
+	end
+	return self.serialID
 end
 
 function Player.__mt.__index:getIP()
@@ -82,14 +100,13 @@ function Player.__mt.__index:setAccount(account)
 	end
 	
 	self.id = id
-	if(account) then
-		if(not self.id) then
-			DbQuery("INSERT INTO "..PlayersTable.." (account, serial, first_visit) VALUES (?, ?, ?)", account, self:getSerial(), now)
-			rows = DbQuery("SELECT player FROM "..PlayersTable.." WHERE account=? LIMIT 1", account)
-			self.id = rows and rows[1] and rows[1].player
-		end
-		
+	if(account and not self.id) then
+		DbQuery("INSERT INTO "..PlayersTable.." (account, serial, first_visit) VALUES (?, ?, ?)", account, self:getSerial(), now)
+		self.id = Database.getLastInsertID()
 		assert(self.id)
+	end
+	
+	if(self.id) then
 		Player.idMap[self.id] = self
 	end
 	self.guest = not self.id

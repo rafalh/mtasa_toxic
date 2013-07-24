@@ -177,7 +177,7 @@ g_ShopItems.nextmap = {
 
 g_ShopItems.vip1w = {
 	name = "VIP rank",
-	cost = 2600000,
+	cost = 2800000,
 	noDiscount = true,
 	descr = "VIP rank activation for 1 week.",
 	img = "vip/enabled.png",

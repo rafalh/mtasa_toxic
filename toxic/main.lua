@@ -25,6 +25,13 @@ BlobsTable = Database.Table{
 	{"data", "BLOB", default = ""},
 }
 
+SerialsTable = Database.Table{
+	name = "serials",
+	{"id", "INT UNSIGNED", pk = true},
+	{"serial", "VARCHAR(32)"},
+	{"serials_idx", unique = {"serial"}},
+}
+
 addEvent("main.onPlayerReady", true)
 
 local function isNickChangeAllowed(player, name)

@@ -23,35 +23,57 @@ local function initAboutPane(x, y, w, h, panel)
 	local subnodes = xmlNodeGetChildren(node)
 	local c = math.floor(#subnodes/2)
 	local x, y = 10, 15
+	local col = 1
 	
-	for i, subnode in ipairs(subnodes) do
-		local text = xmlNodeGetValue(subnode)
-		local attr = xmlNodeGetAttributes(subnode)
+	local prevAttr
+	local lines = {}
+	
+	for i = 1, #subnodes + 1 do
+		local subnode = subnodes[i]
+		local text = subnode and xmlNodeGetValue(subnode)
+		local attr = subnode and xmlNodeGetAttributes(subnode)
 		
-		if(attr[Settings.locale]) then
+		if(attr and attr[Settings.locale]) then
 			text = attr[Settings.locale]
 		end
 		
-		if(text ~= "") then
-			-- removed hack - make label 20 px bigger too make size for scrollbars
-			local label = guiCreateLabel(x, y, 160, 15, text, false, scrollPane)
-			y = y + 15
+		local br = false
+		if(col == 1 and i > c and text == "") then
+			br = true
+			col = 2
+		end
+		
+		local styleChanged = prevAttr and attr and (prevAttr.bold ~= attr.bold or prevAttr.color ~= attr.color)
+		
+		if(styleChanged or br or not subnode) then
+			local linesStr = table.concat(lines, "\n")
 			
-			if(attr.bold == "true") then
+			local label = guiCreateLabel(x, y, 160, 15, linesStr, false, scrollPane)
+			
+			if(prevAttr.bold == "true") then
 				guiSetFont(label, "default-bold-small")
 			end
 			
-			if(attr.color) then
-				local r, g, b = getColorFromString(attr.color)
+			if(prevAttr.color) then
+				local r, g, b = getColorFromString(prevAttr.color)
 				if(r) then
 					guiLabelSetColor(label, r, g, b)
 				end
 			end
-		elseif(i > c and x == 10) then
+			
+			local fontH = guiLabelGetFontHeight(label)
+			local linesH = fontH*#lines
+			guiSetSize(label, 160, linesH, false)
+			y = y + linesH
+			lines = {}
+		end
+		prevAttr = attr
+		
+		if(br) then
 			x = 160
 			y = 15
-		else
-			y = y + 15
+		elseif(text) then
+			table.insert(lines, text)
 		end
 	end
 	xmlUnloadFile(node)
@@ -60,8 +82,6 @@ local function initAboutPane(x, y, w, h, panel)
 end
 
 local function createGui(panel)
-	DbgPerfInit()
-	
 	local w, h = guiGetSize(panel, false)
 	
 	guiCreateStaticImage(10, 10, 200, 64, "about/logo.jpg", false, panel)
@@ -78,8 +98,6 @@ local function createGui(panel)
 	end
 	
 	initAboutPane(10, 100, w - 20, paneH, panel)
-	
-	DbgPerfCp("About server GUI creation")
 end
 
 function AboutPanel.onShow(panel)

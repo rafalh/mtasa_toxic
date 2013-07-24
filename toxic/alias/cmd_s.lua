@@ -9,22 +9,12 @@ local function CmdAlias(message, arg)
 		end
 		
 		local pdata = Player.fromEl(player)
-		local aliases = ""
-		if(pdata.id) then
-			local rows = DbQuery("SELECT name FROM "..NamesTable.." WHERE player=?", pdata.id)
-			for i, data in ipairs(rows) do
-				if(aliases ~= "") then
-					aliases = aliases..", "
-				end
-				aliases = aliases..data.name
-			end
-		else
-			aliases = getPlayerName(player)
-		end
+		local aliasList = AlGetPlayerAliases(pdata)
+		local aliasListStr = table.concat(aliasList, ", ")
 		if(alias) then
-			scriptMsg("%s", aliases..".")
+			scriptMsg("%s", aliasListStr..".")
 		else
-			privMsg(source, "%s", aliases..".")
+			privMsg(source, "%s", aliasListStr..".")
 		end
 	else privMsg(source, "Usage: %s", arg[1].." <player>") end
 end

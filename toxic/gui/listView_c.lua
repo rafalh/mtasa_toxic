@@ -15,10 +15,7 @@ function ListView:addItem(name, img, id, style)
 	local w, h = self.itemSize[1], self.itemSize[2]
 	local item = {title = name, id = id, style = style or self.style}
 	
-	item.el = guiCreateLabel(x, y, w, h, "", false, self.el)
-	self.itemsMap[item.el] = item
-	
-	item.bgEl = guiCreateStaticImage(0, 0, w, h, "img/white.png", false, item.el)
+	item.bgEl = guiCreateStaticImage(x, y, w, h, "img/white.png", false, self.el)
 	guiSetAlpha(item.bgEl, 0)
 	
 	local imgX, imgY
@@ -38,15 +35,21 @@ function ListView:addItem(name, img, id, style)
 	end
 	
 	local imgPath = img or "img/empty.png"
-	item.imgEl = guiCreateStaticImage(imgX, imgY, self.imgSize[1], self.imgSize[2], imgPath, false, item.el)
+	--item.imgEl = guiCreateStaticImage(imgX, imgY, self.imgSize[1], self.imgSize[2], imgPath, false, item.el)
+	item.imgEl = guiCreateStaticImage(x + imgX, y + imgY, self.imgSize[1], self.imgSize[2], imgPath, false, self.el)
 	guiSetAlpha(item.imgEl, item.style.normal.a)
 	
-	item.titleEl = guiCreateLabel(titleX, titleY, titleW, titleH, name, false, item.el)
+	--item.titleEl = guiCreateLabel(titleX, titleY, titleW, titleH, name, false, item.el)
+	item.titleEl = guiCreateLabel(x + titleX, y + titleY, titleW, titleH, name, false, self.el)
 	if(self.style.iconPos == "top" or not self.style.iconPos) then
 		guiLabelSetHorizontalAlign(item.titleEl, "center", true)
 	end
 	guiLabelSetColor(item.titleEl, unpack(item.style.normal.clr))
 	guiSetFont(item.titleEl, item.style.normal.fnt)
+	
+	self.itemsMap[item.bgEl] = item
+	self.itemsMap[item.imgEl] = item
+	self.itemsMap[item.titleEl] = item
 	
 	table.insert(self.items, item)
 	if(item.id) then
@@ -157,12 +160,7 @@ end
 function ListView.getItemFromElement(el)
 	local parent = getElementParent(el)
 	local self = ListView.elMap[parent]
-	if(not self) then -- allow two levels
-		el = parent
-		parent = getElementParent(el)
-		self = ListView.elMap[parent]
-		if(not self) then return false end
-	end
+	if(not self) then return false end
 	return self, self.itemsMap[el]
 end
 

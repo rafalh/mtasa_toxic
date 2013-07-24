@@ -27,7 +27,6 @@ addEvent("main.onAchvList", true)
 addEvent("main.onAchvChange", true)
 
 local function AchvInitGui(panel)
-	DbgPerfInit()
 	local w, h = guiGetSize(panel, false)
 	
 	local achvCntStr = MuiGetMsg("Unlocked achievements: %u/%u"):format(g_ActiveCount, #g_Achievements)
@@ -56,7 +55,6 @@ local function AchvInitGui(panel)
 	end
 	
 	--triggerServerEvent("main.onAchvListReq", g_ResRoot)
-	DbgPerfCp("Achievements GUI creation")
 end
 
 local function AchvUpdateGui()

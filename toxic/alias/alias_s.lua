@@ -1,36 +1,49 @@
-NamesTable = Database.Table{
-	name = "names",
-	{"player", "INT UNSIGNED", fk = {"players", "player"}},
+AliasesTable = Database.Table{
+	name = "aliases",
+	{"serial", "INT UNSIGNED", fk = {"serials", "id"}},
 	{"name", "VARCHAR(32)"},
-	{"names_idx", unique = {"player", "name"}},
+	{"alias_idx", unique = {"serial", "name"}},
 }
 
 local function AlAddPlayerAlias(player, name)
-	name = name:gsub("#%x%x%x%x%x%x", "")
-	local pdata = Player.fromEl(player)
-	if(not pdata.id) then return end -- guest
-	
-	local rows = DbQuery("SELECT player FROM "..NamesTable.." WHERE player=? AND name=? LIMIT 1", pdata.id, name)
-	if(not rows or not rows[1]) then
-		DbQuery("INSERT INTO "..NamesTable.." (player, name) VALUES (?, ?)", pdata.id, name)
+	if(name) then
+		name = name:gsub("#%x%x%x%x%x%x", "")
+	else
+		name = player:getName()
 	end
+	
+	local rows = DbQuery("SELECT serial FROM "..AliasesTable.." WHERE serial=? AND name=? LIMIT 1", player:getSerialID(), name)
+	if(not rows or not rows[1]) then
+		DbQuery("INSERT INTO "..AliasesTable.." (serial, name) VALUES (?, ?)", player:getSerialID(), name)
+	end
+end
+
+function AlGetPlayerAliases(player)
+	local aliases = {}
+	local rows = DbQuery("SELECT name FROM "..AliasesTable.." WHERE serial=?", player:getSerialID())
+	for i, data in ipairs(rows) do
+		table.insert(aliases, data.name)
+	end
+	return aliases
 end
 
 local function AlOnPlayerChangeNick(oldNick, newNick)
 	if(wasEventCancelled()) then return end
 	
-	if(Player.fromEl(source)) then
-		AlAddPlayerAlias(source, newNick)
+	local player = Player.fromEl(source)
+	if(player) then
+		AlAddPlayerAlias(player, newNick)
 	end
 end
 
 local function AlOnPlayerJoin()
-	AlAddPlayerAlias(source, getPlayerName(source))
+	local player = Player.fromEl(source)
+	AlAddPlayerAlias(player)
 end
 
 local function AlInit()
 	for player, pdata in pairs(g_Players) do
-		AlAddPlayerAlias(player, getPlayerName(player))
+		AlAddPlayerAlias(pdata)
 	end
 	
 	addEventHandler("onPlayerJoin", g_Root, AlOnPlayerJoin)

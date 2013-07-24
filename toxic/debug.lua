@@ -55,7 +55,7 @@ if(DEBUG) then
 		if(PERF_DEBUG_CHECKPOINTS) then
 			local dt = ticks - g_DbgPerfData[channel or 1]
 			g_DbgPerfData[channel or 1] = ticks
-			if(dt > 10) then
+			if(dt > 50) then
 				local args = {...}
 				args[#args + 1] = dt
 				DbgPrint(title.." has taken %u ms", unpack(args))

@@ -136,8 +136,6 @@ local function onFilterChange()
 end
 
 local function createGui(panel)
-	DbgPerfInit()
-	
 	g_Panel = panel
 	local w, h = guiGetSize(panel, false)
 	
@@ -182,10 +180,6 @@ local function createGui(panel)
 			guiStaticImageLoadImage(g_RadioImg, imgPath)
 		end
 	end
-	
-	
-	
-	DbgPerfCp("Radio GUI creation")
 end
 
 function RadioPanel.onShow(panel)
