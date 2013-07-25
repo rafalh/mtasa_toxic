@@ -56,7 +56,7 @@ local function McHandleCommand(message, arg)
 		local isVip = vipRes and getResourceState(vipRes) == "running" and call(vipRes, "isVip", source)
 		if(isVip) then
 			local servAddr = get("mapmusic.server_address")
-			local url =  "http://"..servAddr.."/"..getResourceName(resource).."/commands/sounds/"..msg.sound
+			local url =  "http://"..servAddr.."/"..getResourceName(resource).."/msg_cmd/sounds/"..msg.sound
 			--outputChatBox(url)
 			
 			local now = getRealTime().timestamp

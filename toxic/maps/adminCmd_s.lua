@@ -142,15 +142,17 @@ end
 CmdRegister("cancelnext", CmdCancelNextMap, "resource."..g_ResName..".nextmap", "Removes last map from queue")
 
 local function CmdRedo (message, arg)
-	local now = getRealTime ().timestamp
+	local now = getRealTime().timestamp
+	local dt = now - g_LastRedo
 	local room = Player.fromEl(source).room
 	local map = getCurrentMap(room)
-	if (map and now - g_LastRedo > 10) then
+	local redoLimit = 10
+	if(dt < redoLimit) then
+		privMsg(source, "You cannot redo yet! Please wait "..(redoLimit - dt).." seconds.")
+	elseif(map) then
 		GbCancelBets ()
 		g_LastRedo = now
 		map:start(room)
-	else
-		privMsg(source, "You cannot redo yet! Please wait "..(now - g_LastRedo).." seconds.")
 	end
 end
 
