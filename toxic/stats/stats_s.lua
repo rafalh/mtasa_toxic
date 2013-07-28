@@ -116,17 +116,6 @@ local function StLoadRanks()
 	return true
 end
 
-local function StOnPlayerConnect(playerNick, playerIP, playerUsername, playerSerial)
-	local max_warns = Settings.max_warns
-	if(max_warns > 0) then
-		local rows = DbQuery("SELECT warnings FROM "..PlayersTable.." WHERE serial=? LIMIT 1", playerSerial)
-		local data = rows and rows[1]
-		if(data and data.warnings > max_warns) then
-			cancelEvent(true, "You have "..data.warnings.." warnings (limit: "..max_warns..")!")
-		end
-	end
-end
-
 local function StOnPlayerJoin()
 	local player = Player.fromEl(source)
 	local pts = player.accountData:get("points")
@@ -165,7 +154,6 @@ local function StInit()
 	
 	addSyncer("stats", StPlayerStatsSyncCallback)
 	
-	addEventHandler("onPlayerConnect", g_Root, StOnPlayerConnect)
 	addEventHandler("onPlayerJoin", g_Root, StOnPlayerJoin)
 	addEventHandler("onPlayerWasted", g_Root, StOnPlayerWasted)
 	addEventHandler("onVehicleExplode", g_Root, StOnVehicleExplode)

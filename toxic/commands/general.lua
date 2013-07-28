@@ -105,13 +105,3 @@ end
 
 CmdRegister("version", CmdVersion, false, "Shows player MTA version")
 CmdRegisterAlias("ver", "version")
-
-local function CmdWarnings(message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local player = Player.fromEl(playerEl)
-	local warns = player.accountData:get("warnings")
-	scriptMsg("%s has been warned %u times.", getPlayerName(player.el), warns)
-end
-
-CmdRegister("warnings", CmdWarnings, false, "Shows player warnings count")
-CmdRegisterAlias("warns", "warnings")

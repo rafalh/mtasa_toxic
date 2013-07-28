@@ -8,6 +8,8 @@
 	<script src="antispam_s.lua" type="server" />
 	<script src="censor_s.lua" type="server" />
 	<script src="nickBlocker_s.lua" type="server" />
+	<script src="warnings_s.lua" type="server" />
+	
 	<config src="../conf/banned_names.xml" type="server" />
 	<config src="../conf/censor.xml" type="server" />
 	
@@ -28,5 +30,8 @@
 		<setting group="Anticheat" name="*max_viel_kick" accept="false,true" value="false" desc="If true players with too big speed will be kicked. Otherwise only chat message will be generated." friendlyname="Kicking speed cheaters" />
 		<setting group="Anticheat" name="*fps_anticheat" accept="false,true" value="true" desc="Kick player if he has got FPS above the limit." friendlyname="FPS Anticheat" />
 		<setting group="Anticheat" name="*show_ac_msgs" accept="false,true" value="true" desc="If set to true and no online player has access to AC messages, they are sent to everybody." friendlyname="Show AC messages" />
+		
+		<setting group="Warnings" name="*max_warns" friendlyname="Maximum warnings" accept="1-1000" value="3" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." />
+		<setting group="Warnings" name="*warn_ban" friendlyname="Duration of ban in days" accept="0-365" value="7" desc="Ban duration in days after reaching warnings limit." />
 	</settings>
 </meta>

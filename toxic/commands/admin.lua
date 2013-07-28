@@ -118,41 +118,6 @@ end
 
 CmdRegister("unmute", CmdUnmute, "command.unmute", "Unmutes player on chat and voice-chat")
 
-local function CmdWarn(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
-	
-	if(player) then
-		local warns = player.accountData:get("warnings") + 1
-		player.accountData:set("warnings", warns)
-		local max_warns = Settings.max_warns
-		if(max_warns > 0) then
-			scriptMsg ("%s has been warned %u. time (limit: %u)!", player:getName(true), warns, max_warns)
-		else
-			scriptMsg ("%s has been warned %u. time!", player:getName(true), warns)
-		end
-		
-		if(max_warns > 0 and warns > max_warns) then
-			kickPlayer(player.el, source, warns.." warnings (limit: "..max_warns..")")
-		end
-	else privMsg(source, "Usage: %s", arg[1].." <player>") end
-end
-
-CmdRegister("warn", CmdWarn, "resource."..g_ResName..".warn", "Adds player warning and bans if he has too many")
-
-local function CmdUnwarn (message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len () + 2)))
-	
-	if (player) then
-		local warns = player.accountData:get("warnings")
-		if (warns > 0) then
-			player.accountData:set("warnings", warns - 1)
-		end
-		scriptMsg("%s has been unwarned!", player:getName(true))
-	else privMsg(source, "Usage: %s", arg[1].." <player>") end
-end
-
-CmdRegister("unwarn", CmdUnwarn, "resource."..g_ResName..".unwarn", "Removes player warning")
-
 local function CmdKill(message, arg)
 	local sourcePlayer = Player.fromEl(source)
 	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or sourcePlayer

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Misc" author="rafalh" />
+	
+	<script src="avgPlayers_s.lua" type="server" />
+	<script src="spectators_s.lua" type="server" />
+	<script src="tempMod_s.lua" type="server" />
+	<script src="waterFix_c.lua" type="client" />
+</meta>

@@ -2,6 +2,7 @@
 <meta>
 	<info name="Maps" author="rafalh" version="2.61" />
 	
+	<script src="ghostmode_s.lua" type="server" />
 	<script src="maps_s.lua" type="server" />
 	<script src="map_s.lua" type="server" />
 	<script src="mapQueue_s.lua" type="server" />

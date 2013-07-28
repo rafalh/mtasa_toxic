@@ -137,4 +137,9 @@
     <msg id="Aliases for %s:">Aliasy gracza %s:</msg>
 	<msg id="You cannot use sound commands so often!">Nie możesz tak często używać komend dźwiękowych!</msg>
 	
+	<msg id="%s has %u/%u warnings.">%s ma %u/%u ostrzeżeń.</msg>
+	<msg id="%s has been warned by %s and has now %u/%u warnings.">%s został ostrzeżony przez %s i ma teraz %u/%u ostrzeżeń.</msg>
+	<msg id="%s has been banned by %s after %u warnings!">%s został zbanowany przez %s po %u ostrzeżeniach.</msg>
+	<msg id="%s's warning has been removed by %s!">Ostrzeżenie gracza %s zostało usunięte przez %s!</msg>
+	<msg id="%s has no warnings!">%s nie ma żadnych ostrzeżeń!</msg>
 </strings>

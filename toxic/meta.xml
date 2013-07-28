@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="Toxic" author="rafalh" version="2.64" description="Rafalh Scripts System" />
+	<info type="misc" name="Toxic" author="rafalh" version="2.65" description="Rafalh Scripts System" />
 	
 	<min_mta_version client="1.3.1-9.04600" server="1.3.1-9.04600" />
 	
-	<script src="debug.lua" type="shared" />
+	<script src="core/debug.lua" type="shared" />
 	
 	<script src="utils/table.lua" type="shared" />
 	<script src="utils/class.lua" type="shared" />
@@ -24,29 +24,23 @@
 	<script src="utils/file.lua" type="server" />
 	<script src="utils/rpc.lua" type="shared" />
 	
-	<script src="start_s.lua" type="server" />
-	<script src="settings_s.lua" type="server" />
-	<script src="database_s.lua" type="server" />
+	<script src="core/start_s.lua" type="server" />
+	<script src="core/settings_s.lua" type="server" />
+	<script src="core/database_s.lua" type="server" />
 	<config src="conf/database.xml" type="server" />
 	
-	<script src="main_s.lua" type="server" />
-	<script src="main_c.lua" type="client" />
-	<script src="player_s.lua" type="server" />
-	<script src="accountData_s.lua" type="server" />
-	<script src="accounts_s.lua" type="server" />
-	
+	<script src="core/main_s.lua" type="server" />
+	<script src="core/main_c.lua" type="client" />
+	<script src="core/player_s.lua" type="server" />
+	<script src="core/accountData_s.lua" type="server" />
+	<script src="core/accounts_s.lua" type="server" />
 	<script src="settings/settings_c.lua" type="client" />
 	
 	<script src="commands/commands.lua" type="server" />
-	<script src="avgPlayers_s.lua" type="server" />
-	<script src="ghostmode_s.lua" type="server" />
-	<script src="room_s.lua" type="server" />
-	<script src="sync_s.lua" type="server" />
-	<script src="spectators_s.lua" type="server" />
-	<script src="waterFix_c.lua" type="client" />
-	<script src="tempMod_s.lua" type="server" />
-	<script src="mute_s.lua" type="server" />
-	<script src="updater_s.lua" type="server" />
+	<script src="core/room_s.lua" type="server" />
+	<script src="core/sync_s.lua" type="server" />
+	<script src="core/mute_s.lua" type="server" />
+	<script src="core/updater_s.lua" type="server" />
 	
 	<script src="commands/accounts.lua" type="server" />
 	<script src="commands/admin.lua" type="server" />
@@ -78,6 +72,7 @@
 	<module src="invitations" />
 	<module src="login" />
 	<module src="map_rating" />
+	<module src="misc" />
 	<module src="msg_cmd" />
 	<module src="mui" />
 	<module src="profile" />
@@ -92,7 +87,7 @@
 	<module src="about" />
 	<!-- MODULES END -->
 	
-	<script src="stop_s.lua" type="server" />
+	<script src="core/stop_s.lua" type="server" />
 	
 	<config src="conf/commands.xml" />
 	<config src="conf/countries.xml" />
@@ -138,7 +133,6 @@
 	
 	<settings>
 		<setting group="General" name="*mute_time" friendlyname="Mute time" accept="0-3600" value="60" desc="Default mute duration for /mute command. If it equals 0, mute is permanent." />
-		<setting group="General" name="*max_warns" friendlyname="Maximum warnings" accept="0-1000" value="0" desc="If player has more warnings, he is banned. Set to 0 to disable banning for warnings." />
 		<setting group="General" name="*loginWnd" friendlyname="Login window" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" />
 		<!--setting group="General" name="*stunt_bonus" friendlyname="Stunt bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." /-->
 		
