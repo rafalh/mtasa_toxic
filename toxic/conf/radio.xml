@@ -20,7 +20,8 @@
 	<channel name="Chilli ZET" img="chilliz.png">http://www.chillizet.pl/externals/chillizet-streams/chillizetmp3.pls</channel>
 	<channel name="radioparty.pl" img="radioparty.png">http://radioparty.pl/play/glowny_24aac.m3u</channel>
 	<channel name="Euro Dance">http://listen.di.fm/public2/eurodance.pls</channel>
-	<channel name="Eska" img="eska.jpg">http://poznan6.radio.pionier.net.pl:8000/eska-warszawa.mp3</channel>
+	<channel name="Eska Warszawa" img="eska.jpg">http://poznan6.radio.pionier.net.pl:8000/eska-warszawa.mp3</channel>
+	<channel name="Eska Bydgoszcz" img="eska.jpg">http://gramy01.eska.fm:8000/eska_bydgoszcz.mp3</channel>
 	<channel name="DiscoParty" img="DiscoParty.png">http://nadaje.com/playlist/1294/m3u/</channel>
 	<channel name="Polska Stacja" img="polskastacja.jpg">http://nadaje.com/playlist/494/m3u/</channel>
 	<channel name="Przeboje 80/90" img="przeboje80and90.png">http://nadaje.com/playlist/502/m3u/</channel>
@@ -32,9 +33,9 @@
 	<channel name="Dubstep (Open FM)" img="DupstepOpenFM.png">http://open.fm/68.m3u</channel>
 	<channel name="ClubMusic24" img="ClubMusic24.png">http://nadaje.com/playlist/1280/m3u/</channel>
 	<channel name="All4Music.pl" img="All4Music.png">http://sc5.24cast.pl:8014/listen.pls</channel>
-	<channel name="EverFree">http://78.47.53.77:8000/stream/1/</channel>
+	<channel name="EverFree">http://download.everfree.net:8000/stream/1/</channel>
 	<channel name="Hip-Hop PL (Open FM)" img="HipHopPLOpenFM.png">http://open.fm/24.m3u</channel>
-	<channel name="Wesoły Hanys" img="WesolyHanys.png">http://wesolyhanys.pl/listen.m3u</channel>
+	<channel name="Radio Bercik">http://87.98.235.103:7000</channel>
 	<channel name="Radio Piekary" img="RadioPiekary.jpg">http://shot4.inten.pl:8412/listen.pls</channel>
 	<channel name="Ciężkie Brzmienia" img="CiezkieBrzmienia.png">http://open.fm/13.m3u</channel>
 	<channel name="00s HITS (Open FM)" img="00sHitsOpenFM.png">http://open.fm/72.m3u</channel>
@@ -42,4 +43,5 @@
 	<channel name="Ska Roots Reggae (Open FM)" img="SkaRootsReggaeOpenFM.png">http://open.fm/44.m3u</channel>
 	<channel name="ClubParty" img="ClubParty.jpg">http://s1.slotex.pl:8654/listen.pls</channel>
 	<channel name="100% Linkin Park">http://open.fm/42.m3u</channel>
+	<channel name="TechnoBase.fm" img="TechnoBaseFM.png">http://listen.technobase.fm/dsl.pls</channel>
 </channels>

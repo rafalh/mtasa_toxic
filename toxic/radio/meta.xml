@@ -31,12 +31,12 @@
 	<file src="img/channels/All4Music.png" />
 	<file src="img/channels/equestriafm.png" />
 	<file src="img/channels/HipHopPLOpenFM.png" />
-	<file src="img/channels/WesolyHanys.png" />
 	<file src="img/channels/RadioPiekary.jpg" />
 	<file src="img/channels/CiezkieBrzmienia.png" />
 	<file src="img/channels/00sHitsOpenFM.png" />
 	<file src="img/channels/KidsOpenFM.png" />
 	<file src="img/channels/SkaRootsReggaeOpenFM.png" />
 	<file src="img/channels/ClubParty.jpg" />
+	<file src="img/channels/TechnoBaseFM.png" />
 	<config src="../conf/radio.xml" type="client" />
 </meta>
