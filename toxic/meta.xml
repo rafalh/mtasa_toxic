@@ -24,26 +24,26 @@
 	<script src="utils/file.lua" type="server" />
 	<script src="utils/rpc.lua" type="shared" />
 	
-	<script src="start.lua" type="server" />
-	<script src="settings.lua" type="server" />
-	<script src="database.lua" type="server" />
+	<script src="start_s.lua" type="server" />
+	<script src="settings_s.lua" type="server" />
+	<script src="database_s.lua" type="server" />
 	<config src="conf/database.xml" type="server" />
 	
-	<script src="main.lua" type="server" />
+	<script src="main_s.lua" type="server" />
 	<script src="main_c.lua" type="client" />
-	<script src="player.lua" type="server" />
+	<script src="player_s.lua" type="server" />
 	<script src="accountData_s.lua" type="server" />
-	<script src="accounts.lua" type="server" />
+	<script src="accounts_s.lua" type="server" />
 	
 	<script src="settings/settings_c.lua" type="client" />
 	
 	<script src="commands/commands.lua" type="server" />
-	<script src="avg_players.lua" type="server" />
-	<script src="ghostmode.lua" type="server" />
-	<script src="room.lua" type="server" />
-	<script src="sync.lua" type="server" />
-	<script src="spectators.lua" type="server" />
-	<script src="water_fix_c.lua" type="client" />
+	<script src="avgPlayers_s.lua" type="server" />
+	<script src="ghostmode_s.lua" type="server" />
+	<script src="room_s.lua" type="server" />
+	<script src="sync_s.lua" type="server" />
+	<script src="spectators_s.lua" type="server" />
+	<script src="waterFix_c.lua" type="client" />
 	<script src="tempMod_s.lua" type="server" />
 	<script src="mute_s.lua" type="server" />
 	<script src="updater_s.lua" type="server" />
@@ -92,7 +92,7 @@
 	<module src="about" />
 	<!-- MODULES END -->
 	
-	<script src="stop.lua" type="server" />
+	<script src="stop_s.lua" type="server" />
 	
 	<config src="conf/commands.xml" />
 	<config src="conf/countries.xml" />
