@@ -1,140 +1,118 @@
-----------------------
--- Global variables --
-----------------------
+g_Root = getRootElement()
+g_ResRoot = getResourceRootElement()
+g_Res = getThisResource()
+g_ResName = getResourceName(g_Res)
 
-g_PlayersCount = 0
-
-g_InternalEventHandlers = {}
-g_OldVehicleWeapons = nil
-g_Countries = {}
-g_IsoLangs = {}
-g_MapTypes = {}
-g_CustomRights = {}
-
--------------------
--- Custom events --
--------------------
-
-addEvent("onEvent_"..g_ResName, true)
-
---------------------------------
--- Local function definitions --
---------------------------------
-
-local function onEventHandler(event, ...)
-	--outputChatBox("'"..getResourceName ( sourceResource ).."' "..tostring(event))
-	if(not event or not g_InternalEventHandlers[event]) then return end
-	if(sourceResource == g_Res or getResourceName(sourceResource):sub(1, 6) == "rafalh") then
-		for _, handler in ipairs(g_InternalEventHandlers[event]) do
-			-- Note: unpack must be last arg
-			handler(unpack({...}))
-		end
-	else
-		outputDebugString("Access denied", 2)
+function ifElse(condition, trueReturn, falseReturn)
+	if(condition) then
+		return trueReturn
 	end
+	return falseReturn
 end
 
----------------------------------
--- Global function definitions --
----------------------------------
-
-function findPlayer(str)
-	if(not str) then
-		return false
-	end
-	
-	local player = getPlayerFromName(str) -- returns player or false
-	if(player) then
-		return player
-	end
-	
-	str = str:lower()
-	for player, pdata in pairs(g_Players) do
-		if(not pdata.is_console) then
-			local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", ""):lower()
-			if(name:find(str, 1, true)) then
-				return player
-			end
-		end
-	end
-	return false
+function toint(var, nan_r)
+	local r = var and tonumber(var)
+	return (r and r < math.huge and r > -math.huge and math.floor(r)) or nan_r  -- nan ~= nan
 end
 
-function strGradient(str, r1, g1, b1, r2, g2, b2)
-	local n = math.max(math.abs(r1 - r2)/25.5, math.abs(b1 - b2)/25.5, math.abs(b1 - b2)/25.5, 2) -- max 10 codes, min 2
-	local part_len = math.ceil(str:len ()/n)
+function touint(var, nan_r)
+	local r = var and tonumber(var)
+	return (r and r < math.huge and r > -math.huge and r >= 0 and math.floor(r)) or nan_r -- nan ~= nan
+end
+
+function tofloat(var, nan_r)
+	local r = var and tonumber(var)
+	return (r and r < math.huge and r > -math.huge and r) or nan_r -- nan ~= nan
+end
+
+function tonum(var)
+	return (var and tonumber(var)) or 0
+end
+
+function tostr(var)
+	return (var and tostring(var)) or ""
+end
+
+function tobool(val, def)
+	val = tostring(val):lower()
+	if(val == "true" or val == "1") then return true
+	elseif(val == "false" or val == "0") then return false
+	else return def end
+end
+
+function formatDate(timestamp)
+	local tm = getRealTime(timestamp)
+	return ("%d-%02d-%02d %d:%02d"):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
+end
+
+function formatTimePeriod(t, decimals)
+	assert(t)
+	
+	local h = math.floor(t / 3600)
+	local m = math.floor((t % 3600) / 60)
+	local s = math.floor(t % 60)
+	local str = (h > 0 and h..":%02u:%02u" or "%u:%02u"):format(m, s)
+	
+	local dec = touint(decimals, 2)
+	if(dec > 0) then
+		local rest = math.floor((t % 1)*(10^dec))
+		str = str..(".%0"..dec.."u"):format(rest)
+	end
+	
+	return str
+end
+
+function formatNumber(num, decimals)
+	num = tonumber(num)
+	assert(num)
+	local n1, n2 = math.modf(num)
+	n1 = tostring(n1)
 	local buf = ""
-	for i = 0, math.ceil (n) - 1, 1 do
-		local a = i/(n - 1)
-		buf = buf..("#%02X%02X%02X"):format(r1*(1 - a) + r2*a, g1*(1 - a) + g2*a, b1*(1 - a) + b2*a)..str:sub(1 + i*part_len, (i + 1)*part_len)
+	
+	while(n1 ~= "") do
+		buf = n1:sub(-3).." "..buf
+		n1 = n1:sub(1, -4)
+	end
+	buf = buf:sub(1, -2)
+	if(decimals) then
+		return buf.."."..(n2..("0"):rep(decimals)):sub(1, decimals)
 	end
 	return buf
 end
 
-function addScreenMsg(text, player, ms, r, g, b)
-	assert(not ms or ms > 50)
+function formatMoney(money)
+	assert(money)
+	local str = tostring(math.floor(math.abs(money)))
+	local buf = ""
 	
-	local players = getElementsByType("player", player)
-	local textitem
-	
-	for i, player in ipairs(players) do
-		local pdata = Player.fromEl(player)
-		
-		if(not pdata.display) then
-			pdata.display = textCreateDisplay()
-			textDisplayAddObserver(pdata.display, player)
-			pdata.scrMsgs = {}
-		end
-		local msg = MuiGetMsg(text, player)
-		textitem = textCreateTextItem(msg, 0.5, 0.4 + #pdata.scrMsgs * 0.05, "medium", r or 255, g or 0, b or 0, 255, 3, "center")
-		table.insert(pdata.scrMsgs, textitem)
-		textDisplayAddText(pdata.display, textitem)
-		
-		if(ms) then
-			addPlayerTimer(removeScreenMsg, ms, 1, player, textitem)
-		end
+	while(str ~= "") do
+		buf = str:sub ( -3 )..","..buf
+		str = str:sub ( 1, -4 )
 	end
-	
-	return textitem
+	return ((tonumber ( money ) < 0 and "-") or "")..buf:sub(1, -2).." €"
 end
 
-function removeScreenMsg(msgItem, player)
-	local index = false
-	for i, textItem in ipairs(Player.fromEl(player).scrMsgs) do
-		if(index) then -- msgs under textItem
-			local x, y = textItemGetPosition(textItem)
-			textItemSetPosition(textItem, x, y - 0.05)
-		elseif(textItem == msgItem) then
-			index = i
-		end
+local _isPedDead = isPedDead
+function isPedDead(player)
+	if(Player and Player.fromEl(player) and Player.fromEl(player).is_console) then
+		return false -- console
 	end
-	assert(index)
-	table.remove(Player.fromEl(player).scrMsgs, index)
-	textDestroyTextItem(msgItem)
+	local state = getElementData(player, "state")
+	if(state and state ~= "alive") then
+		return true
+	end
+	return(state and state ~= "alive") or _isPedDead (player)
 end
 
-function addInternalEventHandler(eventtype, handler)
-	assert(eventtype and handler)
-	if(not g_InternalEventHandlers[eventtype]) then
-		g_InternalEventHandlers[eventtype] = {}
-	end
-	table.insert(g_InternalEventHandlers[eventtype], handler)
+function trimStr(str)
+	str = str:gsub("^%s+", "")
+	str = str:gsub("%s+$", "")
+	return str
 end
 
-function triggerClientInternalEvent(player, eventtype, source, ...)
-	assert(eventtype and isElement(source) and isElement(player))
-	
-	local players = getElementsByType("player", player)
-	for i, player in ipairs(players) do
-		local pdata = Player.fromEl(player)
-		if(pdata and pdata.sync) then
-			triggerClientEvent(player, "onEvent_"..g_ResName, source, eventtype, ...)
-		end
-	end
+function isPlayerAdmin(player)
+	local adminGroup = aclGetGroup("Admin")
+	local account = getPlayerAccount(player)
+	local accountName = getAccountName(account)
+	return (adminGroup and account and isObjectInACLGroup("user."..accountName, adminGroup))
 end
-
-------------
--- Events --
-------------
-
-addEventHandler("onEvent_"..g_ResName, g_Root, onEventHandler)

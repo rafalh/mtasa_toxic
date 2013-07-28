@@ -1,5 +1,4 @@
-Quaternion = {}
-Quaternion.__mt = {__index = {cls = Quaternion}}
+Quaternion = Class("Quaternion")
 
 function Quaternion.__mt.__index:transform(vec)
 	assert(vec.cls == Vector3)
@@ -64,19 +63,12 @@ function Quaternion.__mt:__tostring()
 	return "("..tostring(self[1]).." "..tostring(self[2]).." "..tostring(self[3]).." "..tostring(self[4])..")"
 end
 
-function Quaternion.__mt.__concat(a, b)
-	return tostring(a)..tostring(b)
+function Quaternion.__mt.__index:init(x, y, z, w)
+	self[1] = x or 0
+	self[2] = y or 0
+	self[3] = z or 0
+	self[4] = w or 0
 end
-
--- Allow creating vectors by calling Quaternion(x, y, z)
-local mt = {}
-function mt:__call(x, y, z, w)
-	return setmetatable({x or 0, y or 0, z or 0, w or 0}, Quaternion.__mt)
-end
-function mt:__tostring()
-	return "Quaternion"
-end
-setmetatable(Quaternion, mt)
 
 function Quaternion.fromRot(axis, angle)
 	assert(axis.cls == Vector3)
@@ -116,4 +108,7 @@ end
 Quaternion.IDENTITY = Quaternion(0, 0, 0, 1)
 
 -- Simple test
-assert(Quaternion.IDENTITY*Quaternion.IDENTITY == Quaternion.IDENTITY)
+#TEST = true
+#if(TEST) then
+	assert(Quaternion.IDENTITY*Quaternion.IDENTITY == Quaternion.IDENTITY)
+#end

@@ -1,5 +1,4 @@
-Vector2 = {}
-Vector2.__mt = {__index = {cls = Vector2}}
+Vector2 = Class("Vector2")
 
 function Vector2.__mt.__index:len()
 	return (self[1]^2 + self[2]^2)^0.5
@@ -45,19 +44,16 @@ function Vector2.__mt:__tostring()
 	return "("..tostring(self[1]).." "..tostring(self[2])..")"
 end
 
-function Vector2.__mt.__concat(a, b)
-	return tostring(a)..tostring(b)
+function Vector2.__mt.__index:init(x, y)
+	self[1] = x or 0
+	self[2] = y or 0
 end
-
--- Allow creating vectors by calling Vector2(x, y, z)
-local mt = {}
-function mt:__call(x, y)
-	return setmetatable({x or 0, y or 0}, Vector2.__mt)
-end
-function mt:__tostring()
-	return "Vector2"
-end
-setmetatable(Vector2, mt)
 
 -- Simple test
---assert(((Vector2(1, 0) + Vector2(0, 1)) * 2) == Vector2(2, 2))
+#TEST = false
+#if(TEST) then
+	local vx = Vector2(1, 0)
+	local vy = Vector2(0, 1)
+	assert(((vx + vy) * 2) == Vector2(2, 2))
+	assert(tostring(vx) == "(1 0)")
+#end

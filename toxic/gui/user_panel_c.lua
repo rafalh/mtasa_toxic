@@ -29,17 +29,6 @@ local g_PanelH
 
 -- Local functions
 
-function UpBack()
-	if(VIEW_W > 0) then return end
-	
-	GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
-	if(g_CurrentItem.onHide) then
-		g_CurrentItem.onHide(g_CurrentItem.container)
-	end
-	g_CurrentItem = false
-	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
-end
-
 local function UpHide()
 	--outputDebugString("UpHide", 3)
 	GaFadeOut(g_Wnd, FADE_DELAY)
@@ -129,9 +118,9 @@ end
 
 local function UpCreateGui()
 	local w = ITEM_W * PANEL_COLUMNS + math.max(VIEW_W + 10, 20)
-	local h = 90 + ITEM_H * math.ceil ( #g_Items / PANEL_COLUMNS )
-	local x = ( g_ScreenSize[1] - w ) / 2
-	local y = ( g_ScreenSize[2] - h ) / 2
+	local h = 90 + ITEM_H * math.ceil(#g_Items / PANEL_COLUMNS)
+	local x = (g_ScreenSize[1] - w) / 2
+	local y = (g_ScreenSize[2] - h) / 2
 	g_Wnd = guiCreateWindow(x, y, w, h, "User Panel", false)
 	guiSetVisible(g_Wnd, false)
 	guiWindowSetSizable(g_Wnd, false)
@@ -219,6 +208,17 @@ function UpUpdate(item)
 	
 	g_List:setItemImg(item.idx, item.img)
 	g_List:setItemTooltip(item.idx, item.tooltip)
+end
+
+function UpBack()
+	if(VIEW_W > 0) then return end
+	
+	GaFadeOut(g_CurrentItem.wnd, FADE_DELAY)
+	if(g_CurrentItem.onHide) then
+		g_CurrentItem.onHide(g_CurrentItem.container)
+	end
+	g_CurrentItem = false
+	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
 end
 
 ------------

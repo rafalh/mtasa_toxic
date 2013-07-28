@@ -6,21 +6,23 @@
 	
 	<script src="debug.lua" type="shared" />
 	
-	<script src="utils/common_sc.lua" type="shared" />
-	<script src="utils/common.lua" type="server" />
+	<script src="utils/table.lua" type="shared" />
+	<script src="utils/class.lua" type="shared" />
+	<script src="utils/common.lua" type="shared" />
+	<script src="utils/common_s.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
 	<script src="utils/outputChat_s.lua" type="server" />
 	<script src="utils/outputChat_c.lua" type="client" />
-	<script src="utils/vector2_c.lua" type="client" />
-	<script src="utils/vector3_c.lua" type="client" />
+	<script src="utils/vector2.lua" type="client" />
+	<script src="utils/vector3.lua" type="client" />
 	<script src="utils/quaternion.lua" type="client" />
-	<script src="utils/rect_c.lua" type="client" />
+	<script src="utils/rect.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />
 	<script src="utils/timers.lua" type="server" />
 	<script src="utils/binary.lua" type="server" />
 	<script src="utils/worker.lua" type="server" />
 	<script src="utils/file.lua" type="server" />
-	<script src="utils/rpc_sc.lua" type="shared" />
+	<script src="utils/rpc.lua" type="shared" />
 	
 	<script src="start.lua" type="server" />
 	<script src="settings.lua" type="server" />
