@@ -2,7 +2,7 @@ local g_Panel = false
 local g_RadioImg, g_RadioName
 local g_VolumeImg, g_VolumeBar
 local g_List, g_TurnOffBtn
-local g_Sound, g_Url, g_Volume = false, false, 100
+local g_Sound, g_Url = false, false
 local g_Muted, g_Filter = false, ""
 local g_IgnoreFilterChange = true
 local g_LastWarning = 0
@@ -51,7 +51,7 @@ local function startRadio(url)
 	if(not g_Muted) then
 		g_Sound = playSound(url, true)
 		if(g_Sound) then
-			setSoundVolume(g_Sound, g_Volume / 100)
+			setSoundVolume(g_Sound, Settings.radioVolume / 100)
 		end
 	end
 	
@@ -146,7 +146,7 @@ local function createGui(panel)
 	g_VolumeImg = guiCreateStaticImage(65, 30, 24, 24, "radio/img/volume.png", false, panel)
 	addEventHandler("onClientGUIClick", g_VolumeImg, onVolumeClick, false)
 	g_VolumeBar = guiCreateScrollBar(95, 32, w - 105, 20, true, false, panel)
-	guiScrollBarSetScrollPosition(g_VolumeBar, g_Volume)
+	guiScrollBarSetScrollPosition(g_VolumeBar, Settings.radioVolume)
 	addEventHandler("onClientGUIScroll", g_VolumeBar, onVolumeChange, false)
 	
 	g_SearchBox = guiCreateEdit(10, 65, 150, 25, MuiGetMsg("Search..."), false, panel)
@@ -206,7 +206,7 @@ local function onRadioSwitch(channel)
 end
 
 local function checkSounds()
-	if(not g_Sound or g_Volume == 0) then return end
+	if(not g_Sound or Settings.radioVolume == 0) then return end
 	
 	-- find long sounds
 	local found = false
@@ -227,7 +227,7 @@ local function checkSounds()
 		setSoundVolume(g_Sound, 0)
 		outputChatBox("Radio has been temporary disabled because other music source has been detected!", 255, 0, 0)
 	elseif(real_volume == 0 and not found) then
-		setSoundVolume(g_Sound, g_Volume / 100)
+		setSoundVolume(g_Sound, Settings.radioVolume / 100)
 	end
 end
 
