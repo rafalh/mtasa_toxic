@@ -78,7 +78,7 @@ CmdRegister("ban24h", CmdBan24h, "resource."..g_ResName..".ban24h", "Bans player
 
 local function CmdMute(message, arg)
 	local player = (#arg >= 2 and Player.find(arg[2]))
-	local sec = tonumber(arg[3]) or Settings.mute_time
+	local sec = touint(arg[3]) or Settings.mute_time
 	local admin = Player.fromEl(source)
 	if(player) then
 		local reason = "Muted by "..admin:getAccountName()
