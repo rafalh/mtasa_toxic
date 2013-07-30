@@ -199,7 +199,13 @@ function ListView.onMouseClick()
 	local self, item = ListView.getItemFromElement(source)
 	if(not self) then return end
 	if(self.onClickHandler) then
-		self.onClickHandler(item.id)
+		if(type(self.onClickHandler) == "table") then
+			local obj = self.onClickHandler[1]
+			local methodName = self.onClickHandler[2]
+			obj[methodName](obj, item.id)
+		else
+			self.onClickHandler(item.id)
+		end
 	end
 end
 

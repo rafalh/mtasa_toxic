@@ -243,3 +243,13 @@ function GUI.create(tpl, x, y, w, h, parent)
 	GUI.wndToObj[self.wnd] = self
 	return self
 end
+
+function GUI.getTestWidth(text, font)
+	if(not GUI.tempLabel) then
+		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, "", false)
+		guiSetVisible(GUI.tempLabel, false)
+	end
+	guiSetFont(GUI.tempLabel, font or "default")
+	guiSetText(GUI.tempLabel, text)
+	return guiLabelGetTextExtent(GUI.tempLabel)
+end

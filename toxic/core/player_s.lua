@@ -112,6 +112,11 @@ function Player.__mt.__index:setAccount(account)
 	self.guest = not self.id
 	self.loginTimestamp = now
 	
+	self.acl:update(account)
+	if(self.sync) then
+		self.acl:send(self)
+	end
+	
 	self.accountData = AccountData.create(self.id)
 	self.accountData:set("online", 1, true)
 	self.accountData:set("serial", self:getSerial(), true)
@@ -164,6 +169,7 @@ function Player.create(el)
 	self.join_time = now
 	self.timers = {}
 	self.cp_times = false
+	self.acl = AccessList()
 	
 	-- get player room
 	local roomEl = g_Root

@@ -135,22 +135,22 @@
 		<label id="mapsBought" x="120" y="210" rw="100" w="-120" h="15" text="" />
 	</label>
 	
-	<window id="transPanel" title="Translator panel" rx="50" x="-160" ry="50" y="-140" w="600" h="400">
-		<image x="10" y="25" w="32" h="32" src="img/beta.png" />
-		<label x="45" y="30" w="55" h="20" text="Language:" />
-		<combobox id="langs" x="100" y="25" w="120" h="160" />
+	<window id="transPanel" title="Translator panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440">
+		<image x="10" y="65" w="32" h="32" src="img/beta.png" />
+		<label x="45" y="70" w="55" h="20" text="Language:" />
+		<combobox id="langs" x="100" y="65" w="120" h="160" />
 		
-		<button id="update" rx="100" x="-220" y="25" w="120" h="25" text="Update" enabled="false" />
-		<button id="close" rx="100" x="-90" y="25" w="80" h="25" text="Close" />
+		<button id="update" rx="100" x="-220" y="65" w="120" h="25" text="Update" enabled="false" />
+		<button id="close" rx="100" x="-90" y="65" w="80" h="25" text="Close" />
 		
-		<list id="msgList" x="10" y="60" rw="100" w="-110" rh="100" h="-70" sorting="false">
+		<list id="msgList" x="10" y="100" rw="100" w="-110" rh="100" h="-70" sorting="false">
 			<column id="idCol" text="ID" w="0.45" />
 			<column id="valCol" text="Value" w="0.5" />
 		</list>
 		
-		<button id="add" rx="100" x="-90" y="60" w="80" h="25" text="Add" />
-		<button id="edit" rx="100" x="-90" y="90" w="80" h="25" text="Edit" />
-		<button id="del" rx="100" x="-90" y="120" w="80" h="25" text="Delete" />
+		<button id="add" rx="100" x="-90" y="100" w="80" h="25" text="Add" />
+		<button id="edit" rx="100" x="-90" y="130" w="80" h="25" text="Edit" />
+		<button id="del" rx="100" x="-90" y="160" w="80" h="25" text="Delete" />
 	</window>
 	
 	<window id="transEdit" title="Edit translation" rx="50" x="-160" ry="50" y="-140" w="320" h="170">
@@ -167,10 +167,10 @@
 		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
-	<window id="teamsAdmin" title="Teams Admin Panel" rx="50" x="-160" ry="50" y="-140" w="600" h="400">
-		<button id="close" rx="100" x="-90" y="25" w="80" h="25" text="Close" />
+	<window id="teamsAdmin" title="Teams Admin Panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440">
+		<button id="close" rx="100" x="-90" y="65" w="80" h="25" text="Close" />
 		
-		<list id="teamsList" x="10" y="25" rw="100" w="-110" rh="100" h="-40" sorting="false">
+		<list id="teamsList" x="10" y="65" rw="100" w="-110" rh="100" h="-40" sorting="false">
 			<column id="nameCol" text="Name" w="0.45" />
 			<column id="typeCol" text="Type" w="0.08" />
 			<column id="tagCol" text="Tag/ACL" w="0.12" />
@@ -178,12 +178,12 @@
 			<column id="lastUsageCol" text="Last Usage" w="0.2" />
 		</list>
 		
-		<button id="add" rx="100" x="-90" y="70" w="80" h="25" text="Add" />
-		<button id="del" rx="100" x="-90" y="100" w="80" h="25" text="Delete" />
+		<button id="add" rx="100" x="-90" y="110" w="80" h="25" text="Add" />
+		<button id="del" rx="100" x="-90" y="140" w="80" h="25" text="Delete" />
 		
-		<button id="up" rx="100" x="-90" y="140" w="80" h="25" text="Up" />
-		<button id="down" rx="100" x="-90" y="170" w="80" h="25" text="Down" />
+		<button id="up" rx="100" x="-90" y="180" w="80" h="25" text="Up" />
+		<button id="down" rx="100" x="-90" y="210" w="80" h="25" text="Down" />
 		
-		<button id="update" rx="100" x="-90" y="210" w="80" h="35" text="Update players" />
+		<button id="update" rx="100" x="-90" y="250" w="80" h="35" text="Update players" />
 	</window>
 </gui>

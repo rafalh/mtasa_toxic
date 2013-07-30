@@ -29,6 +29,8 @@
 	<script src="core/database_s.lua" type="server" />
 	<config src="conf/database.xml" type="server" />
 	
+	<script src="core/access_s.lua" type="server" />
+	<script src="core/access_c.lua" type="client" />
 	<script src="core/main_s.lua" type="server" />
 	<script src="core/main_c.lua" type="client" />
 	<script src="core/player_s.lua" type="server" />
@@ -54,6 +56,9 @@
 	<script src="gui/anim_c.lua" type="client" />
 	<script src="gui/help_c.lua" type="client" />
 	<script src="gui/user_panel_c.lua" type="client" />
+	<script src="gui/iconPanel_c.lua" type="client" />
+	<script src="gui/panelPath_c.lua" type="client" />
+	<script src="gui/adminPanel_c.lua" type="client" />
 	<script src="gui/advert_c.lua" type="client" />
 	<script src="gui/listView_c.lua" type="client" />
 	<script src="gui/tooltip_c.lua" type="client" />

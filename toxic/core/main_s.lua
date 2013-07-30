@@ -34,6 +34,9 @@ SerialsTable = Database.Table{
 
 addEvent("main.onPlayerReady", true)
 
+-- Some custom rights
+AccessRight("resource."..g_ResName..".admin")
+
 local function isNickChangeAllowed(player, name)
 	local namePlain = name:gsub("#%x%x%x%x%x%x", "")
 	if(namePlain == "") then
@@ -226,6 +229,8 @@ local function onPlayerReady(localeId)
 	
 	pdata.sync = true -- set sync to true just before init event
 	triggerClientInternalEvent(client, $(EV_CLIENT_INIT), g_Root, pdata.id, globalSettings, pdata.new, localeId)
+	
+	pdata.acl:send(pdata)
 	
 	if(BtSendMapInfo) then
 		BtSendMapInfo(pdata.room, pdata.new, client)

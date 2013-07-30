@@ -92,3 +92,9 @@ function table.dump(tbl, _stack)
 	table.remove(_stack)
 	return "{"..table.concat(values, ", ").."}"
 end
+
+function table.foreach(tbl, fn)
+	for k, v in pairs(tbl) do
+		fn(v)
+	end
+end

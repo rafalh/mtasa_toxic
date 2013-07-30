@@ -8,23 +8,23 @@
 -- Global variables --
 ----------------------
 
-g_Me = getLocalPlayer ()
+g_Me = getLocalPlayer()
 g_MyId = 0
-g_ScreenSize = { guiGetScreenSize () }
+g_ScreenSize = {guiGetScreenSize()}
 g_InternalEventHandlers = {}
 
 ---------------------
 -- Local variables --
 ---------------------
 
-local g_ThisRes = getThisResource ()
-local g_ThisResName = getResourceName ( g_ThisRes )
+local g_ThisRes = getThisResource()
+local g_ThisResName = getResourceName(g_ThisRes)
 
 -------------------
 -- Custom events --
 -------------------
 
-addEvent ( "onEvent_"..g_ThisResName, true )
+addEvent("onEvent_"..g_ThisResName, true)
 
 --------------------------------
 -- Local function definitions --

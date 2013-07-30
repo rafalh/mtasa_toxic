@@ -1,23 +1,23 @@
-addEvent("main.onTransPanelReq", true)
 addEvent("main.onLocaleDataReq", true)
 addEvent("main.onChangeLocaleReq", true)
+
+local right = AccessRight("mui")
 
 local function checkPlayerAccess(player, code)
 	return isPlayerAdmin(player) or hasObjectPermissionTo(player, "resource."..g_ResName..".translate_"..code, false)
 end
 
-local function onTransPanelReq()
+mui = {}
+function mui.getLangCodes()
 	local langCodes = {}
 	for i, locale in LocaleList.ipairs() do
 		if(locale.code ~= "en" and checkPlayerAccess(client, locale.code)) then
 			table.insert(langCodes, locale.code)
 		end
 	end
-	
-	if(#langCodes > 0) then
-		triggerClientEvent(client, "main.openTransPanel", g_ResRoot, langCodes)
-	end
+	return langCodes
 end
+allowRPC('mui.getLangCodes')
 
 local function loadLocaleFile(path)
 	local node = xmlLoadFile(path)
@@ -91,7 +91,6 @@ local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
 end
 
 addInitFunc(function()
-	addEventHandler("main.onTransPanelReq", g_ResRoot, onTransPanelReq)
 	addEventHandler("main.onLocaleDataReq", g_ResRoot, onLocaleDataReq)
 	addEventHandler("main.onChangeLocaleReq", g_ResRoot, onChangeLocaleReq)
 end)

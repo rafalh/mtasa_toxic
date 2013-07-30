@@ -60,6 +60,13 @@ local function setupACL()
 		end
 	end
 	
+	for i, right in ipairs(AccessRight.list) do
+		local rightName = "resource."..g_ResName.."."..right.name
+		if(not aclGetRight(acl, rightName)) then
+			table.insert(rightsToAdd, rightName)
+		end
+	end
+	
 	if(#rightsToAdd > 0) then
 		if(hasObjectPermissionTo(resource, "function.aclSetRight") and hasObjectPermissionTo(resource, "function.aclSave")) then
 			for i, right in ipairs(rightsToAdd) do

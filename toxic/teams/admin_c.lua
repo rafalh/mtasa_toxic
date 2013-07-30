@@ -1,6 +1,16 @@
 local g_GUI = false
-local g_Teams = {}
 local g_CtxEdit
+local TeamsAdmin = {}
+TeamsAdmin.pathName = "Teams"
+
+AdminPanel:addItem{
+	name = "Teams",
+	right = AccessRight("teams"),
+	exec = function()
+		TeamsAdmin:show()
+		return true
+	end,
+}
 
 local function updateRow(row, teamInfo)
 	local tagOrGroup = teamInfo.tag == "" and teamInfo.aclGroup or teamInfo.tag
@@ -40,18 +50,6 @@ local function updateList(teams, selectedID, selectedCol)
 			guiGridListSetSelectedItem(g_GUI.teamsList, row, selectedCol)
 		end
 	end
-end
-
-local function closeTeamsAdmin()
-	g_GUI:destroy()
-	g_GUI = false
-	
-	if(g_CtxEdit) then
-		destroyElement(g_CtxEdit)
-		g_CtxEdit = false
-	end
-	
-	showCursor(false)
 end
 
 local function onDelResult(row, success)
@@ -204,15 +202,23 @@ local function onListDblClick(btn, state, absX, absY)
 	end
 end
 
-function openTeamsAdmin(teams)
-	if(g_GUI) then return end
+function TeamsAdmin:isVisible()
+	return g_GUI and true
+end
+
+function TeamsAdmin:show()
+	if(self:isVisible()) then return end
+	
+	AdminPath:hide()
+	AdminPath = PanelPath(AdminPanel, TeamsAdmin)
 	
 	g_GUI = GUI.create("teamsAdmin")
-	g_Teams = teams
+	
+	g_GUI.pathView = PanelPathView(AdminPath, Vector2(10, 25), g_GUI.wnd)
 	
 	guiGridListSetSelectionMode(g_GUI.teamsList, 2)
 	
-	addEventHandler("onClientGUIClick", g_GUI.close, closeTeamsAdmin, false)
+	addEventHandler("onClientGUIClick", g_GUI.close, function() TeamsAdmin:hide() end, false)
 	addEventHandler("onClientGUIClick", g_GUI.add, onAddClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.del, onDelClick, false)
 	addEventHandler("onClientGUIClick", g_GUI.up, onUpClick, false)
@@ -222,5 +228,19 @@ function openTeamsAdmin(teams)
 	
 	showCursor(true)
 	
-	updateList(teams)
+	RPC("Teams.getList"):onResult(updateList):exec()
+end
+
+function TeamsAdmin:hide()
+	if(not self:isVisible()) then return end
+	
+	g_GUI:destroy()
+	g_GUI = false
+	
+	if(g_CtxEdit) then
+		destroyElement(g_CtxEdit)
+		g_CtxEdit = false
+	end
+	
+	showCursor(false)
 end

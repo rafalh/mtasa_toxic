@@ -1,11 +1,13 @@
-local TEAMS_RIGHT = "resource."..g_ResName..".teams"
+local right = AccessRight("teams")
 
-local function Teams_adminCmd()
-	RPC("openTeamsAdmin", Teams.list):setClient(source):exec()
+function Teams.getList()
+	if(not right:check(client)) then return false end
+	return Teams.list
 end
+allowRPC('Teams.getList')
 
 function Teams.updateItem(teamInfo)
-	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return false end
+	if(not right:check(client)) then return false end
 	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
 	
 	if(teamInfo.id) then
@@ -46,7 +48,7 @@ end
 allowRPC('Teams.updateItem')
 
 function Teams.delItem(id)
-	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false)) then return false end
+	if(not right:check(client)) then return false end
 	assert(id)
 	
 	local teamInfo = Teams.fromID[id]
@@ -66,7 +68,7 @@ allowRPC('Teams.delItem')
 
 function Teams.changePriority(id, up)
 	local teamInfo = id and Teams.fromID[id]
-	if(not hasObjectPermissionTo(client, TEAMS_RIGHT, false) or not teamInfo) then return false end
+	if(not right:check(client) or not teamInfo) then return false end
 	
 	local i = table.find(Teams.list, teamInfo)
 	local j = up and (i - 1) or (i + 1)
@@ -85,5 +87,3 @@ function Teams.changePriority(id, up)
 	return Teams.list
 end
 allowRPC('Teams.changePriority')
-
-CmdRegister("teamsadmin", Teams_adminCmd, TEAMS_RIGHT)
