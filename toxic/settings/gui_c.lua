@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 -- Local variables
 
@@ -14,7 +14,7 @@ local SAVE_BTN = false
 
 local SettingsPanel = {
 	name = "Settings",
-	img = "settings/icon.png",
+	img = 'settings/icon.png',
 	tooltip = "Adjust settings to your needs",
 	height = 420,
 }
@@ -53,14 +53,14 @@ function SettingsPanel.initGui(panel)
 	local x = w - 90
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(x, h - 35, 80, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		addEventHandler('onClientGUIClick', btn, UpBack, false)
 		x = x - 90
 		paneH = h - 50
 	end
 	
 	if(SAVE_BTN) then
 		local btn = guiCreateButton(x, h - 35, 80, 25, "Save", false, panel)
-		addEventHandler("onClientGUIClick", btn, SettingsPanel.onSaveClick, false)
+		addEventHandler('onClientGUIClick', btn, SettingsPanel.onSaveClick, false)
 		paneH = h - 50
 	end
 	
@@ -68,7 +68,7 @@ function SettingsPanel.initGui(panel)
 end
 
 function invalidateSettingsGui()
-	--outputDebugString("invalidateSettingsGui", 3)
+	--outputDebugString('invalidateSettingsGui', 3)
 	if(not g_Panel) then return end
 	
 	destroyElement(g_ScrollPane)

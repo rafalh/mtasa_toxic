@@ -6,7 +6,7 @@ local g_Panel = nil
 
 local AboutPanel = {
 	name = "About",
-	img = "about/icon.png",
+	img = 'about/icon.png',
 	tooltip = "Learn more about this server",
 }
 
@@ -17,7 +17,7 @@ local AboutPanel = {
 local function initAboutPane(x, y, w, h, panel)
 	local scrollPane = guiCreateScrollPane(x, y, w, h, false, panel)
 	
-	local node = xmlLoadFile("conf/about.xml")
+	local node = xmlLoadFile('conf/about.xml')
 	if(not node) then return false end
 	
 	local subnodes = xmlNodeGetChildren(node)
@@ -38,7 +38,7 @@ local function initAboutPane(x, y, w, h, panel)
 		end
 		
 		local br = false
-		if(col == 1 and i > c and text == "") then
+		if(col == 1 and i > c and text == '') then
 			br = true
 			col = 2
 		end
@@ -46,12 +46,12 @@ local function initAboutPane(x, y, w, h, panel)
 		local styleChanged = prevAttr and attr and (prevAttr.bold ~= attr.bold or prevAttr.color ~= attr.color)
 		
 		if(styleChanged or br or not subnode) then
-			local linesStr = table.concat(lines, "\n")
+			local linesStr = table.concat(lines, '\n')
 			
 			local label = guiCreateLabel(x, y, 160, 15, linesStr, false, scrollPane)
 			
-			if(prevAttr.bold == "true") then
-				guiSetFont(label, "default-bold-small")
+			if(prevAttr.bold == 'true') then
+				guiSetFont(label, 'default-bold-small')
 			end
 			
 			if(prevAttr.color) then
@@ -84,16 +84,16 @@ end
 local function createGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 200, 64, "about/logo.jpg", false, panel)
+	guiCreateStaticImage(10, 10, 200, 64, 'about/logo.jpg', false, panel)
 	
 	local label = guiCreateLabel(10, 80, w - 20, 15, "About ToxiC Server", false, panel)
 	guiLabelSetColor(label, 0, 255, 0)
-	guiSetFont(label, "default-bold-small")
+	guiSetFont(label, 'default-bold-small')
 	
 	local paneH = h - 110
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 90, h - 35, 80, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		addEventHandler('onClientGUIClick', btn, UpBack, false)
 		paneH = paneH - 40
 	end
 	

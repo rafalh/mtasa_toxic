@@ -4,9 +4,9 @@ Map.idCache = {}
 
 -- Used by map.lua and map_fixing.lua
 function setMetaSetting(node, setting, value)
-	local subnode = xmlFindChild(node, "settings", 0)
+	local subnode = xmlFindChild(node, 'settings', 0)
 	if(not subnode) then
-		subnode = xmlCreateChild(node, "settings")
+		subnode = xmlCreateChild(node, 'settings')
 		if(not subnode) then
 			return false
 		end
@@ -16,14 +16,14 @@ function setMetaSetting(node, setting, value)
 	local i = 0
 	
 	while(true) do
-		local subnode2 = xmlFindChild(subnode, "setting", i)
+		local subnode2 = xmlFindChild(subnode, 'setting', i)
 		if(not subnode2) then break end
 		i = i + 1
 		
-		local name = xmlNodeGetAttribute(subnode2, "name")
-		if(name == setting or name == "#"..setting or name == "@"..setting or name == "*"..setting) then
+		local name = xmlNodeGetAttribute(subnode2, 'name')
+		if(name == setting or name == '#'..setting or name == '@'..setting or name == '*'..setting) then
 			if(value) then
-				success = xmlNodeSetAttribute(subnode2, "value", toJSON(value))
+				success = xmlNodeSetAttribute(subnode2, 'value', toJSON(value))
 			else
 				success = xmlDestroyNode(subnode2)
 				i = i - 1
@@ -33,11 +33,11 @@ function setMetaSetting(node, setting, value)
 	end
 	
 	if(not found) then
-		subnode2 = xmlCreateChild(subnode, "setting")
+		subnode2 = xmlCreateChild(subnode, 'setting')
 		if(subnode2) then
 			success =
-				xmlNodeSetAttribute(subnode2, "name", "#"..setting) and
-				xmlNodeSetAttribute(subnode2, "value", toJSON(value))
+				xmlNodeSetAttribute(subnode2, 'name', '#'..setting) and
+				xmlNodeSetAttribute(subnode2, 'value', toJSON(value))
 		else
 			success = false
 		end
@@ -47,18 +47,18 @@ function setMetaSetting(node, setting, value)
 end
 
 function getMetaSetting(node, setting)
-	local subnode = xmlFindChild(node, "settings", 0)
+	local subnode = xmlFindChild(node, 'settings', 0)
 	if(not subnode) then return nil end
 	
 	local i = 0
 	while(true) do
-		local subnode2 = xmlFindChild(subnode, "setting", i)
+		local subnode2 = xmlFindChild(subnode, 'setting', i)
 		if(not subnode2) then break end
 		i = i + 1
 		
-		local name = xmlNodeGetAttribute(subnode2, "name")
-		if(name == setting or name == "#"..setting or name == "@"..setting or name == "*"..setting) then
-			local value = xmlNodeGetAttribute(subnode2, "value")
+		local name = xmlNodeGetAttribute(subnode2, 'name')
+		if(name == setting or name == '#'..setting or name == '@'..setting or name == '*'..setting) then
+			local value = xmlNodeGetAttribute(subnode2, 'value')
 			return fromJSON(value) or value
 		end
 	end
@@ -67,7 +67,7 @@ function getMetaSetting(node, setting)
 end
 
 function Map:getName()
-	return self:getInfo("name") or self.resName
+	return self:getInfo('name') or self.resName
 end
 
 function Map:getInfo(name)
@@ -75,9 +75,9 @@ function Map:getInfo(name)
 		return getResourceInfo(self.res, name)
 	end
 	
-	local mapMgrRes = getResourceFromName("mapmgr")
-	if(self.path and mapMgrRes and getResourceState(mapMgrRes) == "running") then
-		return call(mapMgrRes, "getMapInfo", self.path, name)
+	local mapMgrRes = getResourceFromName('mapmgr')
+	if(self.path and mapMgrRes and getResourceState(mapMgrRes) == 'running') then
+		return call(mapMgrRes, 'getMapInfo', self.path, name)
 	end
 	
 	return false
@@ -88,10 +88,10 @@ function Map:setInfo(attr, value)
 	
 	if ( not setResourceInfo ( self.res, attr, value ) ) then return false end
 	
-	local node = xmlLoadFile ( self:getPath().."/meta.xml" )
+	local node = xmlLoadFile ( self:getPath()..'/meta.xml' )
 	if ( not node ) then return false end
 	
-	local subnode = xmlFindChild ( node, "info", 0 )
+	local subnode = xmlFindChild ( node, 'info', 0 )
 	if ( not subnode ) then xmlUnloadFile ( node ) return false end
 	
 	xmlNodeSetAttribute ( subnode, attr, value )
@@ -103,12 +103,12 @@ end
 
 function Map:getSetting(name)
 	if(not self.res) then return end
-	return get(self.resName.."."..name)
+	return get(self.resName..'.'..name)
 end
 
 function Map:setSetting(setting, value)
 	-- Note: this doesn't work for ZIP resources and I have no idea how to fix it...
-	local node = xmlLoadFile ( self:getPath().."/meta.xml" )
+	local node = xmlLoadFile ( self:getPath()..'/meta.xml' )
 	if ( not node ) then
 		return false
 	end
@@ -126,14 +126,14 @@ end
 function Map:start(room)
 	assert(room)
 	
-	local mapMgrRes = getResourceFromName("mapmanager")
-	if(mapMgrRes and getResourceState(mapMgrRes) == "running") then
-		return call(mapMgrRes, "changeGamemodeMap", self.res)
+	local mapMgrRes = getResourceFromName('mapmanager')
+	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
+		return call(mapMgrRes, 'changeGamemodeMap', self.res)
 	end
 	
-	local roomMgrRes = getResourceFromName("roommgr")
-	if(roomMgrRes and getResourceState(roomMgrRes) == "running") then
-		return call(roomMgrRes, "startRoomMap", room.el, self.path)
+	local roomMgrRes = getResourceFromName('roommgr')
+	if(roomMgrRes and getResourceState(roomMgrRes) == 'running') then
+		return call(roomMgrRes, 'startRoomMap', room.el, self.path)
 	end
 	
 	return false
@@ -146,11 +146,11 @@ function Map:getId()
 	end
 	
 	local map = (self.res and getResourceName ( self.res )) or self.path
-	local rows = DbQuery("SELECT map FROM "..MapsTable.." WHERE name=? LIMIT 1", map)
+	local rows = DbQuery('SELECT map FROM '..MapsTable..' WHERE name=? LIMIT 1', map)
 	if (not rows or not rows[1]) then
 		local now = getRealTime().timestamp
-		DbQuery("INSERT INTO "..MapsTable.." (name, added_timestamp) VALUES(?, ?)", map, now)
-		rows = DbQuery("SELECT map FROM "..MapsTable.." WHERE name=? LIMIT 1", map)
+		DbQuery('INSERT INTO '..MapsTable..' (name, added_timestamp) VALUES(?, ?)', map, now)
+		rows = DbQuery('SELECT map FROM '..MapsTable..' WHERE name=? LIMIT 1', map)
 	end
 	
 	map_id = rows[1].map
@@ -192,9 +192,9 @@ function Map:isForbidden(room)
 	end
 	
 	local mapId = self:getId()
-	local rows = DbQuery ("SELECT removed FROM "..MapsTable.." WHERE map=? LIMIT 1", mapId)
+	local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
 	
-	if(rows[1].removed ~= "") then
+	if(rows[1].removed ~= '') then
 		return "This map has been removed!"
 	end
 	
@@ -207,25 +207,25 @@ function Map:getElements(type)
 end
 
 function Map:getPath()
-	return ":"..getResourceName(self.res)
+	return ':'..getResourceName(self.res)
 end
 
 function Map:getRespawn()
-	local respawnStr = self:getSetting("respawn") or get("race.respawnmode")
-	return respawnStr ~= "none"
+	local respawnStr = self:getSetting('respawn') or get('race.respawnmode')
+	return respawnStr ~= 'none'
 end
 
 function Map.create(res)
 	local self = setmetatable({}, Map.__mt)
 	
 	assert(res)
-	if(type(res) == "userdata") then
+	if(type(res) == 'userdata') then
 		self.res = res
 		self.resRoot = getResourceRootElement(res)
 		self.resName = getResourceName(res)
 	else
 		self.path = res
-		assert(type(self.path) == "string", type(self.path))
+		assert(type(self.path) == 'string', type(self.path))
 	end
 	
 	return self

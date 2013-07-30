@@ -66,7 +66,7 @@ local function renderAnim()
 	local dt = ticks - g_StartTicks
 	
 	if(dt >= 30000) then
-		removeEventHandler("onClientRender", root, renderAnim)
+		removeEventHandler('onClientRender', root, renderAnim)
 	end
 	
 	local bgClr = tocolor(0, 0, 0, math.min(dt/4, (30000-dt)/4, 128))
@@ -77,9 +77,9 @@ local function renderAnim()
 	local shadowClr = tocolor(0, 0, 0, 128)
 	local scale = math.min(4 + dt/2000, 5.5)
 	local tm = getRealTime()
-	local text = "HAPPY NEW YEAR\n"..tostring(1900+tm.year)
-	dxDrawText(text, scale/2, scale/2, g_ScreenSize[1]+scale/2, g_ScreenSize[2]+scale/2, shadowClr, scale, "bankgothic", "center", "center", false, false, true, false, true)
-	dxDrawText(text, 0, 0, g_ScreenSize[1], g_ScreenSize[2], clr, scale, "bankgothic", "center", "center", false, false, true, false, true)
+	local text = 'HAPPY NEW YEAR\n'..tostring(1900+tm.year)
+	dxDrawText(text, scale/2, scale/2, g_ScreenSize[1]+scale/2, g_ScreenSize[2]+scale/2, shadowClr, scale, 'bankgothic', 'center', 'center', false, false, true, false, true)
+	dxDrawText(text, 0, 0, g_ScreenSize[1], g_ScreenSize[2], clr, scale, 'bankgothic', 'center', 'center', false, false, true, false, true)
 	
 	local frameDelta = g_FrameTicks and ticks - g_FrameTicks or 0
 	local i = 1
@@ -113,19 +113,19 @@ local function renderCountDown()
 		local shadowClr = tocolor(0, 0, 0, 128)
 		local scale = dtSec/30
 		local text = tostring(10 - sec)
-		dxDrawText(text, scale/2, scale/2, g_ScreenSize[1]+scale/2, g_ScreenSize[2]+scale/2, shadowClr, scale, "bankgothic", "center", "center", false, false, true, false, true)
-		dxDrawText(text, 0, 0, g_ScreenSize[1], g_ScreenSize[2], clr, scale, "bankgothic", "center", "center", false, false, true, false, true)
+		dxDrawText(text, scale/2, scale/2, g_ScreenSize[1]+scale/2, g_ScreenSize[2]+scale/2, shadowClr, scale, 'bankgothic', 'center', 'center', false, false, true, false, true)
+		dxDrawText(text, 0, 0, g_ScreenSize[1], g_ScreenSize[2], clr, scale, 'bankgothic', 'center', 'center', false, false, true, false, true)
 	else
-		removeEventHandler("onClientRender", root, renderCountDown)
+		removeEventHandler('onClientRender', root, renderCountDown)
 		g_StartTicks = ticks
 		setTimer(launchRocket, 1000, 20)
-		addEventHandler("onClientRender", root, renderAnim)
+		addEventHandler('onClientRender', root, renderAnim)
 	end
 end
 
 local function startAnim()
 	g_StartTicks = getTickCount()
-	addEventHandler("onClientRender", root, renderCountDown)
+	addEventHandler('onClientRender', root, renderCountDown)
 end
 
 local function init()
@@ -133,9 +133,9 @@ local function init()
 	local tm = getRealTime()
 	if(tm.month == 11 and tm.monthday == 31) then
 		local sec = (23 - tm.hour)*3600 + (59-tm.minute)*60 + (60-tm.second) - 10
-		outputDebugString("New year in "..sec.." seconds", 3)
+		outputDebugString('New year in '..sec..' seconds', 3)
 		setTimer(startAnim, sec*1000, 1)
 	end
 end
 
-addEventHandler("onClientResourceStart", resourceRoot, init)
+addEventHandler('onClientResourceStart', resourceRoot, init)

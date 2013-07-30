@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ----------------------
 -- Global variables --
@@ -24,7 +24,7 @@ local g_ThisResName = getResourceName(g_ThisRes)
 -- Custom events --
 -------------------
 
-addEvent("onEvent_"..g_ThisResName, true)
+addEvent('onEvent_'..g_ThisResName, true)
 
 --------------------------------
 -- Local function definitions --
@@ -53,8 +53,8 @@ function findPlayer ( str )
 	end
 	
 	local str_lower = str:lower ()
-	for i, player in ipairs ( getElementsByType ( "player" ) ) do
-		local name = getPlayerName ( player ):gsub ( "#%x%x%x%x%x%x", "" ):lower ()
+	for i, player in ipairs ( getElementsByType ( 'player' ) ) do
+		local name = getPlayerName ( player ):gsub ( '#%x%x%x%x%x%x', '' ):lower ()
 		if ( name:find ( str_lower, 1, true ) ) then
 			return player
 		end
@@ -74,7 +74,7 @@ end
 function triggerServerInternalEvent ( eventtype, source, ... )
 	assert ( eventtype )
 	-- Note: unpack must be last arg
-	triggerServerEvent ( "onEvent_"..g_ThisResName, source, eventtype, unpack ( { ... } ) )
+	triggerServerEvent ( 'onEvent_'..g_ThisResName, source, eventtype, unpack ( { ... } ) )
 end
 
 function triggerInternalEvent ( eventtype, source, ... )
@@ -89,16 +89,16 @@ end
 
 _isPlayerDead = isPlayerDead
 function isPlayerDead ( player )
-	local state = getElementData ( player, "state" )
+	local state = getElementData ( player, 'state' )
 	if ( not state ) then
 		return _isPlayerDead ( player )
 	end
-	return ( state ~= "alive" )
+	return ( state ~= 'alive' )
 end
 
 ------------
 -- Events --
 ------------
 
-addEventHandler ( "onEvent_"..g_ThisResName, g_Root, onEventHandler )
+addEventHandler ( 'onEvent_'..g_ThisResName, g_Root, onEventHandler )
 

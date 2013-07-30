@@ -9,8 +9,8 @@ local g_WinnerAnim = false
 local g_WinnerAnimStart
 local g_StarTexture
 
-addEvent("main.onPlayerWinDD", true)
-addEvent("onClientMapStopping")
+addEvent('main.onPlayerWinDD', true)
+addEvent('onClientMapStopping')
 
 local function starsSortHelper(star1, star2)
 	return star1.dist > star2.dist
@@ -26,7 +26,7 @@ local function renderWinnerAnim()
 	end
 	
 	if(dt > ANIM_TIME or not isElement(g_WinnerAnim)) then
-		removeEventHandler("onClientRender", g_Root, renderWinnerAnim)
+		removeEventHandler('onClientRender', g_Root, renderWinnerAnim)
 		g_WinnerAnim = false
 		return
 	elseif(dt > ANIM_TIME - FADE_TIME) then
@@ -81,12 +81,12 @@ local function startWinnerAnim()
 	
 	g_WinnerAnimStart = getTickCount()
 	g_WinnerAnim = source
-	addEventHandler("onClientRender", g_Root, renderWinnerAnim)
+	addEventHandler('onClientRender', g_Root, renderWinnerAnim)
 end
 
 local function stopWinnerAnim()
 	if(g_WinnerAnim) then
-		removeEventHandler("onClientRender", g_Root, renderWinnerAnim)
+		removeEventHandler('onClientRender', g_Root, renderWinnerAnim)
 		g_WinnerAnim = false
 	end
 end
@@ -98,27 +98,27 @@ local function onPlayerQuit()
 end
 
 local function init()
-	g_StarTexture = dxCreateTexture("img/star.png")
+	g_StarTexture = dxCreateTexture('img/star.png')
 	if(DEBUG) then
 		source = g_Me
 		startWinnerAnim()
 	end
 end
 
-addEventHandler("main.onPlayerWinDD", g_Root, startWinnerAnim)
-addEventHandler("onClientMapStopping", g_Root, stopWinnerAnim)
-addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
-addEventHandler("onClientResourceStart", g_ResRoot, init)
+addEventHandler('main.onPlayerWinDD', g_Root, startWinnerAnim)
+addEventHandler('onClientMapStopping', g_Root, stopWinnerAnim)
+addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
+addEventHandler('onClientResourceStart', g_ResRoot, init)
 
 Settings.register
 {
-	name = "winAnim",
+	name = 'winAnim',
 	default = true,
 	cast = tobool,
 	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Show stars animation above winner car", Settings.winAnim, false, wnd)
 		if(onChange) then
-			addEventHandler("onClientGUIClick", cb, onChange, false)
+			addEventHandler('onClientGUIClick', cb, onChange, false)
 		end
 		return 20, cb
 	end,

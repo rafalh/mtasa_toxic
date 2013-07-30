@@ -2,44 +2,45 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 --------------------------------
 -- Local function definitions --
 --------------------------------
 
 Styles = {
-	joinQuit = {"#00BB00", "#EEEEEE"},
-	stats = {"#FF6464", "#EEEEEE"},
-	maps = {"#80FFC0", "#EEEEEE"},
-	red = {"#FF0000", "#EEEEEE"},
-	green = {"#00FF00", "#80FF80"},
-	poll = "#80FFC0",
-	gambling = {"#FFC000", "#FFE080"},
-	info = {"#FFC000", "#FFFFFF"}
+	joinQuit = {'#00BB00', '#EEEEEE'},
+	stats = {'#FF6464', '#EEEEEE'},
+	maps = {'#80FFC0', '#EEEEEE'},
+	red = {'#FF0000', '#EEEEEE'},
+	green = {'#00FF00', '#80FF80'},
+	poll = '#80FFC0',
+	gambling = {'#FFC000', '#FFE080'},
+	info = {'#FFC000', '#FFFFFF'},
+	pm = {'#FF6464', '#EEEEEE'},
 }
 
 BlobsTable = Database.Table{
-	name = "blobs",
-	{"id", "INT UNSIGNED", pk = true},
-	{"data", "BLOB", default = ""},
+	name = 'blobs',
+	{'id', 'INT UNSIGNED', pk = true},
+	{'data', 'BLOB', default = ''},
 }
 
 SerialsTable = Database.Table{
-	name = "serials",
-	{"id", "INT UNSIGNED", pk = true},
-	{"serial", "VARCHAR(32)"},
-	{"serials_idx", unique = {"serial"}},
+	name = 'serials',
+	{'id', 'INT UNSIGNED', pk = true},
+	{'serial', 'VARCHAR(32)'},
+	{'serials_idx', unique = {'serial'}},
 }
 
-addEvent("main.onPlayerReady", true)
+addEvent('main.onPlayerReady', true)
 
 -- Some custom rights
-AccessRight("resource."..g_ResName..".admin")
+AccessRight('resource.'..g_ResName..'.admin')
 
 local function isNickChangeAllowed(player, name)
-	local namePlain = name:gsub("#%x%x%x%x%x%x", "")
-	if(namePlain == "") then
+	local namePlain = name:gsub('#%x%x%x%x%x%x', '')
+	if(namePlain == '') then
 		privMsg(player, "Empty nick is not allowed!")
 		return false
 	end
@@ -80,10 +81,10 @@ end
 
 local function onPlayerPMRequest(msg, recipient)
 	if(isPlayerMuted(client)) then
-		outputChatBox("pm: You are muted", client, 255, 128, 0)
+		outputMsg(client, Styles.red, "pm: You are muted")
 	else
-		local playerName = getPlayerName(client):gsub("#%x%x%x%x%x%x", "")
-		outputChatBox("PM from "..playerName..": "..msg, recipient, 255, 96, 96)
+		local playerName = getPlayerName(client):gsub('#%x%x%x%x%x%x', '')
+		outputMsg(recipient, Styles.pm, "PM from %s: %s", playerName, msg)
 		triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), client, msg)
 	end
 end
@@ -96,8 +97,8 @@ local function onPlayerChangeNick(oldNick, newNick)
 	local pdata = Player.fromEl(source)
 	if(not pdata) then return end
 	
-	local oldNickPlain = oldNick:gsub("#%x%x%x%x%x%x", "")
-	local newNickPlain = newNick:gsub("#%x%x%x%x%x%x", "")
+	local oldNickPlain = oldNick:gsub('#%x%x%x%x%x%x', '')
+	local newNickPlain = newNick:gsub('#%x%x%x%x%x%x', '')
 	local onlyColorChanged = (oldNickPlain == newNickPlain)
 	
 	if(not onlyColorChanged and not isNickChangeAllowed(source, newNickPlain)) then
@@ -113,28 +114,28 @@ local function onPlayerChangeNick(oldNick, newNick)
 	local fullNick = newNick
 	local r, g, b = getPlayerNametagColor(pdata.el)
 	if(r ~= 255 or g ~= 255 or b ~= 255) then
-		fullNick = ("#%02X%02X%02X"):format(r, g, b)..fullNick
+		fullNick = ('#%02X%02X%02X'):format(r, g, b)..fullNick
 	end
 	
-	pdata.accountData:set("name", fullNick)
+	pdata.accountData:set('name', fullNick)
 	if(not onlyColorChanged) then
 		outputMsg(g_Root, Styles.joinQuit, "* %s is now known as %s.", oldNickPlain, newNickPlain)
 	end
 end
 
 local function onPlayerChat(message, messageType)
-	local message2 = message:gsub("#%x%x%x%x%x%x", "")
-	if(message2:gsub(" ", "") == "") then
+	local message2 = message:gsub('#%x%x%x%x%x%x', '')
+	if(message2:gsub(' ', '') == '') then
 		cancelEvent()
 		return
 	end
 	
-	local arg = split(message, (" "):byte()) -- defined in other place
+	local arg = split(message, (' '):byte()) -- defined in other place
 	local cmd = arg[1]:lower() -- defined in other place
 	
-	local str = cmd:match("[^%w]?(%w)")
-	if((str == "login" or str == "register") and arg[2]) then -- never display someone's password
-		privMsg(source, "DON'T USE \""..arg[1].."\" anymore!!! It could show your password to everybody. Type /"..str.." <password> instead.")
+	local str = cmd:match('[^%w]?(%w)')
+	if((str == 'login' or str == 'register') and arg[2]) then -- never display someone's password
+		privMsg(source, "DON'T USE \"%s\" anymore!!! It could show your password to everybody. Type %s <password> instead.", arg[1], '/'..str)
 		cancelEvent()
 		return
 	end
@@ -150,29 +151,29 @@ local function onPlayerChat(message, messageType)
 	
 	local recipients, type_str, prefix
 	local source_name = getPlayerName(source)
-	local source_name2 = source_name:gsub("#%x%x%x%x%x%x", "")
+	local source_name2 = source_name:gsub('#%x%x%x%x%x%x', '')
 	local r, g, b = getPlayerNametagColor(source)
 	
 	if(messageType == 0) then -- normal message
-		recipients = getElementsByType("player")
-		type_str = ""
-		prefix = ""
+		recipients = getElementsByType('player')
+		type_str = ''
+		prefix = ''
 	elseif(messageType == 1) then -- /me message
-		recipients = getElementsByType("player")
-		type_str = "ME"
-		--prefix = ""
-		message = source_name2.." "..message
-		message2 = source_name2.." "..message2
+		recipients = getElementsByType('player')
+		type_str = 'ME'
+		--prefix = ''
+		message = source_name2..' '..message
+		message2 = source_name2..' '..message2
 	else -- team message
 		recipients = getPlayersInTeam(getPlayerTeam(source))
-		type_str = "TEAM"
-		prefix = "(TEAM) "
+		type_str = 'TEAM'
+		prefix = '(TEAM) '
 	end
 	
 	-- remove recipients which ignore sender
 	for i, player in ipairs(recipients) do
-		local ignored = getElementData(player, "ignored_players")
-		if(type(ignored) == "table" and ignored[source_name2]) then
+		local ignored = getElementData(player, 'ignored_players')
+		if(type(ignored) == 'table' and ignored[source_name2]) then
 			table.remove(recipients, i)
 		end
 	end
@@ -181,7 +182,7 @@ local function onPlayerChat(message, messageType)
 	local x, y, z = getElementPosition(source)
 	for i, player in ipairs(recipients) do
 		if (messageType ~= 1) then
-			outputChatBox(prefix..source_name..": #EBDDB2"..message, player, r, g, b, true)
+			outputChatBox(prefix..source_name..': #EBDDB2'..message, player, r, g, b, true)
 		else
 			outputChatBox(message, player, 255, 0, 255, false)
 		end
@@ -193,13 +194,13 @@ local function onPlayerChat(message, messageType)
 		end
 	end
 	
-	outputServerLog(type_str.."CHAT: "..source_name2..": "..message2)
+	outputServerLog(type_str..'CHAT: '..source_name2..': '..message2)
 	
 	cancelEvent() -- cancel event to disallow printing message twice
 	
 	if(fine > 0) then
 		local pdata = Player.fromEl(source)
-		pdata.accountData:add("cash", -fine)
+		pdata.accountData:add('cash', -fine)
 		privMsg(source, "Do not swear %s! %s taked from your cash.", getPlayerName(source), formatMoney(fine))
 	end
 	
@@ -208,7 +209,7 @@ local function onPlayerChat(message, messageType)
 	end
 	
 	-- fixme: CmdDoesIgnoreChat
-	--if(messageType ~= 1 and message:sub ( 1, 1 ) == "!" and not CmdDoesIgnoreChat(cmd:sub(2))) then
+	--if(messageType ~= 1 and message:sub ( 1, 1 ) == '!' and not CmdDoesIgnoreChat(cmd:sub(2))) then
 	--	parseCommand(message, source, recipients, type_str_br)
 	--end
 end
@@ -219,7 +220,7 @@ local function onPlayerReady(localeId)
 	if(not LocaleList.exists(localeId)) then
 		localeId = pdata.country and pdata.country:lower()
 		if(not LocaleList.exists(localeId)) then
-			localeId = "en"
+			localeId = 'en'
 		end
 	end
 	
@@ -238,19 +239,19 @@ local function onPlayerReady(localeId)
 	
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) and pdata.new and Settings.loginWnd) then
-		triggerClientEvent(client, "main.onLoginReq", g_ResRoot)
+		triggerClientEvent(client, 'main.onLoginReq', g_ResRoot)
 	elseif(not isGuestAccount(account)) then
 		local accountName = getAccountName(account)
-		triggerClientEvent(pdata.el, "main.onLoginStatus", g_ResRoot, true)
-		triggerClientEvent(pdata.el, "main.onAccountChange", g_ResRoot, accountName, pdata.id)
+		triggerClientEvent(pdata.el, 'main.onLoginStatus', g_ResRoot, true)
+		triggerClientEvent(pdata.el, 'main.onAccountChange', g_ResRoot, accountName, pdata.id)
 	end
 	
 	pdata.new = false
 end
 
-allowRPC("getThisResourceVersion")
+allowRPC('getThisResourceVersion')
 function getThisResourceVersion()
-	return getResourceInfo(resource, "version")
+	return getResourceInfo(resource, 'version')
 end
 
 ------------
@@ -258,24 +259,24 @@ end
 ------------
 
 addInitFunc(function()
-	addEventHandler("onPlayerJoin", g_Root, onPlayerJoin)
-	addEventHandler("onPlayerPrivateMessage", g_Root, onPlayerPrivateMessage)
-	addEventHandler("onPlayerChangeNick", g_Root, onPlayerChangeNick)
-	addEventHandler("onPlayerChat", g_Root, onPlayerChat)
-	addEventHandler("main.onPlayerReady", g_ResRoot, onPlayerReady)
+	addEventHandler('onPlayerJoin', g_Root, onPlayerJoin)
+	addEventHandler('onPlayerPrivateMessage', g_Root, onPlayerPrivateMessage)
+	addEventHandler('onPlayerChangeNick', g_Root, onPlayerChangeNick)
+	addEventHandler('onPlayerChat', g_Root, onPlayerChat)
+	addEventHandler('main.onPlayerReady', g_ResRoot, onPlayerReady)
 	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
 end)
 
 Settings.register
 {
-	name = "version",
-	type = "INTEGER",
+	name = 'version',
+	type = 'INTEGER',
 	default = 0,
 }
 
 Settings.register
 {
-	name = "cleanup_done",
-	type = "BOOL",
+	name = 'cleanup_done',
+	type = 'BOOL',
 	default = 0,
 }

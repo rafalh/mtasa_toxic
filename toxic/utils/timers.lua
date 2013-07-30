@@ -29,7 +29,7 @@ local function TmMapTimerProc(roomEl, timer_id, ...)
 end
 
 function setMapTimer(func, interval, timesToExecute, room, ...)
-	assert(type(room) == "table")
+	assert(type(room) == 'table')
 	if(not room.mapTimers) then
 		room.mapTimers = {}
 	end
@@ -56,5 +56,5 @@ local function TmMapStop()
 	room.mapTimers = {}
 end
 
-addEventHandler("onGamemodeMapStop", g_Root, TmMapStop)
-addEventHandler("onPlayerQuit", g_Root, TmPlayerQuit)
+addEventHandler('onGamemodeMapStop', g_Root, TmMapStop)
+addEventHandler('onPlayerQuit', g_Root, TmPlayerQuit)

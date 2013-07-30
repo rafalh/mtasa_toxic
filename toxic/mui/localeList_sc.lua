@@ -11,16 +11,16 @@ end
 function LocaleList.init()
 	LocaleList.tbl = {}
 	
-	local defLocale = {code = "en", name = "English", img = "img/flags/en.png"}
+	local defLocale = {code = 'en', name = "English", img = 'img/flags/en.png'}
 	LocaleList.addLocale(defLocale)
 	
-	local node = xmlLoadFile("conf/languages.xml")
+	local node = xmlLoadFile('conf/languages.xml')
 	if(node) then
 		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 			local locale = {}
 			locale.code = xmlNodeGetValue(subnode)
-			locale.name = xmlNodeGetAttribute(subnode, "name") or locale.code
-			locale.img = xmlNodeGetAttribute(subnode, "img")
+			locale.name = xmlNodeGetAttribute(subnode, 'name') or locale.code
+			locale.img = xmlNodeGetAttribute(subnode, 'img')
 			if(locale.code) then
 				LocaleList.addLocale(locale)
 			end

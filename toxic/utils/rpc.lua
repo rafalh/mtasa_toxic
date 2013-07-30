@@ -1,7 +1,7 @@
 --[[ Syntax propositions:
-  RPC.create("getPlayerStats", 1):onResult(onPlStats):exec()
-* RPC("getPlayerStats", 1):onResult(onPlStats):exec()
-  callServer{"getPlayerStats", 1, onResult = onPlStats}
+  RPC.create('getPlayerStats', 1):onResult(onPlStats):exec()
+* RPC('getPlayerStats', 1):onResult(onPlStats):exec()
+  callServer{'getPlayerStats', 1, onResult = onPlStats}
 ]]
 
 local RpcMethods = {}
@@ -9,8 +9,8 @@ local g_WaitingRpc = {}
 local g_AllowedRpc = {}
 local SERVER = triggerClientEvent and true
 
-addEvent("main.onRpc", true)
-addEvent("main.onRpcResult", true)
+addEvent('main.onRpc', true)
+addEvent('main.onRpcResult', true)
 
 function RpcMethods.onResult(self, fn)
 	self.callback = fn
@@ -23,9 +23,9 @@ function RpcMethods.exec(self)
 		g_WaitingRpc[self.id] = self
 	end
 	if(SERVER) then
-		return triggerClientEvent(self.client, "main.onRpc", resourceRoot, self.id, self.fn, unpack(self.args))
+		return triggerClientEvent(self.client, 'main.onRpc', resourceRoot, self.id, self.fn, unpack(self.args))
 	else
-		return triggerServerEvent("main.onRpc", resourceRoot, self.id, self.fn, unpack(self.args))
+		return triggerServerEvent('main.onRpc', resourceRoot, self.id, self.fn, unpack(self.args))
 	end
 end
 
@@ -60,26 +60,26 @@ end
 
 local function onRpc(id, fnName, ...)
 	if(SERVER and not g_AllowedRpc[fnName]) then
-		outputDebugString("Denied RPC: "..tostring(fnName), 2)
+		outputDebugString('Denied RPC: '..tostring(fnName), 2)
 		return
 	end
 	
-	local fn = loadstring("return "..fnName)()
+	local fn = loadstring('return '..fnName)()
 	local results = {}
 	if(fn) then
 		results = {pcall(fn, ...)}
 		if(not results[1]) then
-			outputDebugString("RPC failed: "..results[2], 2)
+			outputDebugString('RPC failed: '..results[2], 2)
 			results = {}
 		end
 	else
-		outputDebugString("Failed to execute RPC "..tostring(fnName), 2)
+		outputDebugString('Failed to execute RPC '..tostring(fnName), 2)
 	end
 	if(id) then
 		if(SERVER) then
-			triggerClientEvent(client, "main.onRpcResult", resourceRoot, id, unpack(results, 2))
+			triggerClientEvent(client, 'main.onRpcResult', resourceRoot, id, unpack(results, 2))
 		else
-			triggerServerEvent("main.onRpcResult", resourceRoot, id, unpack(results, 2))
+			triggerServerEvent('main.onRpcResult', resourceRoot, id, unpack(results, 2))
 		end
 	end
 end
@@ -87,7 +87,7 @@ end
 local function onRpcResult(id, ...)
 	local self = g_WaitingRpc[id]
 	if(not self) then
-		outputDebugString("Unknown RPC "..tostring(id), 2)
+		outputDebugString('Unknown RPC '..tostring(id), 2)
 		return
 	end
 	g_WaitingRpc[id] = nil
@@ -97,5 +97,5 @@ local function onRpcResult(id, ...)
 	self.callback(unpack(self.cbArgs))
 end
 
-addEventHandler("main.onRpc", resourceRoot, onRpc)
-addEventHandler("main.onRpcResult", resourceRoot, onRpcResult)
+addEventHandler('main.onRpc', resourceRoot, onRpc)
+addEventHandler('main.onRpcResult', resourceRoot, onRpcResult)

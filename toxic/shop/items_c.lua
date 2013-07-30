@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -10,9 +10,9 @@
 
 g_ShopItems = {} -- name = { title, cost, description, onUse handler (if false this item can be only used), onInitButtons }
 
-addEvent ( "onThunderEffect", true )
-addEvent ( "onSetPlayerAlphaReq", true )
-addEvent("rafalh_onBuyNextMap", true)
+addEvent ( 'onThunderEffect', true )
+addEvent ( 'onSetPlayerAlphaReq', true )
+addEvent('rafalh_onBuyNextMap', true)
 
 local g_JoinMsgWnd = false
 
@@ -27,16 +27,16 @@ local function ShpOnJoinMsgUse ( v )
 	g_JoinMsgWnd = guiCreateWindow ( x, y, w, h, "Join Message settings", false )
 	
 	guiCreateLabel ( 10, 20, 220, 20, "New Join Message:", false, g_JoinMsgWnd )
-	local edit = guiCreateEdit ( 10, 40, 230, 20, v or "", false, g_JoinMsgWnd )
-	guiSetProperty ( edit, "MaxTextLength", "128" )
+	local edit = guiCreateEdit ( 10, 40, 230, 20, v or '', false, g_JoinMsgWnd )
+	guiSetProperty ( edit, 'MaxTextLength', '128' )
 	
 	showCursor ( true )
 	
 	local btn = guiCreateButton ( 70, 70, 50, 25, "OK", false, g_JoinMsgWnd )
-	addEventHandler ( "onClientGUIClick", btn, function ()
-		if ( ShpGetInventory ( "joinmsg" ) ) then
+	addEventHandler ( 'onClientGUIClick', btn, function ()
+		if ( ShpGetInventory ( 'joinmsg' ) ) then
 			local msg = guiGetText ( edit )
-			ShpSetInventory ( "joinmsg", msg )
+			ShpSetInventory ( 'joinmsg', msg )
 			triggerServerInternalEvent ( $(EV_SET_JOIN_MSG_REQUEST), g_Me, msg )
 		end
 		destroyElement ( getElementParent ( source ) )
@@ -45,7 +45,7 @@ local function ShpOnJoinMsgUse ( v )
 	end, false )
 	
 	local btn = guiCreateButton ( 130, 70, 50, 25, "Cancel", false, g_JoinMsgWnd )
-	addEventHandler ( "onClientGUIClick", btn, function ()
+	addEventHandler ( 'onClientGUIClick', btn, function ()
 		destroyElement ( getElementParent ( source ) )
 		g_JoinMsgWnd = false
 		showCursor ( false )
@@ -56,7 +56,7 @@ g_ShopItems.joinmsg = {
 	name = "Join Message",
 	cost = 20000,
 	descr = "Set message, which is displayed when you join.",
-	img = "shop/img/joinmsg.png",
+	img = 'shop/img/joinmsg.png',
 	onUse = ShpOnJoinMsgUse,
 	dataToCount = function ( val ) return val and 1 end,
 	getAllowedAct = function ( val ) return not val, true, true end -- buy, sell, use
@@ -66,7 +66,7 @@ g_ShopItems.health100 = {
 	name = "Repair",
 	cost = 100000,
 	descr = "Repair your vehicle when you want.",
-	img = "shop/img/repair.png",
+	img = 'shop/img/repair.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -75,13 +75,13 @@ g_ShopItems.flip = {
 	name = "Flip",
 	cost = 50000,
 	descr = "Flips your vehicle.",
-	img = "shop/img/flip.png",
+	img = 'shop/img/flip.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val )
 		local veh = getPedOccupiedVehicle ( g_Me )
 		if ( veh ) then
 			local rx, ry, rz = getElementRotation ( veh )
-			--outputChatBox ( "r: "..rx.." "..ry.." "..rz )
+			--outputChatBox ( 'r: '..rx..' '..ry..' '..rz )
 			return true, true, not isPlayerDead ( g_Me ) and ( ( rx > 90 and rx < 270 ) or ( ry > 90 and ry < 270 ) ) -- buy, sell, use
 		end
 		return true, true, false -- buy, sell, use
@@ -92,7 +92,7 @@ g_ShopItems.selfdestr = {
 	name = "Self-destruction",
 	cost = 500000,
 	descr = "Make self-destruciton and kill all players, which are near to your vehicle!",
-	img = "shop/img/selfdestr.png",
+	img = 'shop/img/selfdestr.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -101,7 +101,7 @@ g_ShopItems.mine = {
 	name = "Mine",
 	cost = 200000,
 	descr = "Place a mine under your car!",
-	img = "shop/img/mine.png",
+	img = 'shop/img/mine.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -110,7 +110,7 @@ g_ShopItems.oil = {
 	name = "Oil",
 	cost = 100000,
 	descr = "Spill oli over road!",
-	img = "shop/img/oil.png",
+	img = 'shop/img/oil.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -119,7 +119,7 @@ g_ShopItems.beer = {
 	name = "Beer",
 	cost = 2,
 	descr = "Are you angry with whole world? Get drunk!",
-	img = "shop/img/beer.png",
+	img = 'shop/img/beer.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, true end -- buy, sell, use
 }
@@ -128,7 +128,7 @@ g_ShopItems.invisibility = {
 	name = "Invisibility",
 	cost = 300000,
 	descr = "Make your vehicle invisible...",
-	img = "shop/img/ghost.png",
+	img = 'shop/img/ghost.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -137,7 +137,7 @@ g_ShopItems.godmode30 = {
 	name = "Godmode",
 	cost = 300000,
 	descr = "Make your vehicle indestructible for 60 seconds!",
-	img = "shop/img/godmode.png",
+	img = 'shop/img/godmode.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -146,7 +146,7 @@ g_ShopItems.thunder = {
 	name = "Thunder",
 	cost = 200000,
 	descr = "Attack near player for few seconds",
-	img = "shop/img/thunder.png",
+	img = 'shop/img/thunder.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -155,7 +155,7 @@ g_ShopItems.smoke = {
 	name = "Smoke",
 	cost = 100000,
 	descr = "Smoke behind your vehicle for 15 seconds.",
-	img = "shop/img/smoke.png",
+	img = 'shop/img/smoke.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
 }
@@ -164,12 +164,12 @@ g_ShopItems.nextmap = {
 	name = "Next map",
 	cost = 20000,
 	descr = "Add your favorite map to queue.",
-	img = "shop/img/nextmap.png",
+	img = 'shop/img/nextmap.png',
 	getAllowedAct = function ( v ) return true, false, false end, -- buy, sell, use
 	onBuy = function ()
 		MlstDisplay ( "Choose the next map to buy", "Buy map", function ( res_name )
 			if ( res_name ) then
-				triggerServerEvent ( "onBuyNextMapReq", g_Me, res_name )
+				triggerServerEvent ( 'onBuyNextMapReq', g_Me, res_name )
 			end
 		end )
 	end
@@ -180,7 +180,7 @@ g_ShopItems.vip1w = {
 	cost = 2800000,
 	noDiscount = true,
 	descr = "VIP rank activation for 1 week.",
-	img = "vip/enabled.png",
+	img = 'vip/enabled.png',
 	getAllowedAct = function ( v ) return true, false, false end -- buy, sell, use
 }
 
@@ -194,10 +194,10 @@ local g_DrunkEffectTimer = false
 
 local function ShpUpdateDrunkEffect ()
 	local veh = getCameraTarget ()
-	if ( veh and getElementType ( veh ) == "vehicle" ) then
+	if ( veh and getElementType ( veh ) == 'vehicle' ) then
 		local a = ( getTickCount () - g_DrunkEffectStartTime ) / 1000
 		local x, y, z = getVehicleGravity ( veh )
-		--outputChatBox ( "g: "..x.." "..y.." "..z )
+		--outputChatBox ( 'g: '..x..' '..y..' '..z )
 		setVehicleGravity ( veh, x - math.sin ( g_DrunkEffectLastAngle ) / 3 + math.sin ( a ) / 3, y - math.cos ( g_DrunkEffectLastAngle ) / 3 + math.cos ( a ) / 3, z )
 		g_DrunkEffectLastAngle = a
 	end
@@ -210,18 +210,18 @@ local function ShpDrunkEffect ()
 		g_DrunkEffectStartTime = getTickCount ()
 		g_DrunkEffectLastAngle = 0
 		local veh = getCameraTarget ()
-		if ( veh and getElementType ( veh ) == "vehicle" ) then
+		if ( veh and getElementType ( veh ) == 'vehicle' ) then
 			local x, y, z = getVehicleGravity ( veh )
-			--outputChatBox ( "g: "..x.." "..y.." "..z )
+			--outputChatBox ( 'g: '..x..' '..y..' '..z )
 			setVehicleGravity ( veh, x + math.sin ( 0 ) / 3, y + math.cos ( 0 ) / 3, z )
 		end
-		addEventHandler ( "onClientPreRender", g_Root, ShpUpdateDrunkEffect, false )
+		addEventHandler ( 'onClientPreRender', g_Root, ShpUpdateDrunkEffect, false )
 		
 		g_DrunkEffectTimer = setTimer ( function ()
 			g_DrunkEffectTimer = false
-			removeEventHandler ( "onClientPreRender", g_Root, ShpUpdateDrunkEffect )
+			removeEventHandler ( 'onClientPreRender', g_Root, ShpUpdateDrunkEffect )
 			local veh = getCameraTarget ()
-			if ( veh and getElementType ( veh ) == "vehicle" ) then
+			if ( veh and getElementType ( veh ) == 'vehicle' ) then
 				local x, y, z = getVehicleGravity ( veh )
 				setVehicleGravity ( veh, x - math.sin ( g_DrunkEffectLastAngle ) / 3, y - math.cos ( g_DrunkEffectLastAngle ) / 3, z )
 			end
@@ -234,7 +234,7 @@ ShpThunderEffect.active = false
 
 function ShpThunderEffect.onRender ()
 	if(getTickCount() - ShpThunderEffect.ticks > 5000) then
-		removeEventHandler("onClientRender", g_Root, ShpThunderEffect.onRender)
+		removeEventHandler('onClientRender', g_Root, ShpThunderEffect.onRender)
 		ShpThunderEffect.active = false
 	end
 	
@@ -265,7 +265,7 @@ function ShpThunderEffect.start(target)
 	ShpThunderEffect.target = target
 	ShpThunderEffect.ticks = getTickCount()
 	if(not ShpThunderEffect.active) then
-		addEventHandler("onClientRender", g_Root, ShpThunderEffect.onRender)
+		addEventHandler('onClientRender', g_Root, ShpThunderEffect.onRender)
 	end
 end
 
@@ -273,8 +273,8 @@ local function ShpSetPlayerAlpha(value)
 	setElementAlpha(source, value)
 	for i, el in ipairs(getAttachedElements(source)) do
 		setElementAlpha(el, value)
-		if(getElementType(el) == "blip") then
-			--outputDebugString("blip", 3)
+		if(getElementType(el) == 'blip') then
+			--outputDebugString('blip', 3)
 			setBlipColor(el, 0, 0, 0, 0)
 		end
 	end
@@ -284,8 +284,8 @@ local function ShpSetPlayerAlpha(value)
 		setElementAlpha(veh, value)
 		for i, el in ipairs(getAttachedElements(veh)) do
 			setElementAlpha(el, value)
-			if(getElementType(el) =="blip") then
-				outputDebugString("blip2", 2)
+			if(getElementType(el) =='blip') then
+				outputDebugString('blip2', 2)
 				setBlipColor(el, 0, 0, 0, 0)
 			end
 		end
@@ -298,7 +298,7 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler ( $(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect )
-addEventHandler ( "onThunderEffect", g_Root, ShpThunderEffect.start )
-addEventHandler ( "onSetPlayerAlphaReq", g_Root, ShpSetPlayerAlpha )
-addEventHandler("rafalh_onBuyNextMap", g_ResRoot, g_ShopItems.nextmap.onBuy)
+addInternalEventHandler($(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect)
+addEventHandler('onThunderEffect', g_Root, ShpThunderEffect.start)
+addEventHandler('onSetPlayerAlphaReq', g_Root, ShpSetPlayerAlpha)
+addEventHandler('rafalh_onBuyNextMap', g_ResRoot, g_ShopItems.nextmap.onBuy)

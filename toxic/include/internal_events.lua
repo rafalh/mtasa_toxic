@@ -1,6 +1,6 @@
 
-#EV_PREFIX = "\"onRafalh"
-#EV_SUFIX = "\""
+#EV_PREFIX = '"onRafalh'
+#EV_SUFIX = '"'
 
 #EV_RAFALH_START = 1
 #EV_CLIENT_INIT = 2

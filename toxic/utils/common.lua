@@ -30,19 +30,19 @@ function tonum(var)
 end
 
 function tostr(var)
-	return (var and tostring(var)) or ""
+	return (var and tostring(var)) or ''
 end
 
 function tobool(val, def)
 	val = tostring(val):lower()
-	if(val == "true" or val == "1") then return true
-	elseif(val == "false" or val == "0") then return false
+	if(val == 'true' or val == '1') then return true
+	elseif(val == 'false' or val == '0') then return false
 	else return def end
 end
 
 function formatDate(timestamp)
 	local tm = getRealTime(timestamp)
-	return ("%d-%02d-%02d %d:%02d"):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
+	return ('%d-%02d-%02d %d:%02d'):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
 end
 
 function formatTimePeriod(t, decimals)
@@ -51,12 +51,12 @@ function formatTimePeriod(t, decimals)
 	local h = math.floor(t / 3600)
 	local m = math.floor((t % 3600) / 60)
 	local s = math.floor(t % 60)
-	local str = (h > 0 and h..":%02u:%02u" or "%u:%02u"):format(m, s)
+	local str = (h > 0 and h..':%02u:%02u' or '%u:%02u'):format(m, s)
 	
 	local dec = touint(decimals, 2)
 	if(dec > 0) then
 		local rest = math.floor((t % 1)*(10^dec))
-		str = str..(".%0"..dec.."u"):format(rest)
+		str = str..('.%0'..dec..'u'):format(rest)
 	end
 	
 	return str
@@ -67,15 +67,15 @@ function formatNumber(num, decimals)
 	assert(num)
 	local n1, n2 = math.modf(num)
 	n1 = tostring(n1)
-	local buf = ""
+	local buf = ''
 	
-	while(n1 ~= "") do
-		buf = n1:sub(-3).." "..buf
+	while(n1 ~= '') do
+		buf = n1:sub(-3)..' '..buf
 		n1 = n1:sub(1, -4)
 	end
 	buf = buf:sub(1, -2)
 	if(decimals) then
-		return buf.."."..(n2..("0"):rep(decimals)):sub(1, decimals)
+		return buf..'.'..(n2..('0'):rep(decimals)):sub(1, decimals)
 	end
 	return buf
 end
@@ -83,13 +83,13 @@ end
 function formatMoney(money)
 	assert(money)
 	local str = tostring(math.floor(math.abs(money)))
-	local buf = ""
+	local buf = ''
 	
-	while(str ~= "") do
-		buf = str:sub ( -3 )..","..buf
+	while(str ~= '') do
+		buf = str:sub ( -3 )..','..buf
 		str = str:sub ( 1, -4 )
 	end
-	return ((tonumber ( money ) < 0 and "-") or "")..buf:sub(1, -2).." €"
+	return ((tonumber ( money ) < 0 and '-') or '')..buf:sub(1, -2)..' €'
 end
 
 local _isPedDead = isPedDead
@@ -97,22 +97,22 @@ function isPedDead(player)
 	if(Player and Player.fromEl(player) and Player.fromEl(player).is_console) then
 		return false -- console
 	end
-	local state = getElementData(player, "state")
-	if(state and state ~= "alive") then
+	local state = getElementData(player, 'state')
+	if(state and state ~= 'alive') then
 		return true
 	end
-	return(state and state ~= "alive") or _isPedDead (player)
+	return(state and state ~= 'alive') or _isPedDead (player)
 end
 
 function trimStr(str)
-	str = str:gsub("^%s+", "")
-	str = str:gsub("%s+$", "")
+	str = str:gsub('^%s+', '')
+	str = str:gsub('%s+$', '')
 	return str
 end
 
 function isPlayerAdmin(player)
-	local adminGroup = aclGetGroup("Admin")
+	local adminGroup = aclGetGroup('Admin')
 	local account = getPlayerAccount(player)
 	local accountName = getAccountName(account)
-	return (adminGroup and account and isObjectInACLGroup("user."..accountName, adminGroup))
+	return (adminGroup and account and isObjectInACLGroup('user.'..accountName, adminGroup))
 end

@@ -1,13 +1,13 @@
 local function formatMsg(style, onlyCodes, fmt, ...)
 	local curClr = not onlyCodes and style[1]
 	
-	local ret = ""
+	local ret = ''
 	local r, g, b
 	local args = {...}
 	
 	local i, argi = 1, 1
 	while(true) do
-		local b, e = fmt:find("%%%d*%.?%d*l?h?[diuxXfs]", i)
+		local b, e = fmt:find('%%%d*%.?%d*l?h?[diuxXfs]', i)
 		if(not b) then break end
 		
 		local str, clr
@@ -29,7 +29,7 @@ local function formatMsg(style, onlyCodes, fmt, ...)
 		end
 		ret = ret..str
 		
-		if(str:find("#%x%x%x%x%x%x")) then
+		if(str:find('#%x%x%x%x%x%x')) then
 			curClr = false
 		end
 		
@@ -51,10 +51,10 @@ local function formatMsg(style, onlyCodes, fmt, ...)
 end
 
 function outputMsg(style, fmt, ...)
-	if(type(style) == "string") then
+	if(type(style) == 'string') then
 		style = {style, style}
 	elseif(not style) then
-		style = {"#FFC080", "#FFFFFF"}
+		style = {'#FFC080', '#FFFFFF'}
 	end
 	
 	local msg, r, g, b = formatMsg(style, false, MuiGetMsg(fmt), ...)

@@ -9,8 +9,8 @@ function Worker:start()
 	self.co = coroutine.create(Worker.mainProc)
 	local success, msg = coroutine.resume(self.co, self.id)
 	if(not success) then
-		outputDebugString("Worker failed: "..msg, 2)
-	elseif(coroutine.status(self.co) ~= "dead") then
+		outputDebugString('Worker failed: '..msg, 2)
+	elseif(coroutine.status(self.co) ~= 'dead') then
 		self.timer = setTimer(Worker.onTick, TIMER_INTERVAL, 0, self.id)
 	end
 end
@@ -32,7 +32,7 @@ function Worker:init(info)
 end
 
 function Worker.create(info)
-	assert(type(info) == "table")
+	assert(type(info) == 'table')
 	local self = setmetatable({}, Worker.__mt)
 	self:init(info)
 	return self
@@ -43,7 +43,7 @@ function Worker.onTick(id)
 	
 	local success, msg = coroutine.resume(self.co)
 	if(not success) then
-		outputDebugString("Worker failed: "..msg, 2)
+		outputDebugString('Worker failed: '..msg, 2)
 		self:destroy()
 	end
 	
@@ -60,7 +60,7 @@ function Worker.mainProc(id)
 			if(self.info.fnSleep) then
 				self.info.fnSleep(self)
 			elseif(self.info.player and self.info.count) then
-				privMsg(self.info.player, self.index.."/"..self.info.count)
+				privMsg(self.info.player, self.index..'/'..self.info.count)
 			end
 			coroutine.yield()
 			loopStart = getTickCount()

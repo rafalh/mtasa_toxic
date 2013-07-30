@@ -15,22 +15,22 @@ g_CustomRights = {}
 -- Custom events --
 -------------------
 
-addEvent("onEvent_"..g_ResName, true)
+addEvent('onEvent_'..g_ResName, true)
 
 --------------------------------
 -- Local function definitions --
 --------------------------------
 
 local function onEventHandler(event, ...)
-	--outputChatBox("'"..getResourceName ( sourceResource ).."' "..tostring(event))
+	--outputChatBox(getResourceName ( sourceResource )..' '..tostring(event))
 	if(not event or not g_InternalEventHandlers[event]) then return end
-	if(sourceResource == g_Res or getResourceName(sourceResource):sub(1, 6) == "rafalh") then
+	if(sourceResource == g_Res or getResourceName(sourceResource):sub(1, 6) == 'rafalh') then
 		for _, handler in ipairs(g_InternalEventHandlers[event]) do
 			-- Note: unpack must be last arg
 			handler(unpack({...}))
 		end
 	else
-		outputDebugString("Access denied", 2)
+		outputDebugString('Access denied', 2)
 	end
 end
 
@@ -51,7 +51,7 @@ function findPlayer(str)
 	str = str:lower()
 	for player, pdata in pairs(g_Players) do
 		if(not pdata.is_console) then
-			local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", ""):lower()
+			local name = getPlayerName(player):gsub('#%x%x%x%x%x%x', ''):lower()
 			if(name:find(str, 1, true)) then
 				return player
 			end
@@ -63,10 +63,10 @@ end
 function strGradient(str, r1, g1, b1, r2, g2, b2)
 	local n = math.max(math.abs(r1 - r2)/25.5, math.abs(b1 - b2)/25.5, math.abs(b1 - b2)/25.5, 2) -- max 10 codes, min 2
 	local part_len = math.ceil(str:len ()/n)
-	local buf = ""
+	local buf = ''
 	for i = 0, math.ceil (n) - 1, 1 do
 		local a = i/(n - 1)
-		buf = buf..("#%02X%02X%02X"):format(r1*(1 - a) + r2*a, g1*(1 - a) + g2*a, b1*(1 - a) + b2*a)..str:sub(1 + i*part_len, (i + 1)*part_len)
+		buf = buf..('#%02X%02X%02X'):format(r1*(1 - a) + r2*a, g1*(1 - a) + g2*a, b1*(1 - a) + b2*a)..str:sub(1 + i*part_len, (i + 1)*part_len)
 	end
 	return buf
 end
@@ -74,7 +74,7 @@ end
 function addScreenMsg(text, player, ms, r, g, b)
 	assert(not ms or ms > 50)
 	
-	local players = getElementsByType("player", player)
+	local players = getElementsByType('player', player)
 	local textitem
 	
 	for i, player in ipairs(players) do
@@ -86,7 +86,7 @@ function addScreenMsg(text, player, ms, r, g, b)
 			pdata.scrMsgs = {}
 		end
 		local msg = MuiGetMsg(text, player)
-		textitem = textCreateTextItem(msg, 0.5, 0.4 + #pdata.scrMsgs * 0.05, "medium", r or 255, g or 0, b or 0, 255, 3, "center")
+		textitem = textCreateTextItem(msg, 0.5, 0.4 + #pdata.scrMsgs * 0.05, 'medium', r or 255, g or 0, b or 0, 255, 3, 'center')
 		table.insert(pdata.scrMsgs, textitem)
 		textDisplayAddText(pdata.display, textitem)
 		
@@ -124,11 +124,11 @@ end
 function triggerClientInternalEvent(player, eventtype, source, ...)
 	assert(eventtype and isElement(source) and isElement(player))
 	
-	local players = getElementsByType("player", player)
+	local players = getElementsByType('player', player)
 	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
 		if(pdata and pdata.sync) then
-			triggerClientEvent(player, "onEvent_"..g_ResName, source, eventtype, ...)
+			triggerClientEvent(player, 'onEvent_'..g_ResName, source, eventtype, ...)
 		end
 	end
 end
@@ -137,4 +137,4 @@ end
 -- Events --
 ------------
 
-addEventHandler("onEvent_"..g_ResName, g_Root, onEventHandler)
+addEventHandler('onEvent_'..g_ResName, g_Root, onEventHandler)

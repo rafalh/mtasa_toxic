@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -15,7 +15,7 @@ local ENABLED_STAR_CLR = tocolor(255, 255, 255)
 local DISABLED_STAR_CLR = tocolor(255, 255, 255, 64)
 local USE_RENDER_TARGER = true
 
-local g_MapInfo = {name = "", author = false, rating = 0, rates_count = 0, played = 0}
+local g_MapInfo = {name = '', author = false, rating = 0, rates_count = 0, played = 0}
 local g_TopTimes = {}
 local g_MyBestTime = false
 local g_HideTimer = false
@@ -33,9 +33,9 @@ local function MiRenderMapInfo(x, y, w, h)
 	
 	-- General info
 	local author = g_MapInfo.author or MuiGetMsg("unknown")
-	dxDrawText(MuiGetMsg("Map: %s"):format(g_MapInfo.name), x + 10, y + 10, x + w, y + 25, TEXT_COLOR, 1, "default-bold", "left", "top", true, false, false, true)
-	dxDrawText(MuiGetMsg("Author: %s"):format(author), x + 10, y + 25, x + w, y + 40, TEXT_COLOR, 1, "default", "left", "top", true, false, false, true)
-	dxDrawText(MuiGetMsg("Played: %u times"):format(g_MapInfo.played), x + 10, y + 40, 0, 0, TEXT_COLOR, 1, "default")
+	dxDrawText(MuiGetMsg("Map: %s"):format(g_MapInfo.name), x + 10, y + 10, x + w, y + 25, TEXT_COLOR, 1, 'default-bold', 'left', 'top', true, false, false, true)
+	dxDrawText(MuiGetMsg("Author: %s"):format(author), x + 10, y + 25, x + w, y + 40, TEXT_COLOR, 1, 'default', 'left', 'top', true, false, false, true)
+	dxDrawText(MuiGetMsg("Played: %u times"):format(g_MapInfo.played), x + 10, y + 40, 0, 0, TEXT_COLOR, 1, 'default')
 	
 	-- Rates
 	dxDrawText("Rating:", x + 10, y + 55)
@@ -67,24 +67,24 @@ local function MiRenderMapInfo(x, y, w, h)
 		local itemY = y + 95 + i * 14
 		local clr = (data.player == g_MyId) and MYSELF_COLOR or TEXT_COLOR
 		
-		dxDrawText(tostring(i), x + 10, itemY, x + 45, itemY + 15, clr, 1, "default-bold")
-		dxDrawText(data.time, x + 45, itemY, x + 120, itemY + 15, clr, 1, "default-bold")
-		dxDrawText(data.name, x + 120, itemY, x + w, itemY + 15, clr, 1, "default-bold", "left", "top", true, false, false, true)
+		dxDrawText(tostring(i), x + 10, itemY, x + 45, itemY + 15, clr, 1, 'default-bold')
+		dxDrawText(data.time, x + 45, itemY, x + 120, itemY + 15, clr, 1, 'default-bold')
+		dxDrawText(data.name, x + 120, itemY, x + w, itemY + 15, clr, 1, 'default-bold', 'left', 'top', true, false, false, true)
 	end
 	
 	if(g_MyBestTime) then
 		local itemY = y + 95 + (#g_TopTimes + 1) * 14
 		
-		if(g_MyBestTime.pos > #g_TopTimes + 1) then -- dont display "..." if we are 9th
-			dxDrawText("...", x + 10, itemY)
-			dxDrawText("...", x + 45, itemY)
-			dxDrawText("...", x + 120, itemY)
+		if(g_MyBestTime.pos > #g_TopTimes + 1) then -- dont display '...' if we are 9th
+			dxDrawText('...', x + 10, itemY)
+			dxDrawText('...', x + 45, itemY)
+			dxDrawText('...', x + 120, itemY)
 			itemY = itemY + 14
 		end
 		
-		dxDrawText(g_MyBestTime.pos, x + 10, itemY, x + 45, itemY + 15, MYSELF_COLOR, 1, "default-bold")
-		dxDrawText(g_MyBestTime.time, x + 45, itemY, x + 120, itemY + 15, MYSELF_COLOR, 1, "default-bold")
-		dxDrawText(getPlayerName(g_Me), x + 120, itemY, x + w, itemY + 15, MYSELF_COLOR, 1, "default-bold", "left", "top", true, false, false, true)
+		dxDrawText(g_MyBestTime.pos, x + 10, itemY, x + 45, itemY + 15, MYSELF_COLOR, 1, 'default-bold')
+		dxDrawText(g_MyBestTime.time, x + 45, itemY, x + 120, itemY + 15, MYSELF_COLOR, 1, 'default-bold')
+		dxDrawText(getPlayerName(g_Me), x + 120, itemY, x + w, itemY + 15, MYSELF_COLOR, 1, 'default-bold', 'left', 'top', true, false, false, true)
 	end
 end
 
@@ -110,9 +110,9 @@ local function MiUpdateBuffer()
 	local w, h = MiGetSize()
 	g_Buffer = dxCreateRenderTarget(w, h, true)
 	dxSetRenderTarget(g_Buffer, true)
-	dxSetBlendMode("modulate_add")
+	dxSetBlendMode('modulate_add')
 	MiRenderMapInfo(0, 0, w, h)
-	dxSetBlendMode("blend")
+	dxSetBlendMode('blend')
 	dxSetRenderTarget()
 end
 
@@ -126,10 +126,10 @@ local function MiRender()
 		local progress = dt / 500
 		if(progress < 1) then
 			if(g_Hiding) then
-				progress = getEasingValue(progress, "InQuad")
+				progress = getEasingValue(progress, 'InQuad')
 				y = y - progress*(y + h)
 			else
-				progress = getEasingValue(progress, "InOutQuad")
+				progress = getEasingValue(progress, 'InOutQuad')
 				y = -h + progress*(y + h)
 			end
 		else
@@ -137,16 +137,16 @@ local function MiRender()
 			
 			if(g_Hiding) then
 				g_Visible = false
-				removeEventHandler("onClientRender", g_Root, MiRender)
+				removeEventHandler('onClientRender', g_Root, MiRender)
 				return
 			end
 		end
 	end
 	
 	if(g_Buffer) then
-		dxSetBlendMode("add")
+		dxSetBlendMode('add')
 		dxDrawImage(x, y, w, h, g_Buffer)
-		dxSetBlendMode("blend")
+		dxSetBlendMode('blend')
 	else
 		MiRenderMapInfo(x, y, w, h)
 	end
@@ -176,7 +176,7 @@ local function MiShow()
 	g_Visible = true
 	g_Hiding = false
 	g_AnimStart = getTickCount()
-	addEventHandler("onClientRender", g_Root, MiRender)
+	addEventHandler('onClientRender', g_Root, MiRender)
 	g_HideTimer = setTimer(MiHide, 15000, 1)
 end
 
@@ -205,20 +205,20 @@ local function MiOnMapInfo(show, mapInfo, topTimes, myBestTime)
 end
 
 local function MiInit()
-	addCommandHandler("MapInfoGui", MiToggle, false, false)
-	local key = getKeyBoundToCommand("MapInfoGui") or "F5"
-	bindKey(key, "down", "MapInfoGui")
+	addCommandHandler('MapInfoGui', MiToggle, false, false)
+	local key = getKeyBoundToCommand('MapInfoGui') or 'F5'
+	bindKey(key, 'down', 'MapInfoGui')
 	
-	g_Textures.star = dxCreateTexture("img/star.png")
-	g_Textures.star_l = dxCreateTexture("img/star_l.png")
-	g_Textures.star_r = dxCreateTexture("img/star_r.png")
+	g_Textures.star = dxCreateTexture('img/star.png')
+	g_Textures.star_l = dxCreateTexture('img/star_l.png')
+	g_Textures.star_r = dxCreateTexture('img/star_r.png')
 	
 	if(not g_Textures.star or not g_Textures.star_l or not g_Textures.star_r) then
-		outputDebugString("Failed to load textures", 1)
+		outputDebugString('Failed to load textures', 1)
 		return
 	end
 	
-	addEventHandler("onClientRestore", g_Root, MiRestore)
+	addEventHandler('onClientRestore', g_Root, MiRestore)
 	addInternalEventHandler($(EV_CLIENT_MAP_INFO), MiOnMapInfo)
 end
 
@@ -226,4 +226,4 @@ end
 -- Events --
 ------------
 
-addEventHandler("onClientResourceStart", g_ResRoot, MiInit)
+addEventHandler('onClientResourceStart', g_ResRoot, MiInit)

@@ -5,25 +5,25 @@
 local g_Gui = nil
 local g_Stats = {
 	-- field		col name		col w	desc	func
-	{"name",		"Player name",	0.20,	false},
-	{"points", 		"Points",		0.10,	true,	formatNumber},
-	{"cash",		"Cash",			0.14,	true,	formatMoney},
-	{"time_here",	"Playtime",		0.12,	true,	function(n) return formatTimePeriod(n, 0) end},
-	{"toptimes_count", "Top times", 0.09,	true,	formatNumber},
-	{"dmVictories",	"DM Vict",		0.08,	true,	formatNumber},
-	{"ddVictories",	"DD Vict",		0.08,	true,	formatNumber},
-	{"raceVictories", "Race Vict",	0.08,	true,	formatNumber},
+	{'name',		"Player name",	0.20,	false},
+	{'points', 		"Points",		0.10,	true,	formatNumber},
+	{'cash',		"Cash",			0.14,	true,	formatMoney},
+	{'time_here',	"Playtime",		0.12,	true,	function(n) return formatTimePeriod(n, 0) end},
+	{'toptimes_count', "Top times", 0.09,	true,	formatNumber},
+	{'dmVictories',	"DM Vict",		0.08,	true,	formatNumber},
+	{'ddVictories',	"DD Vict",		0.08,	true,	formatNumber},
+	{'raceVictories', "Race Vict",	0.08,	true,	formatNumber},
 	
 }
 	
 local g_Col = {}
-local g_SearchBox, g_Filter = false, ""
+local g_SearchBox, g_Filter = false, ''
 local g_IgnoreFilterChange = false
 local g_RefreshTimer
 
 local PlayersPanel = {
 	name = "Players list",
-	img = "players/img/icon.png",
+	img = 'players/img/icon.png',
 	tooltip = "Read more about other players",
 	width = 620,
 }
@@ -41,7 +41,7 @@ local function refreshData()
 	local orderByIdx = guiComboBoxGetSelected(g_Gui.sortBox)
 	local desc = guiCheckBoxGetSelected(g_Gui.desc)
 	local orderBy = orderByIdx > 0 and g_Stats[orderByIdx][1]
-	triggerServerEvent("main_onPlayersListReq", g_ResRoot, g_Filter, orderBy, desc, 18, 0, online)
+	triggerServerEvent('main_onPlayersListReq', g_ResRoot, g_Filter, orderBy, desc, 18, 0, online)
 end
 
 local function invalidateData()
@@ -62,15 +62,15 @@ local function onDoubleClickPlayer ()
 end
 
 local function onFilterFocus()
-	if(g_Filter == "") then
-		guiSetText(g_SearchBox, "")
+	if(g_Filter == '') then
+		guiSetText(g_SearchBox, '')
 	end
 	g_IgnoreFilterChange = false
 end
 
 local function onFilterBlur()
 	g_IgnoreFilterChange = true
-	if(g_Filter == "") then
+	if(g_Filter == '') then
 		guiSetText(g_SearchBox, MuiGetMsg("Search..."))
 	end
 end
@@ -93,44 +93,44 @@ local function initGui(panel)
 	
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 32, 32, "players/img/icon.png", false, panel)
+	guiCreateStaticImage(10, 10, 32, 32, 'players/img/icon.png', false, panel)
 	
 	g_SearchBox = guiCreateEdit(50, 10, 150, 25, MuiGetMsg("Search..."), false, panel)
-	addEventHandler("onClientGUIFocus", g_SearchBox, onFilterFocus, false)
-	addEventHandler("onClientGUIBlur", g_SearchBox, onFilterBlur, false)
-	addEventHandler("onClientGUIChanged", g_SearchBox, onFilterChange, false)
+	addEventHandler('onClientGUIFocus', g_SearchBox, onFilterFocus, false)
+	addEventHandler('onClientGUIBlur', g_SearchBox, onFilterBlur, false)
+	addEventHandler('onClientGUIChanged', g_SearchBox, onFilterChange, false)
 	
 	g_Gui.online = guiCreateCheckBox(50, 40, 150, 15, "Players online only", true, false, panel)
-	addEventHandler("onClientGUIClick", g_Gui.online, invalidateData, false)
+	addEventHandler('onClientGUIClick', g_Gui.online, invalidateData, false)
 	
 	guiCreateLabel(220, 12, 40, 20, "Sort:", false, panel)
-	g_Gui.sortBox = guiCreateComboBox(260, 10, 120, 200, "", false, panel)
-	guiComboBoxAddItem(g_Gui.sortBox, "-")
+	g_Gui.sortBox = guiCreateComboBox(260, 10, 120, 200, '', false, panel)
+	guiComboBoxAddItem(g_Gui.sortBox, '-')
 	for i, data in ipairs(g_Stats) do
 		guiComboBoxAddItem(g_Gui.sortBox, data[2])
 	end
 	guiComboBoxSetSelected(g_Gui.sortBox, 0)
-	addEventHandler("onClientGUIComboBoxAccepted", g_Gui.sortBox, onOrderChange, false)
+	addEventHandler('onClientGUIComboBoxAccepted', g_Gui.sortBox, onOrderChange, false)
 	
 	g_Gui.desc = guiCreateCheckBox(220, 40, 120, 15, "descending", false, false, panel)
-	addEventHandler("onClientGUIClick", g_Gui.desc, invalidateData, false)
+	addEventHandler('onClientGUIClick', g_Gui.desc, invalidateData, false)
 	
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 80, 10, 70, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		addEventHandler('onClientGUIClick', btn, UpBack, false)
 	end
 	
 	g_Gui.list = guiCreateGridList(10, 60, w - 20, h - 70, false, panel)
 	-- disable sorting because it breaks adding rows (MTA 1.3)
 	guiGridListSetSortingEnabled(g_Gui.list, false)
 	
-	g_Col.idx = guiGridListAddColumn(g_Gui.list, "#", 0.06)
+	g_Col.idx = guiGridListAddColumn(g_Gui.list, '#', 0.06)
 	
 	for i, data in ipairs(g_Stats) do
 		g_Col[data[1]] = guiGridListAddColumn(g_Gui.list, data[2], data[3])
 	end
 	
-	addEventHandler("onClientGUIDoubleClick", g_Gui.list, onDoubleClickPlayer, false)
+	addEventHandler('onClientGUIDoubleClick', g_Gui.list, onDoubleClickPlayer, false)
 end
 
 function PlayersPanel.onShow(panel)
@@ -171,5 +171,5 @@ UpRegister(PlayersPanel)
 -- Events --
 ------------
 
-addEvent("main_onPlayersList", true)
-addEventHandler("main_onPlayersList", g_ResRoot, onPlayersList)
+addEvent('main_onPlayersList', true)
+addEventHandler('main_onPlayersList', g_ResRoot, onPlayersList)

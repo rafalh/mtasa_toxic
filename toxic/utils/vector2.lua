@@ -1,4 +1,4 @@
-Vector2 = Class("Vector2")
+Vector2 = Class('Vector2')
 
 function Vector2.__mt.__index:len()
 	return (self[1]^2 + self[2]^2)^0.5
@@ -13,8 +13,8 @@ function Vector2.__mt.__index:dist(vec)
 end
 
 function Vector2.__mt:__add(vec)
-	assert(type(self) == "table")
-	assert(type(vec) == "table")
+	assert(type(self) == 'table')
+	assert(type(vec) == 'table')
 	return Vector2(self[1] + vec[1], self[2] + vec[2])
 end
 
@@ -23,9 +23,9 @@ function Vector2.__mt:__sub(vec)
 end
 
 function Vector2.__mt.__mul(a, b)
-	if(type(b) ~= "table") then
+	if(type(b) ~= 'table') then
 		return Vector2(a[1]*b, a[2]*b)
-	elseif(type(a) ~= "table") then
+	elseif(type(a) ~= 'table') then
 		return Vector2(b[1]*a, b[2]*a)
 	else -- both tables
 		return Vector2(a[1]*b[1], a[2]*b[2])
@@ -41,7 +41,7 @@ function Vector2.__mt:__eq(vec)
 end
 
 function Vector2.__mt:__tostring()
-	return "("..tostring(self[1]).." "..tostring(self[2])..")"
+	return '('..tostring(self[1])..' '..tostring(self[2])..')'
 end
 
 function Vector2.__mt.__index:init(x, y)
@@ -55,5 +55,5 @@ end
 	local vx = Vector2(1, 0)
 	local vy = Vector2(0, 1)
 	assert(((vx + vy) * 2) == Vector2(2, 2))
-	assert(tostring(vx) == "(1 0)")
+	assert(tostring(vx) == '(1 0)')
 #end

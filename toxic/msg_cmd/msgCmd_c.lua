@@ -8,7 +8,7 @@ end
 
 local function McSoundStream(success)
 	if(not success) then
-		outputDebugString("Failed to stream sound command", 2)
+		outputDebugString('Failed to stream sound command', 2)
 		McSoundStopped()
 	end
 end
@@ -28,7 +28,7 @@ function McPlaySound(path, sender)
 	g_Sound = playSound(path)
 	if(g_Sound) then
 		setSoundVolume(g_Sound, g_Volume/100)
-		addEventHandler("onClientSoundStopped", g_Sound, McSoundStopped)
-		addEventHandler("onClientSoundStream", g_Sound, McSoundStream)
+		addEventHandler('onClientSoundStopped', g_Sound, McSoundStopped)
+		addEventHandler('onClientSoundStream', g_Sound, McSoundStream)
 	end
 end

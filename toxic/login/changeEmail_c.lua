@@ -27,7 +27,7 @@ local function onOkClick()
 	
 	if(pw:len() < 3) then
 		err = "Password is required!"
-	elseif(not email:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$")) then
+	elseif(not email:match('^[%w%._-]+@[%w_-]+%.[%w%._-]+$')) then
 		err = "E-mail address is invalid!"
 	end
 	
@@ -35,7 +35,7 @@ local function onOkClick()
 		guiSetText(g_Gui.info, err)
 		guiLabelSetColor(g_Gui.info, 255, 0, 0)
 	else
-		RPC("changeAccountEmail", email, pw):onResult(onChgEmailResult):exec()
+		RPC('changeAccountEmail', email, pw):onResult(onChgEmailResult):exec()
 	end
 end
 
@@ -48,11 +48,11 @@ end
 function openChangeEmailGui()
 	if(g_Gui) then return end
 	
-	g_Gui = GUI.create("changeEmail")
+	g_Gui = GUI.create('changeEmail')
 	showCursor(true)
 	
-	addEventHandler("onClientGUIClick", g_Gui.ok, onOkClick, false)
-	addEventHandler("onClientGUIClick", g_Gui.cancel, closeChangeEmailGui, false)
+	addEventHandler('onClientGUIClick', g_Gui.ok, onOkClick, false)
+	addEventHandler('onClientGUIClick', g_Gui.cancel, closeChangeEmailGui, false)
 	
-	RPC("getAccountEmail"):onResult(onEmail):exec()
+	RPC('getAccountEmail'):onResult(onEmail):exec()
 end

@@ -2,10 +2,10 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
-addEvent("onPlayerChatting", true)
-addEvent("onClientPlayerChatting", true)
+addEvent('onPlayerChatting', true)
+addEvent('onClientPlayerChatting', true)
 
 ----------------------
 -- Global variables --
@@ -38,12 +38,12 @@ local function update()
 	
 	if(g_Chatting ~= isChatBoxInputActive()) then
 		g_Chatting = not g_Chatting
-		triggerServerEvent("onPlayerChatting", g_Me, g_Chatting)
+		triggerServerEvent('onPlayerChatting', g_Me, g_Chatting)
 	end
 end
 
 local function init ()
-	g_ChatTexture = dxCreateTexture("chat_icon/chat.png")
+	g_ChatTexture = dxCreateTexture('chat_icon/chat.png')
 	setTimer(update, 250, 0)
 end
 
@@ -65,8 +65,8 @@ local function onRender()
 				screen_y = screen_y - #msgs * (g_FontH + 5)
 				
 				for i, msg in ipairs(msgs) do
-					dxDrawText(msg[2], screen_x + 2, screen_y + i * ( g_FontH + scale ) + 2, screen_x + 2, 0, BLACK, scale, "default", "center")
-					dxDrawText(msg[2], screen_x, screen_y + i * ( g_FontH + scale ), screen_x, 0, WHITE, scale, "default", "center")
+					dxDrawText(msg[2], screen_x + 2, screen_y + i * ( g_FontH + scale ) + 2, screen_x + 2, 0, BLACK, scale, 'default', 'center')
+					dxDrawText(msg[2], screen_x, screen_y + i * ( g_FontH + scale ), screen_x, 0, WHITE, scale, 'default', 'center')
 				end
 			end
 		end
@@ -117,14 +117,14 @@ end
 ------------
 
 addInternalEventHandler($(EV_CLIENT_PLAYER_CHAT), onPlayerChat)
-addEventHandler("onClientPlayerChatting", g_Root, onPlayerChatting)
-addEventHandler("onClientRender", g_Root, onRender)
-addEventHandler("onClientResourceStart", g_ResRoot, init)
-addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
+addEventHandler('onClientPlayerChatting', g_Root, onPlayerChatting)
+addEventHandler('onClientRender', g_Root, onRender)
+addEventHandler('onClientResourceStart', g_ResRoot, init)
+addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
 
 Settings.register
 {
-	name = "msgAboveCar",
+	name = 'msgAboveCar',
 	default = true,
 	cast = tobool,
 	createGui = function(wnd, x, y, w)

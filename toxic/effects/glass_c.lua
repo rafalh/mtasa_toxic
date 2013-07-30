@@ -16,7 +16,7 @@ local g_Texture = false
 local function renderGlass()
 	local veh = getCameraTarget()
 	local elType = veh and getElementType(veh)
-	if(elType == "player" or elType == "ped") then
+	if(elType == 'player' or elType == 'ped') then
 		veh = getPedOccupiedVehicle(veh)
 	end
 	if(veh ~= g_PrevTarget) then
@@ -66,31 +66,31 @@ end
 ------------
 
 local function init()
-	g_Texture = dxCreateTexture("effects/broken_glass.png")
+	g_Texture = dxCreateTexture('effects/broken_glass.png')
 	if(g_Texture) then
-		addEventHandler("onClientRender", g_Root, renderGlass)
+		addEventHandler('onClientRender', g_Root, renderGlass)
 	end
 end
 
 Settings.register
 {
-	name = "breakableGlass",
+	name = 'breakableGlass',
 	default = true,
 	cast = tobool,
 	onChange = function(oldVal, newVal)
 		if(not Settings.redDmgScreen) then
 			if(newVal) then
-				addEventHandler("onClientRender", g_Root, renderGlass)
+				addEventHandler('onClientRender', g_Root, renderGlass)
 			else
-				removeEventHandler("onClientRender", g_Root, renderGlass)
+				removeEventHandler('onClientRender', g_Root, renderGlass)
 			end
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Broken glass after huge damage", Settings.breakableGlass, false, wnd)
 		if(onChange) then
-			addEventHandler("onClientGUIClick", cb, function()
-				onChange("breakableGlass")
+			addEventHandler('onClientGUIClick', cb, function()
+				onChange('breakableGlass')
 			end, false)
 		end
 		return 20, cb
@@ -102,22 +102,22 @@ Settings.register
 
 Settings.register
 {
-	name = "redDmgScreen",
+	name = 'redDmgScreen',
 	default = true,
 	cast = tobool,
 	onChange = function(oldVal, newVal)
 		if(not Settings.breakableGlass) then
 			if(newVal) then
-				addEventHandler("onClientRender", g_Root, renderGlass)
+				addEventHandler('onClientRender', g_Root, renderGlass)
 			else
-				removeEventHandler("onClientRender", g_Root, renderGlass)
+				removeEventHandler('onClientRender', g_Root, renderGlass)
 			end
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Screen flashes red after huge damage", Settings.redDmgScreen, false, wnd)
 		if(onChange) then
-			addEventHandler("onClientGUIClick", cb, onChange, false)
+			addEventHandler('onClientGUIClick', cb, onChange, false)
 		end
 		return 20, cb
 	end,
@@ -126,4 +126,4 @@ Settings.register
 	end,
 }
 
-addEventHandler("onClientResourceStart", g_ResRoot, init)
+addEventHandler('onClientResourceStart', g_ResRoot, init)

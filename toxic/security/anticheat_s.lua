@@ -4,7 +4,7 @@ local g_HighSpeedAllowed = false
 -- Global function definitions --
 ---------------------------------
 
-table.insert ( g_CustomRights, "ac_messages" )
+table.insert ( g_CustomRights, 'ac_messages' )
 
 function AcAllowHighSpeed ( allow )
 	g_HighSpeedAllowed = allow
@@ -21,7 +21,7 @@ local function AcCheckPlayer ( player )
 			if ( not Settings.max_viel_kick ) then
 				local show_msg = true
 				for player2, pdata2 in pairs ( g_Players ) do
-					if ( hasObjectPermissionTo ( player2, "resource."..g_ResName..".ac_messages", false ) ) then
+					if ( hasObjectPermissionTo ( player2, 'resource.'..g_ResName..'.ac_messages', false ) ) then
 						privMsg ( player2, "%s's speed in horizontal plane: %.1f km/h. He seems to cheat!", getPlayerName ( player ), speed )
 						show_msg = false
 					end
@@ -40,7 +40,7 @@ local function AcCheckPlayer ( player )
 	-- fps anticheat
 	if (Settings.fps_anticheat) then
 		local pdata = Player.fromEl(player)
-		local fps = tonumber ( getElementData ( player, "fps" ) )
+		local fps = tonumber ( getElementData ( player, 'fps' ) )
 		local fps_limit = getFPSLimit ()
 		if ( fps and fps_limit > 0 and fps > fps_limit + 5 ) then
 			if ( not pdata.fps_cheat ) then

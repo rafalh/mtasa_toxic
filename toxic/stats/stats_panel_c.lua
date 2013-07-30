@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -26,9 +26,9 @@ local function SpInitGui()
 end
 
 local function SpInit()
-	addCommandHandler("StatsPanel", SpToggle, false, false)
-	local key = getKeyBoundToCommand("StatsPanel") or "F1"
-	bindKey(key, "down", "StatsPanel")
+	addCommandHandler('StatsPanel', SpToggle, false, false)
+	local key = getKeyBoundToCommand('StatsPanel') or 'F1'
+	bindKey(key, 'down', 'StatsPanel')
 end
 
 local function onAccountChange()
@@ -52,14 +52,14 @@ function SpToggle()
 	
 	if(g_Visible) then -- hide panel
 		g_Anim = Animation.createAndPlay(g_Wnd,
-			Animation.presets.guiMoveEx(g_ScreenSize[1] + g_Width, g_PosY, 500, "InQuad"),
+			Animation.presets.guiMoveEx(g_ScreenSize[1] + g_Width, g_PosY, 500, 'InQuad'),
 			Animation.presets.guiSetVisible(false))
 		g_StatsView:hide()
 	else -- show panel
 		guiSetVisible(g_Wnd, true)
-		g_Anim = Animation.createAndPlay(g_Wnd, Animation.presets.guiMoveEx(g_PosX, g_PosY, 500, "InOutQuad"))
+		g_Anim = Animation.createAndPlay(g_Wnd, Animation.presets.guiMoveEx(g_PosX, g_PosY, 500, 'InOutQuad'))
 		g_StatsView:show()
-		AchvActivate("Open Statistics Panel")
+		AchvActivate('Open Statistics Panel')
 	end
 	g_Visible = not g_Visible
 end
@@ -68,5 +68,5 @@ end
 -- Events --
 ------------
 
-addEventHandler("onClientResourceStart", g_ResRoot, SpInit)
-addEventHandler("main.onAccountChange", g_ResRoot, onAccountChange)
+addEventHandler('onClientResourceStart', g_ResRoot, SpInit)
+addEventHandler('main.onAccountChange', g_ResRoot, onAccountChange)

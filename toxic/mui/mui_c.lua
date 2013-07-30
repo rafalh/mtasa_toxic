@@ -4,8 +4,8 @@ local g_Mui = {}
 local g_IgnoredSet = {}
 local g_Lang
 
-addEvent ( "onClientLangChange", true )
-addEvent ( "onClientLangChanged" )
+addEvent ( 'onClientLangChange', true )
+addEvent ( 'onClientLangChanged' )
 
 local function MuiLoadInternal ( path )
 	local strings = {}
@@ -14,24 +14,24 @@ local function MuiLoadInternal ( path )
 	if ( node ) then
 		local i = 0
 		while ( true ) do
-			local subnode = xmlFindChild ( node, "msg", i )
+			local subnode = xmlFindChild ( node, 'msg', i )
 			if ( not subnode ) then break end
 			i = i + 1
 			
-			local id = xmlNodeGetAttribute ( subnode, "id" )
+			local id = xmlNodeGetAttribute ( subnode, 'id' )
 			local value = xmlNodeGetValue ( subnode )
 			if ( id and value ) then
 				strings[id] = value
 			end
 			
-			local pattern = xmlNodeGetAttribute ( subnode, "pattern" )
+			local pattern = xmlNodeGetAttribute ( subnode, 'pattern' )
 			if ( pattern and value ) then
 				patterns[pattern] = value
 			end
 		end
 		xmlUnloadFile ( node )
 	elseif(fileExists(path)) then
-		outputDebugString("Failed to load "..path, 2)
+		outputDebugString('Failed to load '..path, 2)
 	end
 	return { strings, patterns }
 end
@@ -143,9 +143,9 @@ end
 function MuiSetLang ( lang )
 	assert(lang)
 	if(lang ~= g_Lang) then
-		MuiLoad("lang/"..tostring (lang).."_c.xml")
+		MuiLoad('lang/'..tostring (lang)..'_c.xml')
 		MuiUpdate()
-		triggerEvent("onClientLangChanged", getResourceRootElement())
+		triggerEvent('onClientLangChanged', getResourceRootElement())
 		g_Lang = lang
 	end
 end
@@ -156,5 +156,5 @@ local function MuiOnElementDestroy ()
 	end
 end
 
-addEventHandler("onClientLangChange", getResourceRootElement(), MuiSetLang)
-addEventHandler("onClientElementDestroy", getResourceRootElement(), MuiOnElementDestroy)
+addEventHandler('onClientLangChange', getResourceRootElement(), MuiSetLang)
+addEventHandler('onClientElementDestroy', getResourceRootElement(), MuiOnElementDestroy)

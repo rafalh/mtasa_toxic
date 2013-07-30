@@ -4,11 +4,11 @@ local function CmdRate(message, arg)
 	if(rate >= 1 and rate <= 10) then
 		RtPlayerRate(rate)
 	else
-		privMsg(source, "Usage: %s", arg[1].." <1-5>")
+		privMsg(source, "Usage: %s", arg[1]..' <1-5>')
 	end
 end
 
-CmdRegister("rate", CmdRate, false, "Rates current map")
+CmdRegister('rate', CmdRate, false, "Rates current map")
 
 local function CmdRating(message, arg)
 	local room = Player.fromEl(source).room
@@ -17,7 +17,7 @@ local function CmdRating(message, arg)
 	if(map) then
 		local map_id = map:getId()
 		local map_name = map:getName()
-		local rows = DbQuery("SELECT rates, rates_count FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
+		local rows = DbQuery('SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
 		local rating = 0
 		if(rows[1].rates_count > 0) then
 			rating = rows[1].rates / rows[1].rates_count
@@ -27,4 +27,4 @@ local function CmdRating(message, arg)
 	end
 end
 
-CmdRegister("rating", CmdRating, false, "Checks current map rating")
+CmdRegister('rating', CmdRating, false, "Checks current map rating")

@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -15,18 +15,18 @@ local g_TranslateBtn, g_SayBtn
 local g_ChatMsgCb
 local g_ChatMsg = {}
 local g_MsgCount = 0
-local g_Langs = { "en" }
+local g_Langs = { 'en' }
 local g_LangNames = { en = "English" }
 local g_Timer = false
 
-addEvent ( "onTranslateReq", true )
-addEvent ( "onTranslateLangListReq", true )
-addEvent ( "onClientTranslate", true )
-addEvent ( "onClientTranslateLangList", true )
+addEvent ( 'onTranslateReq', true )
+addEvent ( 'onTranslateLangListReq', true )
+addEvent ( 'onClientTranslate', true )
+addEvent ( 'onClientTranslateLangList', true )
 
 local TranslatorPanel = {
 	name = "Translator",
-	img = "translator/icon.png",
+	img = 'translator/icon.png',
 	tooltip = "Traslate any sentence into your own language",
 	height = 370,
 }
@@ -37,14 +37,14 @@ local TranslatorPanel = {
 
 local function LoadLanguages ()
 	g_LangNames = {}
-	local node, i = xmlLoadFile ( "conf/iso_langs.xml" ), 0
+	local node, i = xmlLoadFile ( 'conf/iso_langs.xml' ), 0
 	if ( node ) then
 		while ( true ) do
-			local subnode = xmlFindChild ( node, "lang", i )
+			local subnode = xmlFindChild ( node, 'lang', i )
 			if ( not subnode ) then break end
 			i = i + 1
 			
-			local code = xmlNodeGetAttribute ( subnode, "code" )
+			local code = xmlNodeGetAttribute ( subnode, 'code' )
 			local name = xmlNodeGetValue ( subnode )
 			assert ( code and name )
 			g_LangNames[code] = name
@@ -61,7 +61,7 @@ end
 
 local function onTranslateClick ()
 	local text = guiGetText ( g_Input )
-	if ( not text:match ( "^%s*$" ) ) then
+	if ( not text:match ( '^%s*$' ) ) then
 		local from_i = guiComboBoxGetSelected ( g_FromLang )
 		local from = from_i > 0 and g_Langs[from_i] -- auto is supported
 		local to_i = guiComboBoxGetSelected ( g_ToLang )
@@ -74,7 +74,7 @@ local function onTranslateClick ()
 		guiSetText ( g_Output, MuiGetMsg ( "Please wait..." ) )
 		g_Timer = setTimer ( timerProc, 1000, 1 )
 		
-		triggerServerEvent ( "onTranslateReq", g_Me, text, from, to, say )
+		triggerServerEvent ( 'onTranslateReq', g_Me, text, from, to, say )
 	else
 		guiSetText ( g_Output, text )
 	end
@@ -112,7 +112,7 @@ local function updateLangComboBoxes ()
 	local default = 0
 	for i, lang in ipairs ( g_Langs ) do
 		local id = guiComboBoxAddItem ( g_ToLang, g_LangNames[lang] or lang )
-		if ( lang == "en" ) then
+		if ( lang == 'en' ) then
 			default = id
 		end
 	end
@@ -123,46 +123,46 @@ local function createGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
 	LoadLanguages ()
-	triggerServerEvent("onTranslateLangListReq", g_Root)
+	triggerServerEvent('onTranslateLangListReq', g_Root)
 	
 	guiCreateLabel(10, 10, 50, 15, "From:", false, panel)
-	g_FromLang = guiCreateComboBox ( 50, 10, 130, 300, "", false, panel )
+	g_FromLang = guiCreateComboBox ( 50, 10, 130, 300, '', false, panel )
 	
-	local btn = guiCreateButton ( 200, 10, 40, 25, "<->", false, panel )
-	addEventHandler ( "onClientGUIClick", btn, onSwitchLangsClick, false )
+	local btn = guiCreateButton ( 200, 10, 40, 25, '<->', false, panel )
+	addEventHandler ( 'onClientGUIClick', btn, onSwitchLangsClick, false )
 	
 	guiCreateLabel ( 260, 10, 50, 15, "To:", false, panel )
-	g_ToLang = guiCreateComboBox ( 310, 10, math.min(130, w - 320), 300, "", false, panel )
+	g_ToLang = guiCreateComboBox ( 310, 10, math.min(130, w - 320), 300, '', false, panel )
 	
 	updateLangComboBoxes ()
 	
 	g_TranslateBtn = guiCreateButton ( 10, 40, 80, 25, "Translate", false, panel )
-	addEventHandler ( "onClientGUIClick", g_TranslateBtn, onTranslateClick, false )
+	addEventHandler ( 'onClientGUIClick', g_TranslateBtn, onTranslateClick, false )
 	
 	g_SayBtn = guiCreateButton ( 100, 40, 120, 25, "Say translated", false, panel )
-	addEventHandler ( "onClientGUIClick", g_SayBtn, onTranslateClick, false )
+	addEventHandler ( 'onClientGUIClick', g_SayBtn, onTranslateClick, false )
 	
 	g_ChatMsgCb = guiCreateComboBox ( 230, 40, w - 240, 210, MuiGetMsg ( "Load chat message" ), false, panel )
-	addEventHandler ( "onClientGUIComboBoxAccepted", g_ChatMsgCb, loadChatMsg, false )
+	addEventHandler ( 'onClientGUIComboBoxAccepted', g_ChatMsgCb, loadChatMsg, false )
 	for i, msg in ipairs ( g_ChatMsg ) do
 		guiComboBoxAddItem ( g_ChatMsgCb, msg )
 	end
 	g_ChatMsg = false
 	
 	guiCreateLabel ( 10, 70, 50, 15, "Input:", false, panel )
-	g_Input = guiCreateMemo ( 10, 90, w - 20, 90, "", false, panel )
+	g_Input = guiCreateMemo ( 10, 90, w - 20, 90, '', false, panel )
 	
 	guiCreateLabel(10, 190, 50, 15, "Output:", false, panel)
-	g_Output = guiCreateMemo(10, 210, w - 20, 90, "", false, panel)
+	g_Output = guiCreateMemo(10, 210, w - 20, 90, '', false, panel)
 	guiMemoSetReadOnly(g_Output, true)
 	
-	local label = guiCreateLabel(10, 310, w - 20, 15, MuiGetMsg("Translation by %s"):format("Microsoft Bing (tm)"), false, panel)
-	guiSetFont(label, "default-small")
-	guiLabelSetHorizontalAlign(label, "right")
+	local label = guiCreateLabel(10, 310, w - 20, 15, MuiGetMsg("Translation by %s"):format('Microsoft Bing (tm)'), false, panel)
+	guiSetFont(label, 'default-small')
+	guiLabelSetHorizontalAlign(label, 'right')
 	
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		addEventHandler('onClientGUIClick', btn, UpBack, false)
 	end
 end
 
@@ -191,7 +191,7 @@ end
 local function onChatMessage ( text )
 	local LIMIT = 12
 	
-	text = text:gsub ( "#%x%x%x%x%x%x", "" )
+	text = text:gsub ( '#%x%x%x%x%x%x', '' )
 	
 	if ( g_ChatMsgCb ) then
 		if ( g_MsgCount >= LIMIT ) then
@@ -217,6 +217,6 @@ end
 ----------------------
 
 UpRegister ( TranslatorPanel )
-addEventHandler ( "onClientTranslate", g_Root, onTranslate )
-addEventHandler ( "onClientTranslateLangList", g_Root, onTranslateLangList )
-addEventHandler ( "onClientChatMessage", g_Root, onChatMessage )
+addEventHandler ( 'onClientTranslate', g_Root, onTranslate )
+addEventHandler ( 'onClientTranslateLangList', g_Root, onTranslateLangList )
+addEventHandler ( 'onClientChatMessage', g_Root, onChatMessage )

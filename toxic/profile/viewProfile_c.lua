@@ -39,29 +39,29 @@ function ProfileView.create(id, name)
 	local x, y = ( g_ScreenSize[1] - w ) / 2, ( g_ScreenSize[2] - h ) / 2
 	self.wnd = guiCreateWindow(x, y, w, h, "Player profile", false)
 	guiSetVisible(self.wnd, false)
-	addEventHandler("onClientElementDestroy", self.wnd, ProfileView.onDestroy, false)
+	addEventHandler('onClientElementDestroy', self.wnd, ProfileView.onDestroy, false)
 	
 	self.nameLabel = guiCreateLabel(10, 25, w - 20, 20, name or "Unknown", false, self.wnd)
-	guiSetFont(self.nameLabel, "default-bold-small")
+	guiSetFont(self.nameLabel, 'default-bold-small')
 	
 	local statsLabel = guiCreateLabel(10, 45, 100, 15, "Statistics", false, self.wnd)
-	guiSetFont(statsLabel, "default-bold-small")
+	guiSetFont(statsLabel, 'default-bold-small')
 	guiLabelSetColor(statsLabel, 255, 255, 128)
 	
 	self.statsView = StatsView.create(id, self.wnd, 10, 60, 240, h - 80)
 	
 	local infoLabel = guiCreateLabel(250, 45, 100, 15, "Information", false, self.wnd)
-	guiSetFont(infoLabel, "default-bold-small")
+	guiSetFont(infoLabel, 'default-bold-small')
 	guiLabelSetColor(infoLabel, 128, 128, 255)
 	
 	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, self.wnd)
-	addEventHandler("onClientGUIClick", btn, ProfileView.onClose, false)
+	addEventHandler('onClientGUIClick', btn, ProfileView.onClose, false)
 	
 	self.statsView:show()
 	GaFadeIn(self.wnd, 200)
 	showCursor(true)
 	
-	RPC("getPlayerProfile", id):onResult(ProfileView.onProfile):setCallbackArgs(id):exec()
+	RPC('getPlayerProfile', id):onResult(ProfileView.onProfile):setCallbackArgs(id):exec()
 	g_WndToObj[self.wnd] = self
 	g_IdToObj[self.id] = self
 	
@@ -75,7 +75,7 @@ function ProfileView.onProfile(id, data)
 	local y = 60
 	for key, val in pairs(data) do
 		key = key:sub(1, 1):upper()..key:sub(2)
-		guiCreateLabel(250, y, 80, 15, key..":", false, self.wnd)
+		guiCreateLabel(250, y, 80, 15, key..':', false, self.wnd)
 		guiCreateLabel(330, y, 100, 15, val, false, self.wnd)
 		y = y + 15
 	end

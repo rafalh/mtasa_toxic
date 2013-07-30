@@ -3,7 +3,7 @@ local g_Strings = {}
 local g_Patterns = {}
 local g_TextItems = {}
 
-addEvent("onPlayerLangChange")
+addEvent('onPlayerLangChange')
 
 function MuiLoadFile(path)
 	local strings = {}
@@ -12,40 +12,40 @@ function MuiLoadFile(path)
 	if ( node ) then
 		local i = 0
 		while ( true ) do
-			local subnode = xmlFindChild ( node, "msg", i )
+			local subnode = xmlFindChild ( node, 'msg', i )
 			if ( not subnode ) then break end
 			i = i + 1
 			
-			local id = xmlNodeGetAttribute ( subnode, "id" )
+			local id = xmlNodeGetAttribute ( subnode, 'id' )
 			local value = xmlNodeGetValue ( subnode )
 			if ( id and value ) then
 				strings[id] = value
 			end
 			
-			local pattern = xmlNodeGetAttribute ( subnode, "pattern" )
+			local pattern = xmlNodeGetAttribute ( subnode, 'pattern' )
 			if ( pattern and value ) then
 				patterns[pattern] = value
 			end
 		end
 		xmlUnloadFile ( node )
 	elseif(fileExists(path)) then
-		outputDebugString("Failed to load "..path, 2)
+		outputDebugString('Failed to load '..path, 2)
 	end
 	return { strings, patterns }
 end
 
 function MuiLoad(lang_id)
 	if(g_Langs[lang_id]) then return end
-	g_Langs[lang_id] = MuiLoadFile("lang/"..tostring(lang_id)..".xml")
+	g_Langs[lang_id] = MuiLoadFile('lang/'..tostring(lang_id)..'.xml')
 end
 
 function MuiGetPlayerLocale(player)
-	return getElementData(player, "lang")
+	return getElementData(player, 'lang')
 end
 
 function MuiGetMsg ( text, player )
 	assert ( player and text )
-	local lang = getElementData ( player, "lang" )
+	local lang = getElementData ( player, 'lang' )
 	if ( lang ) then
 		MuiLoad ( lang )
 		if ( g_Langs[lang][1][text] ) then
@@ -62,9 +62,9 @@ local _outputChatBox = outputChatBox
 function outputChatBox ( text, visibleTo, ... )
 	local players, ret
 	if ( not visibleTo ) then
-		players = getElementsByType ( "player" ) -- nil is not allowed here
+		players = getElementsByType ( 'player' ) -- nil is not allowed here
 	else
-		players = getElementsByType ( "player", visibleTo ) -- works for player too
+		players = getElementsByType ( 'player', visibleTo ) -- works for player too
 	end
 	for i, player in ipairs ( players ) do
 		ret = _outputChatBox ( MuiGetMsg ( text, player ), player, ... )
@@ -113,9 +113,9 @@ local function MuiUpdate ()
 end
 
 function MuiOnPlayerLangChange ()
-	assert ( getElementType ( source ) == "player" )
+	assert ( getElementType ( source ) == 'player' )
 	MuiLoad ( lang )
 	MuiUpdate ()
 end
 
-addEventHandler ( "onPlayerLangChange", getRootElement (), MuiOnPlayerLangChange )]]
+addEventHandler ( 'onPlayerLangChange', getRootElement (), MuiOnPlayerLangChange )]]

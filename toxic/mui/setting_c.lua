@@ -10,13 +10,13 @@ end
 
 Settings.register
 {
-	name = "locale",
-	default = "en",
+	name = 'locale',
+	default = 'en',
 	priority = 0,
 	cast = tostring,
 	onChange = function(oldVal, newVal)
 		if(g_Ready) then
-			triggerServerEvent("main.onSetLocaleReq", g_ResRoot, newVal)
+			triggerServerEvent('main.onSetLocaleReq', g_ResRoot, newVal)
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
@@ -33,10 +33,10 @@ Settings.register
 		
 		for i, locale in LocaleList.ipairs() do
 			local img = guiCreateStaticImage(x, y + 20, flagW, flagH, locale.img, false, wnd)
-			setElementData(img, "tooltip", locale.name)
-			addEventHandler("onClientGUIClick", img, onFlagClick, false)
+			setElementData(img, 'tooltip', locale.name)
+			addEventHandler('onClientGUIClick', img, onFlagClick, false)
 			if(onChange) then
-				addEventHandler("onClientGUIClick", img, onChange, false)
+				addEventHandler('onClientGUIClick', img, onChange, false)
 			end
 			g_LangButtons[img] = locale.code
 			

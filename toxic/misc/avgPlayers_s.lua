@@ -18,19 +18,19 @@ local function AvpInit()
 	setTimer(AvpTimerProc, 60000, 0)
 end
 
-CmdRegister("avgplayers", CmdAvgPlayers, false, "Shows avarange players count")
+CmdRegister('avgplayers', CmdAvgPlayers, false, "Shows avarange players count")
 addInitFunc(AvpInit)
 
 Settings.register
 {
-	name = "avg_players",
-	type = "DOUBLE",
+	name = 'avg_players',
+	type = 'DOUBLE',
 	default = 0,
 }
 
 Settings.register
 {
-	name = "arit_avg_players_m",
-	type = "DOUBLE",
+	name = 'arit_avg_players_m',
+	type = 'DOUBLE',
 	default = 0,
 }

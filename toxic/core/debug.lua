@@ -5,8 +5,8 @@ local g_DbgPerfData = {}
 
 function DbgTraceBack(lvl, len, offset, ret)
 	local trace = debug.traceback()
-	trace = trace:gsub("\r", "")
-	local lines = split(trace, "\n")
+	trace = trace:gsub('\r', '')
+	local lines = split(trace, '\n')
 	local start = 3 + (offset or 0)
 	local stop = #lines
 	if(len) then
@@ -39,11 +39,11 @@ if(DEBUG) then
 	function DbgDump(str, title)
 		local len = str:len()
 		local bytes = {str:byte(1, len)}
-		local buf = ""
+		local buf = ''
 		for i, byte in ipairs(bytes) do
-			buf = buf..(" %02X"):format (byte)
+			buf = buf..(' %02X'):format (byte)
 		end
-		DbgPrint((title or "dump")..":"..buf)
+		DbgPrint((title or 'dump')..':'..buf)
 	end
 	
 	function DbgPerfInit(channel)
@@ -58,7 +58,7 @@ if(DEBUG) then
 			if(dt > 50) then
 				local args = {...}
 				args[#args + 1] = dt
-				DbgPrint(title.." has taken %u ms", unpack(args))
+				DbgPrint(title..' has taken %u ms', unpack(args))
 				return true
 			end
 		end

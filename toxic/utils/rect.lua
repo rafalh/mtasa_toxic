@@ -1,11 +1,11 @@
-Rect = Class("Rect")
+Rect = Class('Rect')
 
 function Rect.__mt:__eq(rc)
 	return self[1] == rc[1] and self[2] == rc[2]
 end
 
 function Rect.__mt:__tostring()
-	return "("..tostring(self[1]).." "..tostring(self[1] + self[2])..")"
+	return '('..tostring(self[1])..' '..tostring(self[1] + self[2])..')'
 end
 
 function Rect.__mt.__index:init(pos, size)
@@ -13,7 +13,7 @@ function Rect.__mt.__index:init(pos, size)
 	self[2] = size or Vector2()
 end
 
-RelRect = Class("RelRect")
+RelRect = Class('RelRect')
 
 function RelRect.__mt.__index:setAbs(rc)
 	self[1] = rc
@@ -34,7 +34,7 @@ function RelRect.__mt:__eq(rc)
 end
 
 function RelRect.__mt:__tostring()
-	return "(abs "..tostring(self[1])..", rel "..tostring(self[1] + self[2])..")"
+	return '(abs '..tostring(self[1])..', rel '..tostring(self[1] + self[2])..')'
 end
 
 function RelRect.__mt.__index:init(absRect, relRect)

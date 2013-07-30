@@ -19,23 +19,23 @@ function Settings.registerMetaSetting(attr)
 	if(not attr.name) then return end
 	
 	local ch1 = attr.name:sub(1, 1)
-	if(ch1 == "*" or ch1 == "@") then
+	if(ch1 == '*' or ch1 == '@') then
 		attr.name = attr.name:sub(2)
 	end
 	
 	if(Settings.items[attr.name]) then
-		outputDebugString("Ignoring meta setting "..attr.name, 2)
+		outputDebugString('Ignoring meta setting '..attr.name, 2)
 		return
 	end
 	
 	local item = {}
 	item.name = attr.name
 	if(attr.accept) then
-		local min, max = attr.accept:match("^(%d+)%-(%d+)$")
+		local min, max = attr.accept:match('^(%d+)%-(%d+)$')
 		if(min and max) then
 			item.validate = validateInt
 			item.valArgs = {tonumber(min), tonumber(max)}
-		elseif(attr.accept == "true,false" or attr.accept == "false,true") then
+		elseif(attr.accept == 'true,false' or attr.accept == 'false,true') then
 			item.validate = tobool
 			item.valArgs = {}
 		else
@@ -44,7 +44,7 @@ function Settings.registerMetaSetting(attr)
 		end
 	end
 	
-	item.client = (attr.type == "client" or attr.type == "shared")
+	item.client = (attr.type == 'client' or attr.type == 'shared')
 	item.default = attr.value
 	if(item.validate) then
 		item.default = item.validate(item.default, unpack(item.valArgs))
@@ -54,10 +54,10 @@ function Settings.registerMetaSetting(attr)
 end
 
 function Settings.loadMeta()
-	local node = xmlLoadFile("meta.xml")
+	local node = xmlLoadFile('meta.xml')
 	if(not node) then return false end
 	
-	local settingsNode = xmlFindChild(node, "settings", 0)
+	local settingsNode = xmlFindChild(node, 'settings', 0)
 	if(not settingsNode) then
 		xmlUnloadFile(node)
 		return false
@@ -76,7 +76,7 @@ function Settings.createDbTbl()
 	local fields, defValues = {}, {}
 	
 	SettingsTable = Database.Table{
-		name = "settings",
+		name = 'settings',
 	}
 	
 	for key, item in pairs(Settings.items) do
@@ -92,24 +92,24 @@ end
 
 function Settings.loadPrivate()
 	if(not DbIsReady()) then
-		outputDebugString("Database is not ready yet", 2)
+		outputDebugString('Database is not ready yet', 2)
 		return false
 	end
 	
-	local rows = DbQuery("SELECT * FROM "..SettingsTable.." LIMIT 1")
+	local rows = DbQuery('SELECT * FROM '..SettingsTable..' LIMIT 1')
 	if(not rows[1]) then
 		SettingsTable:insertDefault()
-		rows = DbQuery("SELECT * FROM "..SettingsTable.." LIMIT 1")
+		rows = DbQuery('SELECT * FROM '..SettingsTable..' LIMIT 1')
 	end
 	for key, val in pairs(rows[1]) do
 		local item = Settings.items[key]
 		assert(item)
 		
-		if(item.type == "BOOL" or item.type == "BOOLEAN") then
+		if(item.type == 'BOOL' or item.type == 'BOOLEAN') then
 			item.validate = tobool
 			item.valArgs = {}
 			val = tobool(val)
-		elseif(item.type == "INT" or item.type == "INTEGER") then
+		elseif(item.type == 'INT' or item.type == 'INTEGER') then
 			item.validate = toint
 			item.valArgs = {}
 		end
@@ -133,9 +133,9 @@ Settings.__mt.__index = function(self, key)
 	local v = rawget(self, key)
 	if(v) then return v end
 	
-	local item = rawget(Settings, "items")[key]
+	local item = rawget(Settings, 'items')[key]
 	if(not item) then
-		outputDebugString("Unknown setting "..tostring(key), 2)
+		outputDebugString('Unknown setting '..tostring(key), 2)
 		return nil
 	end
 	
@@ -149,7 +149,7 @@ Settings.__mt.__index = function(self, key)
 		item.value = item.validate(item.value, unpack(item.valArgs))
 	end
 	if(item.value == nil) then
-		outputDebugString("Invalid setting value: "..key, 2)
+		outputDebugString('Invalid setting value: '..key, 2)
 		item.value = item.default
 	end
 	
@@ -159,7 +159,7 @@ end
 function Settings.__mt.__newindex(self, key, val)
 	local item = Settings.items[key]
 	if(not item) then
-		outputDebugString("Unknown setting "..tostring(key), 2)
+		outputDebugString('Unknown setting '..tostring(key), 2)
 		return
 	end
 	
@@ -168,7 +168,7 @@ function Settings.__mt.__newindex(self, key, val)
 		newVal = item.validate(val, unpack(item.valArgs))
 	end
 	if(newVal == nil) then
-		outputDebugString("Invalid setting value "..tostring(newVal), 2)
+		outputDebugString('Invalid setting value '..tostring(newVal), 2)
 		return
 	end
 	
@@ -177,10 +177,10 @@ function Settings.__mt.__newindex(self, key, val)
 		item.value = newVal
 		if(item.priv) then
 			local sqlVal = newVal
-			if(type(sqlVal) == "boolean") then
+			if(type(sqlVal) == 'boolean') then
 				sqlVal = sqlVal and 1 or 0
 			end
-			DbQuery("UPDATE "..DbPrefix.."settings SET "..key.."=?", sqlVal)
+			DbQuery('UPDATE '..DbPrefix..'settings SET '..key..'=?', sqlVal)
 		else
 			set(key, newVal)
 		end
@@ -201,17 +201,17 @@ function Settings.onChange(name, oldVal, newVal)
 	local startTicks = getTickCount()
 	
 	local ch1 = name:sub(1, 1)
-	if(ch1 == "*" or ch1 == "@") then
+	if(ch1 == '*' or ch1 == '@') then
 		name = name:sub(2)
 	end
 	
 	-- Check if this is current resource setting
-	if(name:sub(1, g_ResName:len () + 1) ~= g_ResName..".") then return end
+	if(name:sub(1, g_ResName:len () + 1) ~= g_ResName..'.') then return end
 	name = name:sub(g_ResName:len() + 2)
 	
 	local item = Settings.items[name]
 	if(not item or item.priv) then
-		outputDebugString("Unknown setting "..name, 2)
+		outputDebugString('Unknown setting '..name, 2)
 		return
 	end
 	
@@ -221,7 +221,7 @@ function Settings.onChange(name, oldVal, newVal)
 	end
 	
 	if(newVal == nil) then
-		outputDebugString("Invalid setting value "..name, 2)
+		outputDebugString('Invalid setting value '..name, 2)
 		cancelEvent()
 		return
 	end
@@ -243,12 +243,12 @@ function Settings.onChange(name, oldVal, newVal)
 
 	local dt = getTickCount() - startTicks
 	if(dt > 1) then
-		outputDebugString("Too slow "..dt, 2)
+		outputDebugString('Too slow '..dt, 2)
 	end
 end
 
 setmetatable(Settings, Settings.__mt)
 
 addInitFunc(function()
-	addEventHandler("onSettingChange", g_Root, Settings.onChange)
+	addEventHandler('onSettingChange', g_Root, Settings.onChange)
 end)

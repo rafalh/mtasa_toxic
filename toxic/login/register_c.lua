@@ -1,9 +1,9 @@
 local g_GUI
 
-addEvent("main.onRegStatus", true)
+addEvent('main.onRegStatus', true)
 
 local function onRegisterClick(btn,state)
-	if btn ~= "left" or state ~= "up" then return end
+	if btn ~= 'left' or state ~= 'up' then return end
 	local name = guiGetText(g_GUI.name)
 	local pw = guiGetText(g_GUI.pw)
 	local pw2 = guiGetText(g_GUI.pw2)
@@ -16,7 +16,7 @@ local function onRegisterClick(btn,state)
 		err = "Username is too short!"
 	elseif(pw:len() < 3) then
 		err = "Password is too short!"
-	elseif(email ~= "" and not email:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$")) then
+	elseif(email ~= '' and not email:match('^[%w%._-]+@[%w_-]+%.[%w%._-]+$')) then
 		err = "E-Mail is invalid!"
 	end
 	
@@ -24,15 +24,15 @@ local function onRegisterClick(btn,state)
 		guiSetText(g_GUI.info, err)
 		guiLabelSetColor(g_GUI.info, 255, 0, 0)
 	else
-		triggerServerEvent("main.onRegisterReq", g_ResRoot, name, pw, email)
+		triggerServerEvent('main.onRegisterReq', g_ResRoot, name, pw, email)
 	end
 end
 
 function getPasswordStrength(str)
-	local hasNum = str:find("[%d]")
-	local hasLowerCase = str:find("[%l]")
-	local hasUpperCase = str:find("[%u]")
-	local hasSpecChar = str:find("[^%d%a]")
+	local hasNum = str:find('[%d]')
+	local hasLowerCase = str:find('[%l]')
+	local hasUpperCase = str:find('[%u]')
+	local hasSpecChar = str:find('[^%d%a]')
 	local strength = str:len()
 		+ (hasLowerCase and 1 or 0)
 		+ (hasUpperCase and 3 or 0)
@@ -45,7 +45,7 @@ local function onPwChange()
 	local pw = guiGetText(g_GUI.pw)
 	local strength = getPasswordStrength(pw)*100
 	
-	guiSetText(g_GUI.pwStr, ("%d%%"):format(strength))
+	guiSetText(g_GUI.pwStr, ('%d%%'):format(strength))
 	if(strength > 70) then
 		guiLabelSetColor(g_GUI.pwStr, 0, 200, 0)
 	elseif(strength > 40) then
@@ -56,7 +56,7 @@ local function onPwChange()
 end
 
 local function onBackClick(btn,state)
-	if btn ~= "left" or state ~= "up" then return end
+	if btn ~= 'left' or state ~= 'up' then return end
 	closeRegisterWnd()
 	openLoginWnd()
 end
@@ -91,13 +91,13 @@ end
 function openRegisterWnd()
 	closeRegisterWnd()
 	
-	g_GUI = GUI.create("registerWnd")
+	g_GUI = GUI.create('registerWnd')
 	showCursor(true)
 	
-	addEventHandler("onClientGUIClick", g_GUI.regBtn, onRegisterClick, false)
-	addEventHandler("onClientGUIClick", g_GUI.backBtn, onBackClick, false)
-	addEventHandler("onClientGUIChanged", g_GUI.pw, onPwChange, false)
+	addEventHandler('onClientGUIClick', g_GUI.regBtn, onRegisterClick, false)
+	addEventHandler('onClientGUIClick', g_GUI.backBtn, onBackClick, false)
+	addEventHandler('onClientGUIChanged', g_GUI.pw, onPwChange, false)
 end
 
-addEventHandler("main.onLoginStatus", g_ResRoot, onLoginStatus)
-addEventHandler("main.onRegStatus", g_ResRoot, onRegStatus)
+addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)
+addEventHandler('main.onRegStatus', g_ResRoot, onRegStatus)

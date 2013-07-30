@@ -1,8 +1,8 @@
-AccessRight = Class("AccessRight")
+AccessRight = Class('AccessRight')
 AccessRight.list = {}
 
 function AccessRight.__mt:__tostring()
-	return "AccessRight("..self.name..")"
+	return 'AccessRight('..self.name..')'
 end
 
 function AccessRight.__mt.__index:init(name)
@@ -15,7 +15,7 @@ function AccessRight.__mt.__index:check()
 	return LocalACL:checkAccess(self)
 end
 
-AccessList = Class("AccessList")
+AccessList = Class('AccessList')
 function AccessList.__mt.__index:checkAccess(right)
 	return self.tbl[right.name]
 end

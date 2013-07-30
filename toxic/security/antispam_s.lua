@@ -30,8 +30,8 @@ function AsProcessMsg(player)
 end
 
 function AsCanPlayerChangeNick(player, newNick, oldNick)
-	oldNick = oldNick and oldNick:gsub("#%x%x%x%x%x%x", "")
-	newNick = newNick:gsub("#%x%x%x%x%x%x", "")
+	oldNick = oldNick and oldNick:gsub('#%x%x%x%x%x%x', '')
+	newNick = newNick:gsub('#%x%x%x%x%x%x', '')
 	
 	if(oldNick ~= newNick) then
 		local pdata = Player.fromEl(player)

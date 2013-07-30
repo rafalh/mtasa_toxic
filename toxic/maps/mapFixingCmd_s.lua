@@ -9,7 +9,7 @@ end
 local g_FixMapScriptsWorker = false
 
 local function CmdFixMapScripts (message, arg)
-	if (arg[2] == "all") then
+	if (arg[2] == 'all') then
 		if (g_FixMapScriptsWorker) then return end
 		
 		local maps = getMapsList()
@@ -37,7 +37,7 @@ local function CmdFixMapScripts (message, arg)
 	end
 end
 
-CmdRegister("fixmapscripts", CmdFixMapScripts, true)
+CmdRegister('fixmapscripts', CmdFixMapScripts, true)
 
 local function CountSpInMapFile(path)
 	local node = xmlLoadFile(path)
@@ -46,7 +46,7 @@ local function CountSpInMapFile(path)
 	local ret = 0
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local tag = xmlNodeGetName(subnode)
-		if(tag == "spawnpoint") then
+		if(tag == 'spawnpoint') then
 			ret = ret + 1
 		end
 	end
@@ -55,17 +55,17 @@ local function CountSpInMapFile(path)
 end
 
 local function CheckMapSpawnpointsCount(map, player, opts)
-	local gm = map:getSetting("ghostmode")
+	local gm = map:getSetting('ghostmode')
 	if(tobool(gm)) then return true end -- map has ghostmode, so low spawnpoints count is ok
 	
 	local mapPath = map:getPath()
-	local node = xmlLoadFile(mapPath.."/meta.xml")
+	local node = xmlLoadFile(mapPath..'/meta.xml')
 	if(not node) then
-		outputDebugString("Failed to open "..mapPath.."/meta.xml", 2)
+		outputDebugString('Failed to open '..mapPath..'/meta.xml', 2)
 		return false
 	end
 	
-	gm = getMetaSetting(node, "ghostmode") -- getSetting returns cached value so check real setting
+	gm = getMetaSetting(node, 'ghostmode') -- getSetting returns cached value so check real setting
 	if(tobool(gm)) then return true end -- if gamemode is enabled, exit
 	
 	local cnt = 0
@@ -74,13 +74,13 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 		local tag = xmlNodeGetName(subnode)
 		local attr = xmlNodeGetAttributes(subnode)
 		
-		if(tag == "map" and attr.src) then
-			local path = mapPath.."/"..attr.src
+		if(tag == 'map' and attr.src) then
+			local path = mapPath..'/'..attr.src
 			local curFileCnt = CountSpInMapFile(path)
 			if(curFileCnt) then
 				cnt = cnt + curFileCnt
 			else
-				outputDebugString("CountSpInMapFile failed for "..path, 2)
+				outputDebugString('CountSpInMapFile failed for '..path, 2)
 			end
 		end
 	end
@@ -88,15 +88,13 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 	if(cnt < 20) then
 		privMsg(player, "Map %s has only %u spawnpoints", map:getName(), cnt)
 		
-		if(opts == "enablegm") then
-			setMetaSetting(node, "ghostmode", "true")
+		if(opts == 'enablegm') then
+			setMetaSetting(node, 'ghostmode', 'true')
 			xmlSaveFile(node)
-		elseif(opts == "moveres" and map.res) then
+		elseif(opts == 'moveres' and map.res) then
 			local resName = getResourceName(map.res)
-			renameResource(resName, resName, "[maps_to_fix]")
+			renameResource(resName, resName, '[maps_to_fix]')
 		end
-	else
-		--privMsg(player, "Map %s has %u spawnpoints", map:getName(), cnt)
 	end
 	
 	xmlUnloadFile(node)
@@ -105,7 +103,7 @@ end
 
 local function CheckSpCountInMaps(worker)
 	local map = worker.ctx.maps:get(worker.index)	
-	if(worker.ctx.pattern == "*" or map:getName():find(worker.ctx.pattern, 1, true)) then
+	if(worker.ctx.pattern == '*' or map:getName():find(worker.ctx.pattern, 1, true)) then
 		local status = CheckMapSpawnpointsCount(map, worker.info.player, worker.ctx.opts)
 		if(status) then
 			worker.ctx.count = worker.ctx.count + 1
@@ -117,7 +115,7 @@ local g_CheckSpWorker = false
 
 local function CmdCheckSp(message, arg)
 	local pattern, opts
-	if(arg[2] == "enablegm" or arg[2] == "moveres") then
+	if(arg[2] == 'enablegm' or arg[2] == 'moveres') then
 		opts = arg[2]
 		pattern = message:sub(arg[1]:len() + 3 + arg[2]:len())
 	else
@@ -154,4 +152,4 @@ local function CmdCheckSp(message, arg)
 	end
 end
 
-CmdRegister("checksp", CmdCheckSp, true)
+CmdRegister('checksp', CmdCheckSp, true)

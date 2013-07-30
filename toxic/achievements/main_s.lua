@@ -1,11 +1,11 @@
 local g_Achievements = {}
 local g_NameToAchv = {}
 
-addEvent("main.onAchvActivate", true)
---addEvent("main.onAchvListReq", true)
+addEvent('main.onAchvActivate', true)
+--addEvent('main.onAchvListReq', true)
 
 PlayersTable:addColumns{
-	{"achievements", "BLOB", default = ""},
+	{'achievements', 'BLOB', default = ''},
 }
 
 function AchvGetCount()
@@ -16,14 +16,14 @@ end
 function AchvInvalidateCache(player)
 	local pdata = Player.fromEl(player)
 	local achvList, achvSet = AchvGetActive(player)
-	pdata.accountData:set("achvCount", #achvList)
+	pdata.accountData:set('achvCount', #achvList)
 	pdata.achvSet = achvSet
 end
 
 function AchvGetActive(player)
 	local pdata = Player.fromEl(player)
 	
-	local achvStr = pdata.accountData:get("achievements")
+	local achvStr = pdata.accountData:get('achievements')
 	local activeList = {string.byte(achvStr, 1, achvStr:len())}
 	local activeSet = {}
 	for i, id in ipairs(activeList) do
@@ -58,7 +58,7 @@ function AchvCheckPlayer(player)
 	
 	if(#newAchv > 0) then
 		if(#newAchv >= 3) then
-			outputDebugString("Tried to activate "..#newAchv.." achievements at once!", 1)
+			outputDebugString('Tried to activate '..#newAchv..' achievements at once!', 1)
 		else
 			AchvActivate(player, newAchv)
 		end
@@ -74,13 +74,13 @@ end
 function AchvActivate(player, names)
 	local pdata = Player.fromEl(player)
 	assert(pdata and names)
-	if(type(names) ~= "table") then
+	if(type(names) ~= 'table') then
 		names = {names}
 	end
 	
 	if(not pdata.id) then return end -- dont support achievements for guests
 	
-	local achvStr = pdata.accountData:get("achievements")
+	local achvStr = pdata.accountData:get('achievements')
 	local newAchv = {}
 	
 	assert(pdata.achvSet)
@@ -92,24 +92,24 @@ function AchvActivate(player, names)
 		if(not pdata.achvSet[achv.id]) then
 			if(achv.save or achv.client) then
 				achvStr = achvStr..string.char(achv.id)
-				--outputDebugString("add "..achv.id.." to DB", 3)
+				--outputDebugString('add '..achv.id..' to DB', 3)
 			end
 			
-			outputDebugString("Achievement "..achv.name.." activated for "..tostring(getPlayerName(player)), 3)
+			outputDebugString('Achievement '..achv.name..' activated for '..tostring(getPlayerName(player)), 3)
 			pdata.achvSet[achv.id] = true
-			pdata.accountData:add("achvCount", 1)
+			pdata.accountData:add('achvCount', 1)
 			table.insert(newAchv, achv.id)
-			pdata.accountData:add("cash", achv.prize)
+			pdata.accountData:add('cash', achv.prize)
 		else
-			--outputDebugString("Failed to activate achievement: "..achv.name, 3)
+			--outputDebugString('Failed to activate achievement: '..achv.name, 3)
 		end
 	end
 	
 	if(#newAchv > 0) then
-		pdata.accountData:set("achievements", achvStr)
+		pdata.accountData:set('achievements', achvStr)
 		
 		if(pdata.sync) then
-			triggerClientEvent(player, "main.onAchvChange", g_ResRoot, newAchv)
+			triggerClientEvent(player, 'main.onAchvChange', g_ResRoot, newAchv)
 		end
 	end
 end
@@ -120,12 +120,12 @@ local function AchvInitAccount(player)
 	local pdata = Player.fromEl(player)
 	if(pdata.achvReq) then
 		local achvList = AchvGetActive(player)
-		triggerClientEvent(player, "main.onAchvList", g_ResRoot, achvList)
+		triggerClientEvent(player, 'main.onAchvList', g_ResRoot, achvList)
 	end
 end
 
 local function AchvPlayerLoginLogout()
-	--outputDebugString("AchvPlayerLoginLogout!", 3)
+	--outputDebugString('AchvPlayerLoginLogout!', 3)
 	AchvInitAccount(source)
 end
 
@@ -134,7 +134,7 @@ local function AchvPlayerJoin()
 end
 
 local function AchvClientActivate(name)
-	--outputDebugString("AchvClientActivate", 3)
+	--outputDebugString('AchvClientActivate', 3)
 	
 	local achv = g_NameToAchv[name]
 	if(not achv or not achv.client) then return end -- hacking attempt
@@ -144,7 +144,7 @@ end
 
 local function AchvListReq()
 	local achvList = AchvGetActive(client)
-	triggerClientEvent(client, "main.onAchvList", g_ResRoot, achvList)
+	triggerClientEvent(client, 'main.onAchvList', g_ResRoot, achvList)
 	local pdata = Player.fromEl(client)
 	pdata.achvReq = true
 end
@@ -154,12 +154,12 @@ local function AchvInit()
 		AchvInitAccount(player)
 	end
 	
-	addEventHandler("onPlayerLogin", g_Root, AchvPlayerLoginLogout)
-	addEventHandler("onPlayerLogout", g_Root, AchvPlayerLoginLogout)
-	addEventHandler("onPlayerJoin", g_Root, AchvPlayerJoin)
-	addEventHandler("main.onAchvActivate", g_ResRoot, AchvClientActivate)
-	--addEventHandler("main.onAchvListReq", g_ResRoot, AchvListReq)
-	addEventHandler("main.onPlayerReady", g_ResRoot, AchvListReq) -- hmm
+	addEventHandler('onPlayerLogin', g_Root, AchvPlayerLoginLogout)
+	addEventHandler('onPlayerLogout', g_Root, AchvPlayerLoginLogout)
+	addEventHandler('onPlayerJoin', g_Root, AchvPlayerJoin)
+	addEventHandler('main.onAchvActivate', g_ResRoot, AchvClientActivate)
+	--addEventHandler('main.onAchvListReq', g_ResRoot, AchvListReq)
+	addEventHandler('main.onPlayerReady', g_ResRoot, AchvListReq) -- hmm
 end
 
 addInitFunc(AchvInit)

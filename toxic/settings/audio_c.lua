@@ -1,26 +1,26 @@
 Settings.register
 {
-	name = "raceVolume",
+	name = 'raceVolume',
 	default = 100,
 	cast = tonumber,
 	priority = 60,
 	onChange = function(oldVal, newVal)
-		local res = getResourceFromName("race_audio")
+		local res = getResourceFromName('race_audio')
 		if(res) then
-			--outputDebugString("Changing race audio volume to "..newVal/200, 3)
-			call(res, "setRaceAudioVolume", newVal/200) -- normally its 0.5
+			--outputDebugString('Changing race audio volume to '..newVal/200, 3)
+			call(res, 'setRaceAudioVolume', newVal/200) -- normally its 0.5
 		else
-			outputChatBox("Failed to set Race Audio volume!", 255, 0, 0)
+			outputMsg(Styles.red, "Failed to set Race Audio volume!")
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
 		local text = MuiGetMsg("Race Audio Volume: %u%%"):format(Settings.raceVolume)
 		local label = guiCreateLabel(x, y + 5, 190, 15, text, false, wnd)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
-		setElementData(bar, "tooltip", "Changes volume for Count Down, Checkpoints and Race Voice sounds")
+		setElementData(bar, 'tooltip', "Changes volume for Count Down, Checkpoints and Race Voice sounds")
 		guiScrollBarSetScrollPosition(bar, Settings.raceVolume)
 		if(onChange) then
-			addEventHandler("onClientGUIScroll", bar, onChange, false)
+			addEventHandler('onClientGUIScroll', bar, onChange, false)
 		end
 		return 22, {label, bar}
 	end,
@@ -34,7 +34,7 @@ Settings.register
 
 Settings.register
 {
-	name = "cmdVolume",
+	name = 'cmdVolume',
 	default = 100,
 	cast = tonumber,
 	priority = 60,
@@ -46,10 +46,10 @@ Settings.register
 		local text = MuiGetMsg("Commands Volume: %u%%"):format(Settings.cmdVolume)
 		local label = guiCreateLabel(x, y + 5, 190, 15, text, false, wnd)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
-		setElementData(bar, "tooltip", "Changes volume for commands with sound")
+		setElementData(bar, 'tooltip', "Changes volume for commands with sound")
 		guiScrollBarSetScrollPosition(bar, Settings.cmdVolume)
 		if(onChange) then
-			addEventHandler("onClientGUIScroll", bar, onChange, false)
+			addEventHandler('onClientGUIScroll', bar, onChange, false)
 		end
 		return 22, {label, bar}
 	end,
@@ -63,27 +63,27 @@ Settings.register
 
 Settings.register
 {
-	name = "musicVolume",
+	name = 'musicVolume',
 	default = 100,
 	cast = tonumber,
 	priority = 60,
 	onChange = function(oldVal, newVal)
-		local res = getResourceFromName("mapmusic")
+		local res = getResourceFromName('mapmusic')
 		if(res) then
-			--outputDebugString("Changing race audio volume to "..newVal/200, 3)
-			call(res, "setMusicVolume", newVal) -- normally its 0.5
+			--outputDebugString('Changing race audio volume to '..newVal/200, 3)
+			call(res, 'setMusicVolume', newVal) -- normally its 0.5
 		else
-			outputChatBox("Failed to set music volume!", 255, 0, 0)
+			outputMsg(Styles.red, "Failed to set music volume!")
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
 		local text = MuiGetMsg("Map Music Volume: %u%%"):format(Settings.musicVolume)
 		local label = guiCreateLabel(x, y + 5, 190, 15, text, false, wnd)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
-		setElementData(bar, "tooltip", "Changes volume for map music")
+		setElementData(bar, 'tooltip', "Changes volume for map music")
 		guiScrollBarSetScrollPosition(bar, Settings.musicVolume)
 		if(onChange) then
-			addEventHandler("onClientGUIScroll", bar, onChange, false)
+			addEventHandler('onClientGUIScroll', bar, onChange, false)
 		end
 		return 22, {label, bar}
 	end,

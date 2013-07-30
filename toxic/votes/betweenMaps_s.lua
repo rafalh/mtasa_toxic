@@ -2,15 +2,15 @@
 -- Custom events --
 -------------------
 
-addEvent ( "onPollModified" )
-addEvent ( "onPollStarting" )
+addEvent ( 'onPollModified' )
+addEvent ( 'onPollStarting' )
 
 --------------------------------
 -- Local function definitions --
 --------------------------------
 
 local function onPollStarting ( poll )
-	--outputDebugString ( "onPollStarting", 3 )
+	--outputDebugString ( 'onPollStarting', 3 )
 	local room = g_RootRoom
 	
 	local nextMap = MqPop(room)
@@ -86,11 +86,11 @@ local function onPollStarting ( poll )
 							elseif ( show_ratings ) then
 								local map = Map.create(opt[4])
 								local map_id = map:getId()
-								local rows = DbQuery ( "SELECT rates, rates_count FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id )
+								local rows = DbQuery ( 'SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id )
 								opt[1] = map:getName()
 								
 								if(rows[1].rates_count > 0) then
-									opt[1] = opt[1]..( " (%.2f)" ):format ( rows[1].rates / rows[1].rates_count )
+									opt[1] = opt[1]..( ' (%.2f)' ):format ( rows[1].rates / rows[1].rates_count )
 								end
 							end
 						end
@@ -117,12 +117,12 @@ local function onPollStarting ( poll )
 		end
 		
 		if ( #poll == 0 ) then -- this shouldnt happen
-			outputDebugString ( "No maps in votemap!", 2 )
+			outputDebugString ( 'No maps in votemap!', 2 )
 			startRandomMap(room)
 		end
 	end
 	
-	triggerEvent ( "onPollModified", g_Root, poll )
+	triggerEvent ( 'onPollModified', g_Root, poll )
 end
 
 ------------
@@ -130,5 +130,5 @@ end
 ------------
 
 addInitFunc(function()
-	addEventHandler( "onPollStarting", g_Root, onPollStarting )
+	addEventHandler( 'onPollStarting', g_Root, onPollStarting )
 end)

@@ -1,6 +1,6 @@
 function intToBin(num, bytes)
 	num = math.floor(num)
-	local ret = ""
+	local ret = ''
 	if(num < 0) then
 		num = -num
 		ret = string.char(128 + (num % 128))
@@ -18,7 +18,7 @@ end
 
 function uintToBin(num, bytes)
 	num = math.floor(num)
-	local ret = ""
+	local ret = ''
 	for i = 1, bytes do
 		ret = ret..string.char(num % 256)
 		num = math.floor(num / 256)

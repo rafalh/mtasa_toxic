@@ -1,6 +1,6 @@
-local g_TempModGroup = aclGetGroup("PremiumModerator")
-local g_ModGroup = aclGetGroup("Moderator")
-local g_SuperModGroup = aclGetGroup("SuperModerator")
+local g_TempModGroup = aclGetGroup('PremiumModerator')
+local g_ModGroup = aclGetGroup('Moderator')
+local g_SuperModGroup = aclGetGroup('SuperModerator')
 
 function giveTempMod(player, days)
 	local days = tonumber(days) or 30
@@ -10,16 +10,16 @@ function giveTempMod(player, days)
 		return false
 	end
 	
-	aclGroupAddObject(g_TempModGroup, "user."..getAccountName(account))
+	aclGroupAddObject(g_TempModGroup, 'user.'..getAccountName(account))
 	
 	local now = getRealTime().timestamp
-	local timestamp = math.max(getAccountData(account, "toxic.tempModLimit") or 0, now) + days*24*60*60
-	setAccountData(account, "toxic.tempModLimit", timestamp)
+	local timestamp = math.max(getAccountData(account, 'toxic.tempModLimit') or 0, now) + days*24*60*60
+	setAccountData(account, 'toxic.tempModLimit', timestamp)
 	
 	local tm = getRealTime(timestamp)
 	
-	local dateStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-	outputServerLog("Temporary Moderator activated for "..getAccountName(account)..". It will be active untill "..dateStr)
+	local dateStr = ('%u.%02u.%u %u:%02u GMT.'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+	outputServerLog('Temporary Moderator activated for '..getAccountName(account)..'. It will be active untill '..dateStr)
 	
 	return timestamp
 end
@@ -33,25 +33,25 @@ local function CmdGiveMod(msg, arg)
 		local tm = getRealTime(timestamp)
 		local name = player:getName()
 		
-		local dateStr = ("%u.%02u.%u %u:%02u GMT"):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+		local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
 		privMsg(source, "Temporary Moderator successfully given to %s! It will be valid untill %s.", name, dateStr)
 		outputMsg(player, Styles.green, "You have become Temporary Moderator! It will be valid untill %s.", dateStr)
 	else
-		privMsg(source, "Usage: %s", arg[1].." <name> [<days>]")
+		privMsg(source, "Usage: %s", arg[1]..' <name> [<days>]')
 	end
 end
-CmdRegister("givemod", CmdGiveMod, "resource."..g_ResName..".givemod")
+CmdRegister('givemod', CmdGiveMod, 'resource.'..g_ResName..'.givemod')
 
 local function CmdModInfo(msg, arg)
 	local player = arg[2] and Player.find(arg[2])
 	local account = player and getPlayerAccount(player.el)
 	if(account and not isGuestAccount(account)) then
-		local objStr = "user."..getAccountName(account)
+		local objStr = 'user.'..getAccountName(account)
 		local now = getRealTime().timestamp
-		local timestamp = getAccountData(account, "toxic.tempModLimit")
+		local timestamp = getAccountData(account, 'toxic.tempModLimit')
 		if(timestamp and timestamp > now and isObjectInACLGroup(objStr, g_TempModGroup)) then
 			local tm = getRealTime(timestamp)
-			local dateStr = ("%u.%02u.%u %u:%02u GMT"):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+			local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
 			scriptMsg("%s is a Temporary Moderator (valid untill %s).", player:getName(), dateStr)
 		elseif(isObjectInACLGroup(objStr, g_ModGroup)) then
 			scriptMsg("%s is a Moderator.", player:getName())
@@ -61,58 +61,58 @@ local function CmdModInfo(msg, arg)
 			scriptMsg("%s is not a Moderator.", player:getName())
 		end
 	else
-		privMsg(source, "Usage: %s", arg[1].." <name>")
+		privMsg(source, "Usage: %s", arg[1]..' <name>')
 	end
 end
-CmdRegister("modinfo", CmdModInfo, "resource."..g_ResName..".modinfo")
+CmdRegister('modinfo', CmdModInfo, 'resource.'..g_ResName..'.modinfo')
 
 local function CmdCheckMods(msg, arg)
 	local objList = aclGroupListObjects(g_TempModGroup)
-	local vipGroup = aclGetGroup("VIP")
+	local vipGroup = aclGetGroup('VIP')
 	local now = getRealTime().timestamp
 	local msg = true
 	
 	for i, obj in ipairs(objList) do
-		local accountName = obj:match("^user%.(.+)$")
+		local accountName = obj:match('^user%.(.+)$')
 		local account = accountName and getAccount(accountName)
-		local modLimit = account and getAccountData(account, "toxic.tempModLimit")
-		local vipLimit = account and getAccountData(account, "rafalh_vip_time")
+		local modLimit = account and getAccountData(account, 'toxic.tempModLimit')
+		local vipLimit = account and getAccountData(account, 'rafalh_vip_time')
 		local isTempMod = modLimit and modLimit > now
-		local isVip = account and isObjectInACLGroup("user."..accountName, vipGroup) and (not vipLimit or vipLimit > now)
+		local isVip = account and isObjectInACLGroup('user.'..accountName, vipGroup) and (not vipLimit or vipLimit > now)
 		
 		if(account and not isTempMod and not isVip) then
 			local modLimitDate = modLimit and getRealTime(modLimit)
 			local vipLimitDate = vipLimit and getRealTime(vipLimit)
-			local modLimitDateStr = modLimitDate and ("%d-%d-%d"):format(modLimitDate.monthday, modLimitDate.month + 1, modLimitDate.year + 1900)
-			local vipLimitDateStr = vipLimitDate and ("%d-%d-%d"):format(vipLimitDate.monthday, vipLimitDate.month + 1, vipLimitDate.year + 1900)
-			privMsg(source, "%s's Premium Moderator has expired (VIP: %s, Mod: %s)!", accountName, vipLimitDateStr or "no", modLimitDateStr or "no")
+			local modLimitDateStr = modLimitDate and ('%d-%d-%d'):format(modLimitDate.monthday, modLimitDate.month + 1, modLimitDate.year + 1900)
+			local vipLimitDateStr = vipLimitDate and ('%d-%d-%d'):format(vipLimitDate.monthday, vipLimitDate.month + 1, vipLimitDate.year + 1900)
+			privMsg(source, "%s's Premium Moderator has expired (VIP: %s, Mod: %s)!", accountName, vipLimitDateStr or 'no', modLimitDateStr or 'no')
 			msg = false
 		end
 		
-		--outputDebugString(accountName.." - "..tostring(account).." "..tostring(isTempMod).." "..tostring(isVip), 3)
+		--outputDebugString(accountName..' - '..tostring(account)..' '..tostring(isTempMod)..' '..tostring(isVip), 3)
 	end
 	
 	if(msg) then
 		privMsg(source, "Everything is alright!")
 	end
 end
-CmdRegister("checkmods", CmdCheckMods, true)
+CmdRegister('checkmods', CmdCheckMods, true)
 
 local function onPlayerLogin(prevAccount, account)
-	local timestamp = getAccountData(account, "toxic.tempModLimit")
+	local timestamp = getAccountData(account, 'toxic.tempModLimit')
 	if(not timestamp) then return end
 	
 	local now = getRealTime().timestamp
 	if(timestamp >= now) then return end
 	
-	local objStr = "user."..getAccountName(account)
+	local objStr = 'user.'..getAccountName(account)
 	if(isObjectInACLGroup(objStr, g_TempModGroup)) then
 		aclGroupRemoveObject(g_TempModGroup, objStr)
-		outputServerLog("Temporary Moderator disactivated for "..getAccountName(account)..".")
+		outputServerLog('Temporary Moderator disactivated for '..getAccountName(account)..'.')
 		outputMsg(player, Styles.red, "Your Moderator rank has been disactivated!")
 	end
 end
 
 addInitFunc(function()
-	addEventHandler("onPlayerLogin", g_Root, onPlayerLogin)
+	addEventHandler('onPlayerLogin', g_Root, onPlayerLogin)
 end)

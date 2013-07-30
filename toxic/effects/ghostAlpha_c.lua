@@ -6,7 +6,7 @@ local function updateAlpha()
 	local targetPos = target and Vector3(getElementPosition(target))
 	local targetDim = target and getElementDimension(target) or getElementDimension(g_Me)
 	
-	for i, player in ipairs(getElementsByType("player")) do
+	for i, player in ipairs(getElementsByType('player')) do
 		local veh = getPedOccupiedVehicle(player)
 		local a = getElementAlpha(veh or player)
 		local dim = getElementDimension(player)
@@ -29,24 +29,24 @@ local function updateAlpha()
 	end
 end
 
-addEventHandler("onClientPreRender", g_Root, updateAlpha)
+addEventHandler('onClientPreRender', g_Root, updateAlpha)
 
 Settings.register
 {
-	name = "hideNearbyCars",
+	name = 'hideNearbyCars',
 	default = true,
 	cast = tobool,
 	onChange = function(oldVal, newVal)
 		if(newVal) then
-			addEventHandler("onClientPreRender", g_Root, updateAlpha)
+			addEventHandler('onClientPreRender', g_Root, updateAlpha)
 		else
-			removeEventHandler("onClientPreRender", g_Root, updateAlpha)
+			removeEventHandler('onClientPreRender', g_Root, updateAlpha)
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Hide nearby cars", Settings.hideNearbyCars, false, wnd)
 		if(onChange) then
-			addEventHandler("onClientGUIClick", cb, onChange, false)
+			addEventHandler('onClientGUIClick', cb, onChange, false)
 		end
 		return 20, cb
 	end,

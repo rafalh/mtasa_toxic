@@ -1,12 +1,12 @@
 local g_Gui = false
 
-addEvent("main.onChgPwResult", true)
+addEvent('main.onChgPwResult', true)
 
 local function onChgPwEditChange()
 	local pw = guiGetText(g_Gui.pw)
 	local strength = getPasswordStrength(pw)*100
 	
-	guiSetText(g_Gui.pwStr, ("%d%%"):format(strength))
+	guiSetText(g_Gui.pwStr, ('%d%%'):format(strength))
 	if(strength > 70) then
 		guiLabelSetColor(g_Gui.pwStr, 0, 200, 0)
 	elseif(strength > 40) then
@@ -52,17 +52,17 @@ local function onChgPwOkClick()
 		guiSetText(g_Gui.info, err)
 		guiLabelSetColor(g_Gui.info, 255, 0, 0)
 	else
-		RPC("changeAccountPassword", oldPw, pw):onResult(onChgPwResult):exec()
+		RPC('changeAccountPassword', oldPw, pw):onResult(onChgPwResult):exec()
 	end
 end
 
 function openChangePasswordGui()
 	if(g_Gui) then return end
 	
-	g_Gui = GUI.create("changePw")
+	g_Gui = GUI.create('changePw')
 	showCursor(true)
 	
-	addEventHandler("onClientGUIChanged", g_Gui.pw, onChgPwEditChange, false)
-	addEventHandler("onClientGUIClick", g_Gui.ok, onChgPwOkClick, false)
-	addEventHandler("onClientGUIClick", g_Gui.cancel, closeChangePwGui, false)
+	addEventHandler('onClientGUIChanged', g_Gui.pw, onChgPwEditChange, false)
+	addEventHandler('onClientGUIClick', g_Gui.ok, onChgPwOkClick, false)
+	addEventHandler('onClientGUIClick', g_Gui.cancel, closeChangePwGui, false)
 end

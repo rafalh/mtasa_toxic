@@ -1,4 +1,4 @@
-addEvent("onClientMapStarting")
+addEvent('onClientMapStarting')
 
 local function updateWaterLevel()
 	local x, y, z = getElementPosition(localPlayer)
@@ -12,5 +12,5 @@ local function onMapStart()
 	setTimer(updateWaterLevel, 3000, 1)
 end
 
-addEventHandler("onClientMapStarting", g_Root, onMapStart)
-addEventHandler("onClientResourceStart", g_ResRoot, updateWaterLevel)
+addEventHandler('onClientMapStarting', g_Root, onMapStart)
+addEventHandler('onClientResourceStart', g_ResRoot, updateWaterLevel)

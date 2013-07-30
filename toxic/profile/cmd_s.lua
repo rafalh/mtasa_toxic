@@ -16,7 +16,7 @@ local function CmdProfileGet (message, arg)
 	end
 	local pdata = Player.fromEl(player)
 	
-	local rows = pdata.id and DbQuery("SELECT value FROM "..ProfilesTable.." WHERE player=? AND field=? LIMIT 1", pdata.id, field)
+	local rows = pdata.id and DbQuery('SELECT value FROM '..ProfilesTable..' WHERE player=? AND field=? LIMIT 1', pdata.id, field)
 	if (rows and rows[1]) then
 		scriptMsg("%s's %s: %s", getPlayerName(player), g_ProfileFields[field].longname, rows[1].value)
 	else
@@ -39,8 +39,8 @@ end
 
 local function PfcInit ()
 	for field, data in pairs (g_ProfileFields) do
-		CmdRegister (field, CmdProfileGet, false, "Shows player "..data.longname)
-		CmdRegister ("set"..field, CmdProfileSet, false, "Changes your "..data.longname)
+		CmdRegister (field, CmdProfileGet, false, 'Shows player '..data.longname)
+		CmdRegister ('set'..field, CmdProfileSet, false, 'Changes your '..data.longname)
 	end
 end
 

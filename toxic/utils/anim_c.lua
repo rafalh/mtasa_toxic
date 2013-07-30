@@ -70,7 +70,7 @@
 		                    --   the next. defaults to 1
 
 		[subphase1,]        -- optional subphases. if one or more of these are included,
-		[subphase2,]        --   only the "repeats" property is valid for this parent phase
+		[subphase2,]        --   only the 'repeats' property is valid for this parent phase
 		...
 	}
 
@@ -470,11 +470,11 @@ end
 -------------------------------------------------------------------------------------
 
 function Animation.presets.guiMoveEx(endX, endY, time, strEasingType, startX, startY)
-	-- guiMoveEx(endX, endY, [ time = 1000, startX = current X, startY = current Y, strEasingType = "Linear" ])
+	-- guiMoveEx(endX, endY, [ time = 1000, startX = current X, startY = current Y, strEasingType = 'Linear' ])
 	if type(endX) ~= 'userdata' then
 		return { from = 0, to = 1,
 		         time = time or 1000, fn = Animation.presets.guiMoveEx,
-		         startX = startX, startY = startY, endX = endX, endY = endY, strEasingType = strEasingType or "Linear" }
+		         startX = startX, startY = startY, endX = endX, endY = endY, strEasingType = strEasingType or 'Linear' }
 	else
 		local elem, value, phase = endX, endY, time
 		local progress = getEasingValue(value, phase.strEasingType)
@@ -488,11 +488,11 @@ function Animation.presets.guiMoveEx(endX, endY, time, strEasingType, startX, st
 end
 
 function Animation.presets.guiProgressBarSetProgress(endProgress, time, startProgress, strEasingType)
-	-- guiProgressBarSetProgress(endProgress, [ time = 1000, startProgress = current X, strEasingType = "Linear" ])
+	-- guiProgressBarSetProgress(endProgress, [ time = 1000, startProgress = current X, strEasingType = 'Linear' ])
 	if type(endProgress) ~= 'userdata' then
 		return { from = 0, to = 1,
 		         time = time or 1000, fn = Animation.presets.guiProgressBarSetProgress,
-		         startProgress = startProgress, endProgress = endProgress, strEasingType = strEasingType or "Linear" }
+		         startProgress = startProgress, endProgress = endProgress, strEasingType = strEasingType or 'Linear' }
 	else
 		local elem, value, phase = endProgress, time, startProgress
 		local value = getEasingValue(value, phase.strEasingType)

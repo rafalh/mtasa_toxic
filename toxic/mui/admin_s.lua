@@ -1,17 +1,17 @@
-addEvent("main.onLocaleDataReq", true)
-addEvent("main.onChangeLocaleReq", true)
+addEvent('main.onLocaleDataReq', true)
+addEvent('main.onChangeLocaleReq', true)
 
-local right = AccessRight("mui")
+local right = AccessRight('mui')
 
 local function checkPlayerAccess(player, code)
-	return isPlayerAdmin(player) or hasObjectPermissionTo(player, "resource."..g_ResName..".translate_"..code, false)
+	return isPlayerAdmin(player) or hasObjectPermissionTo(player, 'resource.'..g_ResName..'.translate_'..code, false)
 end
 
 mui = {}
 function mui.getLangCodes()
 	local langCodes = {}
 	for i, locale in LocaleList.ipairs() do
-		if(locale.code ~= "en" and checkPlayerAccess(client, locale.code)) then
+		if(locale.code ~= 'en' and checkPlayerAccess(client, locale.code)) then
 			table.insert(langCodes, locale.code)
 		end
 	end
@@ -26,9 +26,9 @@ local function loadLocaleFile(path)
 	local tbl = {}
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local entry = {}
-		entry.id = xmlNodeGetAttribute(subnode, "id")
+		entry.id = xmlNodeGetAttribute(subnode, 'id')
 		if(not entry.id) then
-			entry.id = xmlNodeGetAttribute(subnode, "pattern")
+			entry.id = xmlNodeGetAttribute(subnode, 'pattern')
 			entry.pattern = true
 		end
 		entry.val = xmlNodeGetValue(subnode)
@@ -43,16 +43,16 @@ end
 
 local function onLocaleDataReq(localeCode)
 	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
-	local tblS = loadLocaleFile("lang/"..localeCode..".xml")
-	local tblC = loadLocaleFile("lang/"..localeCode.."_c.xml")
-	triggerClientEvent(client, "main.onLocaleData", g_ResRoot, localeCode, tblS, tblC)
+	local tblS = loadLocaleFile('lang/'..localeCode..'.xml')
+	local tblC = loadLocaleFile('lang/'..localeCode..'_c.xml')
+	triggerClientEvent(client, 'main.onLocaleData', g_ResRoot, localeCode, tblS, tblC)
 end
 
 local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
 	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
-	if(entry and ((entry.id or "") == "" or (entry.val or "") == "")) then return end
+	if(entry and ((entry.id or '') == '' or (entry.val or '') == '')) then return end
 	
-	local path = "lang/"..localeCode..(clientSide and "_c" or "")..".xml"
+	local path = 'lang/'..localeCode..(clientSide and '_c' or '')..'.xml'
 	local node = xmlLoadFile(path)
 	if(not node) then return false end
 	
@@ -61,8 +61,8 @@ local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
 	local subnode
 	if(oldId) then
 		for i, curSubnode in ipairs(xmlNodeGetChildren(node)) do
-			local id = xmlNodeGetAttribute(curSubnode, "id")
-			local pattern = xmlNodeGetAttribute(curSubnode, "pattern")
+			local id = xmlNodeGetAttribute(curSubnode, 'id')
+			local pattern = xmlNodeGetAttribute(curSubnode, 'pattern')
 			if(id == oldId or pattern == oldId) then
 				subnode = curSubnode
 				isPattern = pattern and true
@@ -70,16 +70,16 @@ local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
 			end
 		end
 	else
-		subnode = xmlCreateChild(node, "msg")
+		subnode = xmlCreateChild(node, 'msg')
 		isPattern = entry.pattern
 	end
 	
 	if(subnode) then
 		if(entry) then
 			if(isPattern) then
-				xmlNodeSetAttribute(subnode, "pattern", entry.id)
+				xmlNodeSetAttribute(subnode, 'pattern', entry.id)
 			else
-				xmlNodeSetAttribute(subnode, "id", entry.id)
+				xmlNodeSetAttribute(subnode, 'id', entry.id)
 			end
 			xmlNodeSetValue(subnode, entry.val)
 		else
@@ -91,6 +91,6 @@ local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
 end
 
 addInitFunc(function()
-	addEventHandler("main.onLocaleDataReq", g_ResRoot, onLocaleDataReq)
-	addEventHandler("main.onChangeLocaleReq", g_ResRoot, onChangeLocaleReq)
+	addEventHandler('main.onLocaleDataReq', g_ResRoot, onLocaleDataReq)
+	addEventHandler('main.onChangeLocaleReq', g_ResRoot, onChangeLocaleReq)
 end)

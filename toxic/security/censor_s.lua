@@ -8,10 +8,10 @@ function CsProcessMsg(msg, player)
 	local offsets = {}
 	local offset = 0
 	
-	local buf = msg:lower():gsub("()%A", function(i) -- remove color codes
+	local buf = msg:lower():gsub('()%A', function(i) -- remove color codes
 		offsets[i-offset] = i + 1
 		offset = offset + 1
-		return ""
+		return ''
 	end)
 	
 	offset = 0
@@ -26,11 +26,11 @@ function CsProcessMsg(msg, player)
 	
 	for word, item in pairs(g_ForbWords) do
 		local pattern = word:lower()
-		pattern = pattern:gsub(".", "%1+")
-		for i, j in buf:gmatch("()"..pattern.."()") do
+		pattern = pattern:gsub('.', '%1+')
+		for i, j in buf:gmatch('()'..pattern..'()') do
 			local before = msg:sub(1, offsets[i] - 1)
 			local after = msg:sub(offsets[j])
-			local masked = ("*"):rep(word:len())
+			local masked = ('*'):rep(word:len())
 			
 			msg = before..masked..after -- change word to *****
 			
@@ -48,7 +48,7 @@ function CsProcessMsg(msg, player)
 	if(mute) then
 		local pdata = Player.fromEl(player)
 		local sec = 60
-		if(pdata:mute(sec, "Censor")) then
+		if(pdata:mute(sec, 'Censor')) then
 			outputMsg(g_Root, Styles.red, "%s has been muted by Censor (%u seconds)!", pdata:getName(true), sec)
 		end
 	end
@@ -57,11 +57,11 @@ function CsProcessMsg(msg, player)
 end
 
 local function CsInit ()
-	local node, i = xmlLoadFile("conf/censor.xml"), 0
+	local node, i = xmlLoadFile('conf/censor.xml'), 0
 	if(not node) then return end
 	
 	while(true) do
-		local subnode = xmlFindChild(node, "word", i)
+		local subnode = xmlFindChild(node, 'word', i)
 		if(not subnode) then break end
 		i = i + 1
 		

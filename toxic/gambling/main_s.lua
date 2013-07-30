@@ -24,27 +24,27 @@ local function GbRollTimer(player)
 	
 	if(n == 1) then
 		local cashsub = math.min(math.random(1000, 9000), pdata.accountData.cash)
-		pdata.accountData:add("cash", -cashsub)
+		pdata.accountData:add('cash', -cashsub)
 		privMsg(player, "You rolled %u, you just lost %s.", n, formatMoney(cashsub))
 	elseif(n == 2) then
 		local cashadd = math.random(1000, 5000)
-		pdata.accountData:add("cash", cashadd)
+		pdata.accountData:add('cash', cashadd)
 		privMsg(player, "You rolled %u, %s added to your cash.", n, formatMoney(cashadd))
 	elseif(n == 3) then
 		privMsg(player, "You rolled %u, which is mute.", n, player)
-		if(pdata:mute(60, "Roll")) then
+		if(pdata:mute(60, 'Roll')) then
 			outputMsg(g_Root, Styles.red, "%s has been muted after rolling a dice.", pdata:getName(true))
 		end
 	elseif(n == 4) then
 		local cashsub = math.min(math.random(1000, 4000), pdata.accountData.cash)
-		pdata.accountData:add("cash", -cashsub)
+		pdata.accountData:add('cash', -cashsub)
 		privMsg(player, "You rolled %u, you just lost %s.", n, formatMoney(cashsub))
 	elseif(n == 5) then
 		setSkyGradient(math.random(0,255), math.random(0,255), math.random(0,255), math.random(0,255), math.random(0,255), math.random(0,255))
 		privMsg(player, "You rolled %u, the sky color changes.", n)
 	elseif(n == 6) then
 		local cashadd = math.random (1000, 10000)
-		pdata.accountData:add("cash", cashadd)
+		pdata.accountData:add('cash', cashadd)
 		privMsg(player, "You rolled %u, %s added to your cash.", n, formatMoney(cashadd))
 	end
 end
@@ -53,7 +53,7 @@ local function GbSpinTimer(player, n, cash)
 	local n2 = math.random(1, 65)
 	if(n == n2) then
 		local pdata = Player.fromEl(player)
-		pdata.accountData:add("cash", cash * 101)
+		pdata.accountData:add('cash', cash * 101)
 		privMsg(player, "You spinned %u and won %s.", n2, formatMoney(cash*100))
 	else
 		privMsg(player, "You spinned %u and lost %s.", n2, formatMoney(cash))
@@ -93,8 +93,8 @@ function GbFinishLottery()
 		r = r - tickets
 		if(r <= 0) then
 			local accountData = AccountData.create(id)
-			accountData:add("cash", g_LotteryFund)
-			outputMsg(g_Root, Styles.gambling, "%s won the lottery!", accountData:get("name"))
+			accountData:add('cash', g_LotteryFund)
+			outputMsg(g_Root, Styles.gambling, "%s won the lottery!", accountData:get('name'))
 			break
 		end
 	end
@@ -105,7 +105,7 @@ end
 
 function GbCancelLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
-		AccountData.create(id):add("cash", tickets)
+		AccountData.create(id):add('cash', tickets)
 		local player = Player.fromId(id)
 		if(player) then
 			privMsg(player.el, "Lottery is canceled! You get your money (%s) back.", formatMoney(tickets))
@@ -157,7 +157,7 @@ function GbFinishBets(winner)
 	for player, pdata in pairs(g_Players) do
 		if(winner and pdata.bet == winner) then
 			local award = math.floor(pdata.betcash * mult)
-			pdata.accountData:add("cash", award)
+			pdata.accountData:add('cash', award)
 			privMsg(player, "You have won %s in your bet!", formatMoney(award))
 		end
 		pdata.bet = nil
@@ -167,7 +167,7 @@ end
 function GbCancelBets()
 	for player, pdata in pairs(g_Players) do
 		if(pdata.bet) then
-			pdata.accountData:add("cash", pdata.betcash)
+			pdata.accountData:add('cash', pdata.betcash)
 			privMsg(player, "Your bet is canceled! You get your money (%s) back.", formatMoney(pdata.betcash))
 		end
 	end
@@ -178,7 +178,7 @@ local function GbRemoveBetsPlayer(player, return_cash)
 	for player2, pdata2 in pairs(g_Players) do
 		if(pdata2.bet == player) then
 			if(return_cash) then
-				pdata2.accountData:add("cash", pdata2.betcash)
+				pdata2.accountData:add('cash', pdata2.betcash)
 				privMsg(player2, "Your bet is canceled! You get your money (%s) back.", formatMoney(pdata2.betcash))
 			end
 			pdata2.bet = nil
@@ -192,7 +192,7 @@ local function GbCleanup()
 end
 
 local function GbOnPlayerQuit()
-	GbRemoveBetsPlayer(source, quitType ~= "Quit") -- return cash to betters if he quits normally
+	GbRemoveBetsPlayer(source, quitType ~= 'Quit') -- return cash to betters if he quits normally
 end
 
 local function GbOnMapStop()
@@ -208,9 +208,9 @@ local function GbInit()
 		setTimer(GbLotteryFundInc, fund_inc_interval * 1000, 0)
 	end
 	
-	addEventHandler("onResourceStop", g_ResRoot, GbCleanup)
-	addEventHandler("onPlayerQuit", g_Root, GbOnPlayerQuit)
-	addEventHandler("onGamemodeMapStop", g_Root, GbOnMapStop)
+	addEventHandler('onResourceStop', g_ResRoot, GbCleanup)
+	addEventHandler('onPlayerQuit', g_Root, GbOnPlayerQuit)
+	addEventHandler('onGamemodeMapStop', g_Root, GbOnMapStop)
 end
 
 function GbRoll(player)
@@ -233,7 +233,7 @@ function GbSpin(player, number, cash)
 	
 	if(number >= 1 and number <= 65 and cash > 0 and cash < 100000 and pdata.accountData.cash >= cash) then
 		pdata.last_spin = getTickCount()
-		pdata.accountData:add("cash", -cash)
+		pdata.accountData:add('cash', -cash)
 		
 		-- Create timer
 		setPlayerTimer(GbSpinTimer, 5000, 1, player, number, cash)
@@ -246,7 +246,7 @@ end
 
 function GbBet(player, player2, cash)
 	local pdata = Player.fromEl(player)
-	pdata.accountData:add("cash", -cash)
+	pdata.accountData:add('cash', -cash)
 	pdata.bet = player2
 	pdata.betcash = cash
 	return true
@@ -259,7 +259,7 @@ function GbUnbet(player)
 	end
 	
 	pdata.bet = nil
-	pdata.accountData:add("cash", pdata.betcash)
+	pdata.accountData:add('cash', pdata.betcash)
 	pdata.betcash = 0
 	return true
 end

@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -13,7 +13,7 @@ local g_Stats = {}
 
 local StatsPanel = {
 	name = "Statistics",
-	img = "stats/icon.png",
+	img = 'stats/icon.png',
 	tooltip = "Check your statistics",
 	width = 230,
 	height = 270,
@@ -55,13 +55,13 @@ function StatsView:update()
 	guiSetText(gui.points, formatNumber(stats.points))
 	guiSetText(gui._rank, stats._rank)
 	local dmVictRate = stats.dmVictories / math.max(stats.dmPlayed, 1) * 100
-	guiSetText(gui.dmVictories, ("%s/%s (%.1f%%)"):format(formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmVictRate))
+	guiSetText(gui.dmVictories, ('%s/%s (%.1f%%)'):format(formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmVictRate))
 	local huntRate = stats.huntersTaken / math.max(stats.dmPlayed, 1) * 100
-	guiSetText(gui.huntersTaken, ("%s/%s (%.1f%%)"):format(formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRate))
+	guiSetText(gui.huntersTaken, ('%s/%s (%.1f%%)'):format(formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRate))
 	local ddVictRate = stats.ddVictories / math.max(stats.ddPlayed, 1) * 100
-	guiSetText(gui.ddVictories, ("%s/%s (%.1f%%)"):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate))
+	guiSetText(gui.ddVictories, ('%s/%s (%.1f%%)'):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate))
 	local raceVictRate = stats.raceVictories / math.max(stats.racesPlayed, 1) * 100
-	guiSetText(gui.raceVictories, ("%s/%s (%.1f%%)"):format(formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceVictRate))
+	guiSetText(gui.raceVictories, ('%s/%s (%.1f%%)'):format(formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceVictRate))
 	guiSetText(gui.maxWinStreak, stats.maxWinStreak)
 	guiSetText(gui.toptimes_count, stats.toptimes_count)
 	guiSetText(gui.bidlvl, stats.bidlvl)
@@ -94,17 +94,17 @@ function StatsView:changeTarget(id)
 end
 
 function StatsView.getHeight()
-	return GUI.getTemplate("stats").h
+	return GUI.getTemplate('stats').h
 end
 
 function StatsView.create(id, parent, x, y, w, h)
 	if(not id) then
-		outputDebugString("Wrong ID", 2)
+		outputDebugString('Wrong ID', 2)
 		return false
 	end
 	
 	local self = setmetatable({}, StatsView.__mt)
-	self.gui = GUI.create("stats", x, y, w, h, parent)
+	self.gui = GUI.create('stats', x, y, w, h, parent)
 	self.id = id
 	self.el = self.gui.wnd
 	
@@ -132,7 +132,7 @@ function StatsView:show()
 	end
 	
 	if(g_Stats[id].refs == 0) then
-		--outputDebugString("start sync "..tostring(id), 2)
+		--outputDebugString('start sync '..tostring(id), 2)
 		triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, {stats = id}, force)
 	end
 	g_Stats[id].refs = g_Stats[id].refs + 1
@@ -146,7 +146,7 @@ function StatsView:hide(stopSync)
 	self.sync = false
 	g_Stats[id].refs = g_Stats[id].refs - 1
 	if(g_Stats[id].refs == 0) then
-		--outputDebugString("pause sync "..tostring(id), 2)
+		--outputDebugString('pause sync '..tostring(id), 2)
 		local req = stopSync and $(EV_STOP_SYNC_REQUEST) or $(EV_PAUSE_SYNC_REQUEST)
 		triggerServerInternalEvent(req, g_Me, {stats = id})
 	end
@@ -188,7 +188,7 @@ function StatsPanel.onShow(panel)
 	
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		addEventHandler('onClientGUIClick', btn, UpBack, false)
 	end
 end
 
@@ -209,4 +209,4 @@ UpRegister(StatsPanel)
 ------------
 
 addInternalEventHandler($(EV_SYNC), StatsView.onSync)
-addEventHandler("main.onAccountChange", g_ResRoot, StatsPanel.onAccountChange)
+addEventHandler('main.onAccountChange', g_ResRoot, StatsPanel.onAccountChange)

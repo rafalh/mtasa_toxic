@@ -1,11 +1,11 @@
 local TITLE_COLOR = tocolor(196, 196, 196, 96)
 local VEH_ALPHA = 102
 local USE_INTERPOLATION = true
-local DEBUG = false
+#DEBUG = false
 
-if(DEBUG) then
+#if(DEBUG) then
 	VEH_ALPHA = 0
-end
+#end
 
 local g_Waiting, g_Playback
 
@@ -35,7 +35,7 @@ function Playback.renderTitle()
 			if(scale > 0.3) then
 				local scrX, scrY = getScreenFromWorldPosition(x, y, z + 1)
 				if(scrX) then
-					dxDrawText(playback.title, scrX, scrY, scrX, scrY, TITLE_COLOR, scale, "default", "center")
+					dxDrawText(playback.title, scrX, scrY, scrX, scrY, TITLE_COLOR, scale, 'default', 'center')
 				end
 			end
 		end
@@ -138,7 +138,7 @@ end
 function Playback.timerProc(id)
 	assert(false)
 	local self = Playback.map[id]
-	--outputDebugString("pos = "..self.pos..", rot = "..self.rot)
+	--outputDebugString('pos = '..self.pos..', rot = '..self.rot)
 	
 	local msToNextFrame = self:update()
 	if(msToNextFrame) then
@@ -188,7 +188,7 @@ function Playback.preRender()
 			g_Waiting = false
 			
 			if(not USE_INTERPOLATION) then
-				removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
+				removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
 			end
 		end
 	end
@@ -204,24 +204,24 @@ function Playback.preRender()
 	end
 end
 
-if(DEBUG) then
-function Playback.__mt.__index:render()
-	local myPos = Vector3(getElementPosition(localPlayer))
-	local prevPos = false
-	for i, frame in ipairs(self.data) do
-		local curPos = (prevPos or Vector3()) + Vector3(frame[$(RD_X)], frame[$(RD_Y)], frame[$(RD_Z)])/100
-		
-		if(prevPos and myPos:dist(curPos) < 100) then
-			dxDrawLine3D(prevPos[1], prevPos[2], prevPos[3], curPos[1], curPos[2], curPos[3], tocolor(255, 0, 0), 3)
-			dxDrawLine3D(curPos[1], curPos[2], curPos[3]-0.1, curPos[1], curPos[2], curPos[3]+0.1, tocolor(0, 0, 255), 3)
+#if(DEBUG) then
+	function Playback.__mt.__index:render()
+		local myPos = Vector3(getElementPosition(localPlayer))
+		local prevPos = false
+		for i, frame in ipairs(self.data) do
+			local curPos = (prevPos or Vector3()) + Vector3(frame[$(RD_X)], frame[$(RD_Y)], frame[$(RD_Z)])/100
+			
+			if(prevPos and myPos:dist(curPos) < 100) then
+				dxDrawLine3D(prevPos[1], prevPos[2], prevPos[3], curPos[1], curPos[2], curPos[3], tocolor(255, 0, 0), 3)
+				dxDrawLine3D(curPos[1], curPos[2], curPos[3]-0.1, curPos[1], curPos[2], curPos[3]+0.1, tocolor(0, 0, 255), 3)
+			end
+			prevPos = curPos
 		end
-		prevPos = curPos
+		if(self.curPos) then
+			dxDrawLine3D(self.curPos[1], self.curPos[2], self.curPos[3]-0.1, self.curPos[1], self.curPos[2], self.curPos[3]+0.1, tocolor(0, 255, 0), 3)
+		end
 	end
-	if(self.curPos) then
-		dxDrawLine3D(self.curPos[1], self.curPos[2], self.curPos[3]-0.1, self.curPos[1], self.curPos[2], self.curPos[3]+0.1, tocolor(0, 255, 0), 3)
-	end
-end
-end
+#end
 
 function Playback.__mt.__index:destroy()
 	if(self.timer) then
@@ -238,11 +238,11 @@ function Playback.__mt.__index:destroy()
 	assert(Playback.count >= 0)
 	
 	if(USE_INTERPOLATION and Playback.count == 0) then
-		removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
+		removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
 	end
 	
 	if(Playback.count == 0) then
-		removeEventHandler("onClientRender", g_Root, Playback.renderTitle)
+		removeEventHandler('onClientRender', g_Root, Playback.renderTitle)
 	end
 	
 	self.destroyed = true
@@ -275,15 +275,15 @@ function Playback.create(data, title)
 	self.blip = createBlipAttachedTo(self.veh, 0, 1, 150, 150, 150, 50)
 	setElementParent(self.blip, self.veh)
 	
-	outputDebugString("Playback: frames = "..#data..", pos = ("..x.." "..y.." "..z.."), rot: ("..rx.." "..ry.." "..rz..")")
+	outputDebugString('Playback: frames = '..#data..', pos = ('..x..' '..y..' '..z..'), rot: ('..rx..' '..ry..' '..rz..')')
 	
 	self.id = #Playback.map + 1
 	Playback.map[self.id] = self
 	Playback.count = Playback.count + 1
 	if(Playback.count == 1) then
-		addEventHandler("onClientRender", g_Root, Playback.renderTitle)
+		addEventHandler('onClientRender', g_Root, Playback.renderTitle)
 		if(USE_INTERPOLATION) then
-			addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+			addEventHandler('onClientPreRender', g_Root, Playback.preRender)
 		end
 	end
 	
@@ -292,20 +292,20 @@ end
 
 -- Used by RPC
 function Playback.stop()
-	--outputDebugString("Playback.stop", 3)
+	--outputDebugString('Playback.stop', 3)
 	if(g_Playback) then
 		g_Playback:destroy()
 		g_Playback = false
 	end
 	
 	if(g_Waiting) then
-		removeEventHandler("onClientPreRender", g_Root, Playback.preRender)
+		removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
 	end
 end
 
 -- Used by RPC
 function Playback.startAfterCountdown(playback, title)
-	--outputDebugString("Playback.startAfterCountdown", 3)
+	--outputDebugString('Playback.startAfterCountdown', 3)
 	if(g_Playback) then
 		g_Playback:destroy()
 	end
@@ -314,44 +314,44 @@ function Playback.startAfterCountdown(playback, title)
 		g_Playback = Playback.create(playback, title)
 		g_Waiting = true
 		if(not USE_INTERPOLATION) then
-			addEventHandler("onClientPreRender", g_Root, Playback.preRender)
+			addEventHandler('onClientPreRender', g_Root, Playback.preRender)
 		end
 	end
 end
 
-if(DEBUG) then
-addCommandHandler("testrec", function()
-	outputChatBox("Testing recording!")
-	local veh = getPedOccupiedVehicle(g_Me)
-	local x, y, z = getElementPosition(veh)
-	local rec = Recorder.create()
-	rec:start()
-	setTimer(function()
-		outputChatBox("Recording finished ("..#rec.data.." frames)...")
-		local playback = Playback.create(rec.data, "TEST")
-		rec:destroy()
-		playback.speed = 0.2
-		playback:start()
-		setElementPosition(veh, x, y, z)
-		if(playback.render) then
-			addEventHandler("onClientRender", root, function()
-				playback:render()
-			end)
-		end
-	end, 5000, 1)
-end)
-end
+#if(DEBUG) then
+	addCommandHandler('testrec', function()
+		outputChatBox('Testing recording!')
+		local veh = getPedOccupiedVehicle(g_Me)
+		local x, y, z = getElementPosition(veh)
+		local rec = Recorder.create()
+		rec:start()
+		setTimer(function()
+			outputChatBox('Recording finished ('..#rec.data..' frames)...')
+			local playback = Playback.create(rec.data, 'TEST')
+			rec:destroy()
+			playback.speed = 0.2
+			playback:start()
+			setElementPosition(veh, x, y, z)
+			if(playback.render) then
+				addEventHandler('onClientRender', root, function()
+					playback:render()
+				end)
+			end
+		end, 5000, 1)
+	end)
+#end
 
 
 Settings.register
 {
-	name = "playback",
+	name = 'playback',
 	default = true,
 	cast = tobool,
 	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Top Time Playback", Settings.playback, false, wnd)
 		if(onChange) then
-			addEventHandler("onClientGUIClick", cb, onChange, false)
+			addEventHandler('onClientGUIClick', cb, onChange, false)
 		end
 		return 20, cb
 	end,

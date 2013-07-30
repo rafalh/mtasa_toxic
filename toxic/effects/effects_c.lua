@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------
 -- Variables --
@@ -16,8 +16,8 @@ local g_LowFpsSeconds = 0
 -- Custom events --
 -------------------
 
-addEvent("onRafalhAddEffect")
-addEvent("onRafalhGetEffects")
+addEvent('onRafalhAddEffect')
+addEvent('onRafalhGetEffects')
 
 --------------------------------
 -- Local function definitions --
@@ -25,7 +25,7 @@ addEvent("onRafalhGetEffects")
 
 local function checkFps()
 	-- Note: it needs scorefps resource
-	local fps = tonumber(getElementData(g_Me, "fps"))
+	local fps = tonumber(getElementData(g_Me, 'fps'))
 	if(not fps) then return end
 	
 	-- If FPS < 25 disable effects
@@ -41,20 +41,20 @@ local function checkFps()
 	if(g_LowFpsSeconds < 20) then return end
 	
 	for res, name in pairs(g_Effects) do
-		local enabled = call(res, "isEffectEnabled")
+		local enabled = call(res, 'isEffectEnabled')
 		if(enabled) then
 			-- disable first enabled effect
-			call(res, "setEffectEnabled", false)
+			call(res, 'setEffectEnabled', false)
 			
 			-- count from 0
 			g_LowFpsSeconds = 0
 			
 			-- display message for user
-			if(type(name) == "table") then
+			if(type(name) == 'table') then
 				name = name[Settings.locale] or name[1]
 			end
 			if(name) then
-				outputChatBox(MuiGetMsg("%s has been disabled to improve your FPS!"):format(name), 255, 0, 0)
+				outputMsg(Styles.red, "%s has been disabled to improve your FPS!", name)
 			end
 			
 			break
@@ -64,7 +64,7 @@ end
 
 local function init()
 	-- Get all effects on startup
-	triggerEvent("onRafalhGetEffects", g_Root)
+	triggerEvent('onRafalhGetEffects', g_Root)
 	
 	-- Check if FPS is not too low
 	setTimer(checkFps, 1000, 0)
@@ -90,7 +90,7 @@ local function onAddEffect(res, name)
 	local resName = getResourceName(res)
 	local enabled = g_Enabled[resName]
 	if(enabled ~= nil) then
-		call(res, "setEffectEnabled", enabled)
+		call(res, 'setEffectEnabled', enabled)
 	end
 	
 	-- Effects list has changed
@@ -99,8 +99,8 @@ end
 
 Settings.register
 {
-	name = "effects",
-	default = "",
+	name = 'effects',
+	default = '',
 	priority = 1000,
 	cast = tostring,
 	onChange = function(oldVal, newVal)
@@ -108,7 +108,7 @@ Settings.register
 		for res, enabled in pairs(g_Enabled) do
 			local res = getResourceFromName(res)
 			if(res) then
-				call(res, "setEffectEnabled", tobool(enabled))
+				call(res, 'setEffectEnabled', tobool(enabled))
 			end
 		end
 	end,
@@ -117,12 +117,12 @@ Settings.register
 		local h, gui = 25, {}
 		
 		local function onBtnToggle()
-			onChange("effects")
+			onChange('effects')
 		end
 		
 		for res, name in pairs(g_Effects) do
-			local enabled = call(res, "isEffectEnabled")
-			if(type(name) == "table") then
+			local enabled = call(res, 'isEffectEnabled')
+			if(type(name) == 'table') then
 				name = name[Settings.locale] or name[1]
 			end
 			if(name) then
@@ -152,6 +152,6 @@ Settings.register
 -- Events --
 ------------
 
-addEventHandler("onClientResourceStart", g_ResRoot, init)
-addEventHandler("onClientResourceStop", g_Root, onResStop)
-addEventHandler("onRafalhAddEffect", g_Root, onAddEffect)
+addEventHandler('onClientResourceStart', g_ResRoot, init)
+addEventHandler('onClientResourceStop', g_Root, onResStop)
+addEventHandler('onRafalhAddEffect', g_Root, onAddEffect)

@@ -15,7 +15,7 @@ function Room.create(el)
 	self.el = el
 	Room.elMap[self.el] = self
 	
-	addEventHandler("onElementDestroy", self.el, Room.onDestroy, false)
+	addEventHandler('onElementDestroy', self.el, Room.onDestroy, false)
 	
 	return self
 end

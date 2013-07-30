@@ -1,15 +1,15 @@
 local g_Queries = {}
-local g_BingAppId = "3F57A5F6F90AA286DB6B0557CC897B1C4C88206E"
+local g_BingAppId = '3F57A5F6F90AA286DB6B0557CC897B1C4C88206E'
 local g_Langs = false
 
-addEvent("onTranslateReq", true)
-addEvent("onTranslateLangListReq", true)
-addEvent("onClientTranslate", true)
-addEvent("onClientTranslateLangList", true)
-addEvent("onHttpResult")
+addEvent('onTranslateReq', true)
+addEvent('onTranslateLangListReq', true)
+addEvent('onClientTranslate', true)
+addEvent('onClientTranslateLangList', true)
+addEvent('onHttpResult')
 
 local function onTranslateResult(new_text, old_text, lang_to)
-	if(new_text == "ERROR" or not new_text) then
+	if(new_text == 'ERROR' or not new_text) then
 		outputDebugString(tostring(old_text), 1)
 	else
 		-- remove UTF-8 BOM
@@ -36,16 +36,16 @@ function translate(text, from, to, callback, ...)
 	table.insert(g_Queries[text], { func = callback, args = { ... } })
 	
 	local text_enc = exports.rafalh_shared:HttpEncodeUrl(text)
-	local from_enc = exports.rafalh_shared:HttpEncodeUrl(from or "")
-	local to_enc = exports.rafalh_shared:HttpEncodeUrl(to or "en")
-	local url = "http://api.microsofttranslator.com/v1/Http.svc/Translate?appId="..g_BingAppId.."&text="..text_enc.."&from="..from_enc.."&to="..to_enc
+	local from_enc = exports.rafalh_shared:HttpEncodeUrl(from or '')
+	local to_enc = exports.rafalh_shared:HttpEncodeUrl(to or 'en')
+	local url = 'http://api.microsofttranslator.com/v1/Http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
 	--outputDebugString(url, 2)
-	local req_el = exports.rafalh_shared:HttpSendRequest(url, false, "GET", false, text, to, from)
+	local req_el = exports.rafalh_shared:HttpSendRequest(url, false, 'GET', false, text, to, from)
 	if (not req_el) then return false end
-	addEventHandler("onHttpResult", req_el, onTranslateResult)
+	addEventHandler('onHttpResult', req_el, onTranslateResult)
 	
-	--[[if(not callRemote("http://mtatoxic.tk/scripts/translate.php", onTranslateResult, text, to, from)) then
-		outputDebugString("callRemote failed.", 1)
+	--[[if(not callRemote('http://mtatoxic.tk/scripts/translate.php', onTranslateResult, text, to, from)) then
+		outputDebugString('callRemote failed.', 1)
 		return false
 	end]]
 	
@@ -54,17 +54,17 @@ end
 
 function sayAsPlayer(text, player)
 	if(isPlayerMuted(player)) then
-		outputChatBox("translate: You are muted!", player, 255, 128, 0)
+		outputMsg(player, Styles.red, "translate: You are muted!")
 		return
 	end
 	
 	local r, g, b
-	if(getElementType(player) == "player") then
+	if(getElementType(player) == 'player') then
 		r, g, b = getPlayerNametagColor (player)
 	else
 		r, g, b = 255, 128, 255 -- console
 	end
-	local msg = getPlayerName(player)..": #FFFF00"..text
+	local msg = getPlayerName(player)..': #FFFF00'..text
 	outputChatBox(msg, g_Root, r, g, b, true)
 end
 
@@ -75,35 +75,35 @@ local function onTranslateReq(text, from, to, say)
 		if(say) then
 			sayAsPlayer(text, player)
 		end
-		triggerClientEvent(player, "onClientTranslate", g_Root, text)
+		triggerClientEvent(player, 'onClientTranslate', g_Root, text)
 	end, client)
 	
-	AchvActivate(client, "Try built-in translator")
+	AchvActivate(client, 'Try built-in translator')
 end
 
 local function onTranslateLangList(data, player)
 	if(not data) then
-		outputDebugString("Failed to get translator languages", 2)
+		outputDebugString('Failed to get translator languages', 2)
 		return
 	end
 	
-	g_Langs = split(data, "\r\n")
-	triggerClientEvent(player, "onClientTranslateLangList", g_Root, g_Langs)
+	g_Langs = split(data, '\r\n')
+	triggerClientEvent(player, 'onClientTranslateLangList', g_Root, g_Langs)
 end
 
 local function onTranslateLangListReq()
 	if(not g_Langs) then
-		local url = "http://api.microsofttranslator.com/v1/Http.svc/GetLanguages?appId="..g_BingAppId
-		local sharedRes = getResourceFromName("rafalh_shared")
-		local req_el = sharedRes and call(sharedRes, "HttpSendRequest", url, false, "GET", false, client)
+		local url = 'http://api.microsofttranslator.com/v1/Http.svc/GetLanguages?appId='..g_BingAppId
+		local sharedRes = getResourceFromName('rafalh_shared')
+		local req_el = sharedRes and call(sharedRes, 'HttpSendRequest', url, false, 'GET', false, client)
 		if(not req_el) then return false end
-		addEventHandler("onHttpResult", req_el, onTranslateLangList)
+		addEventHandler('onHttpResult', req_el, onTranslateLangList)
 	else
-		triggerClientEvent(client, "onClientTranslateLangList", g_Root, g_Langs)
+		triggerClientEvent(client, 'onClientTranslateLangList', g_Root, g_Langs)
 	end
 end
 
 addInitFunc(function()
-	addEventHandler("onTranslateReq", g_Root, onTranslateReq)
-	addEventHandler("onTranslateLangListReq", g_Root, onTranslateLangListReq)
+	addEventHandler('onTranslateReq', g_Root, onTranslateReq)
+	addEventHandler('onTranslateLangListReq', g_Root, onTranslateLangListReq)
 end)

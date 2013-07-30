@@ -1,40 +1,40 @@
 local g_Ranks = {}
 local g_Stats = {
-	"cash", "points",
-	"mapsPlayed", "mapsBought", "mapsRated",
-	"dmVictories", "huntersTaken", "dmPlayed",
-	"ddVictories", "ddPlayed",
-	"raceVictories", "racesFinished", "racesPlayed",
-	"maxWinStreak", "toptimes_count",
-	"bidlvl", "time_here", "exploded", "drowned"}
+	'cash', 'points',
+	'mapsPlayed', 'mapsBought', 'mapsRated',
+	'dmVictories', 'huntersTaken', 'dmPlayed',
+	'ddVictories', 'ddPlayed',
+	'raceVictories', 'racesFinished', 'racesPlayed',
+	'maxWinStreak', 'toptimes_count',
+	'bidlvl', 'time_here', 'exploded', 'drowned'}
 
 PlayersTable:addColumns{
 	-- Old stats
-	{"cash",           "INT",                default = 0},
-	{"points",         "MEDIUMINT",          default = 0},
-	{"exploded",       "MEDIUMINT UNSIGNED", default = 0},
-	{"drowned",        "MEDIUMINT UNSIGNED", default = 0},
+	{'cash',           'INT',                default = 0},
+	{'points',         'MEDIUMINT',          default = 0},
+	{'exploded',       'MEDIUMINT UNSIGNED', default = 0},
+	{'drowned',        'MEDIUMINT UNSIGNED', default = 0},
 	
 	-- New stats
-	{"maxWinStreak",  "SMALLINT UNSIGNED",  default = 0},
-	{"mapsPlayed",    "MEDIUMINT UNSIGNED", default = 0},
-	{"mapsBought",    "MEDIUMINT UNSIGNED", default = 0},
-	{"mapsRated",     "SMALLINT UNSIGNED",  default = 0},
-	{"huntersTaken",  "MEDIUMINT UNSIGNED", default = 0},
-	{"dmVictories",   "MEDIUMINT UNSIGNED", default = 0},
-	{"ddVictories",   "MEDIUMINT UNSIGNED", default = 0},
-	{"raceVictories", "MEDIUMINT UNSIGNED", default = 0},
-	{"racesFinished", "MEDIUMINT UNSIGNED", default = 0},
-	{"dmPlayed",      "MEDIUMINT UNSIGNED", default = 0},
-	{"ddPlayed",      "MEDIUMINT UNSIGNED", default = 0},
-	{"racesPlayed",   "MEDIUMINT UNSIGNED", default = 0},
-	{"achvCount",     "TINYINT UNSIGNED",   default = 0},
+	{'maxWinStreak',  'SMALLINT UNSIGNED',  default = 0},
+	{'mapsPlayed',    'MEDIUMINT UNSIGNED', default = 0},
+	{'mapsBought',    'MEDIUMINT UNSIGNED', default = 0},
+	{'mapsRated',     'SMALLINT UNSIGNED',  default = 0},
+	{'huntersTaken',  'MEDIUMINT UNSIGNED', default = 0},
+	{'dmVictories',   'MEDIUMINT UNSIGNED', default = 0},
+	{'ddVictories',   'MEDIUMINT UNSIGNED', default = 0},
+	{'raceVictories', 'MEDIUMINT UNSIGNED', default = 0},
+	{'racesFinished', 'MEDIUMINT UNSIGNED', default = 0},
+	{'dmPlayed',      'MEDIUMINT UNSIGNED', default = 0},
+	{'ddPlayed',      'MEDIUMINT UNSIGNED', default = 0},
+	{'racesPlayed',   'MEDIUMINT UNSIGNED', default = 0},
+	{'achvCount',     'TINYINT UNSIGNED',   default = 0},
 	
 	-- Effectiveness
-	{"efectiveness",      "FLOAT", default = 0},
-	{"efectiveness_dd",   "FLOAT", default = 0},
-	{"efectiveness_dm",   "FLOAT", default = 0},
-	{"efectiveness_race", "FLOAT", default = 0},
+	{'efectiveness',      'FLOAT', default = 0},
+	{'efectiveness_dd',   'FLOAT', default = 0},
+	{'efectiveness_dm',   'FLOAT', default = 0},
+	{'efectiveness_race', 'FLOAT', default = 0},
 }
 
 local function StAccountDataChange(accountData, name, newValue)
@@ -42,10 +42,10 @@ local function StAccountDataChange(accountData, name, newValue)
 	
 	local player = Player.fromId(accountData.id)
 	
-	if(player and name == "points") then
-		setPlayerAnnounceValue(player.el, "score", tostring(newValue))
+	if(player and name == 'points') then
+		setPlayerAnnounceValue(player.el, 'score', tostring(newValue))
 		
-		local oldRank = StRankFromPoints(accountData:get("points"))
+		local oldRank = StRankFromPoints(accountData:get('points'))
 		local newRank = StRankFromPoints(newValue)
 		if(newRank ~= oldRank) then
 			outputMsg(g_Root, Styles.stats, "%s has new rank: %s!", player:getName(), newRank)
@@ -56,7 +56,7 @@ local function StAccountDataChange(accountData, name, newValue)
 		AchvCheckPlayer(player.el)
 	end
 	
-	notifySyncerChange("stats", accountData.id)
+	notifySyncerChange('stats', accountData.id)
 end
 
 function StRankFromPoints(points)
@@ -94,21 +94,21 @@ local function StPlayerStatsSyncCallback(idOrPlayer)
 		-- send timestamp as string, because MTA converts all number to float (low precision)
 		data._loginTimestamp = tostring(player.loginTimestamp)
 	end
-	data.name = data.name:gsub("#%x%x%x%x%x%x", "")
+	data.name = data.name:gsub('#%x%x%x%x%x%x', '')
 	return data
 end
 
 local function StLoadRanks()
-	local node, i = xmlLoadFile("conf/ranks.xml"), 0
+	local node, i = xmlLoadFile('conf/ranks.xml'), 0
 	if(not node) then return false end
 	
 	while(true) do
-		local subnode = xmlFindChild(node, "rank", i)
+		local subnode = xmlFindChild(node, 'rank', i)
 		if(not subnode) then break end
 		i = i + 1
 		
-		local pts = touint(xmlNodeGetAttribute(subnode, "points" ), 0)
-		local name = xmlNodeGetAttribute(subnode, "name")
+		local pts = touint(xmlNodeGetAttribute(subnode, 'points' ), 0)
+		local name = xmlNodeGetAttribute(subnode, 'name')
 		assert(name)
 		g_Ranks[pts] = name
 	end
@@ -118,8 +118,8 @@ end
 
 local function StOnPlayerJoin()
 	local player = Player.fromEl(source)
-	local pts = player.accountData:get("points")
-	setPlayerAnnounceValue(source, "score", tostring(pts))
+	local pts = player.accountData:get('points')
+	setPlayerAnnounceValue(source, 'score', tostring(pts))
 end
 
 local function StOnPlayerWasted(totalAmmo, killer, weapon)
@@ -127,7 +127,7 @@ local function StOnPlayerWasted(totalAmmo, killer, weapon)
 	if(wasEventCancelled() or not player) then return end
 	
 	if(weapon == 53) then -- drowned
-		player.accountData:add("drowned", 1)
+		player.accountData:add('drowned', 1)
 	end
 end
 
@@ -138,7 +138,7 @@ local function StOnVehicleExplode()
 	
 	-- Note: Blow in Admin Panel generates two onVehicleExplode but only one has health > 0
 	if(getElementHealth(source) > 0) then
-		player.accountData:add("exploded", 1)
+		player.accountData:add('exploded', 1)
 	end
 end
 
@@ -146,17 +146,17 @@ local function StInit()
 	StLoadRanks()
 	
 	for player, pdata in pairs(g_Players) do
-		local pts = pdata.accountData:get("points")
+		local pts = pdata.accountData:get('points')
 		if(not pdata.is_console) then
-			setPlayerAnnounceValue(player, "score", tostring(pts))
+			setPlayerAnnounceValue(player, 'score', tostring(pts))
 		end
 	end
 	
-	addSyncer("stats", StPlayerStatsSyncCallback)
+	addSyncer('stats', StPlayerStatsSyncCallback)
 	
-	addEventHandler("onPlayerJoin", g_Root, StOnPlayerJoin)
-	addEventHandler("onPlayerWasted", g_Root, StOnPlayerWasted)
-	addEventHandler("onVehicleExplode", g_Root, StOnVehicleExplode)
+	addEventHandler('onPlayerJoin', g_Root, StOnPlayerJoin)
+	addEventHandler('onPlayerWasted', g_Root, StOnPlayerWasted)
+	addEventHandler('onVehicleExplode', g_Root, StOnVehicleExplode)
 	table.insert(AccountData.onChangeHandlers, StAccountDataChange)
 end
 

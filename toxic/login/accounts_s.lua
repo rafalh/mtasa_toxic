@@ -1,7 +1,7 @@
 local g_RegTimeStamp = 0
 
-addEvent("main.onLogin", true)
-addEvent("main.onRegisterReq", true)
+addEvent('main.onLogin', true)
+addEvent('main.onRegisterReq', true)
 
 local function onLoginReq(name, passwd)
 	local self = Player.fromEl(client)
@@ -16,10 +16,10 @@ local function onLoginReq(name, passwd)
 		end
 		
 		if(not success) then -- if we succeeded onLogin do the rest
-			triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, false)
+			triggerClientEvent(self.el, 'main.onLoginStatus', g_ResRoot, false)
 		end
 	else -- play as guest
-		triggerClientEvent(self.el, "main.onLoginStatus", g_ResRoot, true)
+		triggerClientEvent(self.el, 'main.onLoginStatus', g_ResRoot, true)
 	end
 end
 
@@ -33,20 +33,20 @@ local function onRegisterReq(name, passwd, email)
 		account = addAccount(name, passwd)
 		if(account) then
 			g_RegTimeStamp = ticks
-			self.accountData:set("email", email)
+			self.accountData:set('email', email)
 		end
 	else
 		privMsg(self.el, "Wait a moment...")
 	end
-	triggerClientEvent(self.el, "main.onRegStatus", g_ResRoot, account and true)
+	triggerClientEvent(self.el, 'main.onRegStatus', g_ResRoot, account and true)
 end
 
-allowRPC("logOutReq")
+allowRPC('logOutReq')
 function logOutReq()
 	logOut(client)
 end
 
-allowRPC("changeAccountPassword")
+allowRPC('changeAccountPassword')
 function changeAccountPassword(oldPw, pw)
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) or pw:len() < 3) then return false end
@@ -58,7 +58,7 @@ function changeAccountPassword(oldPw, pw)
 	return setAccountPassword(account, pw)
 end
 
-allowRPC("changeAccountEmail")
+allowRPC('changeAccountEmail')
 function changeAccountEmail(email, pw)
 	local player = Player.fromEl(client)
 	local account = getPlayerAccount(player.el)
@@ -66,7 +66,7 @@ function changeAccountEmail(email, pw)
 	
 	local success = getAccount(getAccountName(account), pw) and true
 	if(success) then
-		success = email:match("^[%w%._-]+@[%w_-]+%.[%w%._-]+$") and true
+		success = email:match('^[%w%._-]+@[%w_-]+%.[%w%._-]+$') and true
 	end
 	
 	if(success) then
@@ -75,13 +75,13 @@ function changeAccountEmail(email, pw)
 	return success
 end
 
-allowRPC("getAccountEmail")
+allowRPC('getAccountEmail')
 function getAccountEmail()
 	local player = Player.fromEl(client)
 	return player.accountData.email
 end
 
 addInitFunc(function()
-	addEventHandler("main.onLogin", g_ResRoot, onLoginReq)
-	addEventHandler("main.onRegisterReq", g_ResRoot, onRegisterReq)
+	addEventHandler('main.onLogin', g_ResRoot, onLoginReq)
+	addEventHandler('main.onRegisterReq', g_ResRoot, onRegisterReq)
 end)

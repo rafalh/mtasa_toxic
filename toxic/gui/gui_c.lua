@@ -29,7 +29,7 @@ end
 function GUI.loadTemplates(path)
 	local node = xmlLoadFile(path)
 	if(not node) then
-		outputDebugString("xmlLoadFile "..path.." failed", 2)
+		outputDebugString('xmlLoadFile '..path..' failed', 2)
 		return false
 	end
 	
@@ -48,8 +48,8 @@ end
 
 function GUI.getTemplate(tplID)
 	if(not GUI.templates) then
-		if(not GUI.loadTemplates("gui/gui.xml")) then
-			outputDebugString("Failed to load GUI", 1)
+		if(not GUI.loadTemplates('gui/gui.xml')) then
+			outputDebugString('Failed to load GUI', 1)
 			return false
 		end
 	end
@@ -74,33 +74,33 @@ function GUI.__mt.__index:createControl(tpl, parent)
 	local x, y, w, h = rc[1][1], rc[1][2], rc[2][1], rc[2][2]
 	
 	local ctrl
-	if(tpl.type == "window") then
-		ctrl = guiCreateWindow(x, y, w, h, tpl.title or "", false)
-		if(tpl.sizeable == "false") then
+	if(tpl.type == 'window') then
+		ctrl = guiCreateWindow(x, y, w, h, tpl.title or '', false)
+		if(tpl.sizeable == 'false') then
 			guiWindowSetSizable(ctrl, false)
 		end
-	elseif(tpl.type == "button") then
-		ctrl = guiCreateButton(x, y, w, h, tpl.text or "", false, parent)
-	elseif(tpl.type == "checkbox") then
-		ctrl = guiCreateCheckBox(x, y, w, h, tpl.text or "", tpl.selected == "true", false, parent)
-	elseif(tpl.type == "edit") then
-		ctrl = guiCreateEdit(x, y, w, h, tpl.text or "", false, parent)
-		if (tpl.readonly == "true") then
+	elseif(tpl.type == 'button') then
+		ctrl = guiCreateButton(x, y, w, h, tpl.text or '', false, parent)
+	elseif(tpl.type == 'checkbox') then
+		ctrl = guiCreateCheckBox(x, y, w, h, tpl.text or '', tpl.selected == 'true', false, parent)
+	elseif(tpl.type == 'edit') then
+		ctrl = guiCreateEdit(x, y, w, h, tpl.text or '', false, parent)
+		if (tpl.readonly == 'true') then
 			guiEditSetReadOnly(ctrl, true)
 		end
 		if(tonumber(tpl.maxlen)) then
 			guiEditSetMaxLength(ctrl, tonumber(tpl.maxlen))
 		end
-		if(tpl.masked == "true") then
+		if(tpl.masked == 'true') then
 			guiEditSetMasked(ctrl, true)
 		end
-	elseif(tpl.type == "memo") then
-		ctrl = guiCreateMemo(x, y, w, h, tpl.text or "", false, parent)
-		if(tpl.readonly == "true") then
+	elseif(tpl.type == 'memo') then
+		ctrl = guiCreateMemo(x, y, w, h, tpl.text or '', false, parent)
+		if(tpl.readonly == 'true') then
 			guiMemoSetReadOnly(ctrl, true)
 		end
-	elseif(tpl.type == "label") then
-		ctrl = guiCreateLabel(x, y, w, h, tpl.text or "", false, parent)
+	elseif(tpl.type == 'label') then
+		ctrl = guiCreateLabel(x, y, w, h, tpl.text or '', false, parent)
 		if(tpl.align) then
 			guiLabelSetHorizontalAlign(ctrl, tpl.align)
 		end
@@ -108,22 +108,22 @@ function GUI.__mt.__index:createControl(tpl, parent)
 			local r, g, b = getColorFromString(tpl.color)
 			guiLabelSetColor(ctrl, r or 255, g or 255, b or 255)
 		end
-	elseif(tpl.type == "image") then
-		ctrl = guiCreateStaticImage(x, y, w, h, tpl.src or "", false, parent)
-	elseif(tpl.type == "combobox") then
-		ctrl = guiCreateComboBox(x, y, w, h, "", false, parent)
-	elseif(tpl.type == "list") then
+	elseif(tpl.type == 'image') then
+		ctrl = guiCreateStaticImage(x, y, w, h, tpl.src or '', false, parent)
+	elseif(tpl.type == 'combobox') then
+		ctrl = guiCreateComboBox(x, y, w, h, '', false, parent)
+	elseif(tpl.type == 'list') then
 		ctrl = guiCreateGridList(x, y, w, h, false, parent)
-		if(tpl.sorting == "false") then
+		if(tpl.sorting == 'false') then
 			guiGridListSetSortingEnabled(ctrl, false)
 		end
-	elseif(tpl.type == "column") then
-		ctrl = guiGridListAddColumn(parent, tpl.text or "", w == 0 and 0.5 or w)
+	elseif(tpl.type == 'column') then
+		ctrl = guiGridListAddColumn(parent, tpl.text or '', w == 0 and 0.5 or w)
 	else
 		assert(false)
 	end
 	
-	if(tpl.visible == "false") then
+	if(tpl.visible == 'false') then
 		guiSetVisible(ctrl, false)
 	end
 	if(tpl.alpha) then
@@ -132,18 +132,18 @@ function GUI.__mt.__index:createControl(tpl, parent)
 	if(tpl.font) then
 		guiSetFont(ctrl, tpl.font)
 	end
-	if(tpl.enabled == "false") then
+	if(tpl.enabled == 'false') then
 		guiSetEnabled(ctrl, false)
 	end
 	
 	if(tpl.id) then
 		self[tpl.id] = ctrl
 	end
-	if(tpl.focus == "true") then
+	if(tpl.focus == 'true') then
 		self.focus = ctrl
 	end
 	if(tpl.defbtn) then
-		addEventHandler("onClientGUIAccepted", ctrl, GUI.onAccept, false)
+		addEventHandler('onClientGUIAccepted', ctrl, GUI.onAccept, false)
 	end
 	
 	return ctrl
@@ -203,7 +203,7 @@ function GUI.onAccept()
 	local tpl = self.ctrlList[source]
 	local btn = self[tpl.defbtn]
 	if(btn and guiGetEnabled(btn)) then
-		triggerEvent("onClientGUIClick", btn, "left", "up")
+		triggerEvent('onClientGUIClick', btn, 'left', 'up')
 	end
 end
 
@@ -215,10 +215,10 @@ function GUI.onDestroy()
 end
 
 function GUI.create(tpl, x, y, w, h, parent)
-	if(type(tpl) ~= "table") then
+	if(type(tpl) ~= 'table') then
 		tpl = GUI.getTemplate(tpl)
 		if(not tpl) then
-			outputDebugString("Unknown template ID "..tostring(tpl), 1)
+			outputDebugString('Unknown template ID '..tostring(tpl), 1)
 			return false
 		end
 	end
@@ -236,8 +236,8 @@ function GUI.create(tpl, x, y, w, h, parent)
 	if(not self.focus) then
 		self.focus = self.wnd
 	end
-	addEventHandler("onClientGUISize", self.wnd, GUI.onResize, false)
-	addEventHandler("onClientElementDestroy", self.wnd, GUI.onDestroy, false)
+	addEventHandler('onClientGUISize', self.wnd, GUI.onResize, false)
+	addEventHandler('onClientElementDestroy', self.wnd, GUI.onDestroy, false)
 	guiBringToFront(self.focus)
 	
 	GUI.wndToObj[self.wnd] = self
@@ -246,10 +246,10 @@ end
 
 function GUI.getTestWidth(text, font)
 	if(not GUI.tempLabel) then
-		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, "", false)
+		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
 		guiSetVisible(GUI.tempLabel, false)
 	end
-	guiSetFont(GUI.tempLabel, font or "default")
+	guiSetFont(GUI.tempLabel, font or 'default')
 	guiSetText(GUI.tempLabel, text)
 	return guiLabelGetTextExtent(GUI.tempLabel)
 end

@@ -12,14 +12,14 @@ local function CmdChangeLogin(message, arg)
 		local newAccount = addAccount(newAccName, passwd)
 		if(newAccount and copyAccountData(newAccount, oldAccount)) then
 			for i, aclGroup in ipairs(aclGroupList()) do
-				if(isObjectInACLGroup("user."..oldAccName, aclGroup) and aclGroupAddObject(aclGroup, "user."..newAccName)) then
-					aclGroupRemoveObject(aclGroup, "user."..oldAccName)
+				if(isObjectInACLGroup('user.'..oldAccName, aclGroup) and aclGroupAddObject(aclGroup, 'user.'..newAccName)) then
+					aclGroupRemoveObject(aclGroup, 'user.'..oldAccName)
 				end
 			end
 			
 			local playerId = player.id
 			logOut(source)
-			AccountData.create(playerId):set("account", newAccName)
+			AccountData.create(playerId):set('account', newAccName)
 			logIn(source, newAccount, passwd)
 			removeAccount(oldAccount)
 			
@@ -27,8 +27,8 @@ local function CmdChangeLogin(message, arg)
 		else
 			privMsg(source, "Unknown error! Failed to change login.")
 		end
-	else privMsg(source, "Usage: %s", arg[1].." <new login> <password>") end
+	else privMsg(source, "Usage: %s", arg[1]..' <new login> <password>') end
 end
 
-CmdRegister("changelogin", CmdChangeLogin, true)
-CmdRegisterAlias("chglogin", "changelogin")
+CmdRegister('changelogin', CmdChangeLogin, true)
+CmdRegisterAlias('chglogin', 'changelogin')

@@ -1,9 +1,9 @@
 local function AvCheckPlayer(player)
-	if(Settings.auto_votekick and hasObjectPermissionTo(player, "command.kick", false)) then
-		set("*votemanager.votekick_enabled", false)
+	if(Settings.auto_votekick and hasObjectPermissionTo(player, 'command.kick', false)) then
+		set('*votemanager.votekick_enabled', false)
 	end
-	if(Settings.auto_votemap and hasObjectPermissionTo(player, "command.setmap", false)) then
-		set("*votemanager.votemap_enabled", false)
+	if(Settings.auto_votemap and hasObjectPermissionTo(player, 'command.setmap', false)) then
+		set('*votemanager.votemap_enabled', false)
 	end
 end
 
@@ -15,19 +15,19 @@ local function AvOnPlayerLogout()
 	local auto_votemap = Settings.auto_votemap
 	
 	for player, pdata in pairs(g_Players) do
-		if(auto_votekick and hasObjectPermissionTo(player, "command.kick", false) and player ~= source) then
+		if(auto_votekick and hasObjectPermissionTo(player, 'command.kick', false) and player ~= source) then
 			enable_votekick = false
 		end
-		if(auto_votemap and hasObjectPermissionTo(player, "command.setmap", false) and player ~= source) then
+		if(auto_votemap and hasObjectPermissionTo(player, 'command.setmap', false) and player ~= source) then
 			enable_votemap = false
 		end
 	end
 	
 	if(auto_votekick) then
-		set("*votemanager.votekick_enabled", enable_votekick)
+		set('*votemanager.votekick_enabled', enable_votekick)
 	end
 	if(auto_votemap) then
-		set("*votemanager.votemap_enabled", enable_votemap)
+		set('*votemanager.votemap_enabled', enable_votemap)
 	end
 end
 
@@ -42,9 +42,9 @@ local function AvInit()
 		AvCheckPlayer(player)
 	end
 	
-	addEventHandler("onPlayerLogin", g_Root, AvOnPlayerLogin)
-	addEventHandler("onPlayerLogout", g_Root, AvOnPlayerLogout)
-	addEventHandler("onPlayerQuit", g_Root, AvOnPlayerLogout)
+	addEventHandler('onPlayerLogin', g_Root, AvOnPlayerLogin)
+	addEventHandler('onPlayerLogout', g_Root, AvOnPlayerLogout)
+	addEventHandler('onPlayerQuit', g_Root, AvOnPlayerLogout)
 end
 
 addInitFunc(AvInit)

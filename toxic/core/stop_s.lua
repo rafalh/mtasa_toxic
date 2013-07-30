@@ -8,7 +8,7 @@ local function onResourceStop()
 	end
 	
 	Settings.cleanup_done = true
-	outputDebugString("rafalh script has stopped!", 3)
+	outputDebugString('rafalh script has stopped!', 3)
 end
 
 local function onPlayerQuit()
@@ -17,6 +17,6 @@ local function onPlayerQuit()
 end
 
 addInitFunc(function()
-	addEventHandler("onResourceStop", g_ResRoot, onResourceStop)
-	addEventHandler("onPlayerQuit", g_Root, onPlayerQuit)
+	addEventHandler('onResourceStop', g_ResRoot, onResourceStop)
+	addEventHandler('onPlayerQuit', g_Root, onPlayerQuit)
 end)

@@ -1,8 +1,8 @@
 local g_LastVotenext = 0
 
-addEvent("onRafalhVotenextResult")
-addEvent("onClientDisplayVotenextGuiReq", true)
-addEvent("onVotenextReq", true)
+addEvent('onRafalhVotenextResult')
+addEvent('onClientDisplayVotenextGuiReq', true)
+addEvent('onVotenextReq', true)
 
 local function onRafalhVotenextResult(roomEl, map_res)
 	if (map_res) then
@@ -25,8 +25,8 @@ function VtnStart (pattern, player)
 		return
 	end
 	
-	if(pattern == "") then
-		triggerClientEvent(player, "onClientDisplayVotenextGuiReq", g_ResRoot)
+	if(pattern == '') then
+		triggerClientEvent(player, 'onClientDisplayVotenextGuiReq', g_ResRoot)
 		return
 	end
 	
@@ -49,20 +49,20 @@ function VtnStart (pattern, player)
 	end
 	
 	local mapName = map:getName()
-	local voteMgrRes = getResourceFromName ("votemanager")
-	if(not voteMgrRes or getResourceState (voteMgrRes) ~= "running") then
+	local voteMgrRes = getResourceFromName ('votemanager')
+	if(not voteMgrRes or getResourceState (voteMgrRes) ~= 'running') then
 		return
 	end
 	
 	-- Actual vote started here
-	local pollDidStart = call (voteMgrRes, "startPoll", {
-		title = "Set next map to "..mapName.."?",
+	local pollDidStart = call (voteMgrRes, 'startPoll', {
+		title = 'Set next map to '..mapName..'?',
 		percentage = Settings.votenext_percentage,
 		timeout = Settings.votenext_timeout,
 		allowchange = Settings.votenext_allowchange,
 		visibleTo = g_Root,
-		[1] = { "Yes", "onRafalhVotenextResult", g_ResRoot, room.el, map.res },
-		[2] = { "No", "onRafalhVotenextResult", g_ResRoot, room.el, false; default=true },
+		[1] = { "Yes", 'onRafalhVotenextResult', g_ResRoot, room.el, map.res },
+		[2] = { "No", 'onRafalhVotenextResult', g_ResRoot, room.el, false; default=true },
 	})
 	
 	if (pollDidStart) then
@@ -78,6 +78,6 @@ local function onVotenextReq(map_res_name)
 end
 
 addInitFunc(function()
-	addEventHandler("onRafalhVotenextResult", g_ResRoot, onRafalhVotenextResult)
-	addEventHandler("onVotenextReq", g_ResRoot, onVotenextReq)
+	addEventHandler('onRafalhVotenextResult', g_ResRoot, onRafalhVotenextResult)
+	addEventHandler('onVotenextReq', g_ResRoot, onVotenextReq)
 end)

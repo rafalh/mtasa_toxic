@@ -2,7 +2,7 @@ Recorder = {}
 Recorder.__mt = {__index = {cls = Recorder}}
 Recorder.map = {}
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 #RECORDING_INTERVAL = 250
 
@@ -84,15 +84,15 @@ function Recorder.preRender() -- checks for countdown end
 	local veh = getPedOccupiedVehicle(g_Me)
 	if(not veh or isVehicleFrozen(veh)) then return end
 	
-	--outputDebugString("Countdown has finished", 3)
-	removeEventHandler("onClientPreRender", g_Root, Recorder.preRender)
+	--outputDebugString('Countdown has finished', 3)
+	removeEventHandler('onClientPreRender', g_Root, Recorder.preRender)
 	
 	g_Waiting = false
 	g_Rec:start()
 end
 
 function Recorder.startReq(map_id)
-	--outputDebugString("Recorder.startReq", 3)
+	--outputDebugString('Recorder.startReq', 3)
 	
 	if(g_Rec) then
 		g_Rec:destroy()
@@ -101,13 +101,13 @@ function Recorder.startReq(map_id)
 	g_MapID = map_id
 	g_Rec = Recorder.create()
 	if(not g_Waiting) then
-		addEventHandler("onClientPreRender", g_Root, Recorder.preRender)
+		addEventHandler('onClientPreRender', g_Root, Recorder.preRender)
 		g_Waiting = true
 	end
 end
 
 function Recorder.stopReq()
-	outputDebugString("Recorder.stopReq", 3)
+	outputDebugString('Recorder.stopReq', 3)
 	
 	if(g_Rec) then
 		g_Rec:destroy()
@@ -115,18 +115,18 @@ function Recorder.stopReq()
 	end
 	
 	if(g_Waiting) then
-		removeEventHandler("onClientPreRender", g_Root, Recorder.preRender)
+		removeEventHandler('onClientPreRender', g_Root, Recorder.preRender)
 	end
 end
 
 function Recorder.stopSendReq(mapId)
-	outputDebugString("Recorder.stopSendReq", 3)
+	outputDebugString('Recorder.stopSendReq', 3)
 	assert(g_Rec and not g_Waiting)
 	
 	if(mapId == g_MapID) then
 		triggerServerInternalEvent($(EV_RECORDING), g_Me, g_MapID, g_Rec.data)
 	else
-		outputDebugString("Wrong map ID: "..tostring(map_id).."<>"..tostring(g_MapID), 3)
+		outputDebugString('Wrong map ID: '..tostring(map_id)..'<>'..tostring(g_MapID), 3)
 	end
 	
 	g_Rec:destroy()
@@ -143,4 +143,4 @@ local function RcInit()
 	addInternalEventHandler($(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), Recorder.stopSendReq)
 end
 
-addEventHandler("onClientResourceStart", g_ResRoot, RcInit)
+addEventHandler('onClientResourceStart', g_ResRoot, RcInit)

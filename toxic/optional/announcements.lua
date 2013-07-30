@@ -6,20 +6,20 @@ local function AnPrintNext ()
 	if ( not g_Announcements[g_AnnouncementIndex] ) then
 		g_AnnouncementIndex = 1
 	end
-	outputMsg(g_Root, "#FFFF00", g_Announcements[g_AnnouncementIndex] )
+	outputMsg(g_Root, '#FFFF00', g_Announcements[g_AnnouncementIndex] )
 end
 
 local function AnInit ()
 	local tmp = {}
 	
-	local node, i = xmlLoadFile ( "conf/announcements.xml" ), 0
+	local node, i = xmlLoadFile ( 'conf/announcements.xml' ), 0
 	if ( node ) then
 		while ( true ) do
-			local subnode = xmlFindChild ( node, "announc", i )
+			local subnode = xmlFindChild ( node, 'announc', i )
 			if ( not subnode ) then break end
 			
 			local announc = {}
-			announc.freq = touint ( xmlNodeGetAttribute ( subnode, "freq" ), 1 )
+			announc.freq = touint ( xmlNodeGetAttribute ( subnode, 'freq' ), 1 )
 			announc.text = xmlNodeGetValue ( subnode )
 			table.insert ( tmp, announc )
 			i = i + 1
@@ -41,4 +41,4 @@ local function AnInit ()
 	end
 end
 
-addEventHandler ( "onResourceStart", g_ResRoot, AnInit )
+addEventHandler ( 'onResourceStart', g_ResRoot, AnInit )

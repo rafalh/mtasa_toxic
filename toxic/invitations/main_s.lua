@@ -1,15 +1,15 @@
 PlayersTable:addColumns{
-	{"invitedby",      "INT UNSIGNED",       default = 0},
+	{'invitedby', 'INT UNSIGNED', default = 0},
 }
 
 local function IvTimerProc ( player )
 	-- give award for player who invited
 	local pdata = Player.fromEl(player)
 	
-	local invitedby = pdata.accountData:get("invitedby")
+	local invitedby = pdata.accountData:get('invitedby')
 	if(invitedby > 0) then
-		pdata.accountData:set("invitedby", 0)
-		AccountData.create(invitedby):add("cash", 1000000)
+		pdata.accountData:set('invitedby', 0)
+		AccountData.create(invitedby):add('cash', 1000000)
 		
 		local invitedbyPlayer = Player.fromId(invitedby)
 		if(invitedbyPlayer) then
@@ -36,7 +36,7 @@ local function IvInit()
 		IvNewPlayer(player)
 	end
 	
-	addEventHandler("onPlayerJoin", g_Root, IvOnPlayerJoin)
+	addEventHandler('onPlayerJoin', g_Root, IvOnPlayerJoin)
 end
 
 addInitFunc(IvInit)

@@ -3,7 +3,7 @@ local function CmdFund (message, arg)
 	scriptMsg ("Lottery fund: %s. Max fund: %s.", formatMoney (GbGetLotteryFund ()), formatMoney (lotto_limit))
 end
 
-CmdRegister ("fund", CmdFund, false, "Shows current lottery fund")
+CmdRegister ('fund', CmdFund, false, "Shows current lottery fund")
 
 local function CmdRoll (message, arg)
 	if (GbRoll (source)) then
@@ -13,7 +13,7 @@ local function CmdRoll (message, arg)
 	end
 end
 
-CmdRegister ("roll", CmdRoll, false)
+CmdRegister ('roll', CmdRoll, false)
 
 local function CmdSpin (message, arg)
 	local num = touint (arg[2])
@@ -24,8 +24,8 @@ local function CmdSpin (message, arg)
 			privMsg(source, "The wheel is spinning!")
 		end
 	else
-		privMsg(source, "Usage: %s", arg[1].." <1-65> <cash>")
+		privMsg(source, "Usage: %s", arg[1]..' <1-65> <cash>')
 	end
 end
 
-CmdRegister ("spin", CmdSpin, false)
+CmdRegister ('spin', CmdSpin, false)

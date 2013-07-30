@@ -8,7 +8,7 @@ local function AlCalcMinFps()
 		local fps_sum, c = 0, 0
 		
 		for player, p in pairs(g_Players) do
-			local fps = tonumber(getElementData(player, "fps"))
+			local fps = tonumber(getElementData(player, 'fps'))
 			
 			if(fps) then
 				fps_sum = fps_sum + fps
@@ -61,7 +61,7 @@ local function AlCheckPlayer(player)
 	-- min fps
 	if(g_MinFps > 0) then
 		local lowfps = pdata.lowfps
-		local fps = tonumber(getElementData(player, "fps"))
+		local fps = tonumber(getElementData(player, 'fps'))
 		
 		if(fps and fps < g_MinFps) then -- lagger
 			if(not bGhostmode and not isPedDead(player)) then -- player can collide
@@ -115,7 +115,7 @@ local function CmdMinFps(message, arg)
 	scriptMsg("Minimal FPS: %u.", g_MinFps)
 end
 
-CmdRegister("minfps", CmdMinFps, false)
+CmdRegister('minfps', CmdMinFps, false)
 
 local function CmdMaxPing(message, arg)
 	local max_ping = Settings.max_ping
@@ -126,6 +126,6 @@ local function CmdMaxPing(message, arg)
 	end
 end
 
-CmdRegister("maxping", CmdMaxPing, false)
+CmdRegister('maxping', CmdMaxPing, false)
 
 addInitFunc(AlInit)

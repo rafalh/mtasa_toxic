@@ -1,5 +1,5 @@
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 local g_Adverts = {}
 local g_AdvertIdx = 0
@@ -8,7 +8,7 @@ local DEBUG = false
 
 -- Settings
 local g_TextColor = tocolor(0, 255, 0)
-local g_TextFont = "bankgothic"
+local g_TextFont = 'bankgothic'
 local g_TextScale = math.max(0.5, (g_ScreenSize[2]^0.5) / 54) -- 0.6
 local g_BgColor = tocolor(16, 16, 16, 128)
 local g_Speed = (g_ScreenSize[1]^0.5)*5 --200
@@ -27,7 +27,7 @@ local function AdvRender()
 	
 	if ( dt > visible_time ) then
 		g_Visible = false
-		removeEventHandler ( "onClientRender", g_Root, AdvRender )
+		removeEventHandler ( 'onClientRender', g_Root, AdvRender )
 		return
 	elseif ( dt < g_AppearingTime ) then
 		h_fact = dt / g_AppearingTime
@@ -40,12 +40,12 @@ local function AdvRender()
 	dxDrawRectangle ( 0, 0, w, h, g_BgColor, true )
 	
 	local x = w - dt * g_Speed / 1000
-	dxDrawText ( text, x, y, x, y, g_TextColor, g_TextScale, g_TextFont, "left", "top", false, false, true, true )
+	dxDrawText ( text, x, y, x, y, g_TextColor, g_TextScale, g_TextFont, 'left', 'top', false, false, true, true )
 end
 
 local function AdvShowNext()
 	if ( not g_Visible ) then
-		addEventHandler("onClientRender", g_Root, AdvRender)
+		addEventHandler('onClientRender', g_Root, AdvRender)
 	end
 	
 	g_Visible = getTickCount ()
@@ -54,15 +54,15 @@ local function AdvShowNext()
 		g_AdvertIdx = 1
 	end
 	
-	outputConsole(g_Adverts[g_AdvertIdx]:gsub("#%x%x%x%x%x%x", ""))
+	outputConsole(g_Adverts[g_AdvertIdx]:gsub('#%x%x%x%x%x%x', ''))
 end
 
 local function AdvInit ()
 	local tmp = {}
-	local node, i = xmlLoadFile("conf/adverts.xml"), 0
+	local node, i = xmlLoadFile('conf/adverts.xml'), 0
 	if ( node ) then
 		while ( true ) do
-			local subnode = xmlFindChild (node, "advert", i)
+			local subnode = xmlFindChild (node, 'advert', i)
 			if(not subnode) then break end
 			
 			local attr = xmlNodeGetAttributes ( subnode )

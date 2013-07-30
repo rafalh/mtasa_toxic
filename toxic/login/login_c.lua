@@ -5,11 +5,11 @@
 local g_GUI
 g_UserName = false
 
-addEvent("main.onLoginReq", true)
-addEvent("main.onLoginStatus", true)
+addEvent('main.onLoginReq', true)
+addEvent('main.onLoginStatus', true)
 
 local function rot13(pw)
-	local buf = ""
+	local buf = ''
 	for i = 1, pw:len() do
 		local code = pw:byte(i)
 		if(code >= 65 and code <= 90) then -- A-Z
@@ -27,23 +27,23 @@ local function saveAutoLogin()
 	local name = guiGetText(g_GUI.name)
 	local pw = guiGetText(g_GUI.pw)
 	
-	local file = fileCreate("@autologin.txt")
+	local file = fileCreate('@autologin.txt')
 	if(not file) then return end
 	
-	fileWrite(file, name.."\n"..rot13(pw))
+	fileWrite(file, name..'\n'..rot13(pw))
 	fileClose(file)
 end
 
 local function loadAutoLogin()
 	assert(g_GUI)
 	
-	if(not fileExists("@autologin.txt")) then return false end
-	local file = fileOpen("@autologin.txt", true)
+	if(not fileExists('@autologin.txt')) then return false end
+	local file = fileOpen('@autologin.txt', true)
 	if(not file) then return false end
 	local size = fileGetSize(file)
-	local buf = size > 0 and fileRead(file, size) or ""
+	local buf = size > 0 and fileRead(file, size) or ''
 	fileClose(file)
-	local data = split(buf, "\n")
+	local data = split(buf, '\n')
 	if(not data or #data < 2) then return false end
 	
 	guiSetText(g_GUI.name, data[1])
@@ -53,25 +53,25 @@ local function loadAutoLogin()
 end
 
 local function onLoginClick(btn,state)
-	if btn ~= "left" or state ~= "up" then return end
+	if btn ~= 'left' or state ~= 'up' then return end
 	local name = guiGetText(g_GUI.name)
 	local pw = guiGetText(g_GUI.pw)
 	
 	guiSetText(g_GUI.info, "Please wait...")
 	guiLabelSetColor(g_GUI.info, 255, 255, 255)
 	
-	triggerServerEvent("main.onLogin", g_ResRoot, name, pw)
+	triggerServerEvent('main.onLogin', g_ResRoot, name, pw)
 end
 
 local function onRegisterClick(btn,state)
-	if btn ~= "left" or state ~= "up" then return end
+	if btn ~= 'left' or state ~= 'up' then return end
 	closeLoginWnd()
 	openRegisterWnd()
 end
 
 local function onPlayAsGuestClick(btn,state)
-	if btn ~= "left" or state ~= "up" then return end
-	triggerServerEvent("main.onLogin", g_ResRoot, false, false)
+	if btn ~= 'left' or state ~= 'up' then return end
+	triggerServerEvent('main.onLogin', g_ResRoot, false, false)
 	closeLoginWnd()
 end
 
@@ -88,7 +88,7 @@ local function onLoginStatus(success)
 		if(remember) then
 			saveAutoLogin()
 		else
-			fileDelete("@autologin.txt")
+			fileDelete('@autologin.txt')
 		end
 		
 		closeLoginWnd()
@@ -99,7 +99,7 @@ local function onFlagClick()
 	local localeId = g_GUI.flagTbl[source]
 	if(Settings.locale == localeId) then return end
 	
-	triggerServerEvent("main.onSetLocaleReq", g_ResRoot, localeId)
+	triggerServerEvent('main.onSetLocaleReq', g_ResRoot, localeId)
 	Settings.locale = localeId
 	saveSettings()
 	
@@ -120,7 +120,7 @@ end
 function openLoginWnd(loginFailed)
 	closeLoginWnd()
 	
-	g_GUI = GUI.create("loginWnd")
+	g_GUI = GUI.create('loginWnd')
 	local langsCount = LocaleList.count()
 	local curLocale = Settings.locale
 	
@@ -134,19 +134,19 @@ function openLoginWnd(loginFailed)
 		if(locale.code ~= curLocale) then
 			guiSetAlpha(img, 0.6)
 		end
-		addEventHandler("onClientGUIClick", img, onFlagClick, false)
-		setElementData(img, "tooltip", locale.name)
+		addEventHandler('onClientGUIClick', img, onFlagClick, false)
+		setElementData(img, 'tooltip', locale.name)
 		g_GUI.flagTbl[img] = locale.code
 		x = x + imgW + spaceW
 	end
 	
 	showCursor(true)
-	addEventHandler("onClientGUIClick", g_GUI.logBtn, onLoginClick, false)
-	addEventHandler("onClientGUIClick", g_GUI.regBtn, onRegisterClick, false)
-	addEventHandler("onClientGUIClick", g_GUI.guestBtn, onPlayAsGuestClick, false)
+	addEventHandler('onClientGUIClick', g_GUI.logBtn, onLoginClick, false)
+	addEventHandler('onClientGUIClick', g_GUI.regBtn, onRegisterClick, false)
+	addEventHandler('onClientGUIClick', g_GUI.guestBtn, onPlayAsGuestClick, false)
 	
 	loadAutoLogin()
 end
 
-addEventHandler("main.onLoginReq", g_ResRoot, openLoginWnd)
-addEventHandler("main.onLoginStatus", g_ResRoot, onLoginStatus)
+addEventHandler('main.onLoginReq', g_ResRoot, openLoginWnd)
+addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)

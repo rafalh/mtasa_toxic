@@ -4,14 +4,14 @@ LocaleAdmin.pathName = "Interface Translation"
 
 AdminPanel:addItem{
 	name = "Interface Translation",
-	right = AccessRight("mui"),
+	right = AccessRight('mui'),
 	exec = function(self)
 		LocaleAdmin:show(path)
 		return true
 	end,
 }
 
-addEvent("main.onLocaleData", true)
+addEvent('main.onLocaleData', true)
 
 function LocaleAdmin:closeEditWnd()
 	self.editGui:destroy()
@@ -23,7 +23,7 @@ function LocaleAdmin:refreshLocale()
 	local id = guiComboBoxGetSelected(self.gui.langs)
 	local locale = self.idToLocale[id]
 	self.localeCode = locale.code
-	triggerServerEvent("main.onLocaleDataReq", g_ResRoot, self.localeCode)
+	triggerServerEvent('main.onLocaleDataReq', g_ResRoot, self.localeCode)
 	
 	if(self.editGui) then
 		self:closeEditWnd()
@@ -53,20 +53,20 @@ function LocaleAdmin:acceptEditWnd()
 	guiGridListSetItemText(self.gui.msgList, row, self.gui.valCol, entry.val, false, false)
 	guiGridListSetItemData(self.gui.msgList, row, self.gui.idCol, info)
 	
-	triggerServerEvent("main.onChangeLocaleReq", g_ResRoot, self.localeCode, entry, oldId, info[2])
+	triggerServerEvent('main.onChangeLocaleReq', g_ResRoot, self.localeCode, entry, oldId, info[2])
 	
 	self:closeEditWnd()
 end
 
 function LocaleAdmin:prepareEditWnd(row)
 	if(not self.editGui) then
-		self.editGui = GUI.create("transEdit")
+		self.editGui = GUI.create('transEdit')
 		showCursor(true)
-		addEventHandler("onClientGUIClick", self.editGui.ok, function() self:acceptEditWnd() end, false)
-		addEventHandler("onClientGUIClick", self.editGui.cancel, function() self:closeEditWnd() end, false)
+		addEventHandler('onClientGUIClick', self.editGui.ok, function() self:acceptEditWnd() end, false)
+		addEventHandler('onClientGUIClick', self.editGui.cancel, function() self:closeEditWnd() end, false)
 	end
 	
-	local id, val = "", ""
+	local id, val = '', ''
 	local info = {false, false}
 	
 	self.editGui.row = row
@@ -104,7 +104,7 @@ function LocaleAdmin.onDelClick()
 	local info = guiGridListGetItemData(self.gui.msgList, row, self.gui.idCol)
 	assert(info)
 	guiGridListRemoveRow(self.gui.msgList, row)
-	triggerServerEvent("main.onChangeLocaleReq", g_ResRoot, self.localeCode, false, id, info[2])
+	triggerServerEvent('main.onChangeLocaleReq', g_ResRoot, self.localeCode, false, id, info[2])
 end
 
 function LocaleAdmin.onLocaleData(locCode, tblS, tblC)
@@ -135,9 +135,9 @@ function LocaleAdmin.onLocaleData(locCode, tblS, tblC)
 end
 
 function LocaleAdmin:initGui()
-	self.gui = GUI.create("transPanel")
+	self.gui = GUI.create('transPanel')
 	
-	RPC("mui.getLangCodes"):onResult(function(langCodes)
+	RPC('mui.getLangCodes'):onResult(function(langCodes)
 		for i, code in ipairs(langCodes) do
 			local locale = LocaleList.get(code)
 			local id = guiComboBoxAddItem(self.gui.langs, locale.name)
@@ -146,16 +146,16 @@ function LocaleAdmin:initGui()
 		
 		guiComboBoxSetSelected(self.gui.langs, 0)
 		self:refreshLocale()
-		addEventHandler("onClientGUIComboBoxAccepted", self.gui.langs, function() self:refreshLocale() end, false)
+		addEventHandler('onClientGUIComboBoxAccepted', self.gui.langs, function() self:refreshLocale() end, false)
 	end):exec()
 	
 	self.pathView = PanelPathView(AdminPath, Vector2(10, 25), self.gui.wnd)
 	
-	addEventHandler("onClientGUIClick", self.gui.close, function() self:hide() end, false)
-	addEventHandler("onClientGUIClick", self.gui.add, LocaleAdmin.onAddClick, false)
-	addEventHandler("onClientGUIClick", self.gui.edit, LocaleAdmin.onEditClick, false)
-	addEventHandler("onClientGUIClick", self.gui.del, LocaleAdmin.onDelClick, false)
-	addEventHandler("onClientGUIDoubleClick", self.gui.msgList, LocaleAdmin.onEditClick, false)
+	addEventHandler('onClientGUIClick', self.gui.close, function() self:hide() end, false)
+	addEventHandler('onClientGUIClick', self.gui.add, LocaleAdmin.onAddClick, false)
+	addEventHandler('onClientGUIClick', self.gui.edit, LocaleAdmin.onEditClick, false)
+	addEventHandler('onClientGUIClick', self.gui.del, LocaleAdmin.onDelClick, false)
+	addEventHandler('onClientGUIDoubleClick', self.gui.msgList, LocaleAdmin.onEditClick, false)
 	
 	MuiIgnoreElement(self.gui.msgList)
 end
@@ -185,4 +185,4 @@ function LocaleAdmin:isVisible()
 	return self.gui and true
 end
 
-addEventHandler("main.onLocaleData", g_ResRoot, LocaleAdmin.onLocaleData)
+addEventHandler('main.onLocaleData', g_ResRoot, LocaleAdmin.onLocaleData)

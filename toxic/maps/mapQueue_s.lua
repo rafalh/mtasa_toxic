@@ -1,7 +1,7 @@
-addEvent("onAddMapToQueueReq", true)
+addEvent('onAddMapToQueueReq', true)
 
 function MqAdd(room, map, display_msg, player)
-	assert(type(room) == "table")
+	assert(type(room) == 'table')
 	
 	if(not room.mapQueue) then
 		room.mapQueue = {}
@@ -22,12 +22,12 @@ function MqAdd(room, map, display_msg, player)
 	end
 	
 	if(pos == 1) then
-		triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, mapName)
+		triggerClientEvent(g_Root, 'onClientSetNextMap', g_Root, mapName)
 	end
 	
 	if(display_msg) then
 		if (player) then
-			if(type(player) ~= "table") then
+			if(type(player) ~= 'table') then
 				player = Player.fromEl(player)
 			end
 			outputMsg(room.el, Styles.maps, "%s has been added to next map queue (pos. %u.) by %s!", mapName, pos, player:getName(true))
@@ -57,7 +57,7 @@ function MqRemove(room, pos)
 	if(pos == 1) then
 		local nextMap = room.mapQueue[1]
 		local nextMapName = nextMap and nextMap:getName()
-		triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, nextMapName)
+		triggerClientEvent(g_Root, 'onClientSetNextMap', g_Root, nextMapName)
 	end
 	
 	return map
@@ -71,7 +71,7 @@ function MqPop(room)
 	
 	local nextMap = room.mapQueue[1]
 	local nextMapName = nextMap and nextMap:getName()
-	triggerClientEvent(g_Root, "onClientSetNextMap", g_Root, nextMapName)
+	triggerClientEvent(g_Root, 'onClientSetNextMap', g_Root, nextMapName)
 	
 	return map
 end
@@ -88,7 +88,7 @@ function MqGetMapPos(room, map)
 end
 
 local function MqOnAddReq(mapResName)
-	if (not hasObjectPermissionTo(client, "resource."..g_ResName..".nextmap", false)) then return end
+	if (not hasObjectPermissionTo(client, 'resource.'..g_ResName..'.nextmap', false)) then return end
 	
 	local room = Player.fromEl(client).room
 	local map = false
@@ -97,8 +97,8 @@ local function MqOnAddReq(mapResName)
 	if(mapRes) then
 		map = Map.create(mapRes)
 	else
-		local mapMgrRes = getResourceFromName("mapmgr")
-		if(mapMgrRes and getResourceState(mapMgrRes) == "running" and call(mapMgrRes, "isMap", mapResName)) then
+		local mapMgrRes = getResourceFromName('mapmgr')
+		if(mapMgrRes and getResourceState(mapMgrRes) == 'running' and call(mapMgrRes, 'isMap', mapResName)) then
 			map = Map.create(mapResName)
 		end
 	end
@@ -106,10 +106,10 @@ local function MqOnAddReq(mapResName)
 	if(map) then
 		MqAdd(room, map, true, client)
 	else
-		outputDebugString("getResourceFromName failed "..tostring(mapResName), 2)
+		outputDebugString('getResourceFromName failed '..tostring(mapResName), 2)
 	end
 end
 
 addInitFunc(function()
-	addEventHandler("onAddMapToQueueReq", g_ResRoot, MqOnAddReq)
+	addEventHandler('onAddMapToQueueReq', g_ResRoot, MqOnAddReq)
 end)

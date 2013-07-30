@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -16,7 +16,7 @@ local g_Chats = {}
 
 local function guiMemoAddLine(memo, str)
 	local buf = guiGetText(memo) --CEGUI always adds \n at the end
-	if(buf == "\n") then buf = "" end
+	if(buf == '\n') then buf = '' end
 	guiSetText(memo, buf..str)
 	guiMemoSetCaretIndex(memo, buf:len() + str:len())
 end
@@ -24,11 +24,11 @@ end
 local function PmSend(chatInfo)
 	guiBringToFront(chatInfo.input)
 	
-	local msg = guiGetText(chatInfo.input, ""):sub(1, 128)
-	if (msg == "") then return end
+	local msg = guiGetText(chatInfo.input, ''):sub(1, 128)
+	if (msg == '') then return end
 	
-	guiSetText(chatInfo.input, "")
-	guiMemoAddLine(chatInfo.chat, getPlayerName(g_Me):gsub("#%x%x%x%x%x%x", "")..": "..msg)
+	guiSetText(chatInfo.input, '')
+	guiMemoAddLine(chatInfo.chat, getPlayerName(g_Me):gsub('#%x%x%x%x%x%x', '')..': '..msg)
 	
 	triggerServerInternalEvent($(EV_PLAYER_PM_REQUEST), g_Me, msg, chatInfo.player)
 end
@@ -87,37 +87,37 @@ end
 
 local function PmCreateGui(player)
 	local chatInfo = {}
-	local playerName = getPlayerName (player):gsub("#%x%x%x%x%x%x", "")
+	local playerName = getPlayerName (player):gsub('#%x%x%x%x%x%x', '')
 	
-	chatInfo = GUI.create("pm")
+	chatInfo = GUI.create('pm')
 	guiSetText(chatInfo.wnd, MuiGetMsg("Private Chat - %s"):format(playerName))
 	chatInfo.player = player
 	chatInfo.enabled = true
 	g_Chats[player] = chatInfo
 	
-	addEventHandler("onClientGUIClick", chatInfo.sendBtn, PmSendBtnClick, false)
-	addEventHandler("onClientGUIClick", chatInfo.bgBtn, PmBgBtnClick, false)
-	addEventHandler("onClientGUIClick", chatInfo.closeBtn, PmCloseBtnClick, false)
+	addEventHandler('onClientGUIClick', chatInfo.sendBtn, PmSendBtnClick, false)
+	addEventHandler('onClientGUIClick', chatInfo.bgBtn, PmBgBtnClick, false)
+	addEventHandler('onClientGUIClick', chatInfo.closeBtn, PmCloseBtnClick, false)
 end
 
 local function PmCmdHandler(command, nick, ...)
 	local player = findPlayer(nick)
 	
 	if(not player) then
-		outputMsg(Styles.pm, "PM: Usage: %s", command.." <nick> [<message>]")
+		outputMsg(Styles.pm, "Usage: %s", command..' <nick> [<message>]')
 		return
 	end
 	
-	local msg = table.concat({...}, " ")
-	if(msg ~= "") then
+	local msg = table.concat({...}, ' ')
+	if(msg ~= '') then
 		msg = msg:sub(1, 128)
 		if(g_Chats[player]) then
-			local myName = getPlayerName(g_Me):gsub("#%x%x%x%x%x%x", "")
-			guiMemoAddLine(g_Chats[player].chat, myName..": "..msg)
+			local myName = getPlayerName(g_Me):gsub('#%x%x%x%x%x%x', '')
+			guiMemoAddLine(g_Chats[player].chat, myName..': '..msg)
 		end
 		
 		triggerServerInternalEvent($(EV_PLAYER_PM_REQUEST), g_Me, msg, player)
-		local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
+		local playerName = getPlayerName(player):gsub('#%x%x%x%x%x%x', '')
 		outputMsg(Styles.pm, "You have sent PM to %s: %s", playerName, msg)
 	elseif(g_Chats[player]) then
 		PmRestore(player)
@@ -129,8 +129,8 @@ end
 
 local function PmOnPlayerPrivMsg(msg)
 	if(g_Chats[source]) then
-		local playerName = getPlayerName(source):gsub("#%x%x%x%x%x%x", "")
-		guiMemoAddLine(g_Chats[source].chat, playerName..": "..msg)
+		local playerName = getPlayerName(source):gsub('#%x%x%x%x%x%x', '')
+		guiMemoAddLine(g_Chats[source].chat, playerName..': '..msg)
 	end
 end
 
@@ -149,9 +149,9 @@ end
 --------------
 
 local function PmInit()
-	addCommandHandler("pm", PmCmdHandler, false)
+	addCommandHandler('pm', PmCmdHandler, false)
 	addInternalEventHandler($(EV_CLIENT_PLAYER_PM), PmOnPlayerPrivMsg)
-	addEventHandler("onClientPlayerQuit", g_Root, PmOnPlayerQuit)
+	addEventHandler('onClientPlayerQuit', g_Root, PmOnPlayerQuit)
 end
 
-addEventHandler("onClientResourceStart", g_ResRoot, PmInit)
+addEventHandler('onClientResourceStart', g_ResRoot, PmInit)

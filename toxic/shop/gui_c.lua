@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -19,7 +19,7 @@ local g_IsVip = false
 
 local ShopPanel = {
 	name = "Shop",
-	img = "shop/img/icon.png",
+	img = 'shop/img/icon.png',
 	tooltip = "Buy improvments for your car or set next map",
 }
 
@@ -54,9 +54,9 @@ local function ShpUpdateCostLabel(itemId)
 		if(g_IsVip and not item.noDiscount) then
 			cost = cost * VIP_COST
 		end
-		costStr = costStr.." "..formatMoney(cost)
+		costStr = costStr..' '..formatMoney(cost)
 		if(g_IsVip and not item.noDiscount) then
-			costStr = costStr.." ("..MuiGetMsg("%u%% price reduction for VIP"):format(100 - VIP_COST*100)..")"
+			costStr = costStr..' ('..MuiGetMsg("%u%% price reduction for VIP"):format(100 - VIP_COST*100)..')'
 		end
 	end
 	guiSetText(g_CostLabel, costStr)
@@ -147,7 +147,7 @@ local function ShpUpdateShopList()
 	g_ShopList:clear()
 	
 	for itemId, item in pairs(g_ShopItems) do
-		local title = MuiGetMsg(item.name).."\n"..formatMoney(item.cost)
+		local title = MuiGetMsg(item.name)..'\n'..formatMoney(item.cost)
 		g_ShopList:addItem(title, item.img, itemId)
 		
 		if(itemId == oldItemId) then
@@ -159,62 +159,62 @@ end
 local function ShpCreateGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 32, 32, "img/shop/coins.png", false, panel)
+	guiCreateStaticImage(10, 10, 32, 32, 'img/shop/coins.png', false, panel)
 	g_CashLabel = guiCreateLabel(45, 15, 160, 15, formatMoney(g_Cash), false, panel)
 	
 	local label = guiCreateLabel(10, 45, 160, 15, "All items:", false, panel)
-	guiSetFont(label, "default-bold-small")
+	guiSetFont(label, 'default-bold-small')
 	
 	g_ShopList = ListView.create({10, 60}, {w - 150, (h - 110) * 3/5}, panel, {90, 80})
 	g_ShopList.onClickHandler = ShpOnItemsListClick
 	ShpUpdateShopList()
 	
 	local label = guiCreateLabel(10, 75 + (h - 110) * 3/5, 160, 15, "Your items:", false, panel)
-	guiSetFont(label, "default-bold-small")
+	guiSetFont(label, 'default-bold-small')
 	
 	g_InventoryList = ListView.create({10, 90 + (h - 110) * 3/5}, {w - 150, (h - 110) * 2/5}, panel, {90, 80})
 	g_InventoryList.onClickHandler = ShpOnInventoryListClick
 	
 	-- guiCreateStaticImage fails if invalid image is given
-	g_ItemIcon = guiCreateStaticImage(w - 130, 10, 32, 32, "img/empty.png", false, panel)
+	g_ItemIcon = guiCreateStaticImage(w - 130, 10, 32, 32, 'img/empty.png', false, panel)
 	guiSetVisible(g_ItemIcon, false)
 	
-	g_ItemLabel = guiCreateLabel(w - 130, 45, 120, 15, "", false, panel)
-	guiSetFont(g_ItemLabel, "default-bold-small")
+	g_ItemLabel = guiCreateLabel(w - 130, 45, 120, 15, '', false, panel)
+	guiSetFont(g_ItemLabel, 'default-bold-small')
 	
 	g_CostLabel = guiCreateLabel(w - 130, 60, 120, 50, "Cost:", false, panel)
-	guiLabelSetHorizontalAlign(g_CostLabel, "left", true)
+	guiLabelSetHorizontalAlign(g_CostLabel, 'left', true)
 	
 	guiCreateLabel(w - 130, 100, 120, 15, "Description:", false, panel)
 	
-	--g_DescrMemo = guiCreateMemo(w - 130, 70, 120, h - 110, "", false, panel)
-	g_DescrMemo = guiCreateLabel(w - 130, 115, 120, 100, "", false, panel)
-	guiLabelSetHorizontalAlign(g_DescrMemo, "left", true)
+	--g_DescrMemo = guiCreateMemo(w - 130, 70, 120, h - 110, '', false, panel)
+	g_DescrMemo = guiCreateLabel(w - 130, 115, 120, 100, '', false, panel)
+	guiLabelSetHorizontalAlign(g_DescrMemo, 'left', true)
 	
 	local offY = UpNeedsBackBtn() and 0 or 35
 	
 	g_BuyButton = guiCreateButton(w - 130, h - 70 + offY, 120, 25, "Buy", false, panel)
-	addEventHandler("onClientGUIClick", g_BuyButton, ShpBuyClick)
+	addEventHandler('onClientGUIClick', g_BuyButton, ShpBuyClick)
 	
 	g_SellButton = guiCreateButton(w - 130, h - 105 + offY, 120, 25, "Sell", false, panel)
 	guiSetVisible(g_SellButton, false)
-	addEventHandler("onClientGUIClick", g_SellButton, ShpSellClick, false)
+	addEventHandler('onClientGUIClick', g_SellButton, ShpSellClick, false)
 	
 	g_UseButton = guiCreateButton(w - 130, h - 70 + offY, 120, 25, "Use", false, panel)
 	guiSetVisible(g_UseButton, false)
-	addEventHandler("onClientGUIClick", g_UseButton, ShpUseClick, false)
+	addEventHandler('onClientGUIClick', g_UseButton, ShpUseClick, false)
 	
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
-		addEventHandler("onClientGUIClick", btn, UpBack, false)
+		addEventHandler('onClientGUIClick', btn, UpBack, false)
 	end
 end
 
 function ShopPanel.onShow(panel)
 	if(not g_ShopList) then
 		ShpCreateGui(panel)
-		g_ShopList:setActiveItem("nextmap")
-		ShpUpdateItemInfo("nextmap", false)
+		g_ShopList:setActiveItem('nextmap')
+		ShpUpdateItemInfo('nextmap', false)
 		triggerServerInternalEvent($(EV_GET_INVENTORY_REQUEST), g_Me)
 	end
 	
@@ -254,7 +254,7 @@ local function ShpUpdateInventoryList ()
 			local cnt = item.dataToCount(data)
 			
 			if(cnt) then
-				local title = MuiGetMsg(item.name).." ("..tostring(cnt)..")"
+				local title = MuiGetMsg(item.name)..' ('..tostring(cnt)..')'
 				g_InventoryList:addItem(title, item.img, itemId)
 				
 				if(oldItemId == itemId) then
@@ -312,14 +312,14 @@ local function ShpUpdateItemsWnd ()
 				gui.img = guiCreateStaticImage ( x + 20, 25, 50, 50, item.img, false, g_ItemsWnd )
 				assert ( gui.img )
 				gui.cnt = guiCreateLabel ( 0, 0, 50, 50, tostring ( count ), false, gui.img )
-				guiLabelSetHorizontalAlign ( gui.cnt, "right" )
-				guiLabelSetVerticalAlign ( gui.cnt, "bottom" )
-				guiSetFont ( gui.cnt, "default-small" )
+				guiLabelSetHorizontalAlign ( gui.cnt, 'right' )
+				guiLabelSetVerticalAlign ( gui.cnt, 'bottom' )
+				guiSetFont ( gui.cnt, 'default-small' )
 			end
 			
-			gui.label = guiCreateLabel ( x, 75, 90, 20, i..". "..MuiGetMsg ( item.name ), false, g_ItemsWnd )
-			guiLabelSetHorizontalAlign ( gui.label, "center" )
-			guiSetFont ( gui.label, "default-bold-small" )
+			gui.label = guiCreateLabel ( x, 75, 90, 20, i..'. '..MuiGetMsg ( item.name ), false, g_ItemsWnd )
+			guiLabelSetHorizontalAlign ( gui.label, 'center' )
+			guiSetFont ( gui.label, 'default-bold-small' )
 			
 			g_ItemsGui[item_id] = gui
 			g_ItemsGui[i] = gui
@@ -331,7 +331,7 @@ local function ShpUpdateItemsWnd ()
 	
 	if ( i == 1 ) then
 		local label = guiCreateLabel ( 0, 30, 300, 20, "You don't have any item!", false, g_ItemsWnd )
-		guiLabelSetHorizontalAlign ( label, "center" )
+		guiLabelSetHorizontalAlign ( label, 'center' )
 		x = 300
 	end
 	
@@ -362,7 +362,7 @@ local function ShpOnItemKeyUp ( key )
 	local item = g_ShopItems[item_id]
 	
 	if ( g_Inventory[item_id] ) then
-		--outputDebugString ( "Use "..item.name, 2 )
+		--outputDebugString ( 'Use '..item.name, 2 )
 		guiLabelSetColor ( gui.label, 0, 255, 0 )
 		setTimer ( function ( label )
 			if ( isElement ( label ) ) then
@@ -389,7 +389,7 @@ local function ShpHideItems ()
 	end
 	
 	for i = 1, 9, 1 do
-		unbindKey ( tostring ( i ), "up", ShpOnItemKeyUp )
+		unbindKey ( tostring ( i ), 'up', ShpOnItemKeyUp )
 	end
 end
 
@@ -406,7 +406,7 @@ local function ShpShowItems ()
 	end
 	
 	for i = 1, 9, 1 do
-		assert ( bindKey ( tostring ( i ), "up", ShpOnItemKeyUp ) )
+		assert ( bindKey ( tostring ( i ), 'up', ShpOnItemKeyUp ) )
 	end
 end
 
@@ -419,9 +419,9 @@ function ShpToggleItems ()
 end
 
 local function ShpInit()
-	addCommandHandler("UserInventory", ShpToggleItems, false, false)
-	local key = getKeyBoundToCommand("UserInventory") or "F3"
-	bindKey(key, "down", "UserInventory")
+	addCommandHandler('UserInventory', ShpToggleItems, false, false)
+	local key = getKeyBoundToCommand('UserInventory') or 'F3'
+	bindKey(key, 'down', 'UserInventory')
 end
 
 local function ShpOnInventory(inventory, isVip)
@@ -449,8 +449,8 @@ end
 -- Events --
 ------------
 
-UpRegister ( ShopPanel )
-addInternalEventHandler ( $(EV_SYNC), ShpOnSync )
-addInternalEventHandler ( $(EV_CLIENT_INVENTORY), ShpOnInventory )
-addEventHandler ( "onClientLangChanged", g_ResRoot, ShpOnChangeLang )
-addEventHandler("onClientResourceStart", g_ResRoot, ShpInit)
+UpRegister(ShopPanel)
+addInternalEventHandler($(EV_SYNC), ShpOnSync)
+addInternalEventHandler($(EV_CLIENT_INVENTORY), ShpOnInventory)
+addEventHandler('onClientLangChanged', g_ResRoot, ShpOnChangeLang)
+addEventHandler('onClientResourceStart', g_ResRoot, ShpInit)

@@ -1,8 +1,8 @@
 local function CmdNew (message, arg)
-	executeCommandHandler ("new", source, message:sub (arg[1]:len () + 2))
+	executeCommandHandler ('new', source, message:sub (arg[1]:len () + 2))
 end
 
-CmdRegister("new", CmdNew, false, false, true)
+CmdRegister('new', CmdNew, false, false, true)
 
 local function CmdVoteMap(message, arg)
 	local room = Player.fromEl(source).room
@@ -13,45 +13,45 @@ local function CmdVoteMap(message, arg)
 		if (forb_reason) then
 			privMsg(source, forb_reason, arg)
 		else
-			executeCommandHandler ("votemap", source, mapName)
+			executeCommandHandler ('votemap', source, mapName)
 		end
 	else
 		privMsg (source, "Cannot find map \"%s\"!", mapName)
 	end
 end
 
-CmdRegister ("votemap", CmdVoteMap, false, false, true)
+CmdRegister ('votemap', CmdVoteMap, false, false, true)
 
 local function CmdVoteRedo (message, arg)
-	executeCommandHandler ("voteredo", source, message:sub (arg[1]:len () + 2))
+	executeCommandHandler ('voteredo', source, message:sub (arg[1]:len () + 2))
 end
 
-CmdRegister("voteredo", CmdVoteRedo, false, false, true)
+CmdRegister('voteredo', CmdVoteRedo, false, false, true)
 
 local function CmdCancel (message, arg)
-	local voteMgrRes = getResourceFromName ("votemanager")
-	if (voteMgrRes and getResourceState (voteMgrRes) == "running" and call (voteMgrRes, "stopPoll")) then
+	local voteMgrRes = getResourceFromName ('votemanager')
+	if (voteMgrRes and getResourceState (voteMgrRes) == 'running' and call (voteMgrRes, 'stopPoll')) then
 		outputMsg(g_Root, Styles.red, "Vote cancelled by %s!", getPlayerName (source))
 	else
 		privMsg (source, "No vote in progress!")
 	end
 end
 
-CmdRegister("cancel", CmdCancel, "resource."..g_ResName..".cancel", "Cancels current vote")
+CmdRegister('cancel', CmdCancel, 'resource.'..g_ResName..'.cancel', "Cancels current vote")
 
 local function CmdVoteNext(message, arg)
 	local pattern = message:sub(arg[1]:len() + 2)
 	VtnStart(pattern, source)
 end
 
-CmdRegister("votenext", CmdVoteNext, false, "Starts a vote for next map")
+CmdRegister('votenext', CmdVoteNext, false, "Starts a vote for next map")
 
 local function CmdPoll(message, arg)
 	local title = message:sub (arg[1]:len () + 2)
 	
-	local voteMgrRes = getResourceFromName("votemanager")
-	if (voteMgrRes and getResourceState(voteMgrRes) == "running") then
-		local pollDidStart = call(voteMgrRes, "startPoll", {
+	local voteMgrRes = getResourceFromName('votemanager')
+	if (voteMgrRes and getResourceState(voteMgrRes) == 'running') then
+		local pollDidStart = call(voteMgrRes, 'startPoll', {
 			title = title,
 			percentage = 50,
 			timeout = 10,
@@ -68,4 +68,4 @@ local function CmdPoll(message, arg)
 	end
 end
 
-CmdRegister("poll", CmdPoll, "resource."..g_ResName..".poll", "Starts a custom poll")
+CmdRegister('poll', CmdPoll, 'resource.'..g_ResName..'.poll', "Starts a custom poll")

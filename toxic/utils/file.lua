@@ -1,12 +1,12 @@
 function fileGetContents(path)
 	local file = fileOpen(path, true)
 	if (not file) then
-		outputDebugString("Failed to open "..path, 2)
+		outputDebugString('Failed to open '..path, 2)
 		return false
 	end
 	
 	local size = fileGetSize(file)
-	local buf = size > 0 and fileRead(file, size) or ""
+	local buf = size > 0 and fileRead(file, size) or ''
 	fileClose(file)
 	
 	return buf

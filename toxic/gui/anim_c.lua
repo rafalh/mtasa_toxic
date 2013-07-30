@@ -8,11 +8,11 @@ local function GaRemoveWnd(wnd)
 	if(not g_WndData[wnd]) then return end
 	
 	g_WndData[wnd] = nil
-	removeEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy)
+	removeEventHandler('onClientElementDestroy', wnd, GaOnElementDestroy)
 	
 	g_WndCount = g_WndCount - 1
 	if (g_WndCount <= 0) then
-		removeEventHandler("onClientPreRender", g_Root, GaUpdate)
+		removeEventHandler('onClientPreRender', g_Root, GaUpdate)
 	end
 end
 
@@ -40,7 +40,7 @@ GaUpdate = function ( dt )
 			end
 			
 			if(fade.t1 == fade.t2) then
-				GaRemoveAnimator(wnd, "fade")
+				GaRemoveAnimator(wnd, 'fade')
 			end
 		end
 	end
@@ -55,7 +55,7 @@ local function GaFade(wnd, delay, targetAlpha)
 	
 	local a = guiGetVisible(wnd) and guiGetAlpha(wnd) or 0
 	if(a == targetAlpha) then
-		GaRemoveAnimator(wnd, "fade")
+		GaRemoveAnimator(wnd, 'fade')
 		if(targetAlpha == 0) then
 			guiSetVisible(wnd, false)
 		end
@@ -64,12 +64,12 @@ local function GaFade(wnd, delay, targetAlpha)
 	
 	if(not g_WndData[wnd]) then
 		if(g_WndCount == 0) then
-			addEventHandler("onClientPreRender", g_Root, GaUpdate, false)
+			addEventHandler('onClientPreRender', g_Root, GaUpdate, false)
 		end
 		g_WndCount = g_WndCount + 1
 		data = {c = 0}
 		g_WndData[wnd] = data
-		addEventHandler("onClientElementDestroy", wnd, GaOnElementDestroy, false)
+		addEventHandler('onClientElementDestroy', wnd, GaOnElementDestroy, false)
 	end
 	
 	guiSetVisible(wnd, true)
@@ -84,7 +84,7 @@ function GaFadeIn(wnd, delay, targetAlpha)
 	if(not targetAlpha) then
 		targetAlpha = 1
 	end
-	--outputDebugString("GaFadeIn "..g_WndCount.." "..guiGetAlpha ( wnd ).."-"..targetAlpha, 3)
+	--outputDebugString('GaFadeIn '..g_WndCount..' '..guiGetAlpha ( wnd )..'-'..targetAlpha, 3)
 	GaFade(wnd, delay, targetAlpha)
 end
 
@@ -92,6 +92,6 @@ function GaFadeOut(wnd, delay, targetAlpha)
 	if(not targetAlpha) then
 		targetAlpha = 0
 	end
-	--outputDebugString("GaFadeOut "..g_WndCount.." "..guiGetAlpha(wnd).."-"..targetAlpha, 3)
+	--outputDebugString('GaFadeOut '..g_WndCount..' '..guiGetAlpha(wnd)..'-'..targetAlpha, 3)
 	GaFade(wnd, delay, targetAlpha)
 end

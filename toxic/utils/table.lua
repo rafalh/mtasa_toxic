@@ -25,7 +25,7 @@ end
 function table.copy(tbl, full)
 	local ret = {}
 	for k, v in pairs(tbl) do
-		if(type(v) == "table" and full) then
+		if(type(v) == 'table' and full) then
 			ret[k] = table.copy(v)
 		else
 			ret[k] = v
@@ -62,7 +62,7 @@ function table.merge(tbl1, tbl2, _subst)
 	for k, v in pairs(tbl2) do
 		if(_subst[v]) then
 			ret[k] = _subst[v]
-		elseif(type(v) == "table" and type(ret[k]) == "table") then
+		elseif(type(v) == 'table' and type(ret[k]) == 'table') then
 			ret[k] = table.merge(ret[k], v, _subst)
 		else
 			ret[k] = v
@@ -84,13 +84,13 @@ function table.dump(tbl, _stack)
 	
 	local values = {}
 	for k, v in pairs(tbl) do
-		if(type(v) == "table" and not table.find(_stack, v)) then
+		if(type(v) == 'table' and not table.find(_stack, v)) then
 			v = table.dump(v, _stack)
 		end
-		table.insert(values, "["..tostring(k).."] = "..tostring(v))
+		table.insert(values, '['..tostring(k)..'] = '..tostring(v))
 	end
 	table.remove(_stack)
-	return "{"..table.concat(values, ", ").."}"
+	return '{'..table.concat(values, ', ')..'}'
 end
 
 function table.foreach(tbl, fn)

@@ -1,4 +1,4 @@
-Quaternion = Class("Quaternion")
+Quaternion = Class('Quaternion')
 
 function Quaternion.__mt.__index:transform(vec)
 	assert(vec.cls == Vector3)
@@ -41,12 +41,12 @@ function Quaternion.__mt:__unm()
 end
 
 function Quaternion.__mt.__mul(a, b)
-	if(type(b) ~= "table") then
+	if(type(b) ~= 'table') then
 		return Quaternion(a[1]*b, a[2]*b, a[3]*b, a[4]*b)
-	elseif(type(a) ~= "table") then
+	elseif(type(a) ~= 'table') then
 		return Quaternion(b[1]*a, b[2]*a, b[3]*a, b[4]*a)
 	else
-		--assert(a.cls == Quaternion and b.cls == Quaternion, tostring(a.cls).." "..tostring(b.cls))
+		--assert(a.cls == Quaternion and b.cls == Quaternion, tostring(a.cls)..' '..tostring(b.cls))
 		local x = a[4]*b[1] + a[1]*b[4] + a[2]*b[3] - a[3]*b[2];
 		local y = a[4]*b[2] + a[2]*b[4] + a[3]*b[1] - a[1]*b[3];
 		local z = a[4]*b[3] + a[3]*b[4] + a[1]*b[2] - a[2]*b[1];
@@ -60,7 +60,7 @@ function Quaternion.__mt:__eq(vec)
 end
 
 function Quaternion.__mt:__tostring()
-	return "("..tostring(self[1]).." "..tostring(self[2]).." "..tostring(self[3]).." "..tostring(self[4])..")"
+	return '('..tostring(self[1])..' '..tostring(self[2])..' '..tostring(self[3])..' '..tostring(self[4])..')'
 end
 
 function Quaternion.__mt.__index:init(x, y, z, w)

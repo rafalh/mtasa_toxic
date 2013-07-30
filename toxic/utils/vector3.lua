@@ -1,4 +1,4 @@
-Vector3 = Class("Vector3")
+Vector3 = Class('Vector3')
 
 function Vector3.__mt.__index:len()
 	return (self[1]^2 + self[2]^2 + self[3]^2)^0.5
@@ -49,12 +49,12 @@ function Vector3.__mt:__unm()
 end
 
 function Vector3.__mt.__mul(a, b)
-	if(type(b) ~= "table") then
+	if(type(b) ~= 'table') then
 		return Vector3(a[1]*b, a[2]*b, a[3]*b)
-	elseif(type(a) ~= "table") then
+	elseif(type(a) ~= 'table') then
 		return Vector3(b[1]*a, b[2]*a, b[3]*a)
 	else
-		--assert(a.cls == Vector3 and b.cls == Vector3, tostring(a.cls).." "..tostring(b.cls))
+		--assert(a.cls == Vector3 and b.cls == Vector3, tostring(a.cls)..' '..tostring(b.cls))
 		return Vector3(a[1]*b[1], a[2]*b[2], a[3]*b[3])
 	end
 end
@@ -68,7 +68,7 @@ function Vector3.__mt:__eq(vec)
 end
 
 function Vector3.__mt:__tostring()
-	return "("..tostring(self[1]).." "..tostring(self[2]).." "..tostring(self[3])..")"
+	return '('..tostring(self[1])..' '..tostring(self[2])..' '..tostring(self[3])..')'
 end
 
 function Vector3.__mt.__index:init(x, y, z)

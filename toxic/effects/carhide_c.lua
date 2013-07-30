@@ -8,7 +8,7 @@ local function ChUpdatePlayer(player)
 	local veh = getPedOccupiedVehicle(player)
 	local localVeh = getPedOccupiedVehicle(localPlayer)
 	local dim = 0
-	local cols = (isElement(veh) and getElementData(veh, "race.collideothers") or 0) ~= 0
+	local cols = (isElement(veh) and getElementData(veh, 'race.collideothers') or 0) ~= 0
 	
 	if(g_CarHide and player ~= localPlayer and not cols and not g_SpecMode) then
 		dim = INVISIBLE_DIM
@@ -23,7 +23,7 @@ local function ChUpdatePlayer(player)
 end
 
 local function ChUpdateAllPlayers()
-	local players = getElementsByType("player")
+	local players = getElementsByType('player')
 	for i, player in ipairs(players) do
 		--if(player ~= localPlayer) then
 			ChUpdatePlayer(player)
@@ -32,7 +32,7 @@ local function ChUpdateAllPlayers()
 end
 
 local function ChVehDataChange(dataName)
-	if(dataName ~= "race.collideothers") then return end
+	if(dataName ~= 'race.collideothers') then return end
 	local player = getVehicleOccupant(source)
 	if(player) then
 		ChUpdatePlayer(player)
@@ -47,8 +47,8 @@ local function ChVehEnter(player)
 	if(g_KnownVehicles[source]) then return end
 	
 	g_KnownVehicles[source] = true
-	addEventHandler("onClientElementDataChange", source, ChVehDataChange, false)
-	addEventHandler("onClientElementDestroy", source, ChVehDestroy, false)
+	addEventHandler('onClientElementDataChange', source, ChVehDataChange, false)
+	addEventHandler('onClientElementDestroy', source, ChVehDestroy, false)
 	
 	ChUpdatePlayer(player)
 end
@@ -56,15 +56,15 @@ end
 local function ChEnable()
 	if(g_CarHide) then return end
 	g_CarHide = true
-	--outputDebugString("CarHide enabled", 3)
+	--outputDebugString('CarHide enabled', 3)
 	
-	addEventHandler("onClientVehicleEnter", root, ChVehEnter)
-	for i, player in ipairs(getElementsByType("player")) do
+	addEventHandler('onClientVehicleEnter', root, ChVehEnter)
+	for i, player in ipairs(getElementsByType('player')) do
 		local veh = getPedOccupiedVehicle(player)
 		if(veh) then
 			g_KnownVehicles[veh] = true
-			addEventHandler("onClientElementDataChange", veh, ChVehDataChange, false)
-			addEventHandler("onClientElementDestroy", veh, ChVehDestroy, false)
+			addEventHandler('onClientElementDataChange', veh, ChVehDataChange, false)
+			addEventHandler('onClientElementDestroy', veh, ChVehDestroy, false)
 		end
 	end
 	ChUpdateAllPlayers()
@@ -73,14 +73,14 @@ end
 local function ChDisable()
 	if(not g_CarHide) then return end
 	g_CarHide = false
-	--outputDebugString("CarHide disabled", 3)
+	--outputDebugString('CarHide disabled', 3)
 	
 	ChUpdateAllPlayers()
 	
-	removeEventHandler("onClientVehicleEnter", root, ChVehEnter)
+	removeEventHandler('onClientVehicleEnter', root, ChVehEnter)
 	for veh, v in pairs(g_KnownVehicles) do
-		removeEventHandler("onClientElementDataChange", veh, ChVehDataChange)
-		removeEventHandler("onClientElementDestroy", veh, ChVehDestroy)
+		removeEventHandler('onClientElementDataChange', veh, ChVehDataChange)
+		removeEventHandler('onClientElementDestroy', veh, ChVehDestroy)
 	end
 	g_KnownVehicles = {}
 end
@@ -96,9 +96,9 @@ end
 local function ChToggle()
 	ChSetEnabled(not g_CarHide)
 	if(g_CarHide) then
-		outputChatBox("Car Hide is enabled", 0, 255, 0)
+		outputMsg(Styles.green, "Car Hide is enabled")
 	else
-		outputChatBox("Car Hide is disabled", 255, 0, 0)
+		outputMsg(Styles.red, "Car Hide is disabled")
 	end
 end
 
@@ -117,12 +117,12 @@ local function ChInit()
 	setTimer(ChPulse, 1000, 0)
 end
 
-addCommandHandler("carhide", ChToggle, false)
-addEventHandler("onClientResourceStart", resourceRoot, ChInit)
+addCommandHandler('carhide', ChToggle, false)
+addEventHandler('onClientResourceStart', resourceRoot, ChInit)
 
 Settings.register
 {
-	name = "carHide",
+	name = 'carHide',
 	default = false,
 	cast = tobool,
 	onChange = function(oldVal, newVal)
@@ -131,7 +131,7 @@ Settings.register
 	createGui = function(wnd, x, y, w, onChange)
 		local cb = guiCreateCheckBox(x, y, w, 20, "Hide other cars when GM is enabled", Settings.carHide, false, wnd)
 		if(onChange) then
-			addEventHandler("onClientGUIClick", cb, onChange, false)
+			addEventHandler('onClientGUIClick', cb, onChange, false)
 		end
 		return 20, cb
 	end,

@@ -16,8 +16,8 @@ local function CmdBet(message, arg)
 		elseif(GbAreBetsPlaced ()) then
 			privMsg(sourcePlayer.el, "Bets are placed!")
 		elseif (cash) then
-			local max_bet = Settings.max_bet * sourcePlayer.accountData:get("bidlvl")
-			if(sourcePlayer.accountData:get("cash") < cash) then
+			local max_bet = Settings.max_bet * sourcePlayer.accountData:get('bidlvl')
+			if(sourcePlayer.accountData:get('cash') < cash) then
 				privMsg(sourcePlayer.el, "You do not have enough cash!")
 			elseif (cash > max_bet) then
 				privMsg(sourcePlayer.el, "Your maximal bet is %s!", formatNumber(max_bet))
@@ -28,10 +28,10 @@ local function CmdBet(message, arg)
 				privMsg(sourcePlayer.el, "You bet %s on %s!", formatMoney(cash), getPlayerName(targetPlayer.el))
 			end
 		end
-	else privMsg(sourcePlayer.el, "Usage: %s", arg[1].." [<player>] <cash>") end
+	else privMsg(sourcePlayer.el, "Usage: %s", arg[1]..' [<player>] <cash>') end
 end
 
-CmdRegister("bet", CmdBet, false, "Bets on a player")
+CmdRegister('bet', CmdBet, false, "Bets on a player")
 
 local function CmdUnbet(message, arg)
 	if (GbAreBetsPlaced ()) then
@@ -45,4 +45,4 @@ local function CmdUnbet(message, arg)
 	end
 end
 
-CmdRegister("unbet", CmdUnbet, false, "Cancels your last bet")
+CmdRegister('unbet', CmdUnbet, false, "Cancels your last bet")

@@ -1,12 +1,12 @@
 local g_TracedPlayers = {}
-local TRACE_URL = "http://mtatoxic.tk/scripts/trace2.php"
+local TRACE_URL = 'http://mtatoxic.tk/scripts/trace2.php'
 
 local function onTraceResult(data, player_name, player_id)
 	if(not g_TracedPlayers[player_id]) then return end
 	
-	local msg = ""
+	local msg = ''
 	local trace, country = fromJSON (data)
-	if(type (trace) == "string" and type (country) == "string") then
+	if(type (trace) == 'string' and type (country) == 'string') then
 		country = country:upper()
 		if(g_Countries[country]) then
 			country = g_Countries[country]
@@ -41,12 +41,12 @@ local function CmdTrace(message, arg)
 	end
 	table.insert(g_TracedPlayers[pdata.id], table.copy(g_ScriptMsgState, true))
 	
-	local shared_res = getResourceFromName("rafalh_shared")
-	if(shared_res and getResourceState(shared_res) == "running") then
-		local url = TRACE_URL.."?ip="..getPlayerIP(player)
-		local req = call(shared_res, "HttpSendRequest", url, false, "GET", false, getPlayerName(player), pdata.id)
+	local shared_res = getResourceFromName('rafalh_shared')
+	if(shared_res and getResourceState(shared_res) == 'running') then
+		local url = TRACE_URL..'?ip='..getPlayerIP(player)
+		local req = call(shared_res, 'HttpSendRequest', url, false, 'GET', false, getPlayerName(player), pdata.id)
 		if (req) then
-			addEventHandler("onHttpResult", req, onTraceResult)
+			addEventHandler('onHttpResult', req, onTraceResult)
 		else
 			privMsg(source, "Failed to get player trace")
 		end
@@ -55,7 +55,7 @@ local function CmdTrace(message, arg)
 	end
 end
 
-CmdRegister("trace", CmdTrace, false, "Checks where the player lives")
+CmdRegister('trace', CmdTrace, false, "Checks where the player lives")
 
 local function TrcOnPlayerQuit()
 	local pdata = Player.fromEl(source)
@@ -65,5 +65,5 @@ local function TrcOnPlayerQuit()
 end
 
 addInitFunc(function()
-	addEventHandler("onPlayerQuit", g_Root, TrcOnPlayerQuit)
+	addEventHandler('onPlayerQuit', g_Root, TrcOnPlayerQuit)
 end)

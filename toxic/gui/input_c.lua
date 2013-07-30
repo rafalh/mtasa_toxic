@@ -18,5 +18,5 @@ function showCursor(visible)
 end
 
 function guiSetInputEnabled()
-	assert(false, "guiSetInputEnabled is deprecated")
+	assert(false, 'guiSetInputEnabled is deprecated')
 end

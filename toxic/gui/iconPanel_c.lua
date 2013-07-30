@@ -1,8 +1,8 @@
 local g_ListStyle = {}
-g_ListStyle.normal = {clr = {255, 255, 0}, a = 0.6, fnt = "default-bold-small"}
-g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = "default-bold-small"}
+g_ListStyle.normal = {clr = {255, 255, 0}, a = 0.6, fnt = 'default-bold-small'}
+g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = 'default-bold-small'}
 g_ListStyle.active = g_ListStyle.hover
-g_ListStyle.iconPos = "top"
+g_ListStyle.iconPos = 'top'
 
 IconPanel = Class('IconPanel')
 
@@ -48,7 +48,7 @@ function IconPanel.__mt.__index:createGUI()
 	self.list.onClickHandler = {self, 'onItemClick'}
 	
 	for i, item in ipairs(self.items) do
-		local img = item.img or "img/no_img.png"
+		local img = item.img or 'img/no_img.png'
 		self.list:addItem(item.name, img, i)
 		if(item.tooltip) then
 			self.list:setItemTooltip(i, item.tooltip)
@@ -63,7 +63,7 @@ end
 function IconPanel.__mt.__index:onItemClick(i)
 	local item = self.items[i]
 	if(item.right and not item.right:check()) then
-		outputChatBox("Access is denied!", 255, 0, 0)
+		outputMsg(Styles.red, "Access is denied!")
 		return
 	end
 	

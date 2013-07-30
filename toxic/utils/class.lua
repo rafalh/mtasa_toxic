@@ -53,7 +53,7 @@ function mt:__call(name, parent)
 end
 
 function mt:__tostring()
-	return "Class"
+	return 'Class'
 end
 function mt.__concat(a, b)
 	return tostring(a)..tostring(b)
@@ -62,15 +62,15 @@ setmetatable(Class, mt)
 
 #TEST = true
 #if(TEST) then
-	A = Class("A")
+	A = Class('A')
 	A.x = 1
 	A.y = 32
-	function A.__mt.__index:test() return "A test" end
-	function A.__mt.__index:test2() return "A test2" end
+	function A.__mt.__index:test() return 'A test' end
+	function A.__mt.__index:test2() return 'A test2' end
 	
-	B = Class("B", A)
+	B = Class('B', A)
 	B.y = 16
-	function B.__mt.__index:test() return "B test" end
+	function B.__mt.__index:test() return 'B test' end
 	
 	assert(A.cls == Class)
 	assert(B.cls == Class)
@@ -85,12 +85,12 @@ setmetatable(Class, mt)
 	
 	local objA = A()
 	local objB = B()
-	assert(tostring(objA) == "A", tostring(objA))
-	assert(tostring(objB) == "B", tostring(objB))
+	assert(tostring(objA) == 'A', tostring(objA))
+	assert(tostring(objB) == 'B', tostring(objB))
 	assert(objA.cls == A)
 	assert(objB.cls == B)
-	assert(objA:test() == "A test")
-	assert(objA:test2() == "A test2")
-	assert(objB:test() == "B test")
-	assert(objB:test2() == "A test2")
+	assert(objA:test() == 'A test')
+	assert(objA:test2() == 'A test2')
+	assert(objB:test() == 'B test')
+	assert(objB:test2() == 'A test2')
 #end

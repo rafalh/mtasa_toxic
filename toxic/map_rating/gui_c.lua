@@ -6,13 +6,13 @@ local g_HideTimer = false
 local g_PosX, g_PosY = (g_ScreenSize[1] - 250) / 2 - 205, 5
 local g_Anim1, g_Anim2
 
-addEvent("onPlayerRate", true)
-addEvent("onClientSetRateGuiVisibleReq", true)
-addEvent("onClientMapStopping")
+addEvent('onPlayerRate', true)
+addEvent('onClientSetRateGuiVisibleReq', true)
+addEvent('onClientMapStopping')
 
 local function RtInitGui()
 	g_Window = guiCreateWindow(g_PosX, -80, 250, 80, "Rate this map", false)
-	g_Panel = guiCreateLabel(g_PosX, -80+15, 250, 80 - 15, "", false)
+	g_Panel = guiCreateLabel(g_PosX, -80+15, 250, 80 - 15, '', false)
 	guiSetVisible(g_Window, false)
 	guiSetVisible(g_Panel, false)
 	guiWindowSetMovable(g_Window, false)
@@ -23,7 +23,7 @@ local function RtInitGui()
 	
 	for i = 1, 5 do
 		g_Stars[i] = {}
-		g_Stars[i].el = guiCreateStaticImage(5 + 35*(i - 1), 25, 32, 32, "img/star.png", false, g_Panel)
+		g_Stars[i].el = guiCreateStaticImage(5 + 35*(i - 1), 25, 32, 32, 'img/star.png', false, g_Panel)
 		guiSetAlpha(g_Stars[i].el, 0.3)
 		g_Stars[i].anim = false
 	end
@@ -53,11 +53,11 @@ end
 local function RtSetBinds(enabled)
 	if(enabled) then
 		for i = 1, 5 do
-			bindKey(tostring(i), "up", RtKeyUp)
+			bindKey(tostring(i), 'up', RtKeyUp)
 		end
 	else
 		for i = 1, 5 do
-			unbindKey(tostring(i), "up", RtKeyUp)
+			unbindKey(tostring(i), 'up', RtKeyUp)
 		end
 	end
 end
@@ -98,16 +98,16 @@ local function RtHideGui()
 	end
 	
 	g_Anim1 = Animation.createAndPlay(g_Window,
-		Animation.presets.guiMoveEx(g_PosX, -80, 500, "InQuad"),
+		Animation.presets.guiMoveEx(g_PosX, -80, 500, 'InQuad'),
 		Animation.presets.guiSetVisible(false))
 	g_Anim2 = Animation.createAndPlay(g_Panel,
-		Animation.presets.guiMoveEx(g_PosX, -80+15, 500, "InQuad"),
+		Animation.presets.guiMoveEx(g_PosX, -80+15, 500, 'InQuad'),
 		Animation.presets.guiSetVisible(false))
 	
 	RtSetBinds(false)
 	
 	if(g_Rating) then
-		triggerServerEvent("onPlayerRate", g_Me, g_Rating)
+		triggerServerEvent('onPlayerRate', g_Me, g_Rating)
 		g_Rating = false
 	end
 end
@@ -125,8 +125,8 @@ local function RtShowGui()
 	guiSetVisible(g_Window, true)
 	guiSetVisible(g_Panel, true)
 	
-	g_Anim1 = Animation.createAndPlay(g_Window, Animation.presets.guiMoveEx(g_PosX, g_PosY, 500, "InOutQuad"))
-	g_Anim2 = Animation.createAndPlay(g_Panel, Animation.presets.guiMoveEx(g_PosX, g_PosY+15, 500, "InOutQuad"))
+	g_Anim1 = Animation.createAndPlay(g_Window, Animation.presets.guiMoveEx(g_PosX, g_PosY, 500, 'InOutQuad'))
+	g_Anim2 = Animation.createAndPlay(g_Panel, Animation.presets.guiMoveEx(g_PosX, g_PosY+15, 500, 'InOutQuad'))
 	
 	RtSetBinds(true)
 	
@@ -159,6 +159,6 @@ end
 -- Events --
 ------------
 
-addEventHandler("onClientSetRateGuiVisibleReq", g_Root, RtSetVisible)
-addEventHandler("onClientMapStopping", g_Root, RtMapStop)
-addEventHandler("onClientResourceStart", g_ResRoot, RtInit)
+addEventHandler('onClientSetRateGuiVisibleReq', g_Root, RtSetVisible)
+addEventHandler('onClientMapStopping', g_Root, RtMapStop)
+addEventHandler('onClientResourceStart', g_ResRoot, RtInit)

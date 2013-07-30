@@ -2,32 +2,32 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
-addEvent("onBuyNextMapReq", true)
+addEvent('onBuyNextMapReq', true)
 
 local JoinMsgItem = {
-	id = "joinmsg",
+	id = 'joinmsg',
 	cost = 20000,
-	field = "joinmsg",
+	field = 'joinmsg',
 }
 
 function JoinMsgItem.onBuy(player, val)
-	return not val and Player.fromEl(player).accountData:set("joinmsg", "")
+	return not val and Player.fromEl(player).accountData:set('joinmsg', '')
 end
 
 function JoinMsgItem.onSell ( player, val )
-	return val and Player.fromEl(player).accountData:set("joinmsg", nil)
+	return val and Player.fromEl(player).accountData:set('joinmsg', nil)
 end
 
 ShpRegisterItem(JoinMsgItem)
 
 local HealthItem = {
-	id = "health100",
+	id = 'health100',
 	cost = 100000,
-	field = "health100",
+	field = 'health100',
 	onBuy = function ( player, val )
-		return Player.fromEl(player).accountData:add("health100", 1)
+		return Player.fromEl(player).accountData:add('health100', 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -36,22 +36,22 @@ local HealthItem = {
 		end
 		
 		fixVehicle ( veh )
-		Player.fromEl(player).accountData:add("health100", -1)
+		Player.fromEl(player).accountData:add('health100', -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("health100", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('health100', -1)
 	end
 }
 
 ShpRegisterItem(HealthItem)
 
 local FlipItem = {
-	id = "flip",
+	id = 'flip',
 	cost = 50000,
-	field = "flips",
+	field = 'flips',
 	onBuy = function ( player, val )
-		return Player.fromEl(player).accountData:add("flips", 1)
+		return Player.fromEl(player).accountData:add('flips', 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -60,29 +60,29 @@ local FlipItem = {
 		local rx, ry, rz = getElementRotation ( veh )
 		if ( val > 0 and not isPedDead ( player ) and ( ( rx > 90 and rx < 270 ) or ( ry > 90 and ry < 270 ) ) ) then
 			setElementRotation ( veh, 0, 0, rz + 180 )
-			Player.fromEl(player).accountData:add("flips", -1)
+			Player.fromEl(player).accountData:add('flips', -1)
 			return true
 		end
 		return false
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("flips", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('flips', -1)
 	end
 }
 
 ShpRegisterItem(FlipItem)
 
 local SelfDestrItem = {
-	id = "selfdestr",
+	id = 'selfdestr',
 	cost = 500000,
-	field = "selfdestr",
+	field = 'selfdestr',
 	onBuy = function ( player, val )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("selfdestr", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('selfdestr', 1)
 	end,
 	onUse = function ( player, val )
-		local res = getResourceFromName ( "race" )
-		if ( val > 0 and not isPedDead ( player ) and ( not res or getResourceState ( res ) ~= "running" or call ( res, "getTimePassed" ) > 5000 ) ) then
+		local res = getResourceFromName ( 'race' )
+		if ( val > 0 and not isPedDead ( player ) and ( not res or getResourceState ( res ) ~= 'running' or call ( res, 'getTimePassed' ) > 5000 ) ) then
 			setTimer ( function ( player )
 				if ( not isPedDead ( player ) ) then
 					local el = getPedOccupiedVehicle ( player ) or player
@@ -90,25 +90,25 @@ local SelfDestrItem = {
 					createExplosion ( x, y, z, 7 )
 				end
 			end, 3000, 1, player )
-			Player.fromEl(player).accountData:add("selfdestr", -1)
+			Player.fromEl(player).accountData:add('selfdestr', -1)
 			return true
 		end
 		return false
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("selfdestr", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('selfdestr', -1)
 	end
 }
 
 ShpRegisterItem(SelfDestrItem)
 
 local MineItem = {
-	id = "mine",
+	id = 'mine',
 	cost = 200000,
-	field = "mines",
+	field = 'mines',
 	onBuy = function ( player, val )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("mines", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('mines', 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 or isPedDead ( player ) ) then
@@ -124,35 +124,35 @@ local MineItem = {
 			destroyElement ( marker )
 			local room = g_RootRoom
 			table.insert ( room.tempElements, createObject ( 1225, x, y, z ) )
-		end, math.max ( 60/v, 50 ), 1, x, y, z, createMarker ( x, y, z, "cylinder", 1, 255, 0, 0, 128 ) )
-		Player.fromEl(player).accountData:add("mines", -1)
+		end, math.max ( 60/v, 50 ), 1, x, y, z, createMarker ( x, y, z, 'cylinder', 1, 255, 0, 0, 128 ) )
+		Player.fromEl(player).accountData:add('mines', -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("mines", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('mines', -1)
 	end
 }
 
 ShpRegisterItem(MineItem)
 
 local function ShpOnOilHit ( veh )
-	if ( getElementType ( veh ) ~= "vehicle" ) then return end
+	if ( getElementType ( veh ) ~= 'vehicle' ) then return end
 	
 	local vx, vy, vz = getElementVelocity ( veh )
 	local speed2 = vx^2 + vy^2 + vz^2
 	local dir = ( { 1, -1 } )[math.random ( 1, 2 )]
 	local turn_v = speed2 / 5 * dir * math.random ( 80, 120 ) / 100
-	--outputDebugString ( "Oil hit: "..turn_v, 2 )
+	--outputDebugString ( 'Oil hit: '..turn_v, 2 )
 	setVehicleTurnVelocity ( veh, 0, 0, turn_v )
 end
 
 local OilItem = {
-	id = "oil",
+	id = 'oil',
 	cost = 100000,
-	field = "oil",
+	field = 'oil',
 	onBuy = function ( player, val )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("oil", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('oil', 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 or isPedDead ( player ) ) then
@@ -163,30 +163,30 @@ local OilItem = {
 		local x, y, z = getElementPosition ( el )
 		local vx, vy, vz = getElementVelocity ( el )
 		local v = math.max ( ( vx^2 + vy^2 )^( 1/2 ), 0.001 )
-		local marker = createMarker(x, y, z - 0.4, "cylinder", 8, 255, 255, 0, 32)
+		local marker = createMarker(x, y, z - 0.4, 'cylinder', 8, 255, 255, 0, 32)
 		local room = g_RootRoom
 		table.insert(room.tempElements, marker)
 		setTimer ( function(marker)
 			if(isElement(marker)) then
-				addEventHandler("onMarkerHit", marker, ShpOnOilHit, false)
+				addEventHandler('onMarkerHit', marker, ShpOnOilHit, false)
 			end
 		end, math.max ( 60/v, 50 ), 1, marker)
-		Player.fromEl(player).accountData:add("oil", -1)
+		Player.fromEl(player).accountData:add('oil', -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("oil", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('oil', -1)
 	end
 }
 
 ShpRegisterItem(OilItem)
 
 local BeerItem = {
-	id = "beer",
+	id = 'beer',
 	cost = 2,
-	field = "beers",
+	field = 'beers',
 	onBuy = function ( player, val )
-		return Player.fromEl(player).accountData:add("beers", 1)
+		return Player.fromEl(player).accountData:add('beers', 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 ) then
@@ -194,23 +194,23 @@ local BeerItem = {
 		end
 		
 		triggerClientInternalEvent ( player, $(EV_CLIENT_DRUNK_EFFECT), player )
-		Player.fromEl(player).accountData:add("beers", -1)
+		Player.fromEl(player).accountData:add('beers', -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("beers", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('beers', -1)
 	end
 }
 
 ShpRegisterItem(BeerItem)
 
 local InvisibilityItem = {
-	id = "invisibility",
+	id = 'invisibility',
 	cost = 300000,
-	field = "invisibility",
+	field = 'invisibility',
 	onBuy = function ( player, val )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("invisibility", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('invisibility', 1)
 	end,
 	onUse = function ( player, val )
 		local pdata = Player.fromEl(player)
@@ -218,22 +218,22 @@ local InvisibilityItem = {
 			return false
 		end
 		
-		local res = getResourceFromName ( "race" )
-		if ( res and getResourceState ( res ) == "running" and call ( res, "getTimePassed" ) < 1000 ) then
+		local res = getResourceFromName ( 'race' )
+		if ( res and getResourceState ( res ) == 'running' and call ( res, 'getTimePassed' ) < 1000 ) then
 			return false
 		end
 		
-		addEvent ( "onSetPlayerAlphaReq", true )
+		addEvent ( 'onSetPlayerAlphaReq', true )
 		for player2, pdata2 in pairs ( g_Players ) do
 			local a = ( player2 == player ) and 102 or 0
-			triggerClientEvent ( player2, "onSetPlayerAlphaReq", player, a )
+			triggerClientEvent ( player2, 'onSetPlayerAlphaReq', player, a )
 		end
-		Player.fromEl(player).accountData:add("invisibility", -1)
+		Player.fromEl(player).accountData:add('invisibility', -1)
 		pdata.invisible = true
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("invisibility", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('invisibility', -1)
 	end
 }
 
@@ -246,12 +246,12 @@ local function ShpGodmodeVehicleDamage ( loss )
 end
 
 local GodmodeItem = {
-	id = "godmode30",
+	id = 'godmode30',
 	cost = 300000,
-	field = "godmodes30",
+	field = 'godmodes30',
 	onBuy = function ( player, val )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("godmodes30", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('godmodes30', 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -260,37 +260,37 @@ local GodmodeItem = {
 		end
 		
 		fixVehicle ( veh )
-		addEventHandler ( "onVehicleDamage", veh, ShpGodmodeVehicleDamage )
+		addEventHandler ( 'onVehicleDamage', veh, ShpGodmodeVehicleDamage )
 		setTimer ( function ( veh )
 			if ( isElement ( veh ) ) then
-				removeEventHandler ( "onVehicleDamage", veh, ShpGodmodeVehicleDamage )
+				removeEventHandler ( 'onVehicleDamage', veh, ShpGodmodeVehicleDamage )
 			end
 		end, 60000, 1, veh )
-		Player.fromEl(player).accountData:add("godmodes30", -1)
+		Player.fromEl(player).accountData:add('godmodes30', -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("godmodes30", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('godmodes30', -1)
 	end
 }
 
 ShpRegisterItem(GodmodeItem)
 
 local ThunderItem = {
-	id = "thunder",
+	id = 'thunder',
 	cost = 200000,
-	field = "thunders",
+	field = 'thunders',
 	onBuy = function ( player, val )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("thunders", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('thunders', 1)
 	end,
 	onUse = function ( player, val )
 		if ( val <= 0 ) then
 			return false
 		end
 		
-		local res = getResourceFromName ( "race" )
-		if ( res and getResourceState ( res ) == "running" and call ( res, "getTimePassed" ) < 3000 ) then
+		local res = getResourceFromName ( 'race' )
+		if ( res and getResourceState ( res ) == 'running' and call ( res, 'getTimePassed' ) < 3000 ) then
 			return false
 		end
 		
@@ -308,32 +308,32 @@ local ThunderItem = {
 		end
 		
 		if ( bestplayer ) then
-			privMsg ( bestplayer, "You have been killed by %s thunder", getPlayerName ( player ) )
+			privMsg ( bestplayer, "You have been killed by %s's thunder!", getPlayerName ( player ) )
 			killPed ( bestplayer, player, 40 )
 		else
 			privMsg ( player, "There is no player near your vehicle." )
 			return false
 		end
 		
-		addEvent ( "onThunderEffect", true )
-		triggerClientEvent ( g_Root, "onThunderEffect", player, bestplayer )
-		Player.fromEl(player).accountData:add("thunders", -1)
+		addEvent ( 'onThunderEffect', true )
+		triggerClientEvent ( g_Root, 'onThunderEffect', player, bestplayer )
+		Player.fromEl(player).accountData:add('thunders', -1)
 		return true
 	end,
 	onSell = function ( player, val )
-		return val > 0 and Player.fromEl(player).accountData:add("thunders", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('thunders', -1)
 	end
 }
 
 ShpRegisterItem(ThunderItem)
 
 local SmokeItem = {
-	id = "smoke",
+	id = 'smoke',
 	cost = 100000,
-	field = "smoke",
+	field = 'smoke',
 	onBuy = function ( player )
-		AchvActivate(player, "Buy a weapon")
-		return Player.fromEl(player).accountData:add("smoke", 1)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('smoke', 1)
 	end,
 	onUse = function ( player, val )
 		local veh = getPedOccupiedVehicle ( player )
@@ -346,21 +346,21 @@ local SmokeItem = {
 		attachElements ( obj, veh, 0, -2, 0 )
 		setTimer ( destroyElement, 15000, 1, obj )
 		
-		Player.fromEl(player).accountData:add("smoke", -1)
+		Player.fromEl(player).accountData:add('smoke', -1)
 		return true
 	end,
 	onSell = function(player, val)
-		return val > 0 and Player.fromEl(player).accountData:add("smoke", -1)
+		return val > 0 and Player.fromEl(player).accountData:add('smoke', -1)
 	end
 }
 
 ShpRegisterItem(SmokeItem)
 
 local NextMapItem = {
-	id = "nextmap",
+	id = 'nextmap',
 	cost = 20000,
 	onBuy = function ( player )
-		triggerClientEvent(player, "rafalh_onBuyNextMap", g_ResRoot)
+		triggerClientEvent(player, 'rafalh_onBuyNextMap', g_ResRoot)
 		return false
 	end
 }
@@ -368,12 +368,12 @@ local NextMapItem = {
 ShpRegisterItem(NextMapItem)
 
 local VipItem = {
-	id = "vip1w",
+	id = 'vip1w',
 	cost = 2800000,
 	noDiscount = true,
 	onBuy = function ( player )
-		local res = getResourceFromName ( "rafalh_vip" )
-		local success = res and call ( res, "giveVip", player, 7 )
+		local res = getResourceFromName ( 'rafalh_vip' )
+		local success = res and call ( res, 'giveVip', player, 7 )
 		if ( not success ) then
 			privMsg ( player, "You have to be loged in!" )
 		end
@@ -389,9 +389,9 @@ ShpRegisterItem(VipItem)
 
 local function ShpSetJoinMsgRequest(str)
 	local pdata = Player.fromEl(client)
-	local joinMsg = pdata.accountData:get("joinmsg")
+	local joinMsg = pdata.accountData:get('joinmsg')
 	if(joinMsg) then
-		pdata.accountData:set("joinmsg", str:sub(1, 128))
+		pdata.accountData:set('joinmsg', str:sub(1, 128))
 	end
 end
 
@@ -405,7 +405,7 @@ local function ShpBuyNextMap(mapResName)
 	local pdata = Player.fromEl(client)
 	local now = getRealTime().timestamp
 	
-	local price = ShpGetItemPrice("nextmap", client)
+	local price = ShpGetItemPrice('nextmap', client)
 	if(pdata.accountData.cash < price) then
 		privMsg(client, "Not enough cash!")
 		return
@@ -414,7 +414,7 @@ local function ShpBuyNextMap(mapResName)
 	local mapRes = getResourceFromName(mapResName)
 	local map = mapRes and Map.create(mapRes)
 	if ( not map ) then
-		outputDebugString("getResourceFromName failed", 2)
+		outputDebugString('getResourceFromName failed', 2)
 		return
 	end
 	
@@ -440,7 +440,7 @@ local function ShpBuyNextMap(mapResName)
 	end
 	
 	local map_id = map:getId()
-	local rows = DbQuery("SELECT played_timestamp FROM "..MapsTable.." WHERE map=? LIMIT 1", map_id)
+	local rows = DbQuery('SELECT played_timestamp FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
 	
 	local minDelayForMap = Settings.minBuyMapDelay
 	local dt = now - rows[1].played_timestamp
@@ -448,9 +448,9 @@ local function ShpBuyNextMap(mapResName)
 		local pos = MqAdd(room, map)
 		outputMsg(room, Styles.maps, "%s has been bought by %s (%u. in map queue)!", mapName, pdata:getName(true), pos)
 		
-		pdata.accountData:add("cash", -price)
-		pdata.accountData:add("mapsBought", 1)
-		pdata.accountData:set("mapBoughtTimestamp", now)
+		pdata.accountData:add('cash', -price)
+		pdata.accountData:add('mapsBought', 1)
+		pdata.accountData:set('mapBoughtTimestamp', now)
 	else
 		local delay = minDelayForMap - dt
 		privMsg(client, "Map %s have been recently played. Please wait %s...", mapName, formatTimePeriod(delay, 0))
@@ -463,6 +463,6 @@ end
 
 addInitFunc(function()
 	addInternalEventHandler($(EV_SET_JOIN_MSG_REQUEST), ShpSetJoinMsgRequest)
-	addEventHandler("onGamemodeMapStop", g_Root, ShpMapStop)
-	addEventHandler("onBuyNextMapReq", g_Root, ShpBuyNextMap)
+	addEventHandler('onGamemodeMapStop', g_Root, ShpMapStop)
+	addEventHandler('onBuyNextMapReq', g_Root, ShpBuyNextMap)
 end)

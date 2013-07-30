@@ -2,7 +2,7 @@
 -- Includes --
 --------------
 
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 ---------------------
 -- Local variables --
@@ -16,10 +16,10 @@ local VIEW_W = 400
 local ICON_W, ICON_H = 32, 32
 
 local g_ListStyle = {}
-g_ListStyle.normal = {clr = {255, 255, 0}, a = 0.6, fnt = "default-bold-small"}
-g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = "default-bold-small"}
+g_ListStyle.normal = {clr = {255, 255, 0}, a = 0.6, fnt = 'default-bold-small'}
+g_ListStyle.hover = {clr = {0, 255, 0}, a = 1, fnt = 'default-bold-small'}
 g_ListStyle.active = g_ListStyle.hover
-g_ListStyle.iconPos = "left"
+g_ListStyle.iconPos = 'left'
 
 local g_Items = {}
 local g_Wnd, g_List, g_UserLabel, g_LogInOutBtn
@@ -30,7 +30,7 @@ local g_PanelH
 -- Local functions
 
 local function UpHide()
-	--outputDebugString("UpHide", 3)
+	--outputDebugString('UpHide', 3)
 	GaFadeOut(g_Wnd, FADE_DELAY)
 	
 	if(g_CurrentItem) then
@@ -78,9 +78,9 @@ local function onItemClick(i)
 			guiSetVisible(g_CurrentItem.wnd, false)
 			guiWindowSetSizable(g_CurrentItem.wnd, false)
 			
-			g_CurrentItem.container = guiCreateLabel(0, 20, panel_w, panel_h, "", false, g_CurrentItem.wnd)
+			g_CurrentItem.container = guiCreateLabel(0, 20, panel_w, panel_h, '', false, g_CurrentItem.wnd)
 		else
-			g_CurrentItem.container = guiCreateLabel(10 + ITEM_W * PANEL_COLUMNS, 50, VIEW_W, g_PanelH - 80, "", false, g_Wnd)
+			g_CurrentItem.container = guiCreateLabel(10 + ITEM_W * PANEL_COLUMNS, 50, VIEW_W, g_PanelH - 80, '', false, g_Wnd)
 		end
 	else
 		guiSetVisible(g_CurrentItem.container, true)
@@ -88,7 +88,7 @@ local function onItemClick(i)
 	if(g_CurrentItem.onShow) then
 		DbgPerfInit()
 		g_CurrentItem.onShow(g_CurrentItem.container)
-		DbgPerfCp("User Panel -> "..g_CurrentItem.name)
+		DbgPerfCp('User Panel -> '..g_CurrentItem.name)
 	end
 	if(VIEW_W == 0) then
 		GaFadeOut(g_Wnd, FADE_DELAY)
@@ -109,7 +109,7 @@ end
 
 local function UpLogInOut()
 	if(g_UserName) then
-		RPC("logOutReq"):exec()
+		RPC('logOutReq'):exec()
 	else
 		UpHide()
 		openLoginWnd()
@@ -126,11 +126,11 @@ local function UpCreateGui()
 	guiWindowSetSizable(g_Wnd, false)
 	g_PanelH = h
 	
-	g_UserLabel = guiCreateLabel(10, 20, w - 100, 20, "", false, g_Wnd)
-	guiSetFont(g_UserLabel, "default-bold-small")
+	g_UserLabel = guiCreateLabel(10, 20, w - 100, 20, '', false, g_Wnd)
+	guiSetFont(g_UserLabel, 'default-bold-small')
 	
 	g_LogInOutBtn = guiCreateButton(w - 90, 20, 80, 25, "Logout", false, g_Wnd)
-	addEventHandler("onClientGUIClick", g_LogInOutBtn, UpLogInOut, false)
+	addEventHandler('onClientGUIClick', g_LogInOutBtn, UpLogInOut, false)
 	
 	UpSetAccount(g_UserName)
 	
@@ -151,11 +151,11 @@ local function UpCreateGui()
 	guiLabelSetColor(copyrightLabel, 128, 128, 128)
 	
 	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, g_Wnd)
-	addEventHandler("onClientGUIClick", btn, UpHide, false)
+	addEventHandler('onClientGUIClick', btn, UpHide, false)
 end
 
 local function UpShow()
-	--outputDebugString("UpShow", 3)
+	--outputDebugString('UpShow', 3)
 	if(not g_Wnd) then
 		UpCreateGui()
 	end
@@ -175,9 +175,9 @@ local function UpShow()
 end
 
 local function UpInit()
-	addCommandHandler("UserPanel", UpToggle, false, false)
-	local key = getKeyBoundToCommand("UserPanel") or "F2"
-	bindKey(key, "down", "UserPanel")
+	addCommandHandler('UserPanel', UpToggle, false, false)
+	local key = getKeyBoundToCommand('UserPanel') or 'F2'
+	bindKey(key, 'down', 'UserPanel')
 end
 
 function UpNeedsBackBtn()
@@ -189,13 +189,13 @@ end
 ----------------------
 
 function UpRegister(item)
-	--assert(type(item) == "table")
+	--assert(type(item) == 'table')
 	item.idx = #g_Items + 1
 	table.insert(g_Items, item)
 end
 
 function UpToggle()
-	--outputDebugString("UpToggle g_Hiding "..tostring(g_Hiding), 3)
+	--outputDebugString('UpToggle g_Hiding '..tostring(g_Hiding), 3)
 	if((not g_Wnd or not guiGetVisible(g_Wnd)) and (not g_CurrentItem or VIEW_W > 0)) then
 		UpShow()
 	elseif(not g_Hiding) then
@@ -225,5 +225,5 @@ end
 -- Events --
 ------------
 
-addEventHandler("onClientResourceStart", g_ResRoot, UpInit)
-addEventHandler("main.onAccountChange", g_ResRoot, UpSetAccount)
+addEventHandler('onClientResourceStart', g_ResRoot, UpInit)
+addEventHandler('main.onAccountChange', g_ResRoot, UpSetAccount)

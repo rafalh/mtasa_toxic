@@ -3,10 +3,10 @@ ListView.__mt = {__index = ListView}
 ListView.elMap = {}
 
 ListView.style = {}
-ListView.style.normal = {clr = {196, 196, 196}, a = 0.8, fnt = "default-normal"}
-ListView.style.hover = {clr = {255, 255, 255}, a = 1, fnt = "default-normal"}
-ListView.style.active = {clr = {255, 255, 255}, a = 1, fnt = "default-bold-small"}
-ListView.style.iconPos = "top"
+ListView.style.normal = {clr = {196, 196, 196}, a = 0.8, fnt = 'default-normal'}
+ListView.style.hover = {clr = {255, 255, 255}, a = 1, fnt = 'default-normal'}
+ListView.style.active = {clr = {255, 255, 255}, a = 1, fnt = 'default-bold-small'}
+ListView.style.iconPos = 'top'
 
 function ListView:addItem(name, img, id, style)
 	local idxX = #self.items % self.cols
@@ -15,18 +15,18 @@ function ListView:addItem(name, img, id, style)
 	local w, h = self.itemSize[1], self.itemSize[2]
 	local item = {title = name, id = id, style = style or self.style}
 	
-	item.bgEl = guiCreateStaticImage(x, y, w, h, "img/white.png", false, self.el)
+	item.bgEl = guiCreateStaticImage(x, y, w, h, 'img/white.png', false, self.el)
 	guiSetAlpha(item.bgEl, 0)
 	
 	local imgX, imgY
 	local titleX, titleY
 	local titleW, titleH
 	
-	if(self.style.iconPos == "top" or not self.style.iconPos) then
+	if(self.style.iconPos == 'top' or not self.style.iconPos) then
 		imgX, imgY = (w - self.imgSize[1])/2, 5
 		titleX, titleY = 0, 10 + self.imgSize[2]
 		titleW, titleH = w, h - 10 - self.imgSize[2]
-	elseif(self.style.iconPos == "left") then
+	elseif(self.style.iconPos == 'left') then
 		imgX, imgY = 5, (self.itemSize[2] - self.imgSize[2])/2
 		titleX, titleY = 10 + self.imgSize[2], 10
 		titleW, titleH = w - titleX, h - 20
@@ -34,15 +34,15 @@ function ListView:addItem(name, img, id, style)
 		assert(false)
 	end
 	
-	local imgPath = img or "img/empty.png"
+	local imgPath = img or 'img/empty.png'
 	--item.imgEl = guiCreateStaticImage(imgX, imgY, self.imgSize[1], self.imgSize[2], imgPath, false, item.el)
 	item.imgEl = guiCreateStaticImage(x + imgX, y + imgY, self.imgSize[1], self.imgSize[2], imgPath, false, self.el)
 	guiSetAlpha(item.imgEl, item.style.normal.a)
 	
 	--item.titleEl = guiCreateLabel(titleX, titleY, titleW, titleH, name, false, item.el)
 	item.titleEl = guiCreateLabel(x + titleX, y + titleY, titleW, titleH, name, false, self.el)
-	if(self.style.iconPos == "top" or not self.style.iconPos) then
-		guiLabelSetHorizontalAlign(item.titleEl, "center", true)
+	if(self.style.iconPos == 'top' or not self.style.iconPos) then
+		guiLabelSetHorizontalAlign(item.titleEl, 'center', true)
 	end
 	guiLabelSetColor(item.titleEl, unpack(item.style.normal.clr))
 	guiSetFont(item.titleEl, item.style.normal.fnt)
@@ -89,7 +89,7 @@ end
 
 function ListView:setItemImg(id, img)
 	local item = self.idToItem[id]
-	local imgPath = img or "img/empty.png"
+	local imgPath = img or 'img/empty.png'
 	guiStaticImageLoadImage(item.imgEl, imgPath)
 end
 
@@ -106,13 +106,13 @@ end
 function ListView:setItemTooltip(id, tooltip)
 	local item = self.idToItem[id]
 	
-	setElementData(item.imgEl, "tooltip", tooltip)
-	setElementData(item.titleEl, "tooltip", tooltip)
-	setElementData(item.bgEl, "tooltip", tooltip)
+	setElementData(item.imgEl, 'tooltip', tooltip)
+	setElementData(item.titleEl, 'tooltip', tooltip)
+	setElementData(item.bgEl, 'tooltip', tooltip)
 end
 
 function ListView:setFilter(filter)
-	filter = (filter or ""):lower()
+	filter = (filter or ''):lower()
 	local idx = 0
 	for i, item in ipairs(self.items) do
 		local visible = item.title:lower():find(filter, 1, true) and true or false
@@ -147,11 +147,11 @@ function ListView.create(pos, size, parent, itemSize, imgSize, style)
 	self.imgSize = imgSize or {32, 32}
 	self.cols = math.floor(size[1] / self.itemSize[1])
 	
-	addEventHandler("onClientElementDestroy", self.el, ListView.onElDestroy, false)
-	addEventHandler("onClientMouseEnter", self.el, ListView.onMouseEnter, true)
-	addEventHandler("onClientMouseLeave", self.el, ListView.onMouseLeave, true)
-	addEventHandler("onClientGUIClick", self.el, ListView.onMouseClick, true)
-	addEventHandler("onClientMouseWheel", self.el, ListView.onMouseWheel, true)
+	addEventHandler('onClientElementDestroy', self.el, ListView.onElDestroy, false)
+	addEventHandler('onClientMouseEnter', self.el, ListView.onMouseEnter, true)
+	addEventHandler('onClientMouseLeave', self.el, ListView.onMouseLeave, true)
+	addEventHandler('onClientGUIClick', self.el, ListView.onMouseClick, true)
+	addEventHandler('onClientMouseWheel', self.el, ListView.onMouseWheel, true)
 	
 	ListView.elMap[self.el] = self
 	return self
@@ -199,7 +199,7 @@ function ListView.onMouseClick()
 	local self, item = ListView.getItemFromElement(source)
 	if(not self) then return end
 	if(self.onClickHandler) then
-		if(type(self.onClickHandler) == "table") then
+		if(type(self.onClickHandler) == 'table') then
 			local obj = self.onClickHandler[1]
 			local methodName = self.onClickHandler[2]
 			obj[methodName](obj, item.id)

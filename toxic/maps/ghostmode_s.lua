@@ -5,31 +5,31 @@ local function GmSetEnabled(room, enabled)
 	local map = getCurrentMap(room)
 	if(not map) then return false end
 	
-	assert(type(map) == "table", type(map))
+	assert(type(map) == 'table', type(map))
 	
-	--[[if (map:getSetting("ghostmode")) then
+	--[[if (map:getSetting('ghostmode')) then
 		return false
 	end
 	
 	enabled = tostring(enabled)
-	local oldEnabled = get("*race.ghostmode")
-	local raceRes = getResourceFromName("race")
+	local oldEnabled = get('*race.ghostmode')
+	local raceRes = getResourceFromName('race')
 	
-	if(raceRes and getResourceState(raceRes) == "running") then
-		set("*race.ghostmode", enabled)
+	if(raceRes and getResourceState(raceRes) == 'running') then
+		set('*race.ghostmode', enabled)
 		local raceResRoot = getResourceRootElement(raceRes)
-		triggerEvent("onSettingChange", raceResRoot, "ghostmode", oldEnabled, enabled)
+		triggerEvent('onSettingChange', raceResRoot, 'ghostmode', oldEnabled, enabled)
 		return true
 	end
 	
 	return false]]
 	
-	local raceRes = getResourceFromName("race")
-	if(not raceRes or getResourceState(raceRes) ~= "running") then
+	local raceRes = getResourceFromName('race')
+	if(not raceRes or getResourceState(raceRes) ~= 'running') then
 		return false
 	end
 	
-	call(raceRes, "setGhostmodeEnabled", enabled)
+	call(raceRes, 'setGhostmodeEnabled', enabled)
 	return true
 end
 
@@ -38,7 +38,7 @@ local function GmOnPlayerQuit()
 end
 
 function GmSet(room, enabled, quiet)
-	assert(type(room) == "table")
+	assert(type(room) == 'table')
 	
 	local sec = touint(enabled)
 	if (sec) then
@@ -52,7 +52,7 @@ function GmSet(room, enabled, quiet)
 			g_NoGMWarningMsg = {}
 			g_NoGMWarningTimeLeft = no_gm_warning_time
 			for player, pdata in pairs(g_Players) do
-				g_NoGMWarningMsg[player] = addScreenMsg("Ghostmode will be disabled in "..g_NoGMWarningTimeLeft.." seconds!", player, g_NoGMWarningTimeLeft * 1000)
+				g_NoGMWarningMsg[player] = addScreenMsg('Ghostmode will be disabled in '..g_NoGMWarningTimeLeft..' seconds!', player, g_NoGMWarningTimeLeft * 1000)
 			end
 			setMapTimer(function(room)
 				g_NoGMWarningTimeLeft = g_NoGMWarningTimeLeft - 1
@@ -63,7 +63,7 @@ function GmSet(room, enabled, quiet)
 					GmSetEnabled(room, false)
 				else
 					for player, msg in pairs(g_NoGMWarningMsg) do
-						textItemSetText(msg, "Ghostmode will be disabled in "..g_NoGMWarningTimeLeft.." seconds!")
+						textItemSetText(msg, 'Ghostmode will be disabled in '..g_NoGMWarningTimeLeft..' seconds!')
 					end
 				end
 			end, 1000, g_NoGMWarningTimeLeft, room)
@@ -81,26 +81,20 @@ function GmSet(room, enabled, quiet)
 end
 
 function GmIsEnabled(room)
-	local raceRes = getResourceFromName("race")
-	if(not raceRes or getResourceState(raceRes) ~= "running") then
+	local raceRes = getResourceFromName('race')
+	if(not raceRes or getResourceState(raceRes) ~= 'running') then
 		return false
 	end
 	
-	return call(raceRes, "isGhostmodeEnabled")
+	return call(raceRes, 'isGhostmodeEnabled')
 	
 	--[[local map = getCurrentMap(room)
 	if(not map) then return false end
 	
-	local ghostModeStr = map:getSetting("ghostmode") or get("*race.ghostmode")
-	return (ghostModeStr == "true")]]
+	local ghostModeStr = map:getSetting('ghostmode') or get('*race.ghostmode')
+	return (ghostModeStr == 'true')]]
 end
 
-CmdRegister("checkgm", function()
-	local pdata = Player.fromEl(source)
-	local gm = GmIsEnabled(pdata.room)
-	scriptMsg("Ghostmode is "..(gm and "enabled" or "disabled"))
-end, true)
-
 addInitFunc(function()
-	addEventHandler("onPlayerQuit", g_Root, GmOnPlayerQuit)
+	addEventHandler('onPlayerQuit', g_Root, GmOnPlayerQuit)
 end)

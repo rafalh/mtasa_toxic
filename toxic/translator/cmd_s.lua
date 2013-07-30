@@ -23,10 +23,10 @@ local function validateLangCode(lang)
 end
 
 local function CmdTranslate(message, arg)
-	local lang = arg[2] or ""
+	local lang = arg[2] or ''
 	local text = message:sub(arg[1]:len () + lang:len () + 3)
 	
-	if(text ~= "") then
+	if(text ~= '') then
 		if (validateLangCode (lang)) then
 			local state = table.copy(g_ScriptMsgState, true)
 			translate (text, false, lang, function (text, state)
@@ -37,18 +37,18 @@ local function CmdTranslate(message, arg)
 			end, state)
 		end
 	else
-		privMsg(source, "Usage: %s", "translate <langcode> <text>")
+		privMsg(source, "Usage: %s", 'translate <langcode> <text>')
 	end
 end
 
-CmdRegister("translate", CmdTranslate, false, "Translates text to any language")
-CmdRegisterAlias("t", "translate")
+CmdRegister('translate', CmdTranslate, false, "Translates text to any language")
+CmdRegisterAlias('t', 'translate')
 
 local function CmdTranslateSay(message, arg)
-	local lang = arg[2] or ""
+	local lang = arg[2] or ''
 	local text = message:sub (arg[1]:len () + lang:len() + 3)
 	
-	if(text ~= "") then
+	if(text ~= '') then
 		if(validateLangCode (lang)) then
 			translate (text, false, lang, function (text, player)
 				if(not isElement (player)) then return end
@@ -57,8 +57,8 @@ local function CmdTranslateSay(message, arg)
 			end, source)
 		end
 	else
-		privMsg(source, "Usage: %s", "tsay <langcode> <text>")
+		privMsg(source, "Usage: %s", 'tsay <langcode> <text>')
 	end
 end
 
-CmdRegister("tsay", CmdTranslateSay, false, "Translate message and says it")
+CmdRegister('tsay', CmdTranslateSay, false, "Translate message and says it")
