@@ -57,7 +57,7 @@ local function setMusicEnabled(enabled)
 		removeEventHandler("onClientPlayerRadioSwitch", g_Root, onRadioSwitch)
 		removeEventHandler("onClientPlayerVehicleEnter", g_Me, onPlayerVehicleEnter)
 	else
-		setSoundVolume(g_Sound, 1)
+		setSoundVolume(g_Sound, g_Volume/100)
 		g_MusicEnabled = true
 		setRadioChannel(0)
 		addEventHandler("onClientPlayerRadioSwitch", g_Root, onRadioSwitch)
@@ -70,7 +70,7 @@ local function toggleMusic()
 end
 
 local function startMusicReq(url)
-	--outputDebugString ( "startMusicReq "..url, 3 )
+	--outputDebugString("startMusicReq "..url, 3)
 	
 	g_SoundUrl = url
 	invalidateSound()
@@ -87,7 +87,7 @@ end
 function setMusicVolume(volume)
 	g_Volume = volume
 	if(g_MusicEnabled and g_Sound) then
-		setSoundVolume ( g_Sound, g_Volume/100 )
+		setSoundVolume(g_Sound, g_Volume/100)
 	end
 end
 
