@@ -200,7 +200,7 @@ local function CmdCleanDb (message, arg)
 	CheckAchievements(fix == 'achievements')
 	
 	if(not fix) then
-		scriptMsg("This is a report. Execute %s <players/tables/tempplayers/maps/int/vacuum/toptimes/achievements> to actualy clean the database.", arg[1])
+		scriptMsg("This is a report. Execute %s <players/tables/tempplayers/maps/int/vacuum/toptimes/achievements> to actually clean the database.", arg[1])
 	end
 end
 

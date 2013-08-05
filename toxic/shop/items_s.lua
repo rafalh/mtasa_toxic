@@ -375,7 +375,7 @@ local VipItem = {
 		local res = getResourceFromName ( 'rafalh_vip' )
 		local success = res and call ( res, 'giveVip', player, 7 )
 		if ( not success ) then
-			privMsg ( player, "You have to be loged in!" )
+			privMsg ( player, "You have to be logged in!" )
 		end
 		return success
 	end

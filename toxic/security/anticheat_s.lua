@@ -46,7 +46,7 @@ local function AcCheckPlayer ( player )
 			if ( not pdata.fps_cheat ) then
 				pdata.fps_cheat = getTickCount ()
 			elseif ( ( getTickCount () - pdata.fps_cheat ) > 15000 ) then
-				scriptMsg ( "Kicking %s for too high FPS. He is propably a cheater. His FPS: %u. FPS limit: %u.", getPlayerName ( player ), fps, fps_limit )
+				scriptMsg ( "Kicking %s for too high FPS. He is probably a cheater. His FPS: %u. FPS limit: %u.", getPlayerName ( player ), fps, fps_limit )
 				return kickPlayer ( player, "FPS above the limit - cheat" )
 			end
 		else

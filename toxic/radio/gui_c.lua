@@ -199,7 +199,7 @@ local function onRadioSwitch(channel)
 		
 		local ticks = getTickCount()
 		if(ticks - g_LastWarning > 3000) then
-			outputMsg(Styles.red, "Disable online radio before using ingame radio (you can do it in User Panel)!")
+			outputMsg(Styles.red, "Disable online radio before using in-game radio (you can do it in User Panel)!")
 			g_LastWarning = ticks
 		end
 	end

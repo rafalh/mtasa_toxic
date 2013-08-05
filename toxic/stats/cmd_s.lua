@@ -6,7 +6,7 @@ local db_tops = {
 	cash = { "Top Cash", 'cash', formatMoney },
 	points = { "Top Points", 'points', function (n) return formatNumber (n) end },
 	playtime = { "Top Playtime", 'time_here', function (n) return formatTimePeriod (n, 0) end },
-	bidlevel = { "Top Bidlevel", 'bidlvl', function (n) return n end }
+	bidlevel = { "Top Bid-level", 'bidlvl', function (n) return n end }
 }
 local local_tops = {
 	lagger = { "Top Laggers", getPlayerPing, function (n) return formatNumber (n)..' ms' end },
@@ -88,10 +88,10 @@ local function CmdCash (message, arg)
 	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
 	local pdata = Player.fromEl(player)
 	local stats = pdata.accountData:getTbl()
-	scriptMsg ("%s's cash: %s - Bidlevel: %u.", getPlayerName (player), formatMoney (stats.cash), stats.bidlvl)
+	scriptMsg ("%s's cash: %s - Bid-level: %u.", getPlayerName (player), formatMoney (stats.cash), stats.bidlvl)
 end
 
-CmdRegister ('cash', CmdCash, false, "Shows player cash and bidlevel")
+CmdRegister ('cash', CmdCash, false, "Shows player cash and bid-level")
 CmdRegisterAlias ('money', 'cash')
 
 local function CmdPoints (message, arg)
@@ -116,10 +116,10 @@ local function CmdBidLevel (message, arg)
 	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
 	local player = Player.fromEl(playerEl)
 	
-	scriptMsg("%s's bidlevel: %u.", getPlayerName(player.el), player.accountData.bidlvl)
+	scriptMsg("%s's bid-level: %u.", getPlayerName(player.el), player.accountData.bidlvl)
 end
 
-CmdRegister ('bidlevel', CmdBidLevel, false, "Shows player bidlevel")
+CmdRegister ('bidlevel', CmdBidLevel, false, "Shows player bid-level")
 
 local function CmdGiveMoney (message, arg)
 	local amount = touint (arg[3])

@@ -18,7 +18,7 @@ local function AvpInit()
 	setTimer(AvpTimerProc, 60000, 0)
 end
 
-CmdRegister('avgplayers', CmdAvgPlayers, false, "Shows avarange players count")
+CmdRegister('avgplayers', CmdAvgPlayers, false, "Shows average players count")
 addInitFunc(AvpInit)
 
 Settings.register

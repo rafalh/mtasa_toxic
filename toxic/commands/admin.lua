@@ -172,7 +172,7 @@ local function CmdDescribeAccount(message, arg)
 		local data = accountData:getTbl()
 		local tm = getRealTime(data.last_visit)
 		local tm2 = getRealTime(data.first_visit)
-		scriptMsg("Name: %s, points: %s, cash: %u, bidlevel: %u, playtime: %u, last visit: %d-%02d-%02d %d:%02d:%02d, joined: %d-%02d-%02d %d:%02d:%02d, IP: %s, serial: %s.",
+		scriptMsg("Name: %s, points: %s, cash: %u, bid-level: %u, playtime: %u, last visit: %d-%02d-%02d %d:%02d:%02d, joined: %d-%02d-%02d %d:%02d:%02d, IP: %s, serial: %s.",
 			data.name, data.points, data.cash, data.bidlvl, data.time_here,
 			tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second,
 			tm2.monthday, tm2.month + 1, tm2.year + 1900, tm2.hour, tm2.minute, tm2.second,

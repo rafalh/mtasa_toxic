@@ -12,9 +12,9 @@ local function CmdInvitedBy(message, arg)
 			privMsg(source, "Failed. Your first visit was earlier than his.")
 		else
 			targetPlayer.accountData:set('invitedby', sourcePlayer.id)
-			privMsg(source, "Successed! %s will get an award when your playtime will reach 10 hours.", targetPlayer:getName())
+			privMsg(source, "Succeeded! %s will get an award when your playtime will reach 10 hours.", targetPlayer:getName())
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
 end
 
-CmdRegister('invitedby', CmdInvitedBy, false, "Sets player who invited you so he can win an avard")
+CmdRegister('invitedby', CmdInvitedBy, false, "Sets player who invited you so he can win an award")

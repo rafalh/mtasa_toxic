@@ -86,7 +86,7 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 	end
 	
 	if(cnt < 20) then
-		privMsg(player, "Map %s has only %u spawnpoints", map:getName(), cnt)
+		privMsg(player, "Map %s has only %u spawn-points", map:getName(), cnt)
 		
 		if(opts == 'enablegm') then
 			setMetaSetting(node, 'ghostmode', 'true')
@@ -139,7 +139,7 @@ local function CmdCheckSp(message, arg)
 		g_CheckSpWorker.ctx.pattern = pattern
 		g_CheckSpWorker.ctx.opts = opts
 		g_CheckSpWorker.ctx.count = 0
-		privMsg(source, "Started counting spawnpoints...")
+		privMsg(source, "Started counting spawn-points...")
 		g_CheckSpWorker:start()
 	else
 		local room = Player.fromEl(source).room

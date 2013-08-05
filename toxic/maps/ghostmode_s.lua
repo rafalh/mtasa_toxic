@@ -42,7 +42,7 @@ function GmSet(room, enabled, quiet)
 	
 	local sec = touint(enabled)
 	if (sec) then
-		outputMsg(room, Styles.green, "Ghostmode enabled for %u seconds!", sec)
+		outputMsg(room, Styles.green, "Ghost Mode enabled for %u seconds!", sec)
 		GmSetEnabled(room, true)
 		
 		local no_gm_warning_time = Settings.no_gm_warning_time
@@ -52,18 +52,18 @@ function GmSet(room, enabled, quiet)
 			g_NoGMWarningMsg = {}
 			g_NoGMWarningTimeLeft = no_gm_warning_time
 			for player, pdata in pairs(g_Players) do
-				g_NoGMWarningMsg[player] = addScreenMsg('Ghostmode will be disabled in '..g_NoGMWarningTimeLeft..' seconds!', player, g_NoGMWarningTimeLeft * 1000)
+				g_NoGMWarningMsg[player] = addScreenMsg('Ghost Mode will be disabled in '..g_NoGMWarningTimeLeft..' seconds!', player, g_NoGMWarningTimeLeft * 1000)
 			end
 			setMapTimer(function(room)
 				g_NoGMWarningTimeLeft = g_NoGMWarningTimeLeft - 1
 				if(g_NoGMWarningTimeLeft <= 0) then
 					if(GmIsEnabled(room)) then
-						outputMsg(room, Styles.red, "Ghostmode disabled!")
+						outputMsg(room, Styles.red, "Ghost Mode disabled!")
 					end
 					GmSetEnabled(room, false)
 				else
 					for player, msg in pairs(g_NoGMWarningMsg) do
-						textItemSetText(msg, 'Ghostmode will be disabled in '..g_NoGMWarningTimeLeft..' seconds!')
+						textItemSetText(msg, 'Ghost Mode will be disabled in '..g_NoGMWarningTimeLeft..' seconds!')
 					end
 				end
 			end, 1000, g_NoGMWarningTimeLeft, room)
@@ -71,9 +71,9 @@ function GmSet(room, enabled, quiet)
 	else
 		if(not quiet and GmIsEnabled(room) ~= enabled) then
 			if(enabled) then
-				outputMsg(room, Styles.green, "Ghostmode enabled!")
+				outputMsg(room, Styles.green, "Ghost Mode enabled!")
 			else
-				outputMsg(room, Styles.red, "Ghostmode disabled!")
+				outputMsg(room, Styles.red, "Ghost Mode disabled!")
 			end
 		end
 		GmSetEnabled(room, enabled)

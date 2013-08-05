@@ -10,7 +10,7 @@
 		<label id="playerLeftLabel" x="10" ry="100" y="-35" rw="100" w="-170" h="15" text="Player has left the game." visible="false" color="#FF0000" />
 	</window>
 	
-	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-133" w="300" h="290" sizeable="false">
+	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-133" w="300" h="290" sizeable="false" defbtn="logBtn">
 		<image rx="50" x="-32" y="30" w="64" h="64" src="login/img/login.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Please login to save your statistics" align="center" />
@@ -18,10 +18,10 @@
 		<label id="flags" x="10" y="115" rw="100" w="-20" h="20" text="" />
 		
 		<label x="30" y="150" w="80" h="15" text="Username:" />
-		<edit id="name" x="120" y="145" w="140" h="25" maxlen="128" focus="true" defbtn="logBtn" />
+		<edit id="name" x="120" y="145" w="140" h="25" maxlen="128" focus="true" />
 		
 		<label x="30" y="180" w="80" h="15" text="Password:" />
-		<edit id="pw" x="120" y="175" w="140" h="25" maxlen="128" masked="true" defbtn="logBtn" />
+		<edit id="pw" x="120" y="175" w="140" h="25" maxlen="128" masked="true" />
 		
 		<checkbox id="remember" x="30" y="205" w="160" h="25" text="Remember me" />
 		
@@ -30,7 +30,7 @@
 		<button id="guestBtn" rx="50" x="50" y="235" w="100" h="30" text="Play as guest" />
 	</window>
 	
-	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false">
+	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false" defbtn="regBtn">
 		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/register.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Register new account" align="center" />
@@ -54,7 +54,7 @@
 		<button id="backBtn" rx="50" x="5" ry="100" y="-35" w="140" h="25" text="Back" />
 	</window>
 	
-	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false">
+	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false" defbtn="ok">
 		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/chgPw.png" />
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Change password for your account" align="center" />
 		
@@ -74,7 +74,7 @@
 		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
-	<window id="changeEmail" title="Change e-mail" rx="50" x="-100" ry="50" y="-110" w="280" h="220" sizeable="false">
+	<window id="changeEmail" title="Change e-mail" rx="50" x="-100" ry="50" y="-110" w="280" h="220" sizeable="false" defbtn="ok">
 		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/chgEmail.png" />
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Change your account e-mail address" align="center" />
 		
@@ -135,33 +135,53 @@
 		<label id="mapsBought" x="120" y="210" rw="100" w="-120" h="15" text="" />
 	</label>
 	
-	<window id="transPanel" title="Translator panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440">
-		<image x="10" y="65" w="32" h="32" src="img/beta.png" />
-		<label x="45" y="70" w="55" h="20" text="Language:" />
-		<combobox id="langs" x="100" y="65" w="120" h="160" />
-		
-		<button id="update" rx="100" x="-220" y="65" w="120" h="25" text="Update" enabled="false" />
-		<button id="close" rx="100" x="-90" y="65" w="80" h="25" text="Close" />
-		
-		<list id="msgList" x="10" y="100" rw="100" w="-110" rh="100" h="-70" sorting="false">
-			<column id="idCol" text="ID" w="0.45" />
-			<column id="valCol" text="Value" w="0.5" />
+	<window id="transMain" title="Translator panel" rx="50" x="-300" ry="50" y="-150" w="600" h="300">
+		<list id="list" x="10" y="65" rw="100" w="-110" rh="100" h="-70" sorting="false">
+			<column id="nameCol" text="Locale" w="0.45" />
+			<column id="stateCol" text="State" w="0.5" />
 		</list>
+		
+		<button id="edit" rx="100" x="-90" y="65" w="80" h="25" text="Edit" />
+	</window>
+	
+	<window id="transPanel" title="Translator panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440">
+		<tabpanel id="tabs" x="10" y="65" rw="100" w="-110" rh="100" h="-75">
+			<tab id="tab_v" text="">
+				<list id="msgList_v" x="10" y="20" rw="100" w="-20" rh="100" h="-30" sorting="false">
+					<column id="idCol_v" text="ID" w="0.4" />
+					<column id="valCol_v" text="Value" w="0.4" />
+				</list>
+			</tab>
+			<tab id="tab_m" text="">
+				<list id="msgList_m" x="10" y="20" rw="100" w="-20" rh="100" h="-30" sorting="false">
+					<column id="idCol_m" text="ID" w="0.4" />
+					<column id="valCol_m" text="Value" w="0.4" />
+				</list>
+			</tab>
+			<tab id="tab_u" text="">
+				<list id="msgList_u" x="10" y="20" rw="100" w="-20" rh="100" h="-30" sorting="false">
+					<column id="idCol_u" text="ID" w="0.4" />
+					<column id="valCol_u" text="Value" w="0.4" />
+				</list>
+			</tab>
+		</tabpanel>
+		
+		<button id="close" rx="100" x="-90" y="65" w="80" h="25" text="Close" />
 		
 		<button id="add" rx="100" x="-90" y="100" w="80" h="25" text="Add" />
 		<button id="edit" rx="100" x="-90" y="130" w="80" h="25" text="Edit" />
 		<button id="del" rx="100" x="-90" y="160" w="80" h="25" text="Delete" />
 	</window>
 	
-	<window id="transEdit" title="Edit translation" rx="50" x="-160" ry="50" y="-140" w="320" h="170">
+	<window id="transEdit" title="Edit translation" rx="50" x="-240" ry="50" y="-140" w="480" h="180" sizeable="false" defbtn="ok">
 		<label x="10" y="30" w="60" h="20" text="ID:" />
 		<edit id="id" x="80" y="25" rw="100" w="-90" h="25" />
 		
 		<label x="10" y="60" w="60" h="20" text="Value:" />
 		<edit id="val" x="80" y="55" rw="100" w="-90" h="25" />
 		
-		<checkbox id="pattern" x="10" y="90" w="100" h="20" text="Pattern" />
-		<checkbox id="client" x="10" y="110" w="100" h="20" text="Client" />
+		<label x="10" y="90" w="60" h="20" text="Type:" />
+		<combobox id="type" x="80" y="90" w="100" h="200" text="" />
 		
 		<button id="ok" rx="50" x="-85" ry="100" y="-35" w="80" h="25" text="OK" />
 		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />

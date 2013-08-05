@@ -19,7 +19,7 @@ function giveTempMod(player, days)
 	local tm = getRealTime(timestamp)
 	
 	local dateStr = ('%u.%02u.%u %u:%02u GMT.'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-	outputServerLog('Temporary Moderator activated for '..getAccountName(account)..'. It will be active untill '..dateStr)
+	outputServerLog('Temporary Moderator activated for '..getAccountName(account)..'. It will be active until '..dateStr)
 	
 	return timestamp
 end
@@ -34,8 +34,8 @@ local function CmdGiveMod(msg, arg)
 		local name = player:getName()
 		
 		local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-		privMsg(source, "Temporary Moderator successfully given to %s! It will be valid untill %s.", name, dateStr)
-		outputMsg(player, Styles.green, "You have become Temporary Moderator! It will be valid untill %s.", dateStr)
+		privMsg(source, "Temporary Moderator successfully given to %s! It will be valid until %s.", name, dateStr)
+		outputMsg(player, Styles.green, "You have become Temporary Moderator! It will be valid until %s.", dateStr)
 	else
 		privMsg(source, "Usage: %s", arg[1]..' <name> [<days>]')
 	end
@@ -52,7 +52,7 @@ local function CmdModInfo(msg, arg)
 		if(timestamp and timestamp > now and isObjectInACLGroup(objStr, g_TempModGroup)) then
 			local tm = getRealTime(timestamp)
 			local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-			scriptMsg("%s is a Temporary Moderator (valid untill %s).", player:getName(), dateStr)
+			scriptMsg("%s is a Temporary Moderator (valid until %s).", player:getName(), dateStr)
 		elseif(isObjectInACLGroup(objStr, g_ModGroup)) then
 			scriptMsg("%s is a Moderator.", player:getName())
 		elseif(isObjectInACLGroup(objStr, g_SuperModGroup)) then
@@ -93,7 +93,7 @@ local function CmdCheckMods(msg, arg)
 	end
 	
 	if(msg) then
-		privMsg(source, "Everything is alright!")
+		privMsg(source, "Everything is all right!")
 	end
 end
 CmdRegister('checkmods', CmdCheckMods, true)
@@ -108,8 +108,8 @@ local function onPlayerLogin(prevAccount, account)
 	local objStr = 'user.'..getAccountName(account)
 	if(isObjectInACLGroup(objStr, g_TempModGroup)) then
 		aclGroupRemoveObject(g_TempModGroup, objStr)
-		outputServerLog('Temporary Moderator disactivated for '..getAccountName(account)..'.')
-		outputMsg(player, Styles.red, "Your Moderator rank has been disactivated!")
+		outputServerLog('Temporary Moderator deactivated for '..getAccountName(account)..'.')
+		outputMsg(player, Styles.red, "Your Moderator rank has been deactivated!")
 	end
 end
 

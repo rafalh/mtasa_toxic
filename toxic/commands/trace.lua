@@ -12,7 +12,7 @@ local function onTraceResult(data, player_name, player_id)
 			country = g_Countries[country]
 		end
 		
-		msg = { "%s's trace: %s.", tostring(player_name), trace..", "..country }
+		msg = { "%s's trace: %s.", tostring(player_name), trace..', '..country }
 	else
 		msg = { "Trace error: %s!", tostring(data) }
 	end

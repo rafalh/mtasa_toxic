@@ -83,6 +83,11 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		ctrl = guiCreateButton(x, y, w, h, tpl.text or '', false, parent)
 	elseif(tpl.type == 'checkbox') then
 		ctrl = guiCreateCheckBox(x, y, w, h, tpl.text or '', tpl.selected == 'true', false, parent)
+	elseif(tpl.type == 'radiobutton') then
+		ctrl = guiCreateRadioButton(x, y, w, h, tpl.text or '', false, parent)
+		if(tpl.selected == 'true') then
+			guiRadioButtonSetSelected(ctrl, true)
+		end
 	elseif(tpl.type == 'edit') then
 		ctrl = guiCreateEdit(x, y, w, h, tpl.text or '', false, parent)
 		if (tpl.readonly == 'true') then
@@ -119,6 +124,13 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		end
 	elseif(tpl.type == 'column') then
 		ctrl = guiGridListAddColumn(parent, tpl.text or '', w == 0 and 0.5 or w)
+	elseif(tpl.type == 'tabpanel') then
+		ctrl = guiCreateTabPanel(x, y, w, h, false, parent)
+	elseif(tpl.type == 'tab') then
+		ctrl = guiCreateTab(tpl.text, parent)
+		if(tpl.selected) then
+			guiSetSelectedTab(parent, ctrl)
+		end
 	else
 		assert(false)
 	end
@@ -142,7 +154,7 @@ function GUI.__mt.__index:createControl(tpl, parent)
 	if(tpl.focus == 'true') then
 		self.focus = ctrl
 	end
-	if(tpl.defbtn) then
+	if(tpl.defbtn or self.tpl.defbtn) then
 		addEventHandler('onClientGUIAccepted', ctrl, GUI.onAccept, false)
 	end
 	
@@ -201,7 +213,7 @@ function GUI.onAccept()
 	local parent = getElementParent(source)
 	local self = GUI.wndToObj[parent]
 	local tpl = self.ctrlList[source]
-	local btn = self[tpl.defbtn]
+	local btn = self[tpl.defbtn or self.tpl.defbtn]
 	if(btn and guiGetEnabled(btn)) then
 		triggerEvent('onClientGUIClick', btn, 'left', 'up')
 	end

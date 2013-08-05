@@ -114,9 +114,9 @@ local function CmdSetMapGhostmode(message, arg)
 			end
 			
 			if(map:setSetting('ghostmode', val)) then
-				scriptMsg("Ghostmode will be set to %s in the next round!", val or 'auto')
+				scriptMsg("Ghost Mode will be set to %s in the next round!", val or 'auto')
 			else
-				privMsg(source, "Failed to set map ghostmode")
+				privMsg(source, "Failed to set map Ghost Mode.")
 			end
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <true/false/auto>') end
@@ -135,10 +135,10 @@ local function CmdSetMapTimeLimit(message, arg)
 			local limit = h * 3600 + m * 60 + s
 			if(limit > 0) then
 				map:setSetting('duration', limit)
-				scriptMsg("Timelimit will be set to %s in the next round!", arg[2])
+				scriptMsg("Time limit will be set to %s in the next round!", arg[2])
 			else
 				map:setSetting('duration', nil)
-				scriptMsg("Timelimit will not be set in the next round!")
+				scriptMsg("Time limit will not be set in the next round!")
 			end
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <[h:m:]s>') end
@@ -179,13 +179,13 @@ local function CmdSetMapHunterMinigun(message, arg)
 		if(map) then
 			if(arg[2] == 'true' or arg[2] == 'yes') then
 				map:setSetting('hunterminigun', 'true')
-				scriptMsg("Hunter minigun will be enabled in the next round!")
+				scriptMsg("Hunter mini-gun will be enabled in the next round!")
 			elseif(arg[2] == 'false' or arg[2] == 'no') then
 				map:setSetting('hunterminigun', 'false')
-				scriptMsg("Hunter minigun will be disabled in the next round!")
+				scriptMsg("Hunter mini-gun will be disabled in the next round!")
 			else
 				map:setSetting('hunterminigun', nil)
-				scriptMsg("Hunter minigun will be set to auto in the next round!")
+				scriptMsg("Hunter mini-gun will be set to auto in the next round!")
 			end
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <true/false/auto>') end
@@ -269,7 +269,7 @@ local function CmdSetMapMaxSpeed(message, arg)
 		if(map:setSetting('maxspeed', max_speed)) then
 			scriptMsg("Maximal speed will be set to %u in the next round!", max_speed or 0)
 		else
-			privMsg(source, "Failed to set max speed!")
+			privMsg(source, "Failed to set maximal speed!")
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <maxspeed>') end
 end

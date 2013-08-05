@@ -65,7 +65,7 @@ function Settings.__mt.__newindex(self, key, val)
 end
 
 function Settings.load()
-	DbgPerfInit()
+	local prof = DbgPerf()
 	
 	local node = xmlLoadFile('settings.xml')
 	if(not node) then return false end
@@ -80,7 +80,7 @@ function Settings.load()
 	end
 	
 	xmlUnloadFile(node)
-	DbgPerfCp('Settings loading')
+	prof:cp('Settings loading')
 	return true
 end
 

@@ -12,8 +12,9 @@ local SERVER = triggerClientEvent and true
 addEvent('main.onRpc', true)
 addEvent('main.onRpcResult', true)
 
-function RpcMethods.onResult(self, fn)
+function RpcMethods.onResult(self, fn, ...)
 	self.callback = fn
+	self.cbArgs = {...}
 	return self
 end
 

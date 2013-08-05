@@ -2,6 +2,8 @@
 -- Its onResourceStop handler is called as the lastest
 
 local function onResourceStop()
+	local prof = DbgPerf(50)
+	
 	-- Note: pairs uses next function which for unknown key starts from table beggining
 	for el, player in pairs(g_Players) do
 		player:destroy()
@@ -9,6 +11,8 @@ local function onResourceStop()
 	
 	Settings.cleanup_done = true
 	outputDebugString('rafalh script has stopped!', 3)
+	
+	prof:cp('stop')
 end
 
 local function onPlayerQuit()

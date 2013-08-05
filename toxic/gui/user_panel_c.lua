@@ -86,9 +86,9 @@ local function onItemClick(i)
 		guiSetVisible(g_CurrentItem.container, true)
 	end
 	if(g_CurrentItem.onShow) then
-		DbgPerfInit()
+		local prof = DbgPerf()
 		g_CurrentItem.onShow(g_CurrentItem.container)
-		DbgPerfCp('User Panel -> '..g_CurrentItem.name)
+		prof:cp('User Panel -> '..g_CurrentItem.name)
 	end
 	if(VIEW_W == 0) then
 		GaFadeOut(g_Wnd, FADE_DELAY)

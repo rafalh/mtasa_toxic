@@ -1,6 +1,7 @@
 local g_InitFuncs = {}
 local _addEventHandler
 local g_Co, g_CoTicks
+#DBG_START_PERF = false
 
 local function setupDatabase()
 	if(not DbInit()) then
@@ -174,6 +175,8 @@ local function onResStart(res)
 end
 
 local function initRountine()
+	local prof = DbgPerf(300)
+	
 	if(not setupDatabase() or not setupACL()) then
 		cancelEvent()
 		return
@@ -205,10 +208,19 @@ local function initRountine()
 	assert(#consoles == 1)
 	Player.create(consoles[1])
 	
+	prof:cp('init1')
+	
 	for i, func in ipairs(g_InitFuncs) do
+#if(DBG_START_PERF) then
+		local prof2 = DbgPerf()
+		func[1]()
+		prof2:cp(func[2])
+#else
 		func()
+#end
 	end
 	
+	prof:cp('init2')
 	outputDebugString('rafalh script has started!', 3)
 end
 
@@ -251,7 +263,13 @@ end
 
 function addInitFunc(func)
 	assert(func)
+#if(DBG_START_PERF) then
+	local name = DbgTraceBack(-1, 1, 1)[1]
+	table.insert(g_InitFuncs, {func, name})
+#else
 	table.insert(g_InitFuncs, func)
+#end
+	
 end
 
 addEventHandler('onResourceStart', g_ResRoot, init)

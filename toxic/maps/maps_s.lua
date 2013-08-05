@@ -50,7 +50,7 @@ function initRoomMaps(room)
 	room.isRace = map and #getCurrentMapElements(room, 'checkpoint') > 0
 end
 
-function findMap (str, removed)
+function findMap(str, removed)
 	local mapMgrRes = getResourceFromName('mapmgr')
 	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
 		local maps = call(mapMgrRes, 'findMaps', str)
@@ -157,6 +157,8 @@ end
 local function onMapStart(map, room)
 	assert(getmetatable(map) == Map.__mt)
 	
+	local prof = DbgPerf()
+	
 	local map_id = map:getId()
 	local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
 	local map_name = map:getName()
@@ -254,15 +256,19 @@ local function onMapStart(map, room)
 		-- allow bets
 		GbStartBets()
 	end
+	
+	prof:cp('onMapStart')
 end
 
 local function onMapStop(room)
+	local prof = DbgPerf()
+	
 	if (room.recording) then
 		room.recording = false
 		RcStopRecording(room)
 	end
 	
-	GbFinishBets ()
+	GbFinishBets()
 	
 	if (g_OldVehicleWeapons) then
 		set ('*race.vehicleweapons', g_OldVehicleWeapons)
@@ -275,9 +281,12 @@ local function onMapStop(room)
 		destroyElement(el)
 	end
 	room.tempElements = {}
+	
+	prof:cp('onMapStop')
 end
 
 local function handlePlayerTime(player, ms)
+	local prof = DbgPerf()
 	local pdata = Player.fromEl(player)
 	if(not pdata.id) then return 0 end
 	
@@ -308,6 +317,7 @@ local function handlePlayerTime(player, ms)
 		end
 	end
 	
+	prof:cp('handlePlayerTime')
 	return n
 end
 
@@ -368,6 +378,8 @@ local function setPlayerFinalRank(player, rank)
 end
 
 local function onPlayerFinish(rank, ms)
+	local prof = DbgPerf()
+	
 	local pdata = Player.fromEl(source)
 	local map = getCurrentMap(pdata.room)
 	local map_id = map:getId()
@@ -380,9 +392,13 @@ local function onPlayerFinish(rank, ms)
 	RcFinishRecordingPlayer(source, ms, map_id, improvedBestTime)
 	
 	setPlayerFinalRank(source, rank)
+	
+	prof:cp('onPlayerFinish')
 end
 
 local function onPlayerWinDD()
+	local prof = DbgPerf()
+	
 	local pdata = Player.fromEl(source)
 	
 	--local game_weight = 0.007 * g_PlayersCount / 32
@@ -396,9 +412,13 @@ local function onPlayerWinDD()
 	
 	setPlayerFinalRank(source, 1)
 	triggerClientEvent(root, 'main.onPlayerWinDD', source)
+	
+	prof:cp('onPlayerWinDD')
 end
 
 local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
+	local prof = DbgPerf()
+	
 	local pdata = Player.fromEl(source)
 	local room = pdata.room
 	local map = getCurrentMap(room)
@@ -423,9 +443,13 @@ local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 			RcFinishRecordingPlayer(source, ms, map:getId(), improvedBestTime)
 		end
 	end
+	
+	prof:cp('onPlayerPickUpRacePickup')
 end
 
 local function onMapListReq()
+	local prof = DbgPerf()
+	
 	local mapsList = {}
 	local maps = getMapsList()
 	
@@ -447,6 +471,8 @@ local function onMapListReq()
 	end
 	
 	triggerClientEvent(client, 'onClientMapList', g_ResRoot, mapsList)
+	
+	prof:cp('onMapListReq')
 end
 
 local function onChangeMapReq(mapResName)
@@ -537,9 +563,9 @@ addInitFunc(function()
 	addEventHandler('onGamemodeMapStop', g_Root, function()
 		onMapStop(g_RootRoom)
 	end)
-	addEventHandler ('onPlayerFinish', g_Root, onPlayerFinish)
-	addEventHandler ('onPlayerWinDD', g_Root, onPlayerWinDD)
-	addEventHandler ('onPlayerPickUpRacePickup', g_Root, onPlayerPickUpRacePickup)
-	addEventHandler ('onMapListReq', g_ResRoot, onMapListReq)
-	addEventHandler ('onChangeMapReq', g_ResRoot, onChangeMapReq)
+	addEventHandler('onPlayerFinish', g_Root, onPlayerFinish)
+	addEventHandler('onPlayerWinDD', g_Root, onPlayerWinDD)
+	addEventHandler('onPlayerPickUpRacePickup', g_Root, onPlayerPickUpRacePickup)
+	addEventHandler('onMapListReq', g_ResRoot, onMapListReq)
+	addEventHandler('onChangeMapReq', g_ResRoot, onChangeMapReq)
 end)

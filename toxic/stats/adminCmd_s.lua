@@ -33,11 +33,11 @@ local function CmdSetBidLevel (message, arg)
 	
 	if(bidlvl) then
 		player.accountData:set('bidlvl', bidlvl)
-		scriptMsg("%s's bidlevel: %u.", player:getName(), bidlvl)
+		scriptMsg("%s's bid-level: %u.", player:getName(), bidlvl)
 	else privMsg(source, "Usage: %s", arg[1]..' [<player>] <bidlvl>') end
 end
 
-CmdRegister('setbidlevel', CmdSetBidLevel, 'resource.'..g_ResName..'.setbidlevel', "Sets player bidlevel")
+CmdRegister('setbidlevel', CmdSetBidLevel, 'resource.'..g_ResName..'.setbidlevel', "Sets player bid-level")
 
 local function CmdResetStats(message, arg)
 	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))

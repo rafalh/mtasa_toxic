@@ -1,9 +1,8 @@
 local DEBUG = true
 local PERF_DEBUG_CHECKPOINTS = true
 local PERF_DEBUG_EVENTS = false
-local g_DbgPerfData = {}
 
-function DbgTraceBack(lvl, len, offset, ret)
+function DbgTraceBack(lvl, len, offset)
 	local trace = debug.traceback()
 	trace = trace:gsub('\r', '')
 	local lines = split(trace, '\n')
@@ -46,23 +45,27 @@ if(DEBUG) then
 		DbgPrint((title or 'dump')..':'..buf)
 	end
 	
-	function DbgPerfInit(channel)
-		g_DbgPerfData[channel or 1] = getTickCount()
+	DbgPerf = Class('DbgPerf')
+	
+	function DbgPerf.__mt.__index:init(limit)
+		self.ticks = getTickCount()
+		self.limit = limit or 50
 	end
 	
-	function DbgPerfCp(title, channel, ...)
+	function DbgPerf.__mt.__index:cp(fmt, ...)
 		local ticks = getTickCount()
-		if(PERF_DEBUG_CHECKPOINTS) then
-			local dt = ticks - g_DbgPerfData[channel or 1]
-			g_DbgPerfData[channel or 1] = ticks
-			if(dt > 50) then
-				local args = {...}
-				args[#args + 1] = dt
-				DbgPrint(title..' has taken %u ms', unpack(args))
-				return true
-			end
+		local dt = getTickCount() - self.ticks
+		if(dt <= self.limit) then
+			self.ticks = ticks
+			return false
+		elseif(PERF_DEBUG_CHECKPOINTS) then
+			local args = {...}
+			table.insert(args, dt)
+			DbgPrint(fmt..' has taken %u ms', unpack(args))
 		end
-		return false
+		
+		self.ticks = getTickCount() -- get ticks again
+		return true
 	end
 	
 	if(PERF_DEBUG_EVENTS) then
@@ -73,14 +76,15 @@ if(DEBUG) then
 		function addEventHandler(eventName, attachedTo, handlerFunction, ...)
 			local trace = DbgTraceBack(-1, 1, 1)
 			local func = function(...)
-				DbgPerfInit()
+				local prof = DbgPerf()
 				local cnt = repeatEventHandler[eventName] or 1
 				for i = 1, cnt do
+					-- Check if handler wasn't removed in this loop
 					if(g_Handlers[handlerFunction]) then
 						handlerFunction(...)
 					end
 				end
-				if(DbgPerfCp(eventName) and trace[1]) then
+				if(prof:cp(eventName) and trace[1]) then
 					outputDebugString(trace[1], 3)
 				end
 			end
@@ -101,6 +105,5 @@ else
 	
 	DbgPrint = DbgDummy
 	DbgDump = DbgDummy
-	DbgPerfInit = DbgDummy
-	DbgPerfCp = DbgDummy
+	DbgPerf = function() return {cp = DbgDummy} end
 end

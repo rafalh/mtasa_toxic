@@ -8,6 +8,7 @@
 	<script src="rec_s.lua" type="server" />
 	<script src="rec_c.lua" type="client" />
 	<script src="playback_c.lua" type="client" />
+	<script src="coder.lua" type="shared" />
 	<export function="getTopTime" />
 	
 	<settings>

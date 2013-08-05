@@ -135,7 +135,7 @@ local function onPlayerChat(message, messageType)
 	
 	local str = cmd:match('[^%w]?(%w)')
 	if((str == 'login' or str == 'register') and arg[2]) then -- never display someone's password
-		privMsg(source, "DON'T USE \"%s\" anymore!!! It could show your password to everybody. Type %s <password> instead.", arg[1], '/'..str)
+		privMsg(source, "DON'T USE \"%s\" any more!!! It could show your password to everybody. Type %s <password> instead.", arg[1], '/'..str)
 		cancelEvent()
 		return
 	end
@@ -201,7 +201,7 @@ local function onPlayerChat(message, messageType)
 	if(fine > 0) then
 		local pdata = Player.fromEl(source)
 		pdata.accountData:add('cash', -fine)
-		privMsg(source, "Do not swear %s! %s taked from your cash.", getPlayerName(source), formatMoney(fine))
+		privMsg(source, "Do not swear %s! %s has been taken from your cash.", getPlayerName(source), formatMoney(fine))
 	end
 	
 	if(AsProcessMsg and AsProcessMsg(source)) then

@@ -40,7 +40,7 @@ local function CmdRestoreMap (message, arg)
 	else privMsg(source, "Usage: %s", arg[1]..' <map>') end
 end
 
-CmdRegister('restoremap', CmdRestoreMap, 'resource.'..g_ResName..'.restoremap', "Restores proviously removed map")
+CmdRegister('restoremap', CmdRestoreMap, 'resource.'..g_ResName..'.restoremap', "Restores previously removed map")
 
 local function CmdMap (message, arg)
 	local mapName = message:sub (arg[1]:len () + 2)

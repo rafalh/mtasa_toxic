@@ -65,7 +65,7 @@ local function CmdAdmins(message, arg)
 	end
 end
 
-CmdRegister('admins', CmdAdmins, false, "Shows admins and moderators playing the game already")
+CmdRegister('admins', CmdAdmins, false, "Shows administrators and moderators playing the game already")
 
 local function CmdPlayers(message, arg)
 	scriptMsg("Total players count: %u.", g_PlayersCount)

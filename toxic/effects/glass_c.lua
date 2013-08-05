@@ -66,10 +66,12 @@ end
 ------------
 
 local function init()
+	local prof = DbgPerf(20)
 	g_Texture = dxCreateTexture('effects/broken_glass.png')
 	if(g_Texture) then
 		addEventHandler('onClientRender', g_Root, renderGlass)
 	end
+	prof:cp('broken_glass loading')
 end
 
 Settings.register

@@ -1,96 +1,160 @@
-addEvent('main.onLocaleDataReq', true)
-addEvent('main.onChangeLocaleReq', true)
+mui = {}
+mui.right = AccessRight('mui') -- for client-side
 
-local right = AccessRight('mui')
+local g_LocStateCache = {}
+local g_MuiStringCount = false
 
 local function checkPlayerAccess(player, code)
 	return isPlayerAdmin(player) or hasObjectPermissionTo(player, 'resource.'..g_ResName..'.translate_'..code, false)
 end
 
-mui = {}
-function mui.getLangCodes()
-	local langCodes = {}
-	for i, locale in LocaleList.ipairs() do
-		if(locale.code ~= 'en' and checkPlayerAccess(client, locale.code)) then
-			table.insert(langCodes, locale.code)
-		end
+local function getLocaleState(code)
+	local state = {}
+	
+	local serverMap = MuiStringMap('lang/'..code..'.xml')
+	local clientMap = MuiStringMap('lang/'..code..'_c.xml')
+	local tblS = serverMap:getList()
+	local tblC = clientMap:getList()
+	
+	local map = {}
+	for i, entry in ipairs(tblS) do
+		map[entry.id] = 's'
 	end
-	return langCodes
-end
-allowRPC('mui.getLangCodes')
-
-local function loadLocaleFile(path)
-	local node = xmlLoadFile(path)
-	if(not node) then return false end
-	
-	local tbl = {}
-	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
-		local entry = {}
-		entry.id = xmlNodeGetAttribute(subnode, 'id')
-		if(not entry.id) then
-			entry.id = xmlNodeGetAttribute(subnode, 'pattern')
-			entry.pattern = true
-		end
-		entry.val = xmlNodeGetValue(subnode)
-		if(entry.id and entry.val) then
-			table.insert(tbl, entry)
-		end
-	end
-	
-	xmlUnloadFile(node)
-	return tbl
-end
-
-local function onLocaleDataReq(localeCode)
-	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
-	local tblS = loadLocaleFile('lang/'..localeCode..'.xml')
-	local tblC = loadLocaleFile('lang/'..localeCode..'_c.xml')
-	triggerClientEvent(client, 'main.onLocaleData', g_ResRoot, localeCode, tblS, tblC)
-end
-
-local function onChangeLocaleReq(localeCode, entry, oldId, clientSide)
-	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
-	if(entry and ((entry.id or '') == '' or (entry.val or '') == '')) then return end
-	
-	local path = 'lang/'..localeCode..(clientSide and '_c' or '')..'.xml'
-	local node = xmlLoadFile(path)
-	if(not node) then return false end
-	
-	local isPattern = false
-	
-	local subnode
-	if(oldId) then
-		for i, curSubnode in ipairs(xmlNodeGetChildren(node)) do
-			local id = xmlNodeGetAttribute(curSubnode, 'id')
-			local pattern = xmlNodeGetAttribute(curSubnode, 'pattern')
-			if(id == oldId or pattern == oldId) then
-				subnode = curSubnode
-				isPattern = pattern and true
-				break
-			end
-		end
-	else
-		subnode = xmlCreateChild(node, 'msg')
-		isPattern = entry.pattern
-	end
-	
-	if(subnode) then
-		if(entry) then
-			if(isPattern) then
-				xmlNodeSetAttribute(subnode, 'pattern', entry.id)
-			else
-				xmlNodeSetAttribute(subnode, 'id', entry.id)
-			end
-			xmlNodeSetValue(subnode, entry.val)
+	for i, entry in ipairs(tblC) do
+		if(map[entry.id]) then
+			map[entry.id] = '*'
 		else
-			xmlDestroyNode(subnode)
+			map[entry.id] = 'c'
 		end
-		xmlSaveFile(node)
 	end
-	xmlUnloadFile(node)
+	
+	state.missing = 0
+	state.count = 0
+	for i, str, strType in MuiStringsList:ipairs() do
+		local curStrType = map[str]
+		if(curStrType == nil) then
+			state.missing = state.missing + 1
+		elseif(curStrType) then
+			state.count = state.count + 1
+			if(curStrType ~= strType) then
+				-- TODO
+				--outputDebugString("What to do?!")
+			end
+			map[str] = false -- set to false if string has been counted
+		end
+	end
+	
+	state.unknown = 0
+	for str, v in pairs(map) do
+		if(v) then
+			state.unknown = state.unknown + 1
+		end
+	end
+	
+	return state
 end
 
-addInitFunc(function()
-	addEventHandler('main.onLocaleDataReq', g_ResRoot, onLocaleDataReq)
-	addEventHandler('main.onChangeLocaleReq', g_ResRoot, onChangeLocaleReq)
-end)
+function mui.getLocaleList()
+	if(not mui.right:check(client)) then return false end
+	
+	MuiStringsList:loadFromFile('strings.txt')
+	
+	local locales = {}
+	for i, locale in LocaleList.ipairs() do
+		if(locale.code ~= 'en') then
+			local info = {}
+			info.code = locale.code
+			info.access = checkPlayerAccess(client, locale.code)
+			if(not g_LocStateCache[locale.code]) then
+				g_LocStateCache[locale.code] = getLocaleState(locale.code)
+			end
+			info.state = g_LocStateCache[locale.code]
+			table.insert(locales, info)
+		end
+	end
+	
+	if(not g_MuiStringCount) then
+		g_MuiStringCount = MuiStringsList:count()
+	end
+	
+	return locales, g_MuiStringCount
+end
+allowRPC('mui.getLocaleList')
+
+function mui.getLocaleData(localeCode)
+	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
+	
+	local serverMap = MuiStringMap('lang/'..localeCode..'.xml')
+	local clientMap = MuiStringMap('lang/'..localeCode..'_c.xml')
+	
+	local validList, missingList, unknownList = {}, {}, {}
+	
+	local map = {}
+	for i, entry in ipairs(serverMap:getList()) do
+		local e = table.copy(entry)
+		e.t = 's'
+		map[entry.id] = e
+		table.insert(unknownList, e)
+	end
+	for i, entry in ipairs(clientMap:getList()) do
+		local e = map[entry.id]
+		if(e) then
+			e.t = '*'
+		else
+			e = table.copy(entry)
+			e.t = 'c'
+			map[entry.id] = e
+			table.insert(unknownList, e)
+		end
+	end
+	
+	for i, str, strType in MuiStringsList:ipairs() do
+		local e = map[str]
+		if(e) then
+			map[str] = false
+			table.removeValue(unknownList, e)
+			table.insert(validList, e)
+		elseif(e == nil) then
+			local e = {id = str, t = strType}
+			map[str] = false
+			table.insert(missingList, e)
+		end
+	end
+	
+	return localeCode, validList, missingList, unknownList
+end
+allowRPC('mui.getLocaleData')
+
+function mui.setString(localeCode, id, value, strType)
+	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
+	
+	local locS = MuiStringMap('lang/'..localeCode..'.xml')
+	local locC = MuiStringMap('lang/'..localeCode..'_c.xml')
+	
+	if(strType == 's') then
+		locS:set(id, value)
+		locC:remove(id)
+	elseif(strType == 'c') then
+		locS:remove(id)
+		locC:set(id, value)
+	else
+		locS:set(id, value)
+		locC:set(id, value)
+	end
+	
+	g_LocStateCache[localeCode] = nil
+end
+allowRPC('mui.setString')
+
+function mui.removeString(localeCode, id)
+	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
+	
+	local locS = MuiStringMap('lang/'..localeCode..'.xml')
+	local locC = MuiStringMap('lang/'..localeCode..'_c.xml')
+	
+	locS:remove(id)
+	locC:remove(id)
+	
+	g_LocStateCache[localeCode] = nil
+end
+allowRPC('mui.removeString')

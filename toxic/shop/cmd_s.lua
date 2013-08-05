@@ -18,11 +18,11 @@ local function CmdBuy (message, arg)
 			local bidlvl = pdata.accountData.bidlvl
 			local price = bidlvl * Settings.bidlvl_price
 			if (pdata.accountData.cash < price) then
-				privMsg (source, "You do not have enough cash! Bidlevel costs %s.", formatMoney (price))
+				privMsg (source, "You do not have enough cash! Bid-level costs %s.", formatMoney (price))
 			else
 				pdata.accountData:set({cash = pdata.accountData.cash - price, bidlvl = bidlvl + 1})
 				local th = ({ 'nd', 'rd' })[bidlvl] or 'th' -- old value
-				scriptMsg ("%s has bought %s bidlevel for %s!", getPlayerName(source), (bidlvl + 1)..th, formatMoney(price))
+				scriptMsg ("%s has bought %s bid-level for %s!", getPlayerName(source), (bidlvl + 1)..th, formatMoney(price))
 			end
 		elseif(item == 'lottery' or item == 'lotto' or item == 'lotteryticket') then
 			local n = touint (arg[3])
@@ -51,7 +51,7 @@ local function CmdCost (message, arg)
 			local pdata = Player.fromEl(source)
 			local bidlvl = pdata.accountData.bidlvl
 			local price = bidlvl * Settings.bidlvl_price
-			privMsg(source, "Bidlevel costs %s.", formatMoney(price))
+			privMsg(source, "Bid-level costs %s.", formatMoney(price))
 		else
 			privMsg(source, "There is no item \"%s\"! Use /itemlist to get list of items.", item)
 		end

@@ -68,12 +68,13 @@ function Player.__mt.__index:getPlayTime()
 end
 
 function Player.__mt.__index:disconnectFromAccount()
-	self.accountData:set('online', 0)
-	
 	local now = getRealTime().timestamp
 	local timeSpent = now - self.loginTimestamp
-	self.accountData:add('time_here', timeSpent)
-	self.accountData:set('last_visit', now)
+	
+	self.accountData:set({
+		online = 0,
+		time_here = self.accountData.time_here + timeSpent,
+		last_visit = now}, true)
 	
 	if(self.id) then
 		Player.idMap[self.id] = nil
@@ -141,13 +142,15 @@ function Player.onTeamChange(team)
 end
 
 function Player.__mt.__index:destroy()
+	local prof = DbgPerf(10)
+	
 	self:disconnectFromAccount()
 	
 	Player.elMap[self.el] = nil
 	
 	if(not self.is_console) then
 		g_PlayersCount = g_PlayersCount - 1
-		assert(g_PlayersCount >= 0 )
+		assert(g_PlayersCount >= 0)
 	end
 	
 	 -- destroy everything related to player
@@ -158,6 +161,8 @@ function Player.__mt.__index:destroy()
 		textDestroyDisplay(self.display)
 		self.display = false
 	end
+	
+	prof:cp('Player destroy')
 end
 
 function Player.create(el)

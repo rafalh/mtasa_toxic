@@ -304,15 +304,18 @@ function Playback.stop()
 end
 
 -- Used by RPC
-function Playback.startAfterCountdown(playback, title)
+function Playback.startAfterCountdown(recCoded, title)
 	--outputDebugString('Playback.startAfterCountdown', 3)
 	if(g_Playback) then
 		g_Playback:destroy()
 	end
 	
 	if(Settings.playback) then
-		g_Playback = Playback.create(playback, title)
+		local rec = RcDecodeTrace(recCoded)
+		
+		g_Playback = Playback.create(rec, title)
 		g_Waiting = true
+		
 		if(not USE_INTERPOLATION) then
 			addEventHandler('onClientPreRender', g_Root, Playback.preRender)
 		end

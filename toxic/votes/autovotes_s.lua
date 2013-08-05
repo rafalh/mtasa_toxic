@@ -1,50 +1,63 @@
-local function AvCheckPlayer(player)
-	if(Settings.auto_votekick and hasObjectPermissionTo(player, 'command.kick', false)) then
-		set('*votemanager.votekick_enabled', false)
+local RIGHTS = {kick = 'command.kick', map = 'command.setmap'}
+local SETTING_NAMES = {kick = '*votemanager.votekick_enabled', map = '*votemanager.votemap_enabled'}
+local g_Votes = {kick = false, map = false}
+
+local function AvSetVoteEnabled(voteType, enabled)
+	if(g_Votes[voteType] == enabled) then return end
+	g_Votes[voteType] = enabled
+	set(SETTING_NAMES[voteType], enabled)
+end
+
+local function AvCheckAllPlayers(voteType, ignored)
+	local vote = true
+	local right = RIGHTS[voteType]
+	
+	for player, pdata in pairs(g_Players) do
+		if(not pdata.is_console and player ~= ignored and hasObjectPermissionTo(player, right, false)) then
+			return false
+		end
 	end
-	if(Settings.auto_votemap and hasObjectPermissionTo(player, 'command.setmap', false)) then
-		set('*votemanager.votemap_enabled', false)
-	end
+	
+	return true
 end
 
 local function AvOnPlayerLogout()
-	if(wasEventCancelled()) then return end
-	
-	local enable_votekick, enable_votemap = true, true
-	local auto_votekick = Settings.auto_votekick
-	local auto_votemap = Settings.auto_votemap
-	
-	for player, pdata in pairs(g_Players) do
-		if(auto_votekick and hasObjectPermissionTo(player, 'command.kick', false) and player ~= source) then
-			enable_votekick = false
-		end
-		if(auto_votemap and hasObjectPermissionTo(player, 'command.setmap', false) and player ~= source) then
-			enable_votemap = false
-		end
+	if(Settings.auto_votekick) then
+		local enabled = AvCheckAllPlayers('kick', source)
+		AvSetVoteEnabled('kick', enabled)
 	end
-	
-	if(auto_votekick) then
-		set('*votemanager.votekick_enabled', enable_votekick)
-	end
-	if(auto_votemap) then
-		set('*votemanager.votemap_enabled', enable_votemap)
+	if(Settings.auto_votemap) then
+		local enabled = AvCheckAllPlayers('map', source)
+		AvSetVoteEnabled('map', enabled)
 	end
 end
 
 local function AvOnPlayerLogin()
-	if(wasEventCancelled()) then return end
-	
-	AvCheckPlayer(source)
+	if(Settings.auto_votekick and hasObjectPermissionTo(source, RIGHTS.kick, false)) then
+		AvSetVoteEnabled('kick', false)
+	end
+	if(Settings.auto_votemap and hasObjectPermissionTo(source, RIGHTS.map, false)) then
+		AvSetVoteEnabled('map', false)
+	end
 end
 
 local function AvInit()
-	for player, pdata in pairs(g_Players) do
-		AvCheckPlayer(player)
+	local prof = DbgPerf()
+	
+	if(Settings.auto_votekick) then
+		local enabled = AvCheckAllPlayers('kick')
+		AvSetVoteEnabled('kick', enabled)
+	end
+	if(Settings.auto_votemap) then
+		local enabled = AvCheckAllPlayers('map')
+		AvSetVoteEnabled('map', enabled)
 	end
 	
 	addEventHandler('onPlayerLogin', g_Root, AvOnPlayerLogin)
 	addEventHandler('onPlayerLogout', g_Root, AvOnPlayerLogout)
 	addEventHandler('onPlayerQuit', g_Root, AvOnPlayerLogout)
+	
+	prof:cp('AutoVotes init')
 end
 
 addInitFunc(AvInit)

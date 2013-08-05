@@ -24,13 +24,14 @@ PlayersTable:addColumns{
 }
 
 function addPlayerTime(player_id, map_id, time)
+	local prof = DbgPerf()
 	local wasInTop = false
 	local now = getRealTime().timestamp
 	
 	local rows = DbQuery('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', player_id, map_id)
 	local besttime = rows and rows[1]
 	if(besttime) then
-		if (besttime.time < time) then -- new time is worse
+		if(besttime.time < time) then -- new time is worse
 			return -1
 		else
 			local rows2 = DbQuery('SELECT count(player) AS c FROM '..BestTimesTable..' WHERE map=? AND time<?', map_id, besttime.time)
@@ -61,10 +62,12 @@ function addPlayerTime(player_id, map_id, time)
 		BtDeleteCache() -- invalidate cache
 	end
 	
+	prof:cp('addPlayerTime')
 	return pos
 end
 
 function BtSendMapInfo(room, show, player)
+	local prof = DbgPerf()
 	local map = getCurrentMap(room)
 	if(not map) then return end
 	
@@ -108,7 +111,7 @@ function BtSendMapInfo(room, show, player)
 		end
 	end
 	
-	local start = getTickCount()
+	local prof2 = DbgPerf(100)
 	if(#idList > 0) then
 		local rows = DbQuery(
 			'SELECT bt1.player, bt1.time, ('..
@@ -123,17 +126,13 @@ function BtSendMapInfo(room, show, player)
 		end
 	end
 	
-	local dt = getTickCount() - start
-	if(dt > 100) then
-		outputDebugString('Too slow: '..dt, 2)
-	end
+	prof2:cp('retreiving toptimes')
 	
 	for i, player in ipairs(players) do
 		triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
 				show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
 	end
-	
-	
+	prof:cp('BtSendMapInfo')
 end
 
 function BtDeleteCache()

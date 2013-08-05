@@ -59,7 +59,7 @@ end
 
 local function AchvUpdateGui()
 	if(not g_List) then return end
-	DbgPerfInit()
+	local prof = DbgPerf()
 	
 	local achvCntStr = MuiGetMsg("Unlocked achievements: %u/%u"):format(g_ActiveCount, #g_Achievements)
 	guiSetText(g_AchvCountLabel, achvCntStr)
@@ -70,7 +70,7 @@ local function AchvUpdateGui()
 		g_List:setItemImg(i, img)
 		g_List:setItemStyle(i, style)
 	end
-	DbgPerfCp('Achievements update')
+	prof:cp('Achievements update')
 end
 
 local function AchvSetActive(id)

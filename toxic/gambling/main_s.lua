@@ -108,7 +108,7 @@ function GbCancelLottery()
 		AccountData.create(id):add('cash', tickets)
 		local player = Player.fromId(id)
 		if(player) then
-			privMsg(player.el, "Lottery is canceled! You get your money (%s) back.", formatMoney(tickets))
+			privMsg(player.el, "Lottery is cancelled! You get your money (%s) back.", formatMoney(tickets))
 		end
 	end
 end
@@ -168,7 +168,7 @@ function GbCancelBets()
 	for player, pdata in pairs(g_Players) do
 		if(pdata.bet) then
 			pdata.accountData:add('cash', pdata.betcash)
-			privMsg(player, "Your bet is canceled! You get your money (%s) back.", formatMoney(pdata.betcash))
+			privMsg(player, "Your bet is cancelled! You get your money (%s) back.", formatMoney(pdata.betcash))
 		end
 	end
 	GbFinishBets()
@@ -179,7 +179,7 @@ local function GbRemoveBetsPlayer(player, return_cash)
 		if(pdata2.bet == player) then
 			if(return_cash) then
 				pdata2.accountData:add('cash', pdata2.betcash)
-				privMsg(player2, "Your bet is canceled! You get your money (%s) back.", formatMoney(pdata2.betcash))
+				privMsg(player2, "Your bet is cancelled! You get your money (%s) back.", formatMoney(pdata2.betcash))
 			end
 			pdata2.bet = nil
 		end

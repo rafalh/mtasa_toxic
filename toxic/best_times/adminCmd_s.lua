@@ -35,18 +35,18 @@ local function CmdRemTopTime(message, arg)
 					local tm = getRealTime()
 					fileWrite(f, ('[%u.%02u.%u %u-%02u-%02u] '):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second)..
 						getPlayerName(source)..' removed '..n..'. toptime ('..formatTimePeriod(rows[n].time / 1000)..' by '..accountData:get('name')..') on map '..map:getName()..'.'..
-						(next_tops ~= '' and ' Next toptimes: '..next_tops:sub(3)..'.' or '')..'\n')
+						(next_tops ~= '' and ' Next Top Times: '..next_tops:sub(3)..'.' or '')..'\n')
 					
 					fileClose(f)
 				end
 				
-				outputMsg(room.el, Styles.red, "%u. toptime (%s by %s) has been removed by %s!",
+				outputMsg(room.el, Styles.red, "%u. Top Time (%s by %s) has been removed by %s!",
 					n, formatTimePeriod(rows[n].time / 1000), accountData:get('name'), getPlayerName(source))
 			elseif(rows) then
-				privMsg(source, "There are only %u toptimes saved!", #rows)
+				privMsg(source, "There are only %u Top Times saved!", #rows)
 			end
 		else privMsg(source, "Cannot find map!") end
 	else privMsg(source, "Usage: %s", arg[1]..' <toptime number>') end
 end
 
-CmdRegister('remtoptime', CmdRemTopTime, 'resource.'..g_ResName..'.remtoptime', "Removes specified toptime on current map")
+CmdRegister('remtoptime', CmdRemTopTime, 'resource.'..g_ResName..'.remtoptime', "Removes specified Top Time on current map")

@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="Toxic" author="rafalh" version="2.66" description="Rafalh Scripts System" />
+	<info type="misc" name="Toxic" author="rafalh" version="3.0.0" description="Rafalh Scripts System" />
 	
 	<min_mta_version client="1.3.1-9.04600" server="1.3.1-9.04600" />
-	
-	<script src="core/debug.lua" type="shared" />
 	
 	<script src="utils/table.lua" type="shared" />
 	<script src="utils/class.lua" type="shared" />
@@ -19,10 +17,12 @@
 	<script src="utils/rect.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />
 	<script src="utils/timers.lua" type="server" />
-	<script src="utils/binary.lua" type="server" />
+	<script src="utils/binary.lua" type="shared" />
 	<script src="utils/worker.lua" type="server" />
 	<script src="utils/file.lua" type="server" />
 	<script src="utils/rpc.lua" type="shared" />
+	
+	<script src="core/debug.lua" type="shared" />
 	
 	<script src="core/start_s.lua" type="server" />
 	<script src="core/settings_s.lua" type="server" />
@@ -123,6 +123,8 @@
 	<file src="img/beta.png" />
 	<file src="img/on.png" />
 	<file src="img/off.png" />
+	<file src="img/back.png" />
+	<file src="img/close.png" />
 	
 	<file src="img/flags/en.png" />
 	<file src="img/flags/pl.png" />

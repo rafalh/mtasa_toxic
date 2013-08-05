@@ -27,7 +27,7 @@ addEvent ( 'onClientTranslateLangList', true )
 local TranslatorPanel = {
 	name = "Translator",
 	img = 'translator/icon.png',
-	tooltip = "Traslate any sentence into your own language",
+	tooltip = "Translate any sentence into your own language",
 	height = 370,
 }
 

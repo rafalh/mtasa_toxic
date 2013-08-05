@@ -54,7 +54,7 @@ end
 PanelPathView = Class('PanelPathView')
 
 function PanelPathView.__mt.__index:init(path, pos, parent)
-	self.buttons = {}
+	self.elements = {}
 	for i, obj in ipairs(path) do
 		local text = obj.pathName or obj.name
 		local textW = GUI.getTestWidth(text)
@@ -63,18 +63,29 @@ function PanelPathView.__mt.__index:init(path, pos, parent)
 		addEventHandler('onClientGUIClick', btn, function()
 			path:switchTo(obj)
 		end, false)
-		table.insert(self.buttons, btn)
+		table.insert(self.elements, btn)
 		pos = pos + Vector2(btnW, 0)
 	end
 	
 	pos = pos + Vector2(10, 0)
-	local backTitle = #path > 1 and "Back" or "Close"
-	local btn = guiCreateButton(pos[1], pos[2], 90, 25, backTitle, false, parent)
-	addEventHandler('onClientGUIClick', btn, function()
-		path:back()
+	
+	if(#path > 1) then
+		local back = guiCreateStaticImage(pos[1], pos[2], 25, 25, 'img/back.png', false, parent)
+		table.insert(self.elements, back)
+		addEventHandler('onClientGUIClick', back, function()
+			path:back()
+		end, false)
+		
+		pos = pos + Vector2(30, 0)
+	end
+	
+	local close = guiCreateStaticImage(pos[1], pos[2], 25, 25, 'img/close.png', false, parent)
+	table.insert(self.elements, close)
+	addEventHandler('onClientGUIClick', close, function()
+		path:hide()
 	end, false)
 end
 
 function PanelPathView.__mt.__index:destroy()
-	table.foreach(self.buttons, destroyElement)
+	table.foreach(self.elements, destroyElement)
 end
