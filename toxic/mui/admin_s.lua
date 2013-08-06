@@ -30,7 +30,7 @@ local function getLocaleState(code)
 	
 	state.missing = 0
 	state.count = 0
-	for i, str, strType in MuiStringsList:ipairs() do
+	for i, str, strType in MuiStringList:ipairs() do
 		local curStrType = map[str]
 		if(curStrType == nil) then
 			state.missing = state.missing + 1
@@ -57,7 +57,7 @@ end
 function mui.getLocaleList()
 	if(not mui.right:check(client)) then return false end
 	
-	MuiStringsList:loadFromFile('strings.txt')
+	MuiStringList:loadFromFile('strings.txt')
 	
 	local locales = {}
 	for i, locale in LocaleList.ipairs() do
@@ -74,7 +74,7 @@ function mui.getLocaleList()
 	end
 	
 	if(not g_MuiStringCount) then
-		g_MuiStringCount = MuiStringsList:count()
+		g_MuiStringCount = MuiStringList:count()
 	end
 	
 	return locales, g_MuiStringCount
@@ -108,7 +108,7 @@ function mui.getLocaleData(localeCode)
 		end
 	end
 	
-	for i, str, strType in MuiStringsList:ipairs() do
+	for i, str, strType in MuiStringList:ipairs() do
 		local e = map[str]
 		if(e) then
 			map[str] = false

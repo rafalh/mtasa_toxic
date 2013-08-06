@@ -226,13 +226,15 @@ end
 
 function GbSpin(player, number, cash)
 	local pdata = Player.fromEl(player)
-	if(pdata.last_spin and (getTickCount() - pdata.last_spin) < 30000) then
+	local ticks = getTickCount()
+	if(pdata.last_spin and (ticks - pdata.last_spin) < 30000) then
 		privMsg(player, "You cannot spin so often!")
-		return false
-	end
-	
-	if(number >= 1 and number <= 65 and cash > 0 and cash < 100000 and pdata.accountData.cash >= cash) then
-		pdata.last_spin = getTickCount()
+	elseif(number < 1 or number > 65 or cash <= 0 or cash > 100000) then
+		privMsg(player, "Invalid number!")
+	elseif(pdata.accountData.cash < cash) then
+		privMsg(player, "You don't have enough cash!")
+	else
+		pdata.last_spin = ticks
 		pdata.accountData:add('cash', -cash)
 		
 		-- Create timer
@@ -240,7 +242,6 @@ function GbSpin(player, number, cash)
 		return true
 	end
 	
-	privMsg(player, "Invalid number or you don't have enough cash")
 	return false
 end
 

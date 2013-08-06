@@ -52,6 +52,7 @@
 	<script src="commands/trace_s.lua" type="server" />
 	
 	<script src="gui/gui_c.lua" type="client" />
+	<script src="gui/guiStr_s.lua" type="server" />
 	<script src="gui/input_c.lua" type="client" />
 	<script src="gui/anim_c.lua" type="client" />
 	<script src="gui/help_c.lua" type="client" />

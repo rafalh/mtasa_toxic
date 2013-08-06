@@ -1,13 +1,13 @@
-local StringsList = Class('StringsList')
+local StringList = Class('StringList')
 
-function StringsList.__mt.__index:init()
+function StringList.__mt.__index:init()
 	self.strList = {}
 	self.typeList = {}
 	self.providers = {}
 	self.loadedFiles = {}
 end
 
-function StringsList.__mt.__index:loadFromFile(path)
+function StringList.__mt.__index:loadFromFile(path)
 	if(self.loadedFiles[path]) then return end
 	
 	local buf = fileGetContents(path)
@@ -32,11 +32,11 @@ function StringsList.__mt.__index:loadFromFile(path)
 	return true
 end
 
-function StringsList.__mt.__index:registerProvider(provider)
+function StringList.__mt.__index:registerProvider(provider)
 	table.insert(self.providers, provider)
 end
 
-function StringsList.__mt.__index:count()
+function StringList.__mt.__index:count()
 	local count = #self.strList
 	for i, prov in ipairs(self.providers) do
 		count = count + prov:getStringCount()
@@ -44,7 +44,7 @@ function StringsList.__mt.__index:count()
 	return count
 end
 
-function StringsList.__mt.__index:iterator(i)
+function StringList.__mt.__index:iterator(i)
 	i = i - self.curProvOffset
 	local prov = self.providers[self.curProvIdx]
 	local str, strType
@@ -69,10 +69,10 @@ function StringsList.__mt.__index:iterator(i)
 	return i + self.curProvOffset, str, strType
 end
 
-function StringsList.__mt.__index:ipairs()
-	self.curProvOffset = 0
+function StringList.__mt.__index:ipairs()
 	self.curProvIdx = 0
+	self.curProvOffset = 0
 	return self.iterator, self, 1
 end
 
-MuiStringsList = StringsList()
+MuiStringList = StringList()
