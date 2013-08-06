@@ -6,6 +6,8 @@
 	<script src="bets_cmd_s.lua" type="server" />
 	<script src="cmd_s.lua" type="server" />
 	
+	<file src="dices.png" />
+	
 	<settings>
 		<setting group="Betting" name="*bet_time" accept="0-3600" value="60" desc="Number of seconds after map start, in which player can bet. Value of 0 disables betting." friendlyname="Betting time" />
 		<setting group="Betting" name="*max_bet" accept="0-1000000" value="1000" desc="Maximal bet for 1st bidlevel. For next bidlevels it will be this value multiplied by level." friendlyname="Maxbet for 1st bidlevel" />

@@ -108,7 +108,8 @@ function GbCancelLottery()
 		AccountData.create(id):add('cash', tickets)
 		local player = Player.fromId(id)
 		if(player) then
-			privMsg(player.el, "Lottery is cancelled! You get your money (%s) back.", formatMoney(tickets))
+			player:addNotify{icon = 'gambling/dices.png',
+				{"Lottery is cancelled! You get your money (%s) back.", formatMoney(tickets)}}
 		end
 	end
 end
@@ -158,7 +159,8 @@ function GbFinishBets(winner)
 		if(winner and pdata.bet == winner) then
 			local award = math.floor(pdata.betcash * mult)
 			pdata.accountData:add('cash', award)
-			privMsg(player, "You have won %s in your bet!", formatMoney(award))
+			pdata:addNotify{icon = 'gambling/dices.png',
+				{"You have won %s in your bet!", formatMoney(award)}}
 		end
 		pdata.bet = nil
 	end
@@ -168,7 +170,8 @@ function GbCancelBets()
 	for player, pdata in pairs(g_Players) do
 		if(pdata.bet) then
 			pdata.accountData:add('cash', pdata.betcash)
-			privMsg(player, "Your bet is cancelled! You get your money (%s) back.", formatMoney(pdata.betcash))
+			pdata:addNotify{icon = 'gambling/dices.png',
+				{"Your bet is cancelled! You get your money (%s) back.", formatMoney(pdata.betcash)}}
 		end
 	end
 	GbFinishBets()
@@ -179,7 +182,8 @@ local function GbRemoveBetsPlayer(player, return_cash)
 		if(pdata2.bet == player) then
 			if(return_cash) then
 				pdata2.accountData:add('cash', pdata2.betcash)
-				privMsg(player2, "Your bet is cancelled! You get your money (%s) back.", formatMoney(pdata2.betcash))
+				pdata2:addNotify{icon = 'gambling/dices.png',
+					{"Your bet is cancelled! You get your money (%s) back.", formatMoney(pdata2.betcash)}}
 			end
 			pdata2.bet = nil
 		end
@@ -266,7 +270,9 @@ function GbUnbet(player)
 end
 
 local function GbBetsPlacedTimer()
-	outputMsg(g_Root, Styles.gambling, "No More Bets.")
+	for el, player in pairs(g_Players) do
+		player:addNotify{icon = 'gambling/dices.png', {"No More Bets."}}
+	end
 	g_BetsTimer = false
 end
 
@@ -275,7 +281,9 @@ function GbStartBets()
 	local bet_min_players = Settings.bet_min_players
 	if(bet_time > 0 and g_PlayersCount >= bet_min_players) then
 		g_BetsTimer = setTimer(GbBetsPlacedTimer, bet_time * 1000, 1)
-		outputMsg(g_Root, Styles.gambling, "Place Your Bets!")
+		for el, player in pairs(g_Players) do
+			player:addNotify{icon = 'gambling/dices.png', {"Place Your Bets!"}}
+		end
 	end
 end
 

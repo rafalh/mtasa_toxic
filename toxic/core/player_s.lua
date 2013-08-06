@@ -68,6 +68,9 @@ function Player.__mt.__index:getPlayTime()
 end
 
 function Player.__mt.__index:addNotify(info)
+	for i, msg in ipairs(info) do
+		msg[1] = MuiGetMsg(msg[1], self.el)
+	end
 	RPC('NfAdd', info):exec()
 end
 

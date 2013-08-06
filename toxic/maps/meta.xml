@@ -14,7 +14,11 @@
 	<script src="mapsListGui_c.lua" type="client" />
 	<script src="http_s.lua" type="server" />
 	<script src="mapPatcher_s.lua" type="server" />
+	
+	<file src="coins.png" />
+	
 	<config src="../conf/map_types.xml" type="server" />
+	
 	<export function="getMaps" http="true" />
 	<export function="getMapInfo" http="true" />
 	

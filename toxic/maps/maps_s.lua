@@ -301,7 +301,10 @@ local function handlePlayerTime(player, ms)
 	local map_id = map:getId()
 	local n = addPlayerTime(pdata.id, map_id, ms)
 	if(n >= 1) then -- improved best time
-		privMsg (player, "You have improved your personal best time! New: %s", formatTimePeriod(ms / 1000))
+		pdata:addNotify{
+			{"You have improved your personal best time!"},
+			{"New: %s", formatTimePeriod(ms / 1000)},
+		}
 		
 		if (n <= 3) then -- new toptime
 			local th = ({ '1st', '2nd', '3rd' })[n]
@@ -369,8 +372,11 @@ local function setPlayerFinalRank(player, rank)
 	stats.cash = pdata.accountData.cash + cashadd
 	stats.points = pdata.accountData.points + pointsadd
 	pdata.accountData:set(stats)
-	privMsg (player, "%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash))
-	privMsg (player, "You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points))
+	pdata:addNotify{
+		icon = 'maps/coins.png',
+		{"%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash)},
+		{"You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points)},
+	}
 	
 	if(rank == 1) then
 		handlePlayerWin(player)
