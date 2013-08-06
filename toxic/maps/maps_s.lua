@@ -177,7 +177,7 @@ local function onMapStart(map, room)
 		setMapTimer(startRandomMap, 500, 1, room)
 	else
 		room.isRace = #(getCurrentMapElements(room, 'checkpoint')) > 0
-		local map_type = map:getType()
+		local mapType = map:getType()
 		
 		local now = getRealTime().timestamp
 		DbQuery('UPDATE '..MapsTable..' SET played=played+1, played_timestamp=? WHERE map=?', now, map_id)
@@ -185,9 +185,9 @@ local function onMapStart(map, room)
 		local mapTypeCounter = false
 		if(room.isRace) then
 			mapTypeCounter = 'racesPlayed'
-		elseif(map_type.name == 'DD') then
+		elseif(mapType.name == 'DD') then
 			mapTypeCounter = 'ddPlayed'
-		elseif(map_type.name == 'DM') then
+		elseif(mapType.name == 'DM') then
 			mapTypeCounter = 'dmPlayed'
 		end
 		
@@ -206,9 +206,9 @@ local function onMapStart(map, room)
 		
 		-- update others_in_row for map types
 		if(not was_queued) then -- queue updates others_in_row when new map is added
-			local dbg_buf = 'Starting map type: '..map_type.name
+			local dbg_buf = 'Starting map type: '..mapType.name
 			for i, map_type2 in ipairs (g_MapTypes) do
-				if (map_type2 ~= map_type) then
+				if (map_type2 ~= mapType) then
 					map_type2.others_in_row = map_type2.others_in_row + 1
 					dbg_buf = dbg_buf..', '..map_type2.name..': '..map_type2.others_in_row..'('..map_type2.max_others_in_row..')'
 				else
@@ -230,7 +230,7 @@ local function onMapStart(map, room)
 		end
 		
 		-- start recording
-		local winning_veh = map_type and map_type.winning_veh
+		local winning_veh = mapType and mapType.winning_veh
 		room.recording = (room.isRace or winning_veh) and Settings.recorder
 		if (room.isRace or winning_veh) then
 			if (room.recording) then
@@ -239,14 +239,14 @@ local function onMapStart(map, room)
 		end
 		
 		-- set fps limit
-		local maxFps = map_type and map_type.max_fps
+		local maxFps = mapType and mapType.max_fps
 		if(maxFps) then
 			setFPSLimit(maxFps)
 		end
 		
 		-- check if ghostmode should be enabled
 		if(not map:getSetting('ghostmode')) then
-			local gm = map_type and map_type.gm
+			local gm = mapType and mapType.gm
 			setMapTimer(GmSet, 3000, 1, room, gm, true)
 		end
 		
@@ -255,12 +255,18 @@ local function onMapStart(map, room)
 		
 		-- allow bets
 		GbStartBets()
+		
+		if(mapType.name == 'DD') then
+			RPC('DDSetKillersDetectionEnabled', true):exec()
+		end
 	end
 	
 	prof:cp('onMapStart')
 end
 
 local function onMapStop(room)
+	if(not room.currentMap) then return end
+
 	local prof = DbgPerf()
 	
 	if (room.recording) then
@@ -271,8 +277,13 @@ local function onMapStop(room)
 	GbFinishBets()
 	
 	if (g_OldVehicleWeapons) then
-		set ('*race.vehicleweapons', g_OldVehicleWeapons)
+		set('*race.vehicleweapons', g_OldVehicleWeapons)
 		g_OldVehicleWeapons = nil
+	end
+	
+	local mapType = room.currentMap:getType()
+	if(mapType.name == 'DD') then
+		RPC('DDSetKillersDetectionEnabled', false):exec()
 	end
 	
 	room.currentMap = false

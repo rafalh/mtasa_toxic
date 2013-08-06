@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Statistics" author="rafalh" version="2.61" />
+	<info name="Statistics" author="rafalh" />
 	
 	<script src="stats_s.lua" type="server" />
 	<script src="cmd_s.lua" type="server" />
@@ -8,7 +8,13 @@
 	<script src="gui_c.lua" type="client" />
 	<script src="statsPanel_c.lua" type="client" />
 	<script src="http_s.lua" type="server" />
-	<file src="icon.png" />
+	<script src="dd_s.lua" type="server" />
+	<script src="dd_c.lua" type="client" />
+	
+	<file src="img/icon.png" />
+	<file src="img/skull.png" />
+	
 	<config src="../conf/ranks.xml" type="server" />
+	
 	<export function="getPlayersStats" http="true" />
 </meta>

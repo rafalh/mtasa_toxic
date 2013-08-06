@@ -13,7 +13,7 @@ local g_Stats = {}
 
 local StatsPanel = {
 	name = "Statistics",
-	img = 'stats/icon.png',
+	img = 'stats/img/icon.png',
 	tooltip = "Check your statistics",
 	width = 230,
 	height = 270,
