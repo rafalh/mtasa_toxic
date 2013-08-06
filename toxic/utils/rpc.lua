@@ -65,6 +65,8 @@ local function onRpc(id, fnName, ...)
 		return
 	end
 	
+	local prof = DbgPerf()
+	
 	local fn = loadstring('return '..fnName)()
 	local results = {}
 	if(fn) then
@@ -83,19 +85,28 @@ local function onRpc(id, fnName, ...)
 			triggerServerEvent('main.onRpcResult', resourceRoot, id, unpack(results, 2))
 		end
 	end
+	
+	prof:cp('RPC '..fnName)
 end
 
 local function onRpcResult(id, ...)
+	local prof = DbgPerf()
+	
+	-- Get object reference
 	local self = g_WaitingRpc[id]
 	if(not self) then
 		outputDebugString('Unknown RPC '..tostring(id), 2)
 		return
 	end
 	g_WaitingRpc[id] = nil
+	
+	-- Call the callback
 	for i, arg in ipairs({...}) do
 		table.insert(self.cbArgs, arg)
 	end
 	self.callback(unpack(self.cbArgs))
+	
+	prof:cp('RPC result')
 end
 
 addEventHandler('main.onRpc', resourceRoot, onRpc)
