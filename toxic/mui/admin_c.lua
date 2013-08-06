@@ -114,11 +114,26 @@ function LocaleStrList:acceptEditWnd()
 	local row = self.editGui.row
 	local oldId = false
 	if(row) then
-		-- Check if it wont overwrite another string
+		-- Retrieve old ID
 		oldId = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
-		if(id ~= oldId and self.idToState[id] and self.idToState[id] ~= 'm') then
+	end
+	
+	if(id ~= oldId and state and state ~= 'u') then
+		-- It was a valid string but ID has changed - treat it like an insertion
+		oldId, state, row = false, false, false
+	end
+	
+	-- Check if it won't overwrite another string
+	local state2 = self.idToState[id]
+	if(id ~= oldId and state2) then
+		if(state2 ~= 'm') then
+			-- Disallow overwriting strings
 			outputChatBox("Such string already exists!", 255, 0, 0)
 			return
+		else
+			-- This string is missing - remove it from the missing list
+			local row2 = self.idToRow[id]
+			guiGridListRemoveRow(self.gui['msgList_'..state2], row2)
 		end
 	end
 	
@@ -128,15 +143,9 @@ function LocaleStrList:acceptEditWnd()
 		newState = 'v'
 	end
 	
-	-- Check if we are overwriting row in another list
-	local state2 = self.idToState[id]
-	if(state2 and state2 ~= state) then
-		local row2 = self.idToRow[id]
-		guiGridListRemoveRow(self.gui['msgList_'..state2], row2)
-	end
-	
+	-- Check if string is modified and state is going to change
 	if(state and state ~= newState) then
-		-- Remove row from old list
+		-- Remove row from the old list
 		guiGridListRemoveRow(listEl, row)
 		row = false
 	end
@@ -175,6 +184,7 @@ function LocaleStrList:acceptEditWnd()
 end
 
 function LocaleStrList:prepareEditWnd(state, row)
+	-- Create Edit GUI if needed
 	if(not self.editGui) then
 		self.editGui = GUI.create('transEdit')
 		guiComboBoxAddItem(self.editGui.type, "Server")
@@ -183,14 +193,17 @@ function LocaleStrList:prepareEditWnd(state, row)
 		
 		addEventHandler('onClientGUIClick', self.editGui.ok, function() self:acceptEditWnd() end, false)
 		addEventHandler('onClientGUIClick', self.editGui.cancel, function() self:closeEditWnd() end, false)
-		
-		showCursor(true)
 	end
 	
-	local id, val, strType = '', '', 's'
+	-- Allow changing ID only if we add new row or if string is in unknown list
+	guiEditSetReadOnly(self.editGui.id, row and state ~= 'u')
 	
+	-- Save edited row ID
 	self.editGui.state = state
 	self.editGui.row = row
+	
+	-- Get edited string properties
+	local id, val, strType = '', '', 's'
 	if(state) then
 		local listEl = self.gui['msgList_'..state]
 		id = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
@@ -198,10 +211,19 @@ function LocaleStrList:prepareEditWnd(state, row)
 		strType = guiGridListGetItemData(listEl, row, self.gui['idCol_'..state])
 	end
 	
+	-- Update GUI elements
 	guiSetText(self.editGui.id, id)
 	guiSetText(self.editGui.val, val)
 	local TYPE_TO_IDX = {s = 0, c = 1, ['*'] = 2}
 	guiComboBoxSetSelected(self.editGui.type, TYPE_TO_IDX[strType])
+	
+	-- Show the cursor when window is ready
+	showCursor(true)
+	if(row) then
+		guiBringToFront(self.editGui.val)
+	else
+		guiBringToFront(self.editGui.id)
+	end
 end
 
 function LocaleStrList.onEditClick()
@@ -232,9 +254,30 @@ function LocaleStrList.onDelClick()
 	if(row == -1) then return end
 	
 	local id = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
+	local strType = guiGridListGetItemData(listEl, row, self.gui['idCol_'..state])
 	
 	guiGridListRemoveRow(listEl, row)
+	if(state == 'v') then
+		-- Add to missing list
+		state = 'm'
+		local listEl = self.gui['msgList_'..state]
+		row = guiGridListAddRow(listEl)
+		guiGridListSetItemText(listEl, row, self.gui['idCol_'..state], id, false, false)
+		guiGridListSetItemText(listEl, row, self.gui['valCol_'..state], val, false, false)
+		guiGridListSetItemData(listEl, row, self.gui['idCol_'..state], strType)
+	else
+		-- Remove from maps
+		row = nil
+		state = nil
+	end
+	
+	self.idToRow[id] = row
+	self.idToState[id] = state
+	
+	-- Notify server
 	RPC('mui.removeString', self.locale.code, id):exec()
+	
+	-- Update tab panel
 	self:updateTabTitles()
 end
 
