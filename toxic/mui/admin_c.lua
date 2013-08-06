@@ -4,7 +4,6 @@ LocaleAdmin.pathName = "Interface Translation"
 
 local LocaleStrList = {}
 LocaleStrList.pathName = ''
-LocaleStrList.idToRow = {}
 
 AdminPanel:addItem{
 	name = "Interface Translation",
@@ -22,7 +21,7 @@ function LocaleAdmin:onLocaleList(locales, strCount)
 		
 		local stateStr = state.count..'/'..strCount
 		if(state.missing > 0 or state.unknown > 0) then
-			stateStr = stateStr..' '..MuiGetMsg("(missing: %u, unknown: %u)"):format(state.missing, state.unknown)
+			stateStr = stateStr..' '..MuiGetMsg("(missing: %u, unknown: %u, wrong type: %u)"):format(state.missing, state.unknown, state.wrongType)
 		end
 		
 		local row = guiGridListAddRow(self.gui.list)
@@ -102,84 +101,168 @@ function LocaleStrList:refreshLocale()
 	end
 end
 
+function LocaleStrList:removeStr(id, row)
+	local e = self.entryMap[id]
+	local state = self.stateMap[id]
+	if(not e) then return false end
+	
+	table.removeValue(self.lists[state], e)
+	self.entryMap[id] = nil
+	self.stateMap[id] = nil
+	
+	if(row) then
+		local listEl = self.gui['msgList_'..state]
+		guiGridListRemoveRow(listEl, row)
+		self:updateTab(state)
+	else
+		self:updateList(state)
+	end
+	
+	return e
+end
+
+function LocaleStrList:updateRow(row, e, state)
+	local listEl = self.gui['msgList_'..state]
+	local idCol = self.gui['idCol_'..state]
+	local valCol = self.gui['valCol_'..state]
+	local TYPE_NAME = {s = "Server", c = "Client", ['*'] = "Shared"}
+	
+	guiGridListSetItemText(listEl, row, idCol, e.id, false, false)
+	if(state == 't') then
+		local comment = MuiGetMsg("Should be: %s"):format(MuiGetMsg(TYPE_NAME[e.vt]))
+		guiGridListSetItemText(listEl, row, valCol, comment, false, false)
+	elseif(e.val) then
+		guiGridListSetItemText(listEl, row, valCol, e.val, false, false)
+	end
+end
+
+function LocaleStrList:insertStr(e, state)
+	-- Add to internal structures
+	self.entryMap[e.id] = e
+	self.stateMap[e.id] = state
+	table.insert(self.lists[state], e)
+	
+	-- Add to GUI
+	local listEl = self.gui['msgList_'..state]
+	row = guiGridListAddRow(listEl)
+	
+	self:updateRow(row, e, state)
+	self:updateTab(state)
+end
+
+function LocaleStrList:updateStr(e, state, oldID, row)
+	if(oldID and oldID ~= e.id) then
+		self.entryMap[oldID] = nil
+		self.stateMap[oldID] = nil
+		self.entryMap[e.id] = e
+		self.stateMap[e.id] = state
+	end
+	
+	if(not row) then
+		self:updateList(state)
+	else
+		self:updateRow(row, e, state)
+	end
+end
+
 function LocaleStrList:acceptEditWnd()
+	-- Read data from GUI
 	local id = guiGetText(self.editGui.id)
 	local val = guiGetText(self.editGui.val)
 	local TYPES = {[0] = 's', [1] = 'c', [2] = '*'}
 	local typeIdx = guiComboBoxGetSelected(self.editGui.type)
-	local strType = TYPES[typeIdx]
+	local typeCh = TYPES[typeIdx]
 	
+	-- Setup entry reference
 	local state = self.editGui.state
-	local listEl = state and self.gui['msgList_'..state]
 	local row = self.editGui.row
-	local oldId = false
+	local listEl = state and self.gui['msgList_'..state]
+	local oldID
+	
 	if(row) then
-		-- Retrieve old ID
-		oldId = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
+		-- Retrieve old entry
+		oldID = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
 	end
 	
-	if(id ~= oldId and state and state ~= 'u') then
-		-- It was a valid string but ID has changed - treat it like an insertion
-		oldId, state, row = false, false, false
+	if(oldID and id ~= oldID and state ~= 'u') then
+		-- It was a known string but ID has changed - treat it like an insertion
+		state, row, oldID = false, false, false
 	end
 	
-	-- Check if it won't overwrite another string
-	local state2 = self.idToState[id]
-	if(id ~= oldId and state2) then
-		if(state2 ~= 'm') then
-			-- Disallow overwriting strings
-			outputChatBox("Such string already exists!", 255, 0, 0)
-			return
-		else
-			-- This string is missing - remove it from the missing list
-			local row2 = self.idToRow[id]
-			guiGridListRemoveRow(self.gui['msgList_'..state2], row2)
+	local owEntry, owState
+	if(oldID ~= id) then
+		-- ID has changed or this is a new string
+		owEntry = self.entryMap[id]
+		owState = self.stateMap[id]
+	end
+	
+	if(owState == 'm') then
+		-- Overwrite missing string
+		if(oldID) then
+			-- Remove old unknown entry (forget about it)
+			assert(state == 'u')
+			self:removeStr(oldID, row)
 		end
+		
+		-- Remove missing entry (will be overwritten)
+		local e = self:removeStr(id)
+		if(typeCh == e.t) then
+			state = 'v'
+		else
+			e.vt = e.t
+			state = 't'
+		end
+		
+		e.id = id
+		e.val = val
+		e.t = typeCh
+		self:insertStr(e, state)
+	elseif(owState) then
+		-- Disallow overwriting known strings
+		outputChatBox("Such string already exists!", 255, 0, 0)
+		return
+	elseif(oldID) then
+		-- Just modify entry
+		local e = self.entryMap[oldID]
+		
+		local newState = state
+		if(state == 't' and typeCh == e.vt) then
+			newState = 'v'
+			e.vt = nil
+		elseif(state == 'm' or state == 'v') then
+			if(typeCh == e.t) then
+				newState = 'v'
+			else
+				e.vt = e.t
+				newState = 't'
+			end
+		end
+		
+		e.id = id
+		e.val = val
+		e.t = typeCh
+		
+		assert(id == oldID or state == 'u')
+		if(state == newState) then
+			self:updateStr(e, state, oldID, row)
+		else
+			self:removeStr(oldID, row)
+			self:insertStr(e, newState)
+		end
+	else
+		-- New unknown entry
+		state = 'u'
+		local e = {id = id, val = val, t = typeCh}
+		self:insertStr(e, state)
 	end
-	
-	-- Check what is the new state of this string
-	local newState = 'u'
-	if(self.idToState[id] == 'v' or self.idToState[id] == 'm') then
-		newState = 'v'
-	end
-	
-	-- Check if string is modified and state is going to change
-	if(state and state ~= newState) then
-		-- Remove row from the old list
-		guiGridListRemoveRow(listEl, row)
-		row = false
-	end
-	
-	if(oldId) then
-		-- Remove from maps for a moment
-		self.idToRow[oldId] = nil
-		self.idToState[oldId] = nil
-	end
-	
-	state = newState
-	listEl = state and self.gui['msgList_'..state]
-	if(not row) then
-		-- Add new row if needed
-		row = guiGridListAddRow(listEl)
-	end
-	
-	-- Setup cells
-	guiGridListSetItemText(listEl, row, self.gui['idCol_'..state], id, false, false)
-	guiGridListSetItemText(listEl, row, self.gui['valCol_'..state], val, false, false)
-	guiGridListSetItemData(listEl, row, self.gui['idCol_'..state], strType)
-	
-	-- Add string to maps again
-	self.idToRow[id] = row
-	self.idToState[id] = state
 	
 	-- Finally notify the server about all changes
-	if(oldId and oldId ~= id) then
-		RPC('mui.removeString', self.locale.code, oldId):exec()
+	if(oldID and id ~= oldID) then
+		RPC('mui.removeString', self.locale.code, oldID):exec()
 	end
-	RPC('mui.setString', self.locale.code, id, val, strType):exec()
+	RPC('mui.setString', self.locale.code, id, val, typeCh):exec()
 	
-	-- Update tab titles and close window
-	self:updateTabTitles()
+	-- Close window
 	self:closeEditWnd()
 end
 
@@ -202,20 +285,23 @@ function LocaleStrList:prepareEditWnd(state, row)
 	self.editGui.state = state
 	self.editGui.row = row
 	
-	-- Get edited string properties
-	local id, val, strType = '', '', 's'
+	-- Get entry info
+	local e
 	if(state) then
+		-- Edit existing string
 		local listEl = self.gui['msgList_'..state]
-		id = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
-		val = guiGridListGetItemText(listEl, row, self.gui['valCol_'..state])
-		strType = guiGridListGetItemData(listEl, row, self.gui['idCol_'..state])
+		local id = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
+		e = self.entryMap[id]
+	else
+		-- New string
+		e = {id = '', val = '', t = 's'}
 	end
 	
 	-- Update GUI elements
-	guiSetText(self.editGui.id, id)
-	guiSetText(self.editGui.val, val)
+	guiSetText(self.editGui.id, e.id)
+	guiSetText(self.editGui.val, e.val or '')
 	local TYPE_TO_IDX = {s = 0, c = 1, ['*'] = 2}
-	guiComboBoxSetSelected(self.editGui.type, TYPE_TO_IDX[strType])
+	guiComboBoxSetSelected(self.editGui.type, TYPE_TO_IDX[e.t])
 	
 	-- Show the cursor when window is ready
 	showCursor(true)
@@ -253,74 +339,71 @@ function LocaleStrList.onDelClick()
 	local row, col = guiGridListGetSelectedItem(listEl)
 	if(row == -1) then return end
 	
+	-- Get item data
 	local id = guiGridListGetItemText(listEl, row, self.gui['idCol_'..state])
-	local strType = guiGridListGetItemData(listEl, row, self.gui['idCol_'..state])
+	local e = self:removeStr(id, row)
 	
-	guiGridListRemoveRow(listEl, row)
-	if(state == 'v') then
+	if(state == 'v' or state == 't') then
 		-- Add to missing list
 		state = 'm'
-		local listEl = self.gui['msgList_'..state]
-		row = guiGridListAddRow(listEl)
-		guiGridListSetItemText(listEl, row, self.gui['idCol_'..state], id, false, false)
-		guiGridListSetItemText(listEl, row, self.gui['valCol_'..state], val, false, false)
-		guiGridListSetItemData(listEl, row, self.gui['idCol_'..state], strType)
-	else
-		-- Remove from maps
-		row = nil
-		state = nil
+		if(e.vt) then
+			e.t = e.vt
+			e.vt = nil
+		end
+		
+		self:insertStr(e, state)
 	end
-	
-	self.idToRow[id] = row
-	self.idToState[id] = state
 	
 	-- Notify server
 	RPC('mui.removeString', self.locale.code, id):exec()
-	
-	-- Update tab panel
-	self:updateTabTitles()
 end
 
-function LocaleStrList:updateTabTitles()
-	local TAB_TITLES = {v = "Valid (%u)", m = "Missing (%u)", u = "Unknown (%u)"}
-	local STATES = {'v', 'm', 'u'}
-	for i, state in ipairs(STATES) do
-		local tabEl = self.gui['tab_'..state]
-		local listEl = self.gui['msgList_'..state]
-		local count = guiGridListGetRowCount(listEl)
-		guiSetText(tabEl, MuiGetMsg(TAB_TITLES[state]):format(count))
-		guiSetVisible(tabEl, count > 0)
-	end
+function LocaleStrList:updateTab(state)
+	-- Update tab title
+	local TAB_TITLES = {v = "Valid (%u)", m = "Missing (%u)", u = "Unknown (%u)", t = "Wrong type (%u)"}
+	local tabEl = self.gui['tab_'..state]
+	local list = self.lists[state]
+	guiSetText(tabEl, MuiGetMsg(TAB_TITLES[state]):format(#list))
+	guiSetVisible(tabEl, #list > 0)
 end
 
-function LocaleStrList:updateList(state, list)
+function LocaleStrList:updateList(state)
+	local list = self.lists[state]
 	local listEl = self.gui['msgList_'..state]
-	local idCol = self.gui['idCol_'..state]
-	local valCol = self.gui['valCol_'..state]
+	
+	-- Clear the list first
 	guiGridListClear(listEl)
-	for i, entry in ipairs(list) do
+	
+	-- Add all rows
+	for i, e in ipairs(list) do
 		local row = guiGridListAddRow(listEl)
-		guiGridListSetItemText(listEl, row, idCol, entry.id, false, false)
-		guiGridListSetItemText(listEl, row, valCol, entry.val or '', false, false)
-		guiGridListSetItemData(listEl, row, idCol, entry.t)
-		
-		self.idToRow[entry.id] = row
-		self.idToState[entry.id] = state
+		self:updateRow(row, e, state)
 	end
+	
+	self:updateTab(state)
 end
 
-function LocaleStrList:onLocaleData(locCode, validList, missingList, unknownList)
+function LocaleStrList:onLocaleData(locCode, validList, missingList, wrongTypeList, unknownList)
 	if(self.locale.code ~= locCode or not self.gui) then return end
 	
-	self.idToRow = {}
-	self.idToState = {}
+	self.lists = {}
+	self.lists.v = validList
+	self.lists.m = missingList
+	self.lists.t = wrongTypeList
+	self.lists.u = unknownList
 	
-	local STATES = {'v', 'm', 'u'}
-	for i, list in ipairs({validList, missingList, unknownList}) do
-		self:updateList(STATES[i], list)
+	self.entryMap = {}
+	self.stateMap = {}
+	
+	local STATES = {'v', 'm', 'u', 't'}
+	for i, state in ipairs(STATES) do
+		for i, e in ipairs(self.lists[state]) do
+			self.stateMap[e.id] = state
+			self.entryMap[e.id] = e
+		end
+		
+		self:updateList(state)
 	end
-	
-	self:updateTabTitles()
 end
 
 function LocaleStrList:initGui()
@@ -335,12 +418,14 @@ function LocaleStrList:initGui()
 	addEventHandler('onClientGUIDoubleClick', self.gui.msgList_v, LocaleStrList.onEditClick, false)
 	addEventHandler('onClientGUIDoubleClick', self.gui.msgList_m, LocaleStrList.onEditClick, false)
 	addEventHandler('onClientGUIDoubleClick', self.gui.msgList_u, LocaleStrList.onEditClick, false)
+	addEventHandler('onClientGUIDoubleClick', self.gui.msgList_t, LocaleStrList.onEditClick, false)
 	
 	MuiIgnoreElement(self.gui.msgList_v)
 	MuiIgnoreElement(self.gui.msgList_m)
 	MuiIgnoreElement(self.gui.msgList_u)
+	MuiIgnoreElement(self.gui.msgList_t)
 	
-	self.tabToState = {[self.gui.tab_v] = 'v', [self.gui.tab_m] = 'm', [self.gui.tab_u] = 'u'}
+	self.tabToState = {[self.gui.tab_v] = 'v', [self.gui.tab_m] = 'm', [self.gui.tab_u] = 'u', [self.gui.tab_t] = 't'}
 	
 	self:refreshLocale()
 end

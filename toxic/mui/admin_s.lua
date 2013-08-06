@@ -30,15 +30,16 @@ local function getLocaleState(code)
 	
 	state.missing = 0
 	state.count = 0
+	state.wrongType = 0
 	for i, str, strType in MuiStringList:ipairs() do
 		local curStrType = map[str]
 		if(curStrType == nil) then
 			state.missing = state.missing + 1
 		elseif(curStrType) then
-			state.count = state.count + 1
 			if(curStrType ~= strType) then
-				-- TODO
-				--outputDebugString("What to do?!")
+				state.wrongType = state.wrongType + 1
+			else
+				state.count = state.count + 1
 			end
 			map[str] = false -- set to false if string has been counted
 		end
@@ -87,7 +88,7 @@ function mui.getLocaleData(localeCode)
 	local serverMap = MuiStringMap('lang/'..localeCode..'.xml')
 	local clientMap = MuiStringMap('lang/'..localeCode..'_c.xml')
 	
-	local validList, missingList, unknownList = {}, {}, {}
+	local validList, missingList, wrongTypeList, unknownList = {}, {}, {}, {}
 	
 	local map = {}
 	for i, entry in ipairs(serverMap:getList()) do
@@ -113,7 +114,12 @@ function mui.getLocaleData(localeCode)
 		if(e) then
 			map[str] = false
 			table.removeValue(unknownList, e)
-			table.insert(validList, e)
+			if(e.t == strType) then
+				table.insert(validList, e)
+			else
+				e.vt = strType
+				table.insert(wrongTypeList, e)
+			end
 		elseif(e == nil) then
 			local e = {id = str, t = strType}
 			map[str] = false
@@ -121,7 +127,7 @@ function mui.getLocaleData(localeCode)
 		end
 	end
 	
-	return localeCode, validList, missingList, unknownList
+	return localeCode, validList, missingList, wrongTypeList, unknownList
 end
 allowRPC('mui.getLocaleData')
 
