@@ -64,6 +64,7 @@
 	<script src="gui/listView_c.lua" type="client" />
 	<script src="gui/tooltip_c.lua" type="client" />
 	<script src="gui/onOffBtn_c.lua" type="client" />
+	<script src="gui/notify_c.lua" type="client" />
 	
 	<!-- MODULES -->
 	<module src="maps" />
@@ -126,6 +127,7 @@
 	<file src="img/off.png" />
 	<file src="img/back.png" />
 	<file src="img/close.png" />
+	<file src="img/notify.png" />
 	
 	<file src="img/flags/en.png" />
 	<file src="img/flags/pl.png" />

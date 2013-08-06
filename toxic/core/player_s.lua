@@ -67,6 +67,10 @@ function Player.__mt.__index:getPlayTime()
 	return getRealTime().timestamp - self.loginTimestamp + self.accountData:get('time_here')
 end
 
+function Player.__mt.__index:addNotify(info)
+	RPC('NfAdd', info):exec()
+end
+
 function Player.__mt.__index:disconnectFromAccount()
 	local now = getRealTime().timestamp
 	local timeSpent = now - self.loginTimestamp
