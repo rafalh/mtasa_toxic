@@ -61,7 +61,7 @@ function ProfileView.create(id, name)
 	GaFadeIn(self.wnd, 200)
 	showCursor(true)
 	
-	RPC('getPlayerProfile', id):onResult(ProfileView.onProfile):setCallbackArgs(id):exec()
+	RPC('getPlayerProfile', id):onResult(ProfileView.onProfile, id):exec()
 	g_WndToObj[self.wnd] = self
 	g_IdToObj[self.id] = self
 	

@@ -1,10 +1,5 @@
---[[ Syntax propositions:
-  RPC.create('getPlayerStats', 1):onResult(onPlStats):exec()
-* RPC('getPlayerStats', 1):onResult(onPlStats):exec()
-  callServer{'getPlayerStats', 1, onResult = onPlStats}
-]]
+RPC = Class('RPC')
 
-local RpcMethods = {}
 local g_WaitingRpc = {}
 local g_AllowedRpc = {}
 local SERVER = triggerClientEvent and true
@@ -12,13 +7,13 @@ local SERVER = triggerClientEvent and true
 addEvent('main.onRpc', true)
 addEvent('main.onRpcResult', true)
 
-function RpcMethods.onResult(self, fn, ...)
+function RPC.__mt.__index:onResult(fn, ...)
 	self.callback = fn
 	self.cbArgs = {...}
 	return self
 end
 
-function RpcMethods.exec(self)
+function RPC.__mt.__index:exec()
 	if(self.callback) then
 		self.id = #g_WaitingRpc + 1
 		g_WaitingRpc[self.id] = self
@@ -30,25 +25,20 @@ function RpcMethods.exec(self)
 	end
 end
 
-function RpcMethods.setCallbackArgs(self, ...)
-	self.cbArgs = {...}
-	return self
-end
-
 if(SERVER) then
-	function RpcMethods.setClient(self, cl)
+	function RPC.__mt.__index:setClient(cl)
 		self.client = cl
 		return self
 	end
 	
-	function allowRPC(fnName)
+	function RPC.allow(fnName)
 		g_AllowedRpc[fnName] = true
 	end
+	
+	allowRPC = RPC.allow
 end
 
-function RPC(fnName, ...)
-	local mt = {__index = RpcMethods}
-	local self = setmetatable({}, mt)
+function RPC.__mt.__index:init(fnName, ...)
 	self.fn = fnName
 	self.args = {...}
 	self.cbArgs = {}
@@ -56,7 +46,6 @@ function RPC(fnName, ...)
 	if(SERVER) then
 		self.client = root
 	end
-	return self
 end
 
 local function onRpc(id, fnName, ...)

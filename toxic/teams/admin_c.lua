@@ -64,7 +64,7 @@ local function onDelClick()
 	
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, row, g_GUI.nameCol)
 	if(teamInfo.id) then
-		RPC('Teams.delItem', teamInfo.id):onResult(onDelResult):setCallbackArgs(row):exec()
+		RPC('Teams.delItem', teamInfo.id):onResult(onDelResult, row):exec()
 	else
 		guiGridListRemoveRow(g_GUI.teamsList, row)
 	end
@@ -130,7 +130,7 @@ local function onEditAccepted()
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	RPC('Teams.updateItem', teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
+	RPC('Teams.updateItem', teamInfo):onResult(onSaveResult, g_GUI.clickedRow):exec()
 	
 	destroyElement(source)
 	g_CtxEdit = false
@@ -152,7 +152,7 @@ local function onTypeClick()
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
-	RPC('Teams.updateItem', teamInfo):onResult(onSaveResult):setCallbackArgs(g_GUI.clickedRow):exec()
+	RPC('Teams.updateItem', teamInfo):onResult(onSaveResult, g_GUI.clickedRow):exec()
 	
 	destroyElement(source)
 	g_CtxEdit = false
