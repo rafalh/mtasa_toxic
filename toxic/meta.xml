@@ -38,24 +38,24 @@
 	<script src="core/accounts_s.lua" type="server" />
 	<script src="settings/settings_c.lua" type="client" />
 	
-	<script src="commands/commands.lua" type="server" />
+	<script src="commands/commands_s.lua" type="server" />
 	<script src="core/room_s.lua" type="server" />
 	<script src="core/sync_s.lua" type="server" />
 	<script src="core/mute_s.lua" type="server" />
 	<script src="core/updater_s.lua" type="server" />
 	
-	<script src="commands/accounts.lua" type="server" />
-	<script src="commands/admin.lua" type="server" />
-	<script src="commands/admin2.lua" type="server" />
-	<script src="commands/clean_db.lua" type="server" />
-	<script src="commands/general.lua" type="server" />
-	<script src="commands/trace.lua" type="server" />
+	<script src="commands/accounts_s.lua" type="server" />
+	<script src="commands/admin_s.lua" type="server" />
+	<script src="commands/admin2_s.lua" type="server" />
+	<script src="commands/cleanDb_s.lua" type="server" />
+	<script src="commands/general_s.lua" type="server" />
+	<script src="commands/trace_s.lua" type="server" />
 	
 	<script src="gui/gui_c.lua" type="client" />
 	<script src="gui/input_c.lua" type="client" />
 	<script src="gui/anim_c.lua" type="client" />
 	<script src="gui/help_c.lua" type="client" />
-	<script src="gui/user_panel_c.lua" type="client" />
+	<script src="gui/userPanel_c.lua" type="client" />
 	<script src="gui/iconPanel_c.lua" type="client" />
 	<script src="gui/panelPath_c.lua" type="client" />
 	<script src="gui/adminPanel_c.lua" type="client" />

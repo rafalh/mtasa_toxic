@@ -5,7 +5,7 @@
 	<script src="mui_s.lua" type="server" />
 	<script src="mui_c.lua" type="client" />
 	<script src="langs_s.lua" type="server" />
-	<script src="localeList_sc.lua" type="shared" />
+	<script src="localeList.lua" type="shared" />
 	<script src="setting_c.lua" type="client" />
 	<script src="admin_s.lua" type="server" />
 	<script src="admin_c.lua" type="client" />

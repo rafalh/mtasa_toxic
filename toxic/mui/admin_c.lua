@@ -246,6 +246,7 @@ function LocaleStrList:updateTabTitles()
 		local listEl = self.gui['msgList_'..state]
 		local count = guiGridListGetRowCount(listEl)
 		guiSetText(tabEl, MuiGetMsg(TAB_TITLES[state]):format(count))
+		guiSetVisible(tabEl, count > 0)
 	end
 end
 

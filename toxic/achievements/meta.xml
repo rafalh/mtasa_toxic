@@ -4,7 +4,7 @@
 	
 	<script src="main_s.lua" type="server" />
 	<script src="gui_c.lua" type="client" />
-	<script src="list_sc.lua" type="shared" />
+	<script src="list.lua" type="shared" />
 	<file src="img/icon.png" />
 	<file src="img/locked.png" />
 	<file src="img/unlocked.png" />
