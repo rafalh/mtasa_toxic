@@ -70,8 +70,7 @@ Settings.register
 	onChange = function(oldVal, newVal)
 		local res = getResourceFromName('mapmusic')
 		if(res) then
-			--outputDebugString('Changing race audio volume to '..newVal/200, 3)
-			call(res, 'setMusicVolume', newVal) -- normally its 0.5
+			call(res, 'setMusicVolume', newVal)
 		else
 			outputMsg(Styles.red, "Failed to set music volume!")
 		end
@@ -94,3 +93,13 @@ Settings.register
 		Settings.musicVolume = vol
 	end,
 }
+
+addEventHandler('onClientResourceStart', root, function(res)
+	-- Set volume for resources after start
+	local resName = getResourceName(res)
+	if(resName == 'race_audio') then
+		call(res, 'setRaceAudioVolume', newVal/200) -- normally its 0.5
+	elseif(resName == 'mapmusic') then
+		call(res, 'setMusicVolume', newVal)
+	end
+end)
