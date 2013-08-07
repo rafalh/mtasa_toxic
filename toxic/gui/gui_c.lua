@@ -58,20 +58,9 @@ function GUI.getTemplate(tplID)
 	return tpl
 end
 
-function GUI.computeCtrlPlacement(tpl, parent)
-	local parentSize
-	if(parent) then
-		parentSize = Vector2(guiGetSize(parent, false))
-	else
-		parentSize = g_ScrSize
-	end
-	
-	return tpl.rc:resolve(parentSize)
-end
-
 function GUI.__mt.__index:createControl(tpl, parent)
-	local rc = GUI.computeCtrlPlacement(tpl, parent)
-	local x, y, w, h = rc[1][1], rc[1][2], rc[2][1], rc[2][2]
+	local x, y, w, h = 0, 0, 0, 0
+	local setupPos = true
 	
 	local ctrl
 	if(tpl.type == 'window') then
@@ -123,7 +112,9 @@ function GUI.__mt.__index:createControl(tpl, parent)
 			guiGridListSetSortingEnabled(ctrl, false)
 		end
 	elseif(tpl.type == 'column') then
+		local w = tpl.rc:getAbs()[2][1]
 		ctrl = guiGridListAddColumn(parent, tpl.text or '', w == 0 and 0.5 or w)
+		setupPos = false
 	elseif(tpl.type == 'tabpanel') then
 		ctrl = guiCreateTabPanel(x, y, w, h, false, parent)
 	elseif(tpl.type == 'tab') then
@@ -131,8 +122,25 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		if(tpl.selected) then
 			guiSetSelectedTab(parent, ctrl)
 		end
+		setupPos = false
 	else
 		assert(false)
+	end
+	
+	if(setupPos) then
+		local absRc, relRc = tpl.rc:getAbs(), tpl.rc:getRel()
+		local unifiedRect = '{'..
+			'{'..(relRc[1][1]/100)..','..absRc[1][1]..'},'.. -- left
+			'{'..(relRc[1][2]/100)..','..absRc[1][2]..'},'.. -- top
+			'{'..((relRc[1][1]+relRc[2][1])/100)..','..(absRc[1][1]+absRc[2][1])..'},'.. -- right
+			'{'..((relRc[1][2]+relRc[2][2])/100)..','..(absRc[1][2]+absRc[2][2])..'}'.. -- bottom
+			'}'
+		guiSetProperty(ctrl, 'UnifiedAreaRect', unifiedRect)
+		
+		local minW, minH = tonumber(tpl.minw) or 0, tonumber(tpl.minh) or 0
+		if(minW > 0 or minH > 0) then
+			guiSetProperty(ctrl, 'UnifiedMinSize', '{{0,'..minW..'},{0,'..minH..'}}')
+		end
 	end
 	
 	if(tpl.visible == 'false') then
@@ -183,32 +191,6 @@ function GUI.__mt.__index:destroy(ignoreEl)
 	self.wnd = false
 end
 
-function GUI.onResize()
-	local self = GUI.wndToObj[source]
-	local w, h = guiGetSize(source, false)
-	local minw, minh = tonumber(self.tpl.minw), tonumber(self.tpl.minh)
-	local resize = false
-	if(minw and w < minw) then
-		w = minw
-		resize = true
-	elseif(minh and h < minh) then
-		h = minh
-		resize = true
-	end
-	
-	if(resize) then
-		guiSetSize(source, w, h, false)
-	end
-	
-	for ctrl, tpl in pairs(self.ctrlList) do
-		local parent = getElementParent(ctrl)
-		local rc = GUI.computeCtrlPlacement(tpl, parent)
-		local x, y, w, h = rc[1][1], rc[1][2], rc[2][1], rc[2][2]
-		guiSetPosition(ctrl, x, y, false)
-		guiSetSize(ctrl, w, h, false)
-	end
-end
-
 function GUI.onAccept()
 	local parent = getElementParent(source)
 	local self = GUI.wndToObj[parent]
@@ -248,7 +230,7 @@ function GUI.create(tpl, x, y, w, h, parent)
 	if(not self.focus) then
 		self.focus = self.wnd
 	end
-	addEventHandler('onClientGUISize', self.wnd, GUI.onResize, false)
+	
 	addEventHandler('onClientElementDestroy', self.wnd, GUI.onDestroy, false)
 	guiBringToFront(self.focus)
 	

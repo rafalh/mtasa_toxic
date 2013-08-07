@@ -19,8 +19,16 @@ function RelRect.__mt.__index:setAbs(rc)
 	self[1] = rc
 end
 
+function RelRect.__mt.__index:getAbs(rc)
+	return self[1]
+end
+
 function RelRect.__mt.__index:setRel(rc)
 	self[2] = rc
+end
+
+function RelRect.__mt.__index:getRel(rc)
+	return self[2]
 end
 
 function RelRect.__mt.__index:resolve(parentSize)

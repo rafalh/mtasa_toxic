@@ -135,7 +135,7 @@
 		<label id="mapsBought" x="120" y="210" rw="100" w="-120" h="15" text="" />
 	</label>
 	
-	<window id="transMain" title="Translator panel" rx="50" x="-300" ry="50" y="-150" w="600" h="300">
+	<window id="transMain" title="Translator panel" rx="50" x="-300" ry="50" y="-150" w="600" h="300" minw="400" minh="200">
 		<list id="list" x="10" y="65" rw="100" w="-110" rh="100" h="-70" sorting="false">
 			<column id="nameCol" text="Locale" w="0.3" />
 			<column id="stateCol" text="State" w="0.65" />
@@ -144,7 +144,7 @@
 		<button id="edit" rx="100" x="-90" y="65" w="80" h="25" text="Edit" />
 	</window>
 	
-	<window id="transPanel" title="Translator panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440">
+	<window id="transPanel" title="Translator panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440" minw="400" minh="200">
 		<tabpanel id="tabs" x="10" y="65" rw="100" w="-110" rh="100" h="-75">
 			<tab id="tab_v" text="">
 				<list id="msgList_v" x="10" y="20" rw="100" w="-20" rh="100" h="-30" sorting="false">
