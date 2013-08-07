@@ -1,20 +1,20 @@
 local g_TracedPlayers = {}
-local TRACE_URL = 'http://mtatoxic.tk/scripts/trace2.php'
+local TRACE_URL = 'http://ravin.tk/api/mta/trace.php'
 
-local function onTraceResult(data, player_name, player_id)
+local function onTraceResult(data, errno, player_name, player_id)
 	if(not g_TracedPlayers[player_id]) then return end
 	
 	local msg = ''
-	local trace, country = fromJSON (data)
-	if(type (trace) == 'string' and type (country) == 'string') then
+	local trace, country = fromJSON(data)
+	if(data ~= 'ERROR' and type(trace) == 'string' and type(country) == 'string') then
 		country = country:upper()
 		if(g_Countries[country]) then
 			country = g_Countries[country]
 		end
 		
-		msg = { "%s's trace: %s.", tostring(player_name), trace..', '..country }
+		msg = {"%s's trace: %s.", tostring(player_name), trace..', '..country}
 	else
-		msg = { "Trace error: %s!", tostring(data) }
+		msg = {"Trace error: %s!", tostring(data)..' '..tostring(errno)}
 	end
 	
 	local oldScriptMsgState = g_ScriptMsgState
@@ -41,16 +41,8 @@ local function CmdTrace(message, arg)
 	end
 	table.insert(g_TracedPlayers[pdata.id], table.copy(g_ScriptMsgState, true))
 	
-	local shared_res = getResourceFromName('rafalh_shared')
-	if(shared_res and getResourceState(shared_res) == 'running') then
-		local url = TRACE_URL..'?ip='..getPlayerIP(player)
-		local req = call(shared_res, 'HttpSendRequest', url, false, 'GET', false, getPlayerName(player), pdata.id)
-		if (req) then
-			addEventHandler('onHttpResult', req, onTraceResult)
-		else
-			privMsg(source, "Failed to get player trace")
-		end
-	else
+	local url = TRACE_URL..'?ip='..exports.rafalh_shared:HttpEncodeUrl(getPlayerIP(player))
+	if(not fetchRemote(url, onTraceResult, '', false, getPlayerName(player), pdata.id)) then
 		privMsg(source, "Failed to get player trace")
 	end
 end
