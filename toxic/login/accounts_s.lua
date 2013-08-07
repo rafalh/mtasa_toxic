@@ -41,12 +41,12 @@ local function onRegisterReq(name, passwd, email)
 	triggerClientEvent(self.el, 'main.onRegStatus', g_ResRoot, account and true)
 end
 
-allowRPC('logOutReq')
+RPC.allow('logOutReq')
 function logOutReq()
 	logOut(client)
 end
 
-allowRPC('changeAccountPassword')
+RPC.allow('changeAccountPassword')
 function changeAccountPassword(oldPw, pw)
 	local account = getPlayerAccount(client)
 	if(isGuestAccount(account) or pw:len() < 3) then return false end
@@ -58,7 +58,7 @@ function changeAccountPassword(oldPw, pw)
 	return setAccountPassword(account, pw)
 end
 
-allowRPC('changeAccountEmail')
+RPC.allow('changeAccountEmail')
 function changeAccountEmail(email, pw)
 	local player = Player.fromEl(client)
 	local account = getPlayerAccount(player.el)
@@ -75,7 +75,7 @@ function changeAccountEmail(email, pw)
 	return success
 end
 
-allowRPC('getAccountEmail')
+RPC.allow('getAccountEmail')
 function getAccountEmail()
 	local player = Player.fromEl(client)
 	return player.accountData.email

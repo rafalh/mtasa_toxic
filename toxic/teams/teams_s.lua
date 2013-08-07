@@ -150,7 +150,7 @@ function Teams.updateAllPlayers()
 	end
 	Teams_destroyEmpty()
 end
-allowRPC('Teams.updateAllPlayers')
+RPC.allow('Teams.updateAllPlayers')
 
 local function Teams_initDelayed()
 	local oldTeams = Teams_loadFromXML()

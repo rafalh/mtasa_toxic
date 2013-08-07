@@ -34,8 +34,6 @@ if(SERVER) then
 	function RPC.allow(fnName)
 		g_AllowedRpc[fnName] = true
 	end
-	
-	allowRPC = RPC.allow
 end
 
 function RPC.__mt.__index:init(fnName, ...)

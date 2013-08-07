@@ -249,7 +249,7 @@ local function onPlayerReady(localeId)
 	pdata.new = false
 end
 
-allowRPC('getThisResourceVersion')
+RPC.allow('getThisResourceVersion')
 function getThisResourceVersion()
 	return getResourceInfo(resource, 'version')
 end

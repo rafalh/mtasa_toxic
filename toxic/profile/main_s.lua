@@ -46,7 +46,7 @@ local function PfLoadFields()
 	return true
 end
 
-allowRPC('getPlayerProfile')
+RPC.allow('getPlayerProfile')
 function getPlayerProfile(playerId)
 	-- Validate parameters
 	playerId = touint(playerId)
@@ -70,7 +70,7 @@ function getPlayerProfile(playerId)
 	return result
 end
 
-allowRPC('getProfileFields')
+RPC.allow('getProfileFields')
 function getProfileFields()
 	return g_ProfileCats
 end
@@ -106,7 +106,7 @@ function setPlayerProfile(id, data)
 	return data
 end
 
-allowRPC('setProfileReq')
+RPC.allow('setProfileReq')
 function setProfileReq(data)
 	local pdata = Player.fromEl(client)
 	if(data and type(data) == 'table' and pdata.id) then

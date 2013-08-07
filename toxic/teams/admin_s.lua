@@ -4,7 +4,7 @@ function Teams.getList()
 	if(not right:check(client)) then return false end
 	return Teams.list
 end
-allowRPC('Teams.getList')
+RPC.allow('Teams.getList')
 
 function Teams.updateItem(teamInfo)
 	if(not right:check(client)) then return false end
@@ -45,7 +45,7 @@ function Teams.updateItem(teamInfo)
 	
 	return teamInfo
 end
-allowRPC('Teams.updateItem')
+RPC.allow('Teams.updateItem')
 
 function Teams.delItem(id)
 	if(not right:check(client)) then return false end
@@ -64,7 +64,7 @@ function Teams.delItem(id)
 	Teams.fromID[teamInfo.id] = nil
 	return true
 end
-allowRPC('Teams.delItem')
+RPC.allow('Teams.delItem')
 
 function Teams.changePriority(id, up)
 	local teamInfo = id and Teams.fromID[id]
@@ -86,4 +86,4 @@ function Teams.changePriority(id, up)
 	
 	return Teams.list
 end
-allowRPC('Teams.changePriority')
+RPC.allow('Teams.changePriority')

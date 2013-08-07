@@ -80,7 +80,7 @@ function mui.getLocaleList()
 	
 	return locales, g_MuiStringCount
 end
-allowRPC('mui.getLocaleList')
+RPC.allow('mui.getLocaleList')
 
 function mui.getLocaleData(localeCode)
 	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
@@ -129,7 +129,7 @@ function mui.getLocaleData(localeCode)
 	
 	return localeCode, validList, missingList, wrongTypeList, unknownList
 end
-allowRPC('mui.getLocaleData')
+RPC.allow('mui.getLocaleData')
 
 function mui.setString(localeCode, id, value, strType)
 	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
@@ -150,7 +150,7 @@ function mui.setString(localeCode, id, value, strType)
 	
 	g_LocStateCache[localeCode] = nil
 end
-allowRPC('mui.setString')
+RPC.allow('mui.setString')
 
 function mui.removeString(localeCode, id)
 	if(not LocaleList.exists(localeCode) or not checkPlayerAccess(client, localeCode)) then return end
@@ -163,4 +163,4 @@ function mui.removeString(localeCode, id)
 	
 	g_LocStateCache[localeCode] = nil
 end
-allowRPC('mui.removeString')
+RPC.allow('mui.removeString')
