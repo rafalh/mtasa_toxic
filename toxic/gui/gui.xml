@@ -89,7 +89,7 @@
 	</window>
 	
 	<window id="transMain" title="Translator panel" rx="50" x="-300" ry="50" y="-150" w="600" h="300" minw="400" minh="200">
-		<list id="list" x="10" y="65" rw="100" w="-110" rh="100" h="-70" sorting="false">
+		<list id="list" x="10" y="65" rw="100" w="-110" rh="100" h="-75" sorting="false">
 			<column id="nameCol" text="Locale" w="0.3" />
 			<column id="stateCol" text="State" w="0.65" />
 		</list>
@@ -145,10 +145,10 @@
 		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
-	<window id="teamsAdmin" title="Teams Admin Panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440">
+	<window id="teamsAdmin" title="Teams Admin Panel" rx="50" x="-300" ry="50" y="-220" w="600" h="440" minw="400" minh="300">
 		<button id="close" rx="100" x="-90" y="65" w="80" h="25" text="Close" />
 		
-		<list id="teamsList" x="10" y="65" rw="100" w="-110" rh="100" h="-40" sorting="false">
+		<list id="teamsList" x="10" y="65" rw="100" w="-110" rh="100" h="-75" sorting="false">
 			<column id="nameCol" text="Name" w="0.45" />
 			<column id="typeCol" text="Type" w="0.08" />
 			<column id="tagCol" text="Tag/ACL" w="0.12" />
