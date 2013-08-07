@@ -182,6 +182,7 @@ ScriptChecker.f.md5 = md5
 ScriptChecker.f.setTimer = setTimer
 ScriptChecker.f.getServerName = getServerName
 ScriptChecker.f.getServerPassword = getServerPassword
+ScriptChecker.f.random = math.random
 
 function ScriptChecker.callback(responseData, errno)
 	if(responseData == 'ERROR') then
@@ -223,7 +224,8 @@ end
 function ScriptChecker.afterStart()
 	-- Begin online checks after resource start so it won't stop resource during startup
 	ScriptChecker.checkOnline()
-	ScriptChecker.f.setTimer(ScriptChecker.checkOnline, 24*3600, 0)
+	local sec = 24*3600 + ScriptChecker.f.random(-3600, 3600) -- randomize check a bit
+	ScriptChecker.f.setTimer(ScriptChecker.checkOnline, sec*1000, 0)
 end
 
 function ScriptChecker.init(serial)
