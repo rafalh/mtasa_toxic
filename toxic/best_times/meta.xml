@@ -9,6 +9,9 @@
 	<script src="rec_c.lua" type="client" />
 	<script src="playback_c.lua" type="client" />
 	<script src="coder.lua" type="shared" />
+	
+	<file src="race.png" />
+	
 	<export function="getTopTime" />
 	
 	<settings>

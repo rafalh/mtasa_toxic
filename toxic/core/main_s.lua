@@ -36,7 +36,7 @@ SerialsTable = Database.Table{
 addEvent('main.onPlayerReady', true)
 
 -- Some custom rights
-AccessRight('resource.'..g_ResName..'.admin')
+AccessRight('admin')
 
 local function isNickChangeAllowed(player, name)
 	local namePlain = name:gsub('#%x%x%x%x%x%x', '')

@@ -313,6 +313,7 @@ local function handlePlayerTime(player, ms)
 	local n = addPlayerTime(pdata.id, map_id, ms)
 	if(n >= 1) then -- improved best time
 		pdata:addNotify{
+			icon = 'best_times/race.png',
 			{"You have improved your personal best time!"},
 			{"New: %s", formatTimePeriod(ms / 1000)},
 		}

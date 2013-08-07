@@ -5,7 +5,7 @@ local g_LocStateCache = {}
 local g_MuiStringCount = false
 
 local function checkPlayerAccess(player, code)
-	return isPlayerAdmin(player) or hasObjectPermissionTo(player, 'resource.'..g_ResName..'.translate_'..code, false)
+	return isPlayerAdmin(player) or hasObjectPermissionTo(player, 'resource.'..g_ResName..'.mui_'..code, false)
 end
 
 local function getLocaleState(code)

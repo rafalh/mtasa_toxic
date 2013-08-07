@@ -74,6 +74,10 @@ function Player.__mt.__index:addNotify(info)
 	RPC('NfAdd', info):setClient(self.el):exec()
 end
 
+function Player.__mt.__index:isAlive()
+	return not isPedDead(self.el)
+end
+
 function Player.__mt.__index:disconnectFromAccount()
 	local now = getRealTime().timestamp
 	local timeSpent = now - self.loginTimestamp

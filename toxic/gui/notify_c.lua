@@ -8,7 +8,7 @@ local START_Y = g_ScreenSize[2] - 20
 local WHITE = tocolor(255, 255, 255)
 local HORZ_MARGIN, VERT_MARGIN = 10, 10
 local DEFAULT_FONT = {face = 'default', clr = WHITE, scale = 1}
-local SPECIAL_FONT = {face = 'default-bold', clr = tocolor(255, 127, 0), scale = 1}
+local SPECIAL_FONT = {face = 'default-bold', clr = tocolor(127, 255, 0), scale = 1}
 
 local g_Items = {}
 local g_TotalHeight = 0

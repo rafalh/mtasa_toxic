@@ -180,7 +180,9 @@ function BtPrintTimes(room, map_id)
 			local data = rows and rows[1]
 			if(data) then
 				local timeStr = formatTimePeriod(data.time / 1000)
-				privMsg(player, "Your personal best time: %s", timeStr)
+				pdata:addNotify{
+					icon = 'best_times/race.png',
+					{"Your personal best time: %s", timeStr}}
 			end
 		end
 	end
