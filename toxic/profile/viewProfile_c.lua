@@ -39,6 +39,7 @@ function ProfileView.create(id, name)
 	local x, y = ( g_ScreenSize[1] - w ) / 2, ( g_ScreenSize[2] - h ) / 2
 	self.wnd = guiCreateWindow(x, y, w, h, "Player profile", false)
 	guiSetVisible(self.wnd, false)
+	guiWindowSetSizable(self.wnd, false)
 	addEventHandler('onClientElementDestroy', self.wnd, ProfileView.onDestroy, false)
 	
 	self.nameLabel = guiCreateLabel(10, 25, w - 20, 20, name or "Unknown", false, self.wnd)

@@ -57,7 +57,7 @@ function PanelPathView.__mt.__index:init(path, pos, parent)
 	self.elements = {}
 	for i, obj in ipairs(path) do
 		local text = obj.pathName or obj.name
-		local textW = GUI.getTestWidth(text)
+		local textW = GUI.getTextWidth(text)
 		local btnW = textW + 20
 		local btn = guiCreateButton(pos[1], pos[2], btnW, 25, text, false, parent)
 		addEventHandler('onClientGUIClick', btn, function()

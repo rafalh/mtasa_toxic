@@ -46,7 +46,7 @@ local function AchvInitGui(panel)
 	for i, achv in ipairs(g_Achievements) do
 		local img = achv.active and 'achievements/img/unlocked.png' or 'achievements/img/locked.png'
 		local style = achv.active and g_UnlockedStyle or g_LockedStyle
-		g_List:addItem(MuiGetStr(achv.name)..'\n('..formatMoney(achv.prize)..')', img, i, style)
+		g_List:addItem(MuiGetMsg(achv.name)..'\n('..formatMoney(achv.prize)..')', img, i, style)
 	end
 	
 	if(UpNeedsBackBtn()) then

@@ -238,7 +238,7 @@ function GUI.create(tpl, x, y, w, h, parent)
 	return self
 end
 
-function GUI.getTestWidth(text, font)
+function GUI.getTextWidth(text, font)
 	if(not GUI.tempLabel) then
 		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
 		guiSetVisible(GUI.tempLabel, false)
@@ -246,4 +246,13 @@ function GUI.getTestWidth(text, font)
 	guiSetFont(GUI.tempLabel, font or 'default')
 	guiSetText(GUI.tempLabel, text)
 	return guiLabelGetTextExtent(GUI.tempLabel)
+end
+
+function GUI.getFontHeight(font)
+	if(not GUI.tempLabel) then
+		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
+		guiSetVisible(GUI.tempLabel, false)
+	end
+	guiSetFont(GUI.tempLabel, font or 'default')
+	return guiLabelGetFontHeight(GUI.tempLabel)
 end

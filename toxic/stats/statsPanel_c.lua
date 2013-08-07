@@ -10,7 +10,7 @@
 
 local g_Wnd, g_Anim, g_Visible
 local g_PosX, g_PosY = g_ScreenSize[1] - 260, (g_ScreenSize[2] - 280)/2
-local g_Width, g_Height = 250, 270
+local g_Width = 250
 local g_StatsView
 
 --------------------------------
@@ -18,11 +18,12 @@ local g_StatsView
 --------------------------------
 
 local function SpInitGui()
-	g_Wnd = guiCreateWindow(g_ScreenSize[1] + g_Width, g_PosY, g_Width, g_Height, "Statistics", false)
+	local h = StatsView.getHeight() + 20
+	g_Wnd = guiCreateWindow(g_ScreenSize[1] + g_Width, g_PosY, g_Width, h, "Statistics", false)
 	guiSetAlpha(g_Wnd, 0.8)
 	guiSetVisible(g_Wnd, false)
 	
-	g_StatsView = StatsView.create(g_MyId or g_Me, g_Wnd, 10, 25, g_Width - 20, g_Height - 35)
+	g_StatsView = StatsView.create(g_MyId or g_Me, g_Wnd, 10, 25, g_Width - 20, h - 35)
 end
 
 local function SpInit()

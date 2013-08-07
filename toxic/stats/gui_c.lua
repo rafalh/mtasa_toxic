@@ -23,6 +23,46 @@ local StatsPanel = {
 -- Local function definitions --
 --------------------------------
 
+local STATS = {
+	{"Cash:", function(stats)
+		return formatMoney(stats.cash)
+	end},
+	{"Points:", function(stats)
+		return formatNumber(stats.points)
+	end},
+	{"Rank:", '_rank'},
+	{"DM Victories:", function(stats)
+		local dmVictRate = stats.dmVictories / math.max(stats.dmPlayed, 1) * 100
+		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmVictRate)
+	end},
+	{"Hunters taken:", function(stats)
+		local huntRate = stats.huntersTaken / math.max(stats.dmPlayed, 1) * 100
+		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRate)
+	end},
+	{"DD Victories:", function(stats)
+		local ddVictRate = stats.ddVictories / math.max(stats.ddPlayed, 1) * 100
+		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate)
+	end},
+	{"Race Victories:", function(stats)
+		local raceVictRate = stats.raceVictories / math.max(stats.racesPlayed, 1) * 100
+		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceVictRate)
+	end},
+	{"Maximal Win Streak:", 'maxWinStreak'},
+	{"Top Times held:", 'toptimes_count'},
+	{"Bidlevel:", 'bidlvl'},
+	{"Exploded:", function(stats)
+		return MuiGetMsg("%s times"):format(stats.exploded)
+	end},
+	{"Drowned:", function(stats)
+		return MuiGetMsg("%s times"):format(stats.drowned)
+	end},
+	{"Playtime:", function(stats)
+		return stats._playTime and formatTimePeriod(stats._playTime, 0) or ''
+	end, cache = 'playtime'},
+	{"Maps rated:", 'mapsRated'},
+	{"Maps bought:", 'mapsBought'},
+}
+
 StatsView = {}
 StatsView.__mt = {__index = StatsView}
 StatsView.elMap = {}
@@ -30,45 +70,46 @@ StatsView.elMap = {}
 function StatsView.updatePlayTime()
 	local now = getRealTime().timestamp
 	
-	for wnd, view in pairs(StatsView.elMap) do
-		local stats = g_Stats[view.id]
-		if(stats and view.sync) then
+	for id, stats in pairs(g_Stats) do
+		if(stats.refs > 0) then
 			local playTime = stats.time_here
 			if(stats._loginTimestamp) then
 				playTime = now - tonumber(stats._loginTimestamp) + playTime
 			end
-			guiSetText(view.gui._time_here, formatTimePeriod(playTime, 0))
+			stats._playTime = playTime
+			stats.valCache.playtime = false
+		end
+	end
+	
+	for wnd, view in pairs(StatsView.elMap) do
+		local stats = g_Stats[view.id]
+		if(stats and view.sync) then
+			view:update()
 		end
 	end
 end
 
 function StatsView:update()
-	-- update playtime
-	StatsView.updatePlayTime()
-	
 	-- update rest
 	local stats = g_Stats[self.id]
 	if(not stats) then return end
 	
-	local gui = self.gui
-	guiSetText(gui.cash, formatMoney(stats.cash))
-	guiSetText(gui.points, formatNumber(stats.points))
-	guiSetText(gui._rank, stats._rank)
-	local dmVictRate = stats.dmVictories / math.max(stats.dmPlayed, 1) * 100
-	guiSetText(gui.dmVictories, ('%s/%s (%.1f%%)'):format(formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmVictRate))
-	local huntRate = stats.huntersTaken / math.max(stats.dmPlayed, 1) * 100
-	guiSetText(gui.huntersTaken, ('%s/%s (%.1f%%)'):format(formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRate))
-	local ddVictRate = stats.ddVictories / math.max(stats.ddPlayed, 1) * 100
-	guiSetText(gui.ddVictories, ('%s/%s (%.1f%%)'):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate))
-	local raceVictRate = stats.raceVictories / math.max(stats.racesPlayed, 1) * 100
-	guiSetText(gui.raceVictories, ('%s/%s (%.1f%%)'):format(formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceVictRate))
-	guiSetText(gui.maxWinStreak, stats.maxWinStreak)
-	guiSetText(gui.toptimes_count, stats.toptimes_count)
-	guiSetText(gui.bidlvl, stats.bidlvl)
-	guiSetText(gui.exploded, MuiGetMsg("%s times"):format(stats.exploded))
-	guiSetText(gui.drowned, MuiGetMsg("%s times"):format(stats.drowned))
-	guiSetText(gui.mapsRated, stats.mapsRated)
-	guiSetText(gui.mapsBought, stats.mapsBought)
+	local values = {}
+	for i, info in ipairs(STATS) do
+		local value = stats.valCache[info.cache or i]
+		if(not value) then
+			if(type(info[2]) == 'function') then
+				value = info[2](stats)
+			else
+				value = stats[info[2]]
+			end
+			stats.valCache[info.cache or i] = value
+		end
+		table.insert(values, value)
+	end
+	
+	local valuesStr = table.concat(values, '\n')
+	guiSetText(self.valuesEl, valuesStr)
 end
 
 function StatsView:destroy(ignoreEl)
@@ -80,7 +121,10 @@ function StatsView:destroy(ignoreEl)
 	end
 	
 	StatsView.elMap[self.el] = nil
-	self.gui:destroy(ignoreEl)
+	if(not ignoreEl) then
+		destroyElement(self.labelsEl)
+		destroyElement(self.valuesEl)
+	end
 end
 
 function StatsView:changeTarget(id)
@@ -94,7 +138,7 @@ function StatsView:changeTarget(id)
 end
 
 function StatsView.getHeight()
-	return GUI.getTemplate('stats').h
+	return GUI.getFontHeight() * #STATS
 end
 
 function StatsView.create(id, parent, x, y, w, h)
@@ -104,9 +148,17 @@ function StatsView.create(id, parent, x, y, w, h)
 	end
 	
 	local self = setmetatable({}, StatsView.__mt)
-	self.gui = GUI.create('stats', x, y, w, h, parent)
+	
+	local labels = {}
+	for i, info in ipairs(STATS) do
+		table.insert(labels, MuiGetMsg(info[1]))
+	end
+	local labelsStr = table.concat(labels, '\n')
+	
+	self.labelsEl = guiCreateLabel(x, y, w * 0.5, h, labelsStr, false, parent)
+	self.valuesEl = guiCreateLabel(x + w * 0.5, y, w * 0.5, h, '', false, parent)
 	self.id = id
-	self.el = self.gui.wnd
+	self.el = self.labelsEl
 	
 	StatsView.elMap[self.el] = self
 	
@@ -127,7 +179,7 @@ function StatsView:show()
 	
 	
 	if(not g_Stats[id]) then
-		g_Stats[id] = { refs = 0 }
+		g_Stats[id] = {refs = 0, valCache = {}}
 		force = true
 	end
 	
@@ -169,6 +221,8 @@ function StatsView.onSync(sync_tbl)
 	for field, val in pairs(sync_tbl.stats[2]) do
 		g_Stats[id][field] = val
 	end
+	g_Stats[id]._playTime = g_Stats[id].time_here
+	g_Stats[id].valCache = {}
 	
 	-- update GUI
 	for wnd, view in pairs(StatsView.elMap) do
