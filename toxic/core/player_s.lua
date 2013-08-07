@@ -71,7 +71,7 @@ function Player.__mt.__index:addNotify(info)
 	for i, msg in ipairs(info) do
 		msg[1] = MuiGetMsg(msg[1], self.el)
 	end
-	RPC('NfAdd', info):exec()
+	RPC('NfAdd', info):setClient(self.el):exec()
 end
 
 function Player.__mt.__index:disconnectFromAccount()

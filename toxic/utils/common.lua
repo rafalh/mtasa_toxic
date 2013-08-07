@@ -110,9 +110,7 @@ function trimStr(str)
 	return str
 end
 
-function isPlayerAdmin(player)
-	local adminGroup = aclGetGroup('Admin')
-	local account = getPlayerAccount(player)
-	local accountName = getAccountName(account)
-	return (adminGroup and account and isObjectInACLGroup('user.'..accountName, adminGroup))
+function isNativeFunction(func)
+	local info = debug.getinfo(func, 'S')
+	return info.what == 'C'
 end

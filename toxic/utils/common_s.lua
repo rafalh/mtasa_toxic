@@ -113,6 +113,13 @@ function removeScreenMsg(msgItem, player)
 	textDestroyTextItem(msgItem)
 end
 
+function isPlayerAdmin(player)
+	local adminGroup = aclGetGroup('Admin')
+	local account = getPlayerAccount(player)
+	local accountName = getAccountName(account)
+	return (adminGroup and account and isObjectInACLGroup('user.'..accountName, adminGroup))
+end
+
 function addInternalEventHandler(eventtype, handler)
 	assert(eventtype and handler)
 	if(not g_InternalEventHandlers[eventtype]) then
