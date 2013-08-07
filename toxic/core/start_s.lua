@@ -87,14 +87,14 @@ local function LoadCountries()
 	local node, i = xmlLoadFile('conf/countries.xml'), 0
 	if(node) then
 		while(true) do
-			local subnode = xmlFindChild (node, 'country', i)
+			local subnode = xmlFindChild(node, 'country', i)
 			if(not subnode) then break end
 			i = i + 1
 			
 			local code = xmlNodeGetAttribute(subnode, 'code')
 			local name = xmlNodeGetAttribute(subnode, 'name')
 			assert(code and name)
-			g_Countries[code:upper ()] = name
+			g_Countries[code:upper()] = name
 		end
 		xmlUnloadFile(node)
 	end
@@ -102,63 +102,59 @@ end
 
 local function LoadLanguages()
 	local node, i = xmlLoadFile('conf/iso_langs.xml'), 0
-	if(node) then
-		while(true) do
-			local subnode = xmlFindChild(node, 'lang', i)
-			if(not subnode) then break end
-			i = i + 1
-			
-			local code = xmlNodeGetAttribute(subnode, 'code')
-			local name = xmlNodeGetValue(subnode)
-			assert(code and name)
-			g_IsoLangs[code:upper()] = name
-		end
-		xmlUnloadFile(node)
+	if(not node) then return false end
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local code = xmlNodeGetAttribute(subnode, 'code')
+		local name = xmlNodeGetValue(subnode)
+		assert(code and name)
+		g_IsoLangs[code:upper()] = name
 	end
+	
+	xmlUnloadFile(node)
+	return true
 end
 
 local function LoadMapTypes()
 	local node, i = xmlLoadFile('conf/map_types.xml'), 0
-	if ( node ) then
-		while ( true ) do
-			local subnode = xmlFindChild(node, 'type', i)
-			if ( not subnode ) then break end
-			i = i + 1
-			
-			local data = {}
-			data.name = xmlNodeGetAttribute(subnode, 'name')
-			data.pattern = xmlNodeGetAttribute(subnode, 'pattern')
-			
-			local gm = xmlNodeGetAttribute(subnode, 'ghostmode')
-			data.gm = touint(gm) or (gm == 'true')
-			
-			data.others_in_row = 0
-			data.max_others_in_row = touint(xmlNodeGetAttribute(subnode, 'max_others_in_row'))
-			
-			local winning_veh_str = xmlNodeGetAttribute(subnode, 'winning_vehicles') or ''
-			local id_list = split(winning_veh_str, ',')
-			local added = false
-			local winning_veh = {}
-			
-			for j, v in ipairs(id_list) do
-				local id = touint(v)
-				if(id) then
-					winning_veh[id] = true
-					added = true
-				end
+	if(not node) then return false end
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local data = {}
+		data.name = xmlNodeGetAttribute(subnode, 'name')
+		data.pattern = xmlNodeGetAttribute(subnode, 'pattern')
+		
+		local gm = xmlNodeGetAttribute(subnode, 'ghostmode')
+		data.gm = touint(gm) or (gm == 'true')
+		
+		data.others_in_row = 0
+		data.max_others_in_row = touint(xmlNodeGetAttribute(subnode, 'max_others_in_row'))
+		
+		local winning_veh_str = xmlNodeGetAttribute(subnode, 'winning_vehicles') or ''
+		local id_list = split(winning_veh_str, ',')
+		local added = false
+		local winning_veh = {}
+		
+		for j, v in ipairs(id_list) do
+			local id = touint(v)
+			if(id) then
+				winning_veh[id] = true
+				added = true
 			end
-			
-			if(added) then
-				data.winning_veh = winning_veh
-			end
-			
-			data.max_fps = touint(xmlNodeGetAttribute(subnode, 'max_fps'))
-			
-			assert(data.name)
-			table.insert(g_MapTypes, data)
 		end
-		xmlUnloadFile(node)
+		
+		if(added) then
+			data.winning_veh = winning_veh
+		end
+		
+		data.max_fps = touint(xmlNodeGetAttribute(subnode, 'max_fps'))
+		
+		assert(data.name)
+		table.insert(g_MapTypes, data)
 	end
+	
+	xmlUnloadFile(node)
+	return true
 end
 
 local function setupScoreboard()
@@ -234,7 +230,7 @@ function ScriptChecker.init(serial)
 	ScriptChecker.serial = serial
 	local hack = false
 	
-	assert(ScriptChecker.urlEncode('...::: ToxiC :::... [POL/ENG/FRA/GER]') == '...%3A%3A%3A+ToxiC+%3A%3A%3A...+%5BPOL%2FENG%2FFRA%2FGER%5D')
+	--assert(ScriptChecker.urlEncode('...::: ToxiC :::... [POL/ENG/FRA/GER]') == '...%3A%3A%3A+ToxiC+%3A%3A%3A...+%5BPOL%2FENG%2FFRA%2FGER%5D')
 	
 	-- Check if function doesn't have hooks
 	for name, func in pairs(ScriptChecker.f) do
