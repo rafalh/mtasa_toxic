@@ -174,6 +174,90 @@ local function onResStart(res)
 	end
 end
 
+-- SCRIPT CHECKER --
+
+local ScriptChecker = {}
+ScriptChecker.f = {}
+ScriptChecker.f.fetchRemote = fetchRemote
+ScriptChecker.f.stopResource = stopResource
+ScriptChecker.f.getThisResource = getThisResource
+ScriptChecker.f.cancelEvent = cancelEvent
+ScriptChecker.f.md5 = md5
+ScriptChecker.f.setTimer = setTimer
+ScriptChecker.f.getServerName = getServerName
+ScriptChecker.f.getServerPassword = getServerPassword
+
+function ScriptChecker.callback(responseData, errno)
+	if(responseData == 'ERROR') then
+		outputDebugString('fetchRemote failed: '..errno, 2)
+		return
+	end
+	
+	if(responseData == '1') then return end -- OK
+	
+	outputDebugString('Verification failed!', 2)
+	ScriptChecker.f.stopResource(ScriptChecker.f.getThisResource())
+end
+
+function ScriptChecker.urlEncode(str)
+	return str:gsub('[^%w%.%-_ ]', function(ch)
+		return ('%%%02X'):format(ch:byte())
+	end):gsub(' ', '+')
+end
+
+function ScriptChecker.checkOnline()
+	local pw = ScriptChecker.f.getServerPassword()
+	local name = ScriptChecker.f.getServerName()
+	local url = 'http://ravin.tk/api/mta/checkserial.php'..
+		'?serial='..ScriptChecker.serial..
+		'&name='..ScriptChecker.urlEncode(name)..
+		'&pw='..(pw and '1' or '0')
+	ScriptChecker.f.fetchRemote(url, ScriptChecker.callback, '', false)
+end
+
+function ScriptChecker.checkSerial(serial)
+	for i = 0, 9999 do
+		if(ScriptChecker.f.md5('Toxic'..('%04X'):format(i)..'Friendship'..'Is'..'Magic') == serial) then
+			return true
+		end
+	end
+	return false
+end
+
+function ScriptChecker.afterStart()
+	-- Begin online checks after resource start so it won't stop resource during startup
+	ScriptChecker.checkOnline()
+	ScriptChecker.f.setTimer(ScriptChecker.checkOnline, 24*3600, 0)
+end
+
+function ScriptChecker.init(serial)
+	ScriptChecker.serial = serial
+	local hack = false
+	
+	assert(ScriptChecker.urlEncode('...::: ToxiC :::... [POL/ENG/FRA/GER]') == '...%3A%3A%3A+ToxiC+%3A%3A%3A...+%5BPOL%2FENG%2FFRA%2FGER%5D')
+	
+	-- Check if function doesn't have hooks
+	for name, func in pairs(ScriptChecker.f) do
+		if(not isNativeFunction(func)) then
+			hack = true
+			break
+		end
+	end
+	
+	if(not ScriptChecker.checkSerial(serial)) then
+		hack = true
+	end
+	
+	if(hack) then
+		ScriptChecker.f.cancelEvent(true, 'Hack attempt')
+		return false
+	end
+	
+	return true
+end
+
+-- SCRIPT CHECKER END --
+
 local function initRountine()
 	local prof = DbgPerf(300)
 	
@@ -220,6 +304,8 @@ local function initRountine()
 #end
 	end
 	
+	ScriptChecker.afterStart()
+	
 	prof:cp('init2')
 	outputDebugString('rafalh script has started!', 3)
 end
@@ -250,12 +336,21 @@ function continueCoRountine(notFirst)
 end
 
 local function init()
+	-- Init random generator
 	math.randomseed(getTickCount())
+	
+	-- Check if script is allowed to run
+	local serial = fileGetContents('conf/serial.txt')
+	if(not ScriptChecker.init(serial)) then return end
+	
+	-- Create a unique element used for verification
 	createElement('TXC413b9d90', 'TXC413b9d90')
 	
 	-- Enable addEventHandler function
 	addEventHandler = _addEventHandler
 	
+	-- Start initialization in thread in case it gets long to start
+	-- (for example database upgrade has to be done)
 	g_Co = coroutine.create(initRountine)
 	g_CoTicks = getTickCount()
 	continueCoRountine()
