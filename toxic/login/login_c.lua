@@ -101,7 +101,7 @@ local function onFlagClick()
 	
 	triggerServerEvent('main.onSetLocaleReq', g_ResRoot, localeId)
 	Settings.locale = localeId
-	saveSettings()
+	Settings.save()
 	
 	for img, localeId in pairs(g_GUI.flagTbl) do
 		local a = (img == source and 1 or 0.6)
