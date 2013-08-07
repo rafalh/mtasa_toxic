@@ -32,14 +32,6 @@ end
 
 local function init()
 	setTimer(updateSpectators, 1000, 0)
-	
-	fetchRemote('https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRgbl0IikbJb-en_OxzoCZnI07A4kZOI6AZ074dLrgMnIhKxgR1', function(responseData, errno)
-		if(responseData == 'ERROR') then
-			outputChatBox('Error: '..errno)
-		else
-			outputChatBox('Response: '..responseData:len())
-		end
-	end)
 end
 
 addInitFunc(init)

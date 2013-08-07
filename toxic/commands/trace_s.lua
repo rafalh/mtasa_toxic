@@ -41,7 +41,7 @@ local function CmdTrace(message, arg)
 	end
 	table.insert(g_TracedPlayers[pdata.id], table.copy(g_ScriptMsgState, true))
 	
-	local url = TRACE_URL..'?ip='..exports.rafalh_shared:HttpEncodeUrl(getPlayerIP(player))
+	local url = TRACE_URL..'?ip='..urlEncode(getPlayerIP(player))
 	if(not fetchRemote(url, onTraceResult, '', false, getPlayerName(player), pdata.id)) then
 		privMsg(source, "Failed to get player trace")
 	end

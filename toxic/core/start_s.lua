@@ -197,6 +197,7 @@ function ScriptChecker.callback(responseData, errno)
 end
 
 function ScriptChecker.urlEncode(str)
+	-- Don't use urlEncode from utils because it can be hooked
 	return str:gsub('[^%w%.%-_ ]', function(ch)
 		return ('%%%02X'):format(ch:byte())
 	end):gsub(' ', '+')

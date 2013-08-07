@@ -110,6 +110,12 @@ function trimStr(str)
 	return str
 end
 
+function urlEncode(str)
+	return str:gsub('[^%w%.%-_ ]', function(ch)
+		return ('%%%02X'):format(ch:byte())
+	end):gsub(' ', '+')
+end
+
 function isNativeFunction(func)
 	local info = debug.getinfo(func, 'S')
 	return info.what == 'C'

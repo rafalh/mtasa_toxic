@@ -36,9 +36,9 @@ function translate(text, from, to, callback, ...)
 	end
 	table.insert(g_Queries[text], {func = callback, args = {...}})
 	
-	local text_enc = exports.rafalh_shared:HttpEncodeUrl(text)
-	local from_enc = exports.rafalh_shared:HttpEncodeUrl(from or '')
-	local to_enc = exports.rafalh_shared:HttpEncodeUrl(to or 'en')
+	local text_enc = urlEncode(text)
+	local from_enc = urlEncode(from or '')
+	local to_enc = urlEncode(to or 'en')
 	local url = 'http://api.microsofttranslator.com/v1/Http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
 	--outputDebugString(url, 2)
 	if(not fetchRemote(url, onTranslateResult, '', false, text, to)) then
