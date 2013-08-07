@@ -9,7 +9,6 @@ g_OldVehicleWeapons = nil
 g_Countries = {}
 g_IsoLangs = {}
 g_MapTypes = {}
-g_CustomRights = {}
 
 -------------------
 -- Custom events --

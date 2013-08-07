@@ -54,13 +54,6 @@ local function setupACL()
 		end
 	end
 	
-	for i, name in ipairs(g_CustomRights) do
-		local right = 'resource.'..g_ResName..'.'..name
-		if(not aclGetRight(acl, right)) then
-			table.insert(rightsToAdd, right)
-		end
-	end
-	
 	for i, right in ipairs(AccessRight.list) do
 		local rightName = 'resource.'..g_ResName..'.'..right.name
 		if(not aclGetRight(acl, rightName)) then
@@ -182,6 +175,7 @@ ScriptChecker.f.md5 = md5
 ScriptChecker.f.setTimer = setTimer
 ScriptChecker.f.getServerName = getServerName
 ScriptChecker.f.getServerPassword = getServerPassword
+ScriptChecker.f.sethook = debug.sethook
 ScriptChecker.f.random = math.random
 
 function ScriptChecker.callback(responseData, errno)
@@ -204,6 +198,9 @@ function ScriptChecker.urlEncode(str)
 end
 
 function ScriptChecker.checkOnline()
+	-- Remove hooks if there is any
+	ScriptChecker.f.sethook()
+	
 	local pw = ScriptChecker.f.getServerPassword()
 	local name = ScriptChecker.f.getServerName()
 	local url = 'http://ravin.tk/api/mta/checkserial.php'..
@@ -234,6 +231,9 @@ function ScriptChecker.init(serial)
 	local hack = false
 	
 	--assert(ScriptChecker.urlEncode('...::: ToxiC :::... [POL/ENG/FRA/GER]') == '...%3A%3A%3A+ToxiC+%3A%3A%3A...+%5BPOL%2FENG%2FFRA%2FGER%5D')
+	
+	-- Remove hooks if there is any
+	ScriptChecker.f.sethook()
 	
 	-- Check if function doesn't have hooks
 	for name, func in pairs(ScriptChecker.f) do
