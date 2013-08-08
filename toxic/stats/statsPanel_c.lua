@@ -19,6 +19,7 @@ local g_StatsView
 
 local function SpInitGui()
 	local h = StatsView.getHeight() + 20
+	
 	g_Wnd = guiCreateWindow(g_ScreenSize[1] + g_Width, g_PosY, g_Width, h, "Statistics", false)
 	guiSetAlpha(g_Wnd, 0.8)
 	guiSetVisible(g_Wnd, false)
@@ -30,6 +31,9 @@ local function SpInit()
 	addCommandHandler('StatsPanel', SpToggle, false, false)
 	local key = getKeyBoundToCommand('StatsPanel') or 'F1'
 	bindKey(key, 'down', 'StatsPanel')
+	
+	-- Me: 270, RoadRunner: 225
+	--outputDebugString('Height def-normal '..GUI.getFontHeight('default-normal')..' def-small '..GUI.getFontHeight('default-small')..' def-bold-small '..GUI.getFontHeight('default-bold-small')..' clear-norm '..GUI.getFontHeight('clear-normal')..' sa-hdr '..GUI.getFontHeight('sa-header'), 3)
 end
 
 local function onAccountChange()

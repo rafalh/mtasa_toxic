@@ -57,7 +57,7 @@ end
 function DbQuery(query, ...)
 	local prof = DbgPerf(100)
 	local result = g_Driver and g_Driver:query(query, ...)
-	prof:cp('SQL query '..query:sub(1, 255))
+	prof:cp('SQL query '..query:sub(1, 96))
 	return result
 end
 

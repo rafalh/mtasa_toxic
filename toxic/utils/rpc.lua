@@ -53,10 +53,11 @@ local function onRpc(id, fnName, ...)
 	end
 	
 	local prof = DbgPerf()
-	
+
 	local fn = loadstring('return '..fnName)()
 	local results = {}
 	if(fn) then
+		source = client
 		results = {pcall(fn, ...)}
 		if(not results[1]) then
 			outputDebugString('RPC failed: '..results[2], 2)
@@ -91,6 +92,7 @@ local function onRpcResult(id, ...)
 	for i, arg in ipairs({...}) do
 		table.insert(self.cbArgs, arg)
 	end
+	source = client
 	self.callback(unpack(self.cbArgs))
 	
 	prof:cp('RPC result')

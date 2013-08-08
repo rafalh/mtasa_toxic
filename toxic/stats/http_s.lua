@@ -1,8 +1,8 @@
 function getPlayersStats(player, order, desc, limit, start, online)
 	-- Validate parameters
-	limit = math.min ( touint ( limit, 20 ), 20 )
-	start = touint ( start )
-	if ( order and not tostring ( order ):match ( '^[%w_/%*%+-]+$' ) ) then -- check validity of arguments
+	limit = math.min(touint(limit, 20), 20)
+	start = touint(start)
+	if(order and not tostring(order):match ( '^[%w_/%*%+-]+$')) then -- check validity of arguments
 		return false
 	end
 	
@@ -24,8 +24,11 @@ function getPlayersStats(player, order, desc, limit, start, online)
 		where = ' WHERE '..table.concat(cond, ' AND ')
 	end
 	
-	local rows = DbQuery ( 'SELECT COUNT(*) AS c FROM '..PlayersTable..where )
-	local players_count = rows[1].c
+	local players_count
+	if(not player_id) then
+		local rows = DbQuery('SELECT COUNT(*) AS c FROM '..PlayersTable..where)
+		players_count = rows[1].c
+	end
 	
 	local query = 'SELECT player, name, cash, points, '..
 		'dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesFinished, racesPlayed, '..
@@ -42,12 +45,16 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	query = query..limit
 	
 	-- Query database
-	local rows = DbQuery ( query )
-	if ( rows ) then
+	local rows = DbQuery(query)
+	if(rows) then
 		for i, data in ipairs ( rows ) do
 			data.rank = StRankFromPoints ( data.points )
 			data.name = data.name:gsub('#%x%x%x%x%x%x', '')
 			data.maxAchvCount = AchvGetCount()
+		end
+		
+		if(not players_count) then
+			players_count = #rows
 		end
 	end
 	

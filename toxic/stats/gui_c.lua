@@ -177,7 +177,6 @@ function StatsView:show()
 	local id = self.id
 	local force = false
 	
-	
 	if(not g_Stats[id]) then
 		g_Stats[id] = {refs = 0, valCache = {}}
 		force = true

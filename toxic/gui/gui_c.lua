@@ -238,21 +238,23 @@ function GUI.create(tpl, x, y, w, h, parent)
 	return self
 end
 
-function GUI.getTextWidth(text, font)
+function GUI.prepareTempLabel(font)
 	if(not GUI.tempLabel) then
-		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
-		guiSetVisible(GUI.tempLabel, false)
+		GUI.tempLabel = guiCreateLabel(0, 0, 100, 100, '', false)
+		--guiSetVisible(GUI.tempLabel, false)
 	end
-	guiSetFont(GUI.tempLabel, font or 'default')
-	guiSetText(GUI.tempLabel, text)
+	if(not guiSetFont(GUI.tempLabel, font or 'default-normal')) then return false end
+	return true
+end
+
+function GUI.getTextWidth(text, font)
+	if(not GUI.prepareTempLabel(font)) then return false end
+	if(not guiSetText(GUI.tempLabel, text)) then return false end
 	return guiLabelGetTextExtent(GUI.tempLabel)
 end
 
 function GUI.getFontHeight(font)
-	if(not GUI.tempLabel) then
-		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
-		guiSetVisible(GUI.tempLabel, false)
-	end
-	guiSetFont(GUI.tempLabel, font or 'default')
+	if(not font or font == 'default-normal') then return 18 end -- HACK
+	if(not GUI.prepareTempLabel(font)) then return false end
 	return guiLabelGetFontHeight(GUI.tempLabel)
 end

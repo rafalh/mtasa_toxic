@@ -1,36 +1,31 @@
-function getMaps ( map, order, desc, limit, start )
+function getMaps(mapName, order, desc, limit, start)
 	-- Validate parameters
-	limit = math.min ( touint ( limit, 20 ), 20 )
-	start = touint ( start )
-	if ( order and not tostring ( order ):match ( '^[%l_/%*%+-]+$' ) ) then -- check validity of arguments
+	limit = math.min(touint(limit, 20), 20)
+	start = touint(start)
+	if(order and not tostring(order):match('^[%l_/%*%+-]+$')) then -- check validity of arguments
 		return false
 	end
-	if ( order == 'rating' ) then
+	if(order == 'rating') then
 		order = 'rates/max(rates_count, 1)'
 	end
 	
 	-- Build query
 	local where = ''
-	if ( map ) then
-		local map_id = touint ( map )
-		if ( map_id ) then
-			where = ' WHERE map='..map_id
-		else
-			local pattern = tostring ( map ):gsub ( ' ', '%%' )
-			where = ' WHERE name LIKE '..DbStr ( '%'..pattern..'%' )
-		end
+	if(mapName) then
+		local pattern = tostring(mapName):gsub(' ', '%%')
+		where = ' WHERE name LIKE '..DbStr('%'..pattern..'%')
 	end
 	
-	local rows = DbQuery ( 'SELECT COUNT(*) AS c FROM '..MapsTable..where )
-	local maps_count = rows[1].c
+	local rows = DbQuery('SELECT COUNT(*) AS c FROM '..MapsTable..where)
+	local mapsCount = rows[1].c
 	
 	local query = 'SELECT map, name, played, rates, rates_count FROM '..MapsTable..where
-	if ( order ) then
-		query = query..' ORDER BY '..tostring ( order )..( ( desc and ' DESC' ) or '' )
+	if(order) then
+		query = query..' ORDER BY '..tostring(order)..((desc and ' DESC') or '')
 	end
 	
 	query = query..' LIMIT '
-	if ( start ) then
+	if(start) then
 		query = query..start..','
 	end
 	query = query..limit
@@ -44,7 +39,7 @@ function getMaps ( map, order, desc, limit, start )
 		data.author = map and map:getInfo('author')
 	end
 	
-	return rows, maps_count
+	return rows, mapsCount
 end
 
 function getMapInfo(mapId)
