@@ -231,9 +231,15 @@ function Database.Drivers.SQLite:init()
 end
 
 function Database.Drivers.SQLite:query(query, ...)
-	local qh = dbQuery(g_Connection, query, ...)
-	assert(qh)
-	local result, numrows, errmsg = dbPoll(qh, -1)
+	local result, numrows, errmsg
+	if(query:sub(1, 6) == 'SELECT') then
+		local qh = dbQuery(g_Connection, query, ...)
+		assert(qh)
+		result, numrows, errmsg = dbPoll(qh, -1)
+	else
+		--outputChatBox('DB Exec '..query)
+		result = dbExec(g_Connection, query, ...)
+	end
 	
 	if(result) then
 		return result

@@ -23,13 +23,17 @@ PlayersTable = Database.Table{
 
 local DefaultData = false
 
+function AccountData:fillCache()
+	assert(self.id)
+	local rows = DbQuery('SELECT * FROM '..PlayersTable..' WHERE player=? LIMIT 1', self.id)
+	cache = rows[1] or false
+	rawset(self, 'cache', cache)
+end
+
 function AccountData:getTbl()
 	local cache = rawget(self, 'cache')
 	if(not cache) then
-		assert(self.id)
-		local rows = DbQuery('SELECT * FROM '..PlayersTable..' WHERE player=? LIMIT 1', self.id)
-		cache = rows[1] or false
-		rawset(self, 'cache', cache)
+		self:fillCache()
 	end
 	
 	return cache
@@ -38,25 +42,30 @@ end
 function AccountData:get(name)
 	assert(type(self) == 'table' and name)
 	
+	-- prepare arguments
 	local fields = name
 	if(type(fields) ~= 'table') then
 		fields = {name}
 	end
 	
-	local cache = AccountData.getTbl(self)
-	if(not cache) then -- load cache
-		return false
-	end
-	
 	local result = {}
 	for i, field in ipairs(fields) do
-		if(cache[field] ~= nil) then
-			result[field] = cache[field]
+		-- Check if field value is in cache
+		if(self.cache[field] == nil) then
+			-- Load entire row from database
+			self:fillCache()
+		end
+		
+		-- Get value from cache
+		local value = self.cache[field]
+		if(value ~= nil) then
+			result[field] = value
 		else
 			outputDebugString('Unknown field '..field, 2)
 		end
 	end
 	
+	-- Return result in proper format
 	if(type(name) == 'table') then
 		return result
 	else
@@ -81,11 +90,13 @@ function AccountData:set(arg1, arg2, arg3)
 	local set = ''
 	local params = {}
 	for k, v in pairs(data) do
-		assert(PlayersTable.colMap[k])
-		if(not self.cache or self.cache[k] ~= v) then
+		local colDef = PlayersTable.colMap[k]
+		assert(colDef)
+		
+		if(self.cache[k] == nil or self.cache[k] ~= v) then
 			if(v == false) then
 				set = set..','..k..'=NULL'
-			elseif(type(v) == 'string' and PlayersTable.colMap[k][2] == 'BLOB' and v) then
+			elseif(type(v) == 'string' and colDef[2] == 'BLOB' and v) then
 				set = set..','..k..'='..DbBlob(v)
 			else
 				set = set..','..k..'=?'
@@ -98,9 +109,7 @@ function AccountData:set(arg1, arg2, arg3)
 				end
 			end
 			
-			if(self.cache) then
-				self.cache[k] = v
-			end
+			self.cache[k] = v
 		end
 	end
 	
@@ -140,8 +149,7 @@ function AccountData.create(id)
 		return AccountData.map[id]
 	end
 	
-	local self = {id = id, cache = false}
-	self.lol = true
+	local self = {id = id, cache = {}}
 	if(id) then
 		AccountData.map[id] = self
 	else
@@ -164,9 +172,3 @@ function AccountData.__mt.__newindex(self, k, v)
 	--outputDebugString('__newindex '..tostring(k), 3)
 	AccountData.set(self, k, v)
 end
-
-local function init()
-	
-end
-
-init() -- Do it now (don't use addInitFunc)

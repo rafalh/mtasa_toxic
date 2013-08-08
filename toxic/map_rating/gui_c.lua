@@ -6,8 +6,6 @@ local g_HideTimer = false
 local g_PosX, g_PosY = (g_ScreenSize[1] - 250) / 2 - 205, 5
 local g_Anim1, g_Anim2
 
-addEvent('onPlayerRate', true)
-addEvent('onClientSetRateGuiVisibleReq', true)
 addEvent('onClientMapStopping')
 
 local function RtInitGui()
@@ -107,7 +105,7 @@ local function RtHideGui()
 	RtSetBinds(false)
 	
 	if(g_Rating) then
-		triggerServerEvent('onPlayerRate', g_Me, g_Rating)
+		RPC('RtPlayerRate', g_Rating):exec()
 		g_Rating = false
 	end
 end
@@ -137,7 +135,8 @@ local function RtShowGui()
 	end
 end
 
-local function RtSetVisible(visible)
+-- used by RPC
+function RtSetVisible(visible)
 	if(visible) then
 		RtShowGui()
 	else
@@ -159,6 +158,5 @@ end
 -- Events --
 ------------
 
-addEventHandler('onClientSetRateGuiVisibleReq', g_Root, RtSetVisible)
 addEventHandler('onClientMapStopping', g_Root, RtMapStop)
 addEventHandler('onClientResourceStart', g_ResRoot, RtInit)

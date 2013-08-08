@@ -130,12 +130,13 @@ function Player.__mt.__index:setAccount(account)
 	end
 	
 	self.accountData = AccountData.create(self.id)
-	self.accountData:set('online', 1, true)
-	self.accountData:set('serial', self:getSerial(), true)
-	self.accountData:set('ip', self:getIP(), true)
-	self.accountData:set('last_visit', now, true)
-	local fullName = self:getName(true)
-	self.accountData:set('name', fullName, true)
+	self.accountData:set({
+		online = 1,
+		serial = self:getSerial(),
+		ip = self:getIP(),
+		last_visit = now,
+		name = self:getName(true),
+	}, true)
 	return true
 end
 

@@ -32,7 +32,7 @@ end
 
 if(DEBUG) then
 	function DbgPrint(fmt, ...)
-		outputDebugString(fmt:format ( ... ), 3)
+		outputDebugString(fmt:format(...), 3)
 	end
 	
 	function DbgDump(str, title)

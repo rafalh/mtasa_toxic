@@ -9,8 +9,6 @@ RatesTable = Database.Table{
 }
 
 addEvent('onPollStarting')
-addEvent('onPlayerRate', true)
-addEvent('onClientSetRateGuiVisibleReq', true)
 
 function RtPlayerRate(rate)
 	local pdata = Player.fromEl(source)
@@ -47,24 +45,29 @@ function RtPlayerRate(rate)
 		privMsg(source, "You rated this map before: %u!", oldRate)
 	end
 end
-
-local function RtShowGuiForPlayer(player, map_id)
-	local pdata = Player.fromEl(player)
-	if(not pdata.id) then return end
-	
-	local rows = DbQuery('SELECT rate FROM '..RatesTable..' WHERE player=? AND map=? LIMIT 1', pdata.id, map_id)
-	if(not rows or not rows[1]) then
-		triggerClientEvent(player, 'onClientSetRateGuiVisibleReq', g_Root, true)
-	end
-end
+RPC.allow('RtPlayerRate')
 
 local function RtTimerProc(room)
 	local map = getCurrentMap(room)
-	if(map and not g_Poll) then
-		local map_id = map:getId()
-		for player, pdata in pairs(g_Players) do
-			RtShowGuiForPlayer(player, map_id)
+	if(not map or g_Poll) then return end
+	
+	local pidList = {}
+	for player, pdata in pairs(g_Players) do
+		if(pdata.id) then
+			table.insert(pidList, pdata.id)
 		end
+	end
+	
+	local pidListStr = table.concat(pidList, ',')
+	local mapId = map:getId()
+	local rows = DbQuery('SELECT player FROM '..RatesTable..' WHERE map=? AND player IN (??) LIMIT 1', mapId, pidListStr)
+	for i, row in ipairs(rows) do
+		table.removeValue(pidList, row.player)
+	end
+	
+	for i, pid in ipairs(pidList) do
+		local player = Player.fromId(pid)
+		RPC('RtSetVisible', true):setClient(player.el):exec()
 	end
 end
 
@@ -75,12 +78,11 @@ end
 
 local function RtPoolStarting()
 	--outputDebugString('RtPoolStarting', 3)
-	triggerClientEvent(g_Root, 'onClientSetRateGuiVisibleReq', g_Root, false)
+	RPC('RtSetVisible', false):exec()
 	g_Poll = true
 end
 
 addInitFunc(function()
 	addEventHandler('onGamemodeMapStart', g_Root, RtMapStart) -- FIXME
-	addEventHandler('onPlayerRate', g_Root, RtPlayerRate)
 	addEventHandler('onPollStarting', g_Root, RtPoolStarting)
 end)

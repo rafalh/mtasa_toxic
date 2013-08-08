@@ -1,27 +1,6 @@
 Updater = {
-	currentVer = 154,
+	currentVer = 155,
 	list = {
-		{
-			ver = 151,
-			func = function()
-				DbQuery('UPDATE '..BestTimesTable..' SET timestamp=0 WHERE timestamp IS NULL')
-				
-				if(not DbRecreateTable(BestTimesTable)) then
-					return false, 'Failed to recreate best times table'
-				end
-				return false
-			end
-		},
-		{
-			ver = 152,
-			func = function()
-				DbQuery('UPDATE '..PlayersTable..' SET account=NULL WHERE account=?', '')
-				if(not DbRecreateTable(PlayersTable)) then
-					return 'Failed to recreate players table'
-				end
-				return false
-			end
-		},
 		{
 			ver = 153,
 			func = function()
@@ -51,6 +30,16 @@ Updater = {
 					return 'Failed to delete names table'
 				end
 				
+				return false
+			end
+		},
+		{
+			ver = 155,
+			func = function()
+				if(not DbQuery('DROP INDEX IF EXISTS '..DbPrefix..'rates_idx') or
+					not DbQuery('CREATE UNIQUE INDEX '..DbPrefix..'rates_idx ON '..RatesTable..' (map, player)')) then
+					return 'Failed to recreate rafalh_rates_idx'
+				end
 				return false
 			end
 		},
