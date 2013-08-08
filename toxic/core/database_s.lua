@@ -55,7 +55,10 @@ function DbRecreateTable(tbl)
 end
 
 function DbQuery(query, ...)
-	return g_Driver and g_Driver:query(query, ...)
+	local prof = DbgPerf(100)
+	local result = g_Driver and g_Driver:query(query, ...)
+	prof:cp('SQL query '..query:sub(1, 255))
+	return result
 end
 
 function Database.createTable(tbl)

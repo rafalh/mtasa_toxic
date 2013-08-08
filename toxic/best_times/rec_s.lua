@@ -80,27 +80,35 @@ end
 function RcStartRecording(room, map_id)
 	--outputDebugString('Recording started...', 3)
 	local prof = DbgPerf()
+	local prof2 = DbgPerf(30)
 	
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room) then
 			pdata.recording = true
 		end
 	end
+	prof2:cp('RcStartRecording 1')
 	
 	local rows = DbQuery('SELECT bt.player, bt.time, b.data FROM '..BestTimesTable..' bt, '..BlobsTable..' b WHERE bt.map=? AND b.id=bt.rec ORDER BY bt.time LIMIT 1', map_id)
 	local row = rows and rows[1]
+	prof2:cp('RcStartRecording 2')
 	if(row and Settings.ghost) then
 		outputDebugString('Showing ghost', 3)
 		
 		local recCoded = zlibUncompress(row.data)
 		if(not recCoded) then outputDebugString('Failed to uncompress', 2) end
+		prof2:cp('RcStartRecording 3')
 		
 		local rows2 = DbQuery('SELECT count(player) AS c FROM '..BestTimesTable..' WHERE map=? AND time<? LIMIT 1', map_id, row.time)
 		local recTitle = 'Top '..(rows2[1].c + 1)
+		prof2:cp('RcStartRecording 4')
+		
 		RPC('Playback.startAfterCountdown', recCoded, recTitle):setClient(room.el):exec()
+		prof2:cp('RcStartRecording 5')
 	end
 	
 	triggerClientInternalEvent(room.el, $(EV_CLIENT_START_RECORDING_REQUEST), g_Root, map_id)
+	prof2:cp('RcStartRecording 6')
 	prof:cp('RcStartRecording')
 end
 

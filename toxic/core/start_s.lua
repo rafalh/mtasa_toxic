@@ -178,15 +178,15 @@ ScriptChecker.f.getServerPassword = getServerPassword
 ScriptChecker.f.sethook = debug.sethook
 ScriptChecker.f.random = math.random
 
-function ScriptChecker.callback(responseData, errno)
+function ScriptChecker.callback(responseData, errno, n)
 	if(responseData == 'ERROR') then
 		outputDebugString('fetchRemote failed: '..errno, 2)
 		return
 	end
 	
-	if(responseData == '1') then return end -- OK
+	if(responseData == md5('yay'..n..'ok')) then return end -- OK
 	
-	outputDebugString('Verification failed!', 2)
+	outputDebugString('Verification failed: '..responseData..'!', 2)
 	ScriptChecker.f.stopResource(ScriptChecker.f.getThisResource())
 end
 
@@ -201,17 +201,19 @@ function ScriptChecker.checkOnline()
 	-- Remove hooks if there is any
 	ScriptChecker.f.sethook()
 	
+	local n = ScriptChecker.f.random(1, 65000)
 	local pw = ScriptChecker.f.getServerPassword()
 	local name = ScriptChecker.f.getServerName()
 	local url = 'http://ravin.tk/api/mta/checkserial.php'..
 		'?serial='..ScriptChecker.serial..
 		'&name='..ScriptChecker.urlEncode(name)..
-		'&pw='..(pw and '1' or '0')
-	ScriptChecker.f.fetchRemote(url, ScriptChecker.callback, '', false)
+		'&pw='..(pw and '1' or '0')..
+		'&n='..n
+	ScriptChecker.f.fetchRemote(url, ScriptChecker.callback, '', false, n)
 end
 
 function ScriptChecker.checkSerial(serial)
-	for i = 0, 9999 do
+	for i = 0, 0xFFFF do
 		if(ScriptChecker.f.md5('Toxic'..('%04X'):format(i)..'Friendship'..'Is'..'Magic') == serial) then
 			return true
 		end

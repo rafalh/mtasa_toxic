@@ -94,14 +94,19 @@ end
 
 local _isPedDead = isPedDead
 function isPedDead(player)
+	-- Check if this is a Console
 	if(Player and Player.fromEl(player) and Player.fromEl(player).is_console) then
-		return false -- console
+		return true -- always dead
 	end
+	
+	-- Check state from Race gamemode
 	local state = getElementData(player, 'state')
 	if(state and state ~= 'alive') then
 		return true
 	end
-	return(state and state ~= 'alive') or _isPedDead (player)
+	
+	-- Call MTA function
+	return _isPedDead(player)
 end
 
 function trimStr(str)

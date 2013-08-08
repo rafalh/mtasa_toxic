@@ -98,8 +98,8 @@ addEventHandler('onClientResourceStart', root, function(res)
 	-- Set volume for resources after start
 	local resName = getResourceName(res)
 	if(resName == 'race_audio') then
-		call(res, 'setRaceAudioVolume', newVal/200) -- normally its 0.5
+		call(res, 'setRaceAudioVolume', Settings.raceVolume/200) -- normally its 0.5
 	elseif(resName == 'mapmusic') then
-		call(res, 'setMusicVolume', newVal)
+		call(res, 'setMusicVolume', Settings.musicVolume)
 	end
 end)

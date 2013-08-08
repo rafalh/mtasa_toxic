@@ -158,6 +158,7 @@ local function onMapStart(map, room)
 	assert(getmetatable(map) == Map.__mt)
 	
 	local prof = DbgPerf()
+	local prof2 = DbgPerf(30)
 	
 	local map_id = map:getId()
 	local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
@@ -170,6 +171,7 @@ local function onMapStart(map, room)
 		room.mapRepeats = 1
 	end
 	room.currentMap = map
+	prof2:cp('onMapStart 1')
 	
 	if(rows[1].removed ~= '') then
 		scriptMsg("Map %s is removed! Changing to random map.", map_name)
@@ -181,6 +183,7 @@ local function onMapStart(map, room)
 		
 		local now = getRealTime().timestamp
 		DbQuery('UPDATE '..MapsTable..' SET played=played+1, played_timestamp=? WHERE map=?', now, map_id)
+		prof2:cp('onMapStart 2')
 		
 		local mapTypeCounter = false
 		if(room.isRace) then
@@ -197,6 +200,7 @@ local function onMapStart(map, room)
 				pdata.accountData:add(mapTypeCounter, 1)
 			end
 		end
+		prof2:cp('onMapStart 3')
 		
 		local was_queued = (g_StartingQueuedMap == map)
 		g_StartingQueuedMap = false
@@ -217,6 +221,7 @@ local function onMapStart(map, room)
 			end
 			--DbgPrint('%s', dbg_buf)
 		end
+		prof2:cp('onMapStart 4')
 		
 		-- show toptimes
 		BtSendMapInfo(room, true)
@@ -228,6 +233,7 @@ local function onMapStart(map, room)
 				pdata.winner = false
 			end
 		end
+		prof2:cp('onMapStart 5')
 		
 		-- start recording
 		local winning_veh = mapType and mapType.winning_veh
@@ -237,6 +243,7 @@ local function onMapStart(map, room)
 				RcStartRecording(room, map_id)
 			end
 		end
+		prof2:cp('onMapStart 6')
 		
 		-- set fps limit
 		local maxFps = mapType and mapType.max_fps
@@ -249,6 +256,7 @@ local function onMapStart(map, room)
 			local gm = mapType and mapType.gm
 			setMapTimer(GmSet, 3000, 1, room, gm, true)
 		end
+		prof2:cp('onMapStart 7')
 		
 		-- show best times
 		BtPrintTimes(room, map_id)
@@ -261,6 +269,7 @@ local function onMapStart(map, room)
 		end
 	end
 	
+	prof2:cp('onMapStart 8')
 	prof:cp('onMapStart')
 end
 
@@ -376,40 +385,55 @@ local function handlePlayerWin(player)
 end
 
 local function setPlayerFinalRank(player, rank)
+	local prof = DbgPerf()
+	local prof2 = DbgPerf(20)
+	
 	local cashadd = math.floor (1000 * g_PlayersCount / rank)
 	local pointsadd = math.floor (g_PlayersCount / rank)
 	local pdata = Player.fromEl(player)
+	prof2:cp('setPlayerFinalRank 1')
 	
 	local stats = {}
 	stats.cash = pdata.accountData.cash + cashadd
 	stats.points = pdata.accountData.points + pointsadd
 	pdata.accountData:set(stats)
+	prof2:cp('setPlayerFinalRank 2')
+	
 	pdata:addNotify{
 		icon = 'maps/coins.png',
 		{"%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash)},
 		{"You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points)},
 	}
+	prof2:cp('setPlayerFinalRank 3')
 	
 	if(rank == 1) then
 		handlePlayerWin(player)
 	end
+	prof2:cp('setPlayerFinalRank 4')
+	prof:cp('setPlayerFinalRank')
 end
 
 local function onPlayerFinish(rank, ms)
 	local prof = DbgPerf()
+	local prof2 = DbgPerf(30)
 	
 	local pdata = Player.fromEl(source)
 	local map = getCurrentMap(pdata.room)
 	local map_id = map:getId()
+	prof2:cp('onPlayerFinish 1')
 	
 	pdata.accountData:add('racesFinished', 1)
+	prof2:cp('onPlayerFinish 2')
 	
 	local n = handlePlayerTime(source, ms)
 	local improvedBestTime = (n >= 1)
+	prof2:cp('onPlayerFinish 3')
 	
 	RcFinishRecordingPlayer(source, ms, map_id, improvedBestTime)
+	prof2:cp('onPlayerFinish 4')
 	
 	setPlayerFinalRank(source, rank)
+	prof2:cp('onPlayerFinish 5')
 	
 	prof:cp('onPlayerFinish')
 end
@@ -467,18 +491,20 @@ end
 
 local function onMapListReq()
 	local prof = DbgPerf()
+	local prof2 = DbgPerf(20)
 	
 	local mapsList = {}
 	local maps = getMapsList()
-	
+	prof2:cp('onMapListReq 1')
 	for i, map in maps:ipairs() do
 		local mapResName = (map.res and getResourceName(map.res)) or map.path
 		local mapName = map:getName()
 		local mapAuthor = map:getInfo('author') or ''
 		mapsList[mapResName] = {mapName, mapAuthor, 0, 0}
 	end
-	
+	prof2:cp('onMapListReq 2')
 	local rows = DbQuery('SELECT name, played, rates, rates_count FROM '..MapsTable)
+	prof2:cp('onMapListReq 3')
 	for i, data in ipairs (rows) do
 		if(mapsList[data.name]) then
 			mapsList[data.name][3] = data.played
@@ -487,9 +513,9 @@ local function onMapListReq()
 			end
 		end
 	end
-	
+	prof2:cp('onMapListReq 4')
 	triggerClientEvent(client, 'onClientMapList', g_ResRoot, mapsList)
-	
+	prof2:cp('onMapListReq 5')
 	prof:cp('onMapListReq')
 end
 

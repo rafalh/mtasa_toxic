@@ -12,9 +12,11 @@ local function onKillersList(killer, assist)
 		return
 	end
 	
+	outputDebugString('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()), 3)
+	
 	local respawn = map and map:getRespawn()
 	if(not respawn and victimPlayer:isAlive()) then
-		outputDebugString('Ignoring killer info - client alive: '..tostring(victimPlayer:isAlive()), 2)
+		outputDebugString('Ignoring killer info - client alive: '..tostring(victimPlayer:getName()), 2)
 		return
 	end
 	
@@ -62,7 +64,17 @@ local function onMapStop()
 	end
 end
 
+local function onPlayerWasted()
+	local player = Player.fromEl(source)
+	local map = player and getCurrentMap(player.room)
+	
+	if(map:getType().name == 'DD') then
+		outputDebugString('onPlayerWasted '..player:getName(), 3)
+	end
+end
+
 addInitFunc(function()
 	addEventHandler('stats.onDDKillersList', resourceRoot, onKillersList)
 	addEventHandler('onGamemodeMapStop', root, onMapStop)
+	addEventHandler('onPlayerWasted', root, onPlayerWasted)
 end)
