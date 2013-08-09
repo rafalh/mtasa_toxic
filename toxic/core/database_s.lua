@@ -55,9 +55,23 @@ function DbRecreateTable(tbl)
 end
 
 function DbQuery(query, ...)
+	if(not g_Driver) then return false end
 	local prof = DbgPerf(100)
-	local result = g_Driver and g_Driver:query(query, ...)
-	prof:cp('SQL query '..query:sub(1, 96))
+	local result
+	if(query:sub(1, 6) == 'SELECT') then
+		result = g_Driver:query(query, ...)
+	else
+		result = g_Driver:exec(query, ...)
+	end
+	prof:cp('SQL query %s', query:sub(1, 96))
+	return result
+end
+
+function DbQuerySync(query, ...)
+	if(not g_Driver) then return false end
+	local prof = DbgPerf(100)
+	local result = g_Driver:query(query, ...)
+	prof:cp('SQL query %s', query:sub(1, 96))
 	return result
 end
 
@@ -231,21 +245,27 @@ function Database.Drivers.SQLite:init()
 end
 
 function Database.Drivers.SQLite:query(query, ...)
-	local result, numrows, errmsg
-	if(query:sub(1, 6) == 'SELECT') then
-		local qh = dbQuery(g_Connection, query, ...)
-		assert(qh)
-		result, numrows, errmsg = dbPoll(qh, -1)
-	else
-		--outputChatBox('DB Exec '..query)
-		result = dbExec(g_Connection, query, ...)
-	end
+	local qh = dbQuery(g_Connection, query, ...)
+	assert(qh)
+	local result, numrows, errmsg = dbPoll(qh, -1)
 	
 	if(result) then
 		return result
 	end
 	
 	outputDebugString('SQL query failed: '..errmsg, 2)
+	DbgTraceBack()
+	return false
+end
+
+function Database.Drivers.SQLite:exec(query, ...)
+	result = dbExec(g_Connection, query, ...)
+	
+	if(result) then
+		return result
+	end
+	
+	outputDebugString('SQL exec failed: '..query, 2)
 	DbgTraceBack()
 	return false
 end
@@ -324,6 +344,18 @@ function Database.Drivers.MySQL:query(query, ...)
 	return false
 end
 
+function Database.Drivers.MySQL:exec(query, ...)
+	local result = dbExec(g_Connection, query, ...)
+	
+	if(result) then
+		return result
+	end
+	
+	outputDebugString('SQL exec failed: '..query, 2)
+	DbgTraceBack()
+	return false
+end
+
 function Database.Drivers.MySQL:createTable(tbl)
 	local cols, constr = {}, {}
 	for i, col in ipairs(tbl) do
@@ -363,6 +395,7 @@ function Database.Drivers.Internal:query(query, ...)
 	return executeSQLQuery(query, ...)
 end
 
+Database.Drivers.Internal.exec = Database.Drivers.Internal.query
 Database.Drivers.Internal.createTable = Database.Drivers.SQLite.createTable
 Database.Drivers.Internal.insertDefault = Database.Drivers.SQLite.insertDefault
 Database.Drivers.Internal.getLastInsertID = Database.Drivers.SQLite.getLastInsertID

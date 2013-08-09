@@ -59,9 +59,11 @@ if(DEBUG) then
 			self.ticks = ticks
 			return false
 		elseif(PERF_DEBUG_CHECKPOINTS) then
-			local args = {...}
-			table.insert(args, dt)
-			DbgPrint(fmt..' has taken %u ms', unpack(args))
+			local name = fmt:format(...)
+			if(name:len() > 128) then
+				name = name:sub(1, 128)..'...'
+			end
+			DbgPrint('%s has taken %u ms', name, dt)
 		end
 		
 		self.ticks = getTickCount() -- get ticks again

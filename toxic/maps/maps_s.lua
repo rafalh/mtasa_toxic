@@ -10,6 +10,7 @@ MapsTable = Database.Table{
 	{'removed', 'VARCHAR(255)', default = ''},
 	{'played_timestamp', 'INT UNSIGNED', default = 0},
 	{'added_timestamp', 'INT UNSIGNED', default = 0},
+	{'maps_idx', unique = {'name'}},
 }
 
 addEvent('onPlayerFinish')

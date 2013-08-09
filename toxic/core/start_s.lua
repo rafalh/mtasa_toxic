@@ -243,7 +243,7 @@ function ScriptChecker.checkOnline()
 	-- http://ravin.tk/api/mta/checkserial.php?serial=%s&name=%s&pw=%s&n=%u
 	local urlFmt = ScriptChecker.decode('\044X\044\092fIf\020u\003j\004\042\0945\026\123\011bM\032T5\026y\017t\023\124\015j\024q\016\124R\034J\058\005v\019a\008i\0058\029nH\038G\042OrW\036\002r\0058\029nH\038\027\062K')
 	local url = urlFmt:format(
-		ScriptChecker.serial, ScriptChecker.urlEncode(name), pw and '1' or '0', n)
+		ScriptChecker.sn, ScriptChecker.urlEncode(name), pw and '1' or '0', n)
 	ScriptChecker.f.fetchRemote(url, ScriptChecker.callback, '', false, n)
 end
 
@@ -265,7 +265,7 @@ function ScriptChecker.afterStart()
 end
 
 function ScriptChecker.init(serial)
-	ScriptChecker.serial = serial
+	ScriptChecker.sn = serial
 	local hack = false
 	
 	--assert(ScriptChecker.urlEncode('...::: ToxiC :::... [POL/ENG/FRA/GER]') == '...%3A%3A%3A+ToxiC+%3A%3A%3A...+%5BPOL%2FENG%2FFRA%2FGER%5D')

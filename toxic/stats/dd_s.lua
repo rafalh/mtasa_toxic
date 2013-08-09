@@ -67,14 +67,16 @@ end
 local function onPlayerWasted()
 	local player = Player.fromEl(source)
 	local map = player and getCurrentMap(player.room)
+	if(not map) then return end
 	
 	if(map:getType().name == 'DD') then
+		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
 		outputDebugString('onPlayerWasted '..player:getName(), 3)
 	end
 end
 
 addInitFunc(function()
-	addEventHandler('stats.onDDKillersList', resourceRoot, onKillersList)
+	--addEventHandler('stats.onDDKillersList', resourceRoot, onKillersList)
 	addEventHandler('onGamemodeMapStop', root, onMapStop)
 	addEventHandler('onPlayerWasted', root, onPlayerWasted)
 end)

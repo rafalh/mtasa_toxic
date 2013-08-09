@@ -275,7 +275,7 @@ local function CmdMergeAccounts(message, arg)
 		newData.toptimes_count = player.accountData.toptimes_count + src_data.toptimes_count
 		
 		for i, data in ipairs(rows) do
-			local delTime = math.min(data.time1, data.time2)
+			local delTime = math.max(data.time1, data.time2)
 			if(data.time1 > data.time2) then -- old besttime was better
 				table.insert(mapsDst, data.map)
 				table.insert(questionMarksDst, '?')
@@ -291,11 +291,11 @@ local function CmdMergeAccounts(message, arg)
 		end
 		if(#mapsDst > 0) then
 			local questionMarksStr = table.concat(questionMarksDst, ',')
-			DbQuery('DELETE FROM '..BestTimesTable..' WHERE player=? AND map IN ('..questionMarksStr..')', player.id, unpack(mapsDst)) -- remove duplicates
+			BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', player.id, unpack(mapsDst)) -- remove duplicates
 		end
 		if(#mapsSrc > 0) then
 			local questionMarksStr = table.concat(questionMarksSrc, ',')
-			DbQuery('DELETE FROM '..BestTimesTable..' WHERE player=? AND map IN ('..questionMarksStr..')', id, unpack(mapsSrc)) -- remove duplicates
+			BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', id, unpack(mapsSrc)) -- remove duplicates
 		end
 		DbQuery('UPDATE '..BestTimesTable..' SET player=? WHERE player=?', player.id, id) -- set new best times owner
 		
@@ -332,8 +332,8 @@ local function CmdDelAcc(message, arg)
 		end
 		
 		DbQuery('DELETE FROM '..NamesTable..' WHERE player=?', playerId)
-		DbQuery('DELETE FROM '..RatesTable..' WHERE player=?', playerId)
-		DbQuery('DELETE FROM '..BestTimesTable..' WHERE player=?', playerId)
+		DbQuery('DELETE FROM '..RatesTable..' WHERE player=?', playerId) -- FIXME: maps.rates
+		BtDeleteTimes('player=?', playerId)
 		DbQuery('DELETE FROM '..ProfilesTable..' WHERE player=?', playerId)
 		DbQuery('DELETE FROM '..PlayersTable..' WHERE player=?', playerId)
 		

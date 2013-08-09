@@ -13,31 +13,48 @@ local function onVehCol(hitElement)
 	g_LastCol[hitPlayer] = getTickCount()
 end
 
-local function onMyselfWasted()
+-- Used by RPC
+function DdGetKillers()
+	assert(g_LastCol)
 	local ticks = getTickCount()
 	
 	local killersSorted = {}
 	for player, colTicks in pairs(g_LastCol) do
-		if(ticks - colTicks < 15000) then
+		local dt = ticks - colTicks
+		if(dt < 15000) then
 			table.insert(killersSorted, player)
 		end
 	end
 	
 	table.sort(killersSorted, function(pl1, pl2) return g_LastCol[pl1] > g_LastCol[pl2] end)
 	
+	-- Note: killersSorted[1] is last killer
+	local lastColTicks = #killersSorted > 0 and g_LastCol[killersSorted[1]]
+	local i = 2
+	while(i <= #killersSorted) do
+		local colTicks = g_LastCol[killersSorted[i]]
+		assert(colTicks <= lastColTicks)
+		if(lastColTicks - colTicks > 2000) then
+			table.remove(killersSorted, i)
+		else
+			i = i + 1
+		end
+	end
+	
 	if(#killersSorted > 0) then
-		local killerTicks = g_LastCol[killersSorted[1]]
-		local killerPlayer = killersSorted[1]
-		local assistTicks = killersSorted[2] and g_LastCol[killersSorted[2]]
-		assert(not assistTicks or killerTicks > assistTicks) -- Note: killersSorted[1] is last killer
-		local assistPlayer = assistTicks and (killerTicks - assistTicks < 2000) and killersSorted[2]
-		
-		outputDebugString("Killer "..getPlayerName(killersSorted[1]).." assist "..(assistPlayer and getPlayerName(assistPlayer) or "no"), 3)
-		triggerServerEvent('stats.onDDKillersList', resourceRoot, killerPlayer, assistPlayer)
+		local killerName = getPlayerName(killersSorted[1])
+		local assistName = killersSorted[2] and getPlayerName(killersSorted[2]) or "no"
+		outputDebugString("Killer "..killerName.." assist "..assistName, 3)
 	end
 	
 	g_LastCol = {}
+	return unpack(killersSorted)
 end
+
+--[[local function onMyselfWasted()
+	local killerPlayer, assistPlayer = DdGetKillers()
+	triggerServerEvent('stats.onDDKillersList', resourceRoot, killerPlayer, assistPlayer)
+end]]
 
 function DDSetKillersDetectionEnabled(enabled)
 	local curEnabled = g_LastCol and true
@@ -47,12 +64,12 @@ function DDSetKillersDetectionEnabled(enabled)
 	if(enabled) then
 		addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 		addEventHandler("onClientVehicleCollision", g_Root, onVehCol)
-		addEventHandler("onClientPlayerWasted", g_Me, onMyselfWasted)
+		--addEventHandler("onClientPlayerWasted", g_Me, onMyselfWasted)
 		g_LastCol = {}
 	else
 		removeEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
 		removeEventHandler("onClientVehicleCollision", g_Root, onVehCol)
-		removeEventHandler("onClientPlayerWasted", g_Me, onMyselfWasted)
+		--removeEventHandler("onClientPlayerWasted", g_Me, onMyselfWasted)
 		g_LastCol = false
 	end
 end

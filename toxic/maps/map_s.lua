@@ -86,18 +86,18 @@ end
 function Map:setInfo(attr, value)
 	if(not self.res) then return end
 	
-	if ( not setResourceInfo ( self.res, attr, value ) ) then return false end
+	if(not setResourceInfo(self.res, attr, value)) then return false end
 	
-	local node = xmlLoadFile ( self:getPath()..'/meta.xml' )
-	if ( not node ) then return false end
+	local node = xmlLoadFile(self:getPath()..'/meta.xml')
+	if(not node) then return false end
 	
-	local subnode = xmlFindChild ( node, 'info', 0 )
-	if ( not subnode ) then xmlUnloadFile ( node ) return false end
+	local subnode = xmlFindChild(node, 'info', 0)
+	if(not subnode) then xmlUnloadFile(node) return false end
 	
-	xmlNodeSetAttribute ( subnode, attr, value )
+	xmlNodeSetAttribute(subnode, attr, value)
 	
-	local result = xmlSaveFile ( node )
-	xmlUnloadFile ( node )
+	local result = xmlSaveFile(node)
+	xmlUnloadFile(node)
 	return result
 end
 
@@ -108,17 +108,17 @@ end
 
 function Map:setSetting(setting, value)
 	-- Note: this doesn't work for ZIP resources and I have no idea how to fix it...
-	local node = xmlLoadFile ( self:getPath()..'/meta.xml' )
-	if ( not node ) then
+	local node = xmlLoadFile(self:getPath()..'/meta.xml')
+	if(not node) then
 		return false
 	end
 	
 	local success = setMetaSetting ( node, setting, value )
 	
-	if ( success ) then
-		success = xmlSaveFile ( node )
+	if(success) then
+		success = xmlSaveFile(node)
 	end
-	xmlUnloadFile ( node )
+	xmlUnloadFile(node)
 	
 	return success
 end
@@ -141,13 +141,13 @@ end
 
 function Map:getId()
 	local map_id = Map.idCache[self.res or self.path]
-	if ( map_id ) then
+	if(map_id) then
 		return map_id
 	end
 	
-	local map = (self.res and getResourceName ( self.res )) or self.path
+	local map = (self.res and getResourceName(self.res)) or self.path
 	local rows = DbQuery('SELECT map FROM '..MapsTable..' WHERE name=? LIMIT 1', map)
-	if (not rows or not rows[1]) then
+	if(not rows or not rows[1]) then
 		local now = getRealTime().timestamp
 		DbQuery('INSERT INTO '..MapsTable..' (name, added_timestamp) VALUES(?, ?)', map, now)
 		rows = DbQuery('SELECT map FROM '..MapsTable..' WHERE name=? LIMIT 1', map)
@@ -161,9 +161,9 @@ end
 function Map:getType()
 	local mapName = self:getName()
 	
-	local mapNameLower = mapName:lower ()
-	for i, mapType in ipairs (g_MapTypes) do
-		if (not mapType.pattern or mapNameLower:match(mapType.pattern)) then
+	local mapNameLower = mapName:lower()
+	for i, mapType in ipairs(g_MapTypes) do
+		if(not mapType.pattern or mapNameLower:match(mapType.pattern)) then
 			return mapType
 		end
 	end
@@ -175,7 +175,7 @@ function Map:isForbidden(room)
 	assert(room)
 	
 	local max_map_rep = Settings.max_map_rep
-	if (self == getLastMap(room) and max_map_rep > 0 and room.mapRepeats >= max_map_rep) then
+	if(self == getLastMap(room) and max_map_rep > 0 and room.mapRepeats >= max_map_rep) then
 		return "Map cannot be repeated!"
 	end
 	
@@ -183,9 +183,9 @@ function Map:isForbidden(room)
 	local forced = mapType.others_in_row >= mapType.max_others_in_row
 	
 	-- if it's not forced, let's check if there are other forced types
-	if (not forced) then
-		for i, mapType in ipairs (g_MapTypes) do
-			if (mapType.others_in_row >= mapType.max_others_in_row) then
+	if(not forced) then
+		for i, mapType in ipairs(g_MapTypes) do
+			if(mapType.others_in_row >= mapType.max_others_in_row) then
 				return "You can vote only for race map now! Allowed types: %s.", mapType.name
 			end
 		end

@@ -66,6 +66,25 @@ function addPlayerTime(player_id, map_id, time)
 	return pos
 end
 
+function BtDeleteTimes(cond, ...)
+	local rows = DbQuery('SELECT rec, cp_times FROM '..BestTimesTable..' WHERE '..cond, ...)
+	local blobs = {}
+	for i, row in ipairs(rows) do
+		if(row.rec ~= 0) then
+			table.insert(blobs, row.rec)
+		end
+		if(row.cp_times ~= 0) then
+			table.insert(blobs, row.cp_times)
+		end
+	end
+	
+	DbQuery('DELETE FROM '..BestTimesTable..' WHERE '..cond, ...)
+	if(#blobs > 0) then
+		local blobsStr = table.concat(blobs, ',')
+		DbQuery('DELETE FROM '..BlobsTable..' WHERE id IN (??)', blobsStr)
+	end
+end
+
 function BtSendMapInfo(room, show, player)
 	local prof = DbgPerf()
 	local map = getCurrentMap(room)
