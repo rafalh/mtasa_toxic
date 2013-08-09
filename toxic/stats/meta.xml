@@ -3,6 +3,7 @@
 	<info name="Statistics" author="rafalh" />
 	
 	<script src="stats_s.lua" type="server" />
+	<script src="stats_c.lua" type="client" />
 	<script src="cmd_s.lua" type="server" />
 	<script src="adminCmd_s.lua" type="server" />
 	<script src="gui_c.lua" type="client" />
@@ -10,6 +11,8 @@
 	<script src="http_s.lua" type="server" />
 	<script src="dd_s.lua" type="server" />
 	<script src="dd_c.lua" type="client" />
+	<script src="exp_s.lua" type="server" />
+	<script src="exp_c.lua" type="client" />
 	
 	<file src="img/icon.png" />
 	<file src="img/skull.png" />

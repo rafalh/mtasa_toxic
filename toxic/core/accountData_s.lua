@@ -1,6 +1,7 @@
 AccountData = {}
 AccountData.__mt = {__index = AccountData}
 AccountData.onChangeHandlers = {}
+AccountData.onChangeDoneHandlers = {}
 AccountData.map = {}
 setmetatable(AccountData.map, {__mode = 'v'}) -- weak table
 
@@ -107,20 +108,28 @@ function AccountData:set(arg1, arg2, arg3)
 				for i, handler in ipairs(AccountData.onChangeHandlers) do
 					handler(self, k, v)
 				end
+				--onPostChangeHandlers
 			end
 			
 			self.cache[k] = v
 		end
 	end
 	
+	local result = true
 	if(self.id and set ~= '') then
 		-- Add player ID at the end of parameters table. Note: we can't use it when calling DbQuery
 		-- because unpack has to be on the last place. If it's not only one element from table is used.
 		table.insert(params, self.id)
 		
-		return DbQuery('UPDATE '..PlayersTable..' SET '..set:sub(2)..' WHERE player=?', unpack(params))
-	else
-		return true
+		result = DbQuery('UPDATE '..PlayersTable..' SET '..set:sub(2)..' WHERE player=?', unpack(params))
+	end
+	
+	if(not silent) then
+		for k, v in pairs(data) do
+			for i, handler in ipairs(AccountData.onChangeDoneHandlers) do
+				handler(self, k)
+			end
+		end
 	end
 end
 

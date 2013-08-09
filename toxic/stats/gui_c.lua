@@ -1,15 +1,8 @@
---------------
--- Includes --
---------------
-
-#include 'include/internal_events.lua'
-
 ---------------------
 -- Local variables --
 ---------------------
 
 local g_Timer = nil
-local g_Stats = {}
 
 local StatsPanel = {
 	name = "Statistics",
@@ -68,21 +61,10 @@ StatsView.__mt = {__index = StatsView}
 StatsView.elMap = {}
 
 function StatsView.updatePlayTime()
-	local now = getRealTime().timestamp
-	
-	for id, stats in pairs(g_Stats) do
-		if(stats.refs > 0) then
-			local playTime = stats.time_here
-			if(stats._loginTimestamp) then
-				playTime = now - tonumber(stats._loginTimestamp) + playTime
-			end
-			stats._playTime = playTime
-			stats.valCache.playtime = false
-		end
-	end
+	StUpdatePlayTime()
 	
 	for wnd, view in pairs(StatsView.elMap) do
-		local stats = g_Stats[view.id]
+		local stats = StGet(view.id)
 		if(stats and view.sync) then
 			view:update()
 		end
@@ -91,7 +73,7 @@ end
 
 function StatsView:update()
 	-- update rest
-	local stats = g_Stats[self.id]
+	local stats = StGet(self.id)
 	if(not stats) then return end
 	
 	local values = {}
@@ -115,9 +97,8 @@ end
 function StatsView:destroy(ignoreEl)
 	self:hide()
 	
-	local id = self.id
-	if(id ~= g_MyId and g_Stats[id].refs == 0) then
-		g_Stats[id] = nil
+	if(self.id ~= g_MyId) then
+		StDeleteIfNotUsed(self.id)
 	end
 	
 	StatsView.elMap[self.el] = nil
@@ -174,61 +155,15 @@ end
 function StatsView:show()
 	if(self.sync) then return end
 	
-	local id = self.id
-	local force = false
-	
-	if(not g_Stats[id]) then
-		g_Stats[id] = {refs = 0, valCache = {}}
-		force = true
-	end
-	
-	if(g_Stats[id].refs == 0) then
-		--outputDebugString('start sync '..tostring(id), 2)
-		triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, {stats = id}, force)
-	end
-	g_Stats[id].refs = g_Stats[id].refs + 1
+	StStartSync(self.id)
 	self.sync = true
 end
 
 function StatsView:hide(stopSync)
 	if(not self.sync) then return end
 	
-	local id = self.id
 	self.sync = false
-	g_Stats[id].refs = g_Stats[id].refs - 1
-	if(g_Stats[id].refs == 0) then
-		--outputDebugString('pause sync '..tostring(id), 2)
-		local req = stopSync and $(EV_STOP_SYNC_REQUEST) or $(EV_PAUSE_SYNC_REQUEST)
-		triggerServerInternalEvent(req, g_Me, {stats = id})
-	end
-end
-
-function StatsView.onSync(sync_tbl)
-	-- is it stats sync?
-	if(not sync_tbl.stats or not sync_tbl.stats[2]) then return end
-	
-	-- check id
-	local id = sync_tbl.stats[1]
-	if(not g_Stats[id] and id ~= g_MyId and id ~= g_Me) then return end
-	
-	-- create table if not exists
-	if(not g_Stats[id]) then
-		g_Stats[id] = {refs = 0}
-	end
-	
-	-- update stats
-	for field, val in pairs(sync_tbl.stats[2]) do
-		g_Stats[id][field] = val
-	end
-	g_Stats[id]._playTime = g_Stats[id].time_here
-	g_Stats[id].valCache = {}
-	
-	-- update GUI
-	for wnd, view in pairs(StatsView.elMap) do
-		if(view.id == id) then
-			view:update()
-		end
-	end
+	StStopSync(self.id)
 end
 
 function StatsPanel.onShow(panel)
@@ -261,5 +196,4 @@ UpRegister(StatsPanel)
 -- Events --
 ------------
 
-addInternalEventHandler($(EV_SYNC), StatsView.onSync)
 addEventHandler('main.onAccountChange', g_ResRoot, StatsPanel.onAccountChange)

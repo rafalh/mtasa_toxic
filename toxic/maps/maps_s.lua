@@ -21,8 +21,6 @@ addEvent('onGamemodeMapStart')
 addEvent('onGamemodeMapStop')
 addEvent('onPlayerPickUpRacePickup')
 addEvent('onClientSetNextMap', true)
-addEvent('onClientMapList', true)
-addEvent('onMapListReq', true)
 addEvent('onChangeMapReq', true)
 
 function initRoomMaps(room)
@@ -490,7 +488,7 @@ local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 	prof:cp('onPlayerPickUpRacePickup')
 end
 
-local function onMapListReq()
+function getMapList()
 	local prof = DbgPerf()
 	local prof2 = DbgPerf(20)
 	
@@ -515,10 +513,10 @@ local function onMapListReq()
 		end
 	end
 	prof2:cp('onMapListReq 4')
-	triggerClientEvent(client, 'onClientMapList', g_ResRoot, mapsList)
-	prof2:cp('onMapListReq 5')
 	prof:cp('onMapListReq')
+	return mapsList
 end
+RPC.allow('getMapList')
 
 local function onChangeMapReq(mapResName)
 	if (not hasObjectPermissionTo (client, 'command.setmap', false)) then return end
@@ -611,6 +609,5 @@ addInitFunc(function()
 	addEventHandler('onPlayerFinish', g_Root, onPlayerFinish)
 	addEventHandler('onPlayerWinDD', g_Root, onPlayerWinDD)
 	addEventHandler('onPlayerPickUpRacePickup', g_Root, onPlayerPickUpRacePickup)
-	addEventHandler('onMapListReq', g_ResRoot, onMapListReq)
 	addEventHandler('onChangeMapReq', g_ResRoot, onChangeMapReq)
 end)

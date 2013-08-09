@@ -41,21 +41,27 @@ local function StAccountDataChange(accountData, name, newValue)
 	if(not table.find(g_Stats, name)) then return end -- not a stat
 	
 	local player = Player.fromId(accountData.id)
-	
 	if(player and name == 'points') then
 		setPlayerAnnounceValue(player.el, 'score', tostring(newValue))
 		
-		local oldRank = StRankFromPoints(accountData:get('points'))
+		local oldRank = StRankFromPoints(accountData.points)
 		local newRank = StRankFromPoints(newValue)
 		if(newRank ~= oldRank) then
 			outputMsg(g_Root, Styles.stats, "%s has new rank: %s!", player:getName(), newRank)
 		end
+		
+		HandleExpChange(player, accountData.points, newValue)
 	end
+end
+
+local function StAccountDataChangeDone(accountData, name)
+	if(not table.find(g_Stats, name)) then return end -- not a stat
 	
+	local player = Player.fromId(accountData.id)
 	if(player) then
 		AchvCheckPlayer(player.el)
 	end
-	
+
 	notifySyncerChange('stats', accountData.id)
 end
 
@@ -158,6 +164,7 @@ local function StInit()
 	addEventHandler('onPlayerWasted', g_Root, StOnPlayerWasted)
 	addEventHandler('onVehicleExplode', g_Root, StOnVehicleExplode)
 	table.insert(AccountData.onChangeHandlers, StAccountDataChange)
+	table.insert(AccountData.onChangeDoneHandlers, StAccountDataChangeDone)
 end
 
 addInitFunc(StInit)

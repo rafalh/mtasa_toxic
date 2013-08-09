@@ -1,5 +1,3 @@
-addEvent('onClientMapList', true )
-addEvent('onMapListReq', true )
 addEvent('onClientDisplayVotenextGuiReq', true )
 addEvent('onVotenextReq', true )
 addEvent('onClientDisplayNextMapGuiReq', true )
@@ -92,7 +90,7 @@ end
 function MlstDisplay ( title, btn_name, callback )
 	if ( not g_MapList ) then
 		g_MapList = {}
-		triggerServerEvent ( 'onMapListReq', g_ResRoot )
+		RPC('getMapList'):onResult(MlstOnMapList):exec()
 	end
 	
 	local gui = { cb = callback }
@@ -172,7 +170,6 @@ local function DisplayChangeMapGui ()
 	end )
 end
 
-addEventHandler('onClientMapList', g_ResRoot, MlstOnMapList)
 addEventHandler('onClientDisplayVotenextGuiReq', g_ResRoot, DisplayVotenextGui)
 addEventHandler('onClientDisplayNextMapGuiReq', g_ResRoot, DisplayNextMapGui)
 addEventHandler('onClientDisplayChangeMapGuiReq', g_ResRoot, DisplayChangeMapGui)
