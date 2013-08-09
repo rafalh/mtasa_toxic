@@ -60,7 +60,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 158,
+	currentVer = 159,
 	list = {
 		{
 			ver = 153,
@@ -124,6 +124,16 @@ Updater = {
 				if(not DbQuerySync('DROP INDEX IF EXISTS '..DbPrefix..'maps_idx') or
 					not DbQuerySync('CREATE UNIQUE INDEX '..DbPrefix..'maps_idx ON '..MapsTable..' (name)')) then
 					return 'Failed to recreate rafalh_maps_idx'
+				end
+				return false
+			end
+		},
+		{
+			ver = 159,
+			func = function()
+				if(not DbQuerySync('DROP INDEX IF EXISTS '..DbPrefix..'mutes_idx') or
+					not DbQuerySync('CREATE UNIQUE INDEX '..DbPrefix..'mutes_idx ON '..MutesTable..' (serial)')) then
+					return 'Failed to recreate rafalh_mutes_idx'
 				end
 				return false
 			end
