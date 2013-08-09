@@ -13,7 +13,7 @@ local MYSELF_COLOR = tocolor(180, 255, 255)
 local BACKGROUND_COLOR = tocolor(0, 0, 0, 64)
 local ENABLED_STAR_CLR = tocolor(255, 255, 255)
 local DISABLED_STAR_CLR = tocolor(255, 255, 255, 64)
-local USE_RENDER_TARGER = true
+local USE_RENDER_TARGET = true
 
 local g_MapInfo = {name = '', author = false, rating = 0, rates_count = 0, played = 0}
 local g_TopTimes = {}
@@ -153,7 +153,7 @@ local function MiRender()
 end
 
 local function MiRestore()
-	if(USE_RENDER_TARGER) then
+	if(USE_RENDER_TARGET) then
 		MiUpdateBuffer()
 	end
 end
@@ -192,7 +192,7 @@ local function MiOnMapInfo(show, mapInfo, topTimes, myBestTime)
 	g_MapInfo, g_TopTimes = mapInfo, topTimes
 	g_MyBestTime = myBestTime and myBestTime.pos > #g_TopTimes and myBestTime
 	
-	if(USE_RENDER_TARGER) then
+	if(USE_RENDER_TARGET) then
 		MiUpdateBuffer()
 	end
 	
