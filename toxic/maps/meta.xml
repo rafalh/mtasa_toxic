@@ -23,5 +23,6 @@
 	<settings>
 		<setting group="Maps" name="*max_map_rep" accept="0-100" value="0" desc="Maximal number of repeats of the map. If equal 0 map can be repeated infinited number of times." friendlyname="Maximal map repeats count" />
 		<setting group="Maps" name="*no_gm_warning_time" accept="0-100000" value="3" desc="Number of seconds, during which warning, before disabling Ghost-mode, is displayed." friendlyname="Ghostmode OFF warning time" />
+		<setting group="Maps" name="*map_queue_capacity" accept="0-100" value="5" friendlyname="Maximal number of maps in queue" />
 	</settings>
 </meta>

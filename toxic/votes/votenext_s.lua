@@ -8,7 +8,9 @@ local function onRafalhVotenextResult(roomEl, map_res)
 	if (map_res) then
 		local room = Room.create(roomEl)
 		local map = Map.create(map_res)
-		MqAdd(room, map, true)
+		if(not MqAdd(room, map, true)) then
+			outputMsg(g_Root, Styles.red, "Map queue is full!")
+		end
 	end
 end
 

@@ -7,6 +7,10 @@ function MqAdd(room, map, display_msg, player)
 		room.mapQueue = {}
 	end
 	
+	if(#room.mapQueue >= Settings.map_queue_capacity) then
+		return false
+	end
+	
 	table.insert(room.mapQueue, map)
 	local pos = #room.mapQueue
 	
@@ -103,10 +107,10 @@ local function MqOnAddReq(mapResName)
 		end
 	end
 	
-	if(map) then
-		MqAdd(room, map, true, client)
-	else
+	if(not map) then
 		outputDebugString('getResourceFromName failed '..tostring(mapResName), 2)
+	elseif(not MqAdd(room, map, true, client)) then
+		outputMsg(client, Styles.red, "Map queue is full!")
 	end
 end
 

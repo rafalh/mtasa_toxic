@@ -83,8 +83,8 @@ local function AddMapToQueue(room, map)
 	if (rows[1].removed ~= '') then
 		local map_name = map:getName()
 		privMsg(source, "%s has been removed!", map_name)
-	else
-		MqAdd(room, map, true, source)
+	elseif(not MqAdd(room, map, true, source)) then
+		outputMsg(source, Styles.red, "Map queue is full!")
 	end
 end
 
