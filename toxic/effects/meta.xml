@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Effects" author="rafalh" version="2.61" />
+	<info name="Effects" author="rafalh" />
 	
 	<script src="carhide_c.lua" type="client" />
 	<script src="effects_c.lua" type="client" />

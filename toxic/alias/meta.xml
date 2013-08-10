@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Alias support" author="rafalh" version="2.61" />
+	<info name="Alias support" author="rafalh" />
 	
 	<script src="alias_s.lua" type="server" />
 	<script src="cmd_s.lua" type="server" />

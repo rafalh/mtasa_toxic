@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="VIP Support" author="rafalh" version="2.61" />
+	<info name="VIP Support" author="rafalh" />
 	
 	<script src="gui_c.lua" type="client" />
 	<script src="cmd_s.lua" type="server" />

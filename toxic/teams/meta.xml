@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Teams" author="rafalh" version="2.61" />
+	<info name="Teams" author="rafalh" />
 	
 	<script src="teams_s.lua" type="server" />
 	<script src="admin_s.lua" type="server" />

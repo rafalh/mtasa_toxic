@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="About Server Panel" author="rafalh" version="2.61" />
+	<info name="About Server Panel" author="rafalh" />
 	
 	<script src="gui_c.lua" type="client" />
 	<file src="icon.png" />

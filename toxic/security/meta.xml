@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Security" author="rafalh" version="2.61" />
+	<info name="Security" author="rafalh" />
 	
 	<script src="anticamp_s.lua" type="server" />
 	<script src="anticheat_s.lua" type="server" />

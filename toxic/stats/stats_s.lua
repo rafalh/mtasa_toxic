@@ -29,11 +29,11 @@ PlayersTable:addColumns{
 	{'racesPlayed',   'MEDIUMINT UNSIGNED', default = 0},
 	{'achvCount',     'TINYINT UNSIGNED',   default = 0},
 	
-	-- Effectiveness
-	{'efectiveness',      'FLOAT', default = 0},
+	-- Effectiveness (TODO)
+	--[[{'efectiveness',      'FLOAT', default = 0},
 	{'efectiveness_dd',   'FLOAT', default = 0},
 	{'efectiveness_dm',   'FLOAT', default = 0},
-	{'efectiveness_race', 'FLOAT', default = 0},
+	{'efectiveness_race', 'FLOAT', default = 0},]]
 }
 
 local function StAccountDataChange(accountData, name, newValue)

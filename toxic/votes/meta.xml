@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Votes" author="rafalh" version="2.61" />
+	<info name="Votes" author="rafalh" />
 	
 	<script src="autovotes_s.lua" type="server" />
 	<script src="betweenMaps_s.lua" type="server" />

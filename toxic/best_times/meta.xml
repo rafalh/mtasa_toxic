@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Best Times" author="rafalh" version="2.61" />
+	<info name="Best Times" author="rafalh" />
 	
 	<script src="main_s.lua" type="server" />
 	<script src="cmd_s.lua" type="server" />

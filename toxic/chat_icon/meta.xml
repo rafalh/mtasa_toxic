@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Chat Icon" author="rafalh" version="2.61" />
+	<info name="Chat Icon" author="rafalh" />
 	
 	<script src="chat_s.lua" type="server" />
 	<script src="chat_c.lua" type="client" />

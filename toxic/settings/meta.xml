@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Settings" author="rafalh" version="2.61" />
+	<info name="Settings" author="rafalh" />
 	
 	<script src="gui_c.lua" type="client" />
 	<script src="audio_c.lua" type="client" />

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Gambling" author="rafalh" version="2.61" />
+	<info name="Gambling" author="rafalh" />
 	
 	<script src="main_s.lua" type="server" />
 	<script src="bets_cmd_s.lua" type="server" />
