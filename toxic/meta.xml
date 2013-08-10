@@ -92,8 +92,8 @@
 	<module src="settings" />
 	<module src="votes" />
 	<module src="about" />
-	<module src="button_theme" />
-	<module src="avatars" />
+	<!--module src="button_theme" /-->
+	<!--module src="avatars" /-->
 	<!-- MODULES END -->
 	
 	<script src="core/stop_s.lua" type="server" />
