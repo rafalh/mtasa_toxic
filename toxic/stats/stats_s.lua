@@ -204,6 +204,18 @@ function StPlayerWin(player)
 	end
 end
 
+-- Called from maps
+function StHunterTaken(player)
+#if(DM_STATS) then
+	local map = getCurrentMap(player.room)
+	local mapType = map and map:getType()
+	
+	if(mapType and mapType.name == 'DM') then
+		player.accountData:add('huntersTaken', 1)
+	end
+#end
+end
+
 -- Called from core
 function StSetupScoreboard(res)
 	if(Settings.scoreboard_lvl) then

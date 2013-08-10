@@ -421,9 +421,7 @@ local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 			GmSet(room, false)
 		end
 		
-		if(mapType.name == 'DM') then
-			pdata.accountData:add('huntersTaken', 1)
-		end
+		StHunterTaken(pdata)
 		
 		local race_res = getResourceFromName('race')
 		local ms = race_res and call(race_res, 'getTimePassed')
