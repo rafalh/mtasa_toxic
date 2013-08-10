@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 AchvRegister{
 	id = 0,
 	name = "Open User Panel",
@@ -33,6 +36,7 @@ AchvRegister{
 	prize = 2000,
 }
 
+#if(RACE_STATS) then
 AchvRegister{
 	id = 4,
 	name = "Finish a race",
@@ -67,7 +71,8 @@ AchvRegister{
 	checkStats = function(stats) return stats.raceVictories >= 1000 end,
 	prize = 100000,
 }
-
+#end
+#if(DM_STATS) then
 AchvRegister{
 	id = 9,
 	name = "Take 1st hunter on DM",
@@ -95,7 +100,8 @@ AchvRegister{
 	checkStats = function(stats) return stats.huntersTaken >= 1000 end,
 	prize = 100000,
 }
-
+#end
+#if(DD_STATS) then
 AchvRegister{
 	id = 13,
 	name = "1st victory on DD",
@@ -123,7 +129,7 @@ AchvRegister{
 	checkStats = function(stats) return stats.ddVictories >= 1000 end,
 	prize = 100000,
 }
-
+#end
 AchvRegister{
 	id = 17,
 	name = "Play 50 matches",
