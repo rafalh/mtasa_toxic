@@ -14,7 +14,7 @@ MapsTable = Database.Table{
 }
 
 addEvent('onPlayerFinish')
-addEvent('onPlayerWinDD')
+addEvent('onPlayerFinishDD')
 addEvent('onRoomMapStart')
 addEvent('onRoomMapStop')
 addEvent('onGamemodeMapStart')
@@ -323,42 +323,9 @@ local function handlePlayerTime(player, ms)
 end
 
 local function handlePlayerWin(player)
-	local pdata = Player.fromEl(player)
-	local room = pdata.room
 	scriptMsg("%s is the winner!", getPlayerName(player))
 	
 	GbFinishBets(player)
-	
-	StPlayerWin(pdata)
-end
-
-local function setPlayerFinalRank(player, rank)
-	local prof = DbgPerf()
-	local prof2 = DbgPerf(20)
-	
-	local cashadd = math.floor (1000 * g_PlayersCount / rank)
-	local pointsadd = math.floor (g_PlayersCount / rank)
-	local pdata = Player.fromEl(player)
-	prof2:cp('setPlayerFinalRank 1')
-	
-	local stats = {}
-	stats.cash = pdata.accountData.cash + cashadd
-	stats.points = pdata.accountData.points + pointsadd
-	pdata.accountData:set(stats)
-	prof2:cp('setPlayerFinalRank 2')
-	
-	pdata:addNotify{
-		icon = 'maps/coins.png',
-		{"%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash)},
-		{"You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points)},
-	}
-	prof2:cp('setPlayerFinalRank 3')
-	
-	if(rank == 1) then
-		handlePlayerWin(player)
-	end
-	prof2:cp('setPlayerFinalRank 4')
-	prof:cp('setPlayerFinalRank')
 end
 
 local function onPlayerFinish(rank, ms)
@@ -367,43 +334,38 @@ local function onPlayerFinish(rank, ms)
 	
 	local pdata = Player.fromEl(source)
 	local map = getCurrentMap(pdata.room)
-	local map_id = map:getId()
-	prof2:cp('onPlayerFinish 1')
-	
-	pdata.accountData:add('racesFinished', 1)
-	prof2:cp('onPlayerFinish 2')
 	
 	local n = handlePlayerTime(source, ms)
 	local improvedBestTime = (n >= 1)
-	prof2:cp('onPlayerFinish 3')
 	
-	RcFinishRecordingPlayer(source, ms, map_id, improvedBestTime)
-	prof2:cp('onPlayerFinish 4')
+	RcFinishRecordingPlayer(source, ms, map:getId(), improvedBestTime)
 	
-	setPlayerFinalRank(source, rank)
-	prof2:cp('onPlayerFinish 5')
+	if(rank == 1) then
+		handlePlayerWin(source)
+	end
+	
+	StPlayerFinish(pdata, rank, ms)
 	
 	prof:cp('onPlayerFinish')
 end
 
-local function onPlayerWinDD()
-	local prof = DbgPerf()
+local function onPlayerFinishDD(rank, timePassed)
+	if(rank == 1) then
+		handlePlayerWin(source)
+		triggerClientEvent(root, 'main.onPlayerWinDD', source)
+		
+		--[[local game_weight = 0.007 * g_PlayersCount / 32
+		local pdata = Player.fromEl(source)
+		for player, pdata in pairs(g_Players) do
+			local efectiveness_dd = pdata.accountData.efectiveness_dd
+			local rank = (player == source) and 1 or g_PlayersCount
+			efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
+			pdata.accountData:set('efectiveness_dd', efectiveness_dd)
+		end]]
+	end
 	
-	local pdata = Player.fromEl(source)
-	
-	--local game_weight = 0.007 * g_PlayersCount / 32
-	
-	--[[for player, pdata in pairs(g_Players) do
-		local efectiveness_dd = pdata.accountData.efectiveness_dd
-		local rank = (player == source) and 1 or g_PlayersCount
-		efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
-		pdata.accountData:set('efectiveness_dd', efectiveness_dd)
-	end]]
-	
-	setPlayerFinalRank(source, 1)
-	triggerClientEvent(root, 'main.onPlayerWinDD', source)
-	
-	prof:cp('onPlayerWinDD')
+	local player = Player.fromEl(source)
+	StPlayerFinish(player, rank, timePassed)
 end
 
 local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
@@ -554,7 +516,7 @@ addInitFunc(function()
 		onMapStop(g_RootRoom)
 	end)
 	addEventHandler('onPlayerFinish', g_Root, onPlayerFinish)
-	addEventHandler('onPlayerWinDD', g_Root, onPlayerWinDD)
+	addEventHandler('onPlayerFinishDD', g_Root, onPlayerFinishDD)
 	addEventHandler('onPlayerPickUpRacePickup', g_Root, onPlayerPickUpRacePickup)
 	addEventHandler('onChangeMapReq', g_ResRoot, onChangeMapReq)
 end)

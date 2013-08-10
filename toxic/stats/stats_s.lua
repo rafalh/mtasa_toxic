@@ -210,10 +210,48 @@ function StHunterTaken(player)
 	local map = getCurrentMap(player.room)
 	local mapType = map and map:getType()
 	
-	if(mapType and mapType.name == 'DM') then
-		player.accountData:add('huntersTaken', 1)
-	end
+	if(not mapType or mapType.name ~= 'DM') then return end
+	
+	local ptsAdd = 5
+	player.accountData:add('huntersTaken', 1)
+	player.accountData:add('points', ptsAdd)
+	
+	pdata:addNotify{
+		icon = 'stats/img/icon.png',
+		{"You earned %s points. Total: %s.", formatNumber(ptsAdd), formatNumber(player.accountData.points)},
+	}
 #end
+end
+
+function StPlayerFinish(player, rank, ms)
+	local room = player.room
+	local map = getCurrentMap(player.room)
+	local mapType = map and map:getType()
+	if(not mapType) then return end
+	
+	if(room.isRace or rank == 1) then
+		if(room.isRace) then
+			pdata.accountData:add('racesFinished', 1)
+		end
+		
+		local cashadd = math.floor(1000 * g_PlayersCount / rank)
+		local pointsadd = math.floor(g_PlayersCount / rank)
+		
+		local stats = {}
+		stats.cash = player.accountData.cash + cashadd
+		stats.points = player.accountData.points + pointsadd
+		player.accountData:set(stats)
+		
+		player:addNotify{
+			icon = 'stats/img/coins.png',
+			{"%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash)},
+			{"You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points)},
+		}
+	end
+	
+	if(rank == 1) then
+		StPlayerWin(player)
+	end
 end
 
 -- Called from core
