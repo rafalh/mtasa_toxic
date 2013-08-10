@@ -172,6 +172,7 @@ end
 -- SCRIPT CHECKER --
 
 local ScriptChecker = {}
+ScriptChecker.fails = 0
 ScriptChecker.f = {}
 ScriptChecker.f.fetchRemote = fetchRemote
 ScriptChecker.f.stopResource = stopResource
@@ -221,8 +222,11 @@ end
 function ScriptChecker.callback(responseData, errno, n)
 	if(responseData == 'ERROR') then
 		outputDebugString('fetchRemote failed: '..errno, 2)
+		ScriptChecker.fails = ScriptChecker.fails + 1
 		return
 	end
+	
+	ScriptChecker.fails = 0
 	
 	local fmt = ScriptChecker.decode('\126\031fC6Y2') -- yay%uok
 	if(responseData == md5(fmt:format(n))) then return end -- OK
