@@ -12,7 +12,7 @@ function ExpFromLvl(lvl)
 	return (100 + (lvl - 1)*100)/2 * (lvl - 1)
 end
 
-function HandleExpChange(player, oldExp, newExp)
+function StDetectLevelChange(player, oldExp, newExp)
 	local oldLvl = LvlFromExp(oldExp)
 	local newLvl = LvlFromExp(newExp)
 	if(newLvl ~= oldLvl) then

@@ -263,10 +263,7 @@ local function onMapStart(map, room)
 		-- allow bets
 		GbStartBets()
 		
-		room.ddKilersDetection = (mapType.name == 'DD')
-		if(room.ddKilersDetection) then
-			RPC('DDSetKillersDetectionEnabled', true):exec()
-		end
+		StMapStart(room)
 	end
 	
 	prof2:cp('onMapStart 8')
@@ -290,10 +287,7 @@ local function onMapStop(room)
 		g_OldVehicleWeapons = nil
 	end
 	
-	if(room.ddKilersDetection) then
-		RPC('DDSetKillersDetectionEnabled', false):exec()
-		room.ddKilersDetection = false
-	end
+	StMapStop(room)
 	
 	room.currentMap = false
 	

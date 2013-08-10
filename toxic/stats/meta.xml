@@ -11,6 +11,7 @@
 	<script src="http_s.lua" type="server" />
 	<script src="dd_s.lua" type="server" />
 	<script src="dd_c.lua" type="client" />
+	<script src="ranks_s.lua" type="server" />
 	<script src="exp_s.lua" type="server" />
 	<script src="exp_c.lua" type="client" />
 	

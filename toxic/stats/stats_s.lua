@@ -1,4 +1,3 @@
-local g_Ranks = {}
 local g_Stats = {
 	'cash', 'points',
 	'mapsPlayed', 'mapsBought', 'mapsRated',
@@ -44,13 +43,8 @@ local function StAccountDataChange(accountData, name, newValue)
 	if(player and name == 'points') then
 		setPlayerAnnounceValue(player.el, 'score', tostring(newValue))
 		
-		local oldRank = StRankFromPoints(accountData.points)
-		local newRank = StRankFromPoints(newValue)
-		if(newRank ~= oldRank) then
-			outputMsg(g_Root, Styles.stats, "%s has new rank: %s!", player:getName(), newRank)
-		end
-		
-		HandleExpChange(player, accountData.points, newValue)
+		StDetectRankChange(player, accountData.points, newValue)
+		StDetectLevelChange(player, accountData.points, newValue)
 	end
 end
 
@@ -63,21 +57,6 @@ local function StAccountDataChangeDone(accountData, name)
 	end
 
 	notifySyncerChange('stats', accountData.id)
-end
-
-function StRankFromPoints(points)
-	assert(points)
-	local pt = -1
-	local rank = nil
-	
-	for pt_i, rank_i in pairs(g_Ranks) do
-		if(pt_i > pt and pt_i <= points) then
-			rank = rank_i
-			pt = pt_i
-		end
-	end
-	
-	return rank or "none"
 end
 
 local function StPlayerStatsSyncCallback(idOrPlayer)
@@ -105,24 +84,6 @@ local function StPlayerStatsSyncCallback(idOrPlayer)
 	return data
 end
 
-local function StLoadRanks()
-	local node, i = xmlLoadFile('conf/ranks.xml'), 0
-	if(not node) then return false end
-	
-	while(true) do
-		local subnode = xmlFindChild(node, 'rank', i)
-		if(not subnode) then break end
-		i = i + 1
-		
-		local pts = touint(xmlNodeGetAttribute(subnode, 'points' ), 0)
-		local name = xmlNodeGetAttribute(subnode, 'name')
-		assert(name)
-		g_Ranks[pts] = name
-	end
-	xmlUnloadFile(node)
-	return true
-end
-
 local function StOnPlayerJoin()
 	local player = Player.fromEl(source)
 	local pts = player.accountData:get('points')
@@ -147,6 +108,16 @@ local function StOnVehicleExplode()
 	if(getElementHealth(source) > 0) then
 		player.accountData:add('exploded', 1)
 	end
+end
+
+-- Called from maps
+function StMapStart(room)
+	DdMapStart(room)
+end
+
+-- Called from maps
+function StMapStop(room)
+	DdMapStop(room)
 end
 
 local function StInit()

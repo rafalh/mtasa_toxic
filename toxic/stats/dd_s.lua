@@ -57,7 +57,21 @@ local function onKillersList(killer, assist)
 	end
 end
 
-local function onMapStop()
+function DdMapStart(room)
+	local map = getCurrentMap(room)
+	local mapType = map and map:getType()
+	room.ddKilersDetection = (map and mapType.name == 'DD')
+	if(room.ddKilersDetection) then
+		RPC('DdSetKillersDetectionEnabled', true):exec()
+	end
+end
+
+function DdMapStop(room)
+	if(room.ddKilersDetection) then
+		RPC('DdSetKillersDetectionEnabled', false):exec()
+		room.ddKilersDetection = false
+	end
+	
 	for player, pdata in pairs(g_Players) do
 		pdata.currentMapKills = 0
 		pdata.killed = false
@@ -77,6 +91,5 @@ end
 
 addInitFunc(function()
 	--addEventHandler('stats.onDDKillersList', resourceRoot, onKillersList)
-	addEventHandler('onGamemodeMapStop', root, onMapStop)
 	addEventHandler('onPlayerWasted', root, onPlayerWasted)
 end)

@@ -56,7 +56,7 @@ end
 	triggerServerEvent('stats.onDDKillersList', resourceRoot, killerPlayer, assistPlayer)
 end]]
 
-function DDSetKillersDetectionEnabled(enabled)
+function DdSetKillersDetectionEnabled(enabled)
 	local curEnabled = g_LastCol and true
 	if(curEnabled == enabled) then return end
 	--outputDebugString('DD killers detection: '..tostring(enabled), 3)
