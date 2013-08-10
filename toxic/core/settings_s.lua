@@ -103,17 +103,17 @@ function Settings.loadPrivate()
 	end
 	for key, val in pairs(rows[1]) do
 		local item = Settings.items[key]
-		assert(item)
-		
-		if(item.type == 'BOOL' or item.type == 'BOOLEAN') then
-			item.validate = tobool
-			item.valArgs = {}
-			val = tobool(val)
-		elseif(item.type == 'INT' or item.type == 'INTEGER') then
-			item.validate = toint
-			item.valArgs = {}
+		if(item) then
+			if(item.type == 'BOOL' or item.type == 'BOOLEAN') then
+				item.validate = tobool
+				item.valArgs = {}
+				val = tobool(val)
+			elseif(item.type == 'INT' or item.type == 'INTEGER') then
+				item.validate = toint
+				item.valArgs = {}
+			end
+			item.value = val
 		end
-		item.value = val
 	end
 	
 	return true
