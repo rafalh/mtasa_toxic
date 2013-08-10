@@ -73,6 +73,13 @@ function AvtGetList()
 end
 RPC.allow('AvtGetList')
 
+function AvtGetAccountAvatar(id)
+	local accountData = AccountData.create(id)
+	local avatar = accountData.avatar
+	return avatar ~= '' and avatar
+end
+RPC.allow('AvtGetAccountAvatar')
+
 local function AvtPlayerReady()
 	local player = Player.fromEl(client)
 	AvtUpdatePlayer(player)
