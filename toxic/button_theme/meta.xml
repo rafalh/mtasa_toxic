@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Button theme" author="rafalh" />
+	
+	<script src="widgetHooks_c.lua" type="client" />
+	
+	<file src="button.png" />
+	<file src="buttonHover.png" />
+</meta>
