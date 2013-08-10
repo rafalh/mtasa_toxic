@@ -66,6 +66,7 @@ local function StAccountDataChangeDone(accountData, name)
 end
 
 function StRankFromPoints(points)
+	assert(points)
 	local pt = -1
 	local rank = nil
 	

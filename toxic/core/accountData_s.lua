@@ -28,16 +28,16 @@ function AccountData:fillCache()
 	assert(self.id)
 	local rows = DbQuery('SELECT * FROM '..PlayersTable..' WHERE player=? LIMIT 1', self.id)
 	cache = rows[1] or false
-	rawset(self, 'cache', cache)
+	self.cache = cache
+	self.allCached = true
 end
 
 function AccountData:getTbl()
-	local cache = rawget(self, 'cache')
-	if(not cache) then
+	if(not self.allCached) then
 		self:fillCache()
 	end
 	
-	return cache
+	return self.cache
 end
 
 function AccountData:get(name)
@@ -158,7 +158,7 @@ function AccountData.create(id)
 		return AccountData.map[id]
 	end
 	
-	local self = {id = id, cache = {}}
+	local self = {id = id, cache = {}, allCached = false}
 	if(id) then
 		AccountData.map[id] = self
 	else

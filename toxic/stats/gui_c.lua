@@ -74,18 +74,19 @@ end
 function StatsView:update()
 	-- update rest
 	local stats = StGet(self.id)
+	local valCache = StGetValCache(self.id)
 	if(not stats) then return end
 	
 	local values = {}
 	for i, info in ipairs(STATS) do
-		local value = stats.valCache[info.cache or i]
+		local value = valCache[info.cache or i]
 		if(not value) then
 			if(type(info[2]) == 'function') then
 				value = info[2](stats)
 			else
 				value = stats[info[2]]
 			end
-			stats.valCache[info.cache or i] = value
+			valCache[info.cache or i] = value
 		end
 		table.insert(values, value)
 	end
@@ -163,7 +164,7 @@ function StatsView:hide(stopSync)
 	if(not self.sync) then return end
 	
 	self.sync = false
-	StStopSync(self.id)
+	StStopSync(self.id, stopSync)
 end
 
 function StatsPanel.onShow(panel)

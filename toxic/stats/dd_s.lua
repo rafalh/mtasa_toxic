@@ -69,7 +69,7 @@ local function onPlayerWasted()
 	local map = player and getCurrentMap(player.room)
 	if(not map) then return end
 	
-	if(map:getType().name == 'DD') then
+	if(player.room.ddKilersDetection) then
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
 		outputDebugString('onPlayerWasted '..player:getName(), 3)
 	end

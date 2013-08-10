@@ -263,7 +263,8 @@ local function onMapStart(map, room)
 		-- allow bets
 		GbStartBets()
 		
-		if(mapType.name == 'DD') then
+		room.ddKilersDetection = (mapType.name == 'DD')
+		if(room.ddKilersDetection) then
 			RPC('DDSetKillersDetectionEnabled', true):exec()
 		end
 	end
@@ -289,9 +290,9 @@ local function onMapStop(room)
 		g_OldVehicleWeapons = nil
 	end
 	
-	local mapType = room.currentMap:getType()
-	if(mapType.name == 'DD') then
+	if(room.ddKilersDetection) then
 		RPC('DDSetKillersDetectionEnabled', false):exec()
+		room.ddKilersDetection = false
 	end
 	
 	room.currentMap = false
