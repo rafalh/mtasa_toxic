@@ -1,0 +1,1 @@
+addEvent('onClientSetSpectators', true)

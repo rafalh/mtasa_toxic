@@ -4,6 +4,7 @@
 	
 	<script src="avgPlayers_s.lua" type="server" />
 	<script src="spectators_s.lua" type="server" />
+	<script src="spectators_c.lua" type="client" />
 	<script src="tempMod_s.lua" type="server" />
 	<script src="waterFix_c.lua" type="client" />
 </meta>
