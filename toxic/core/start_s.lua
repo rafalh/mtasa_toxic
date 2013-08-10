@@ -153,7 +153,13 @@ end
 local function setupScoreboard()
 	local scoreboardRes = getResourceFromName('scoreboard')
 	if(scoreboardRes and getResourceState(scoreboardRes) == 'running') then
-		call(scoreboardRes, 'addScoreboardColumn', 'country', g_Root, false, 50, 'country_img')
+		call(scoreboardRes, 'scoreboardAddColumn', 'country', g_Root, 50, 'Country', false, 'country_img')
+		if(AvtSetupScoreboard) then
+			AvtSetupScoreboard(scoreboardRes)
+		end
+		if(StSetupScoreboard) then
+			StSetupScoreboard(scoreboardRes)
+		end
 	end
 end
 

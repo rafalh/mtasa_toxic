@@ -1,5 +1,3 @@
-local DEFAULT_COST = 100000
-local MIN_LEVEL = false
 local AVATARS_DIR = 'avatars/img/'
 
 local g_Avatars = false
@@ -18,11 +16,13 @@ local function AvtLoadList()
 	local node = xmlLoadFile('meta.xml')
 	if(not node) then return end
 	
+	local defPrice = Settings.avatar_price
+	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local src = xmlNodeGetAttribute(subnode, 'src')
 		if(xmlNodeGetName(subnode) == 'file' and src and src:sub(1, AVATARS_DIR:len()) == AVATARS_DIR) then
 			local filename = src:sub(AVATARS_DIR:len() + 1)
-			local cost = touint(xmlNodeGetAttribute(subnode, 'avatarCost'), DEFAULT_COST)
+			local cost = touint(xmlNodeGetAttribute(subnode, 'avatarCost'), defPrice)
 			g_Avatars[filename] = cost
 		end
 	end
@@ -55,10 +55,11 @@ local function AvtSetReq(filename)
 		return
 	end
 	
+	local minLevel = Settings.avatar_min_level
 	if(player.accountData.cash < cost) then
 		privMsg(player.el, "You don't have enough cash!")
-	elseif(MIN_LEVEL and LvlFromExp(player.accountData.points) < MIN_LEVEL) then
-		privMsg(player.el, "You need %u. level to set your avatar!", MIN_LEVEL)
+	elseif(minLevel > 1 and LvlFromExp(player.accountData.points) < minLevel) then
+		privMsg(player.el, "You need %u. level to set your avatar!", minLevel)
 	else
 		player.accountData.avatar = filename or ''
 		player.accountData:add('cash', -cost)
@@ -79,6 +80,12 @@ function AvtGetAccountAvatar(id)
 	return avatar ~= '' and avatar
 end
 RPC.allow('AvtGetAccountAvatar')
+
+function AvtSetupScoreboard(res)
+	if(Settings.scoreboard_avatar) then
+		call(res, 'scoreboardAddColumn', 'avatar',  g_Root, 36, 'Avatar', 1)
+	end
+end
 
 local function AvtPlayerReady()
 	local player = Player.fromEl(client)

@@ -28,7 +28,6 @@ function AvatarView.__mt.__index:init(x, y, w, h, target, allowChange, parent)
 end
 
 function AvatarView.__mt.__index:setAvatar(filename)
-	outputDebugString('setAvatar '..filename, 3)
 	if(not self.el) then return end -- destroyed
 	local path = filename and filename ~= '' and 'avatars/img/'..filename
 	guiStaticImageLoadImage(self.el, path or 'img/no_img.png')

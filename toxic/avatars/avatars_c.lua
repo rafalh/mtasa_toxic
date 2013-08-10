@@ -4,8 +4,6 @@ STYLE.hover = {clr = {255, 255, 255}, a = 1, fnt = 'default-normal'}
 STYLE.active = {clr = {255, 255, 0}, a = 1, fnt = 'default-bold-small'}
 STYLE.iconPos = 'top'
 
-local MIN_LEVEL = false
-
 local g_GUI = false
 local g_Avatars = false
 g_LocalAvatar = false
@@ -58,11 +56,12 @@ end
 function AvtOpenGUI()
 	if(g_GUI) then return end
 	
-	if(MIN_LEVEL) then
+	local minLevel = Settings.avatar_min_level
+	if(minLevel > 1) then
 		local exp = StGet(g_MyId or g_Me, 'points')
 		local lvl = exp and LvlFromExp(exp)
-		if(not lvl or lvl < MIN_LEVEL) then
-			outputMsg(Styles.red, "You need at least %u. level to change your avatar!", MIN_LEVEL)
+		if(not lvl or lvl < minLevel) then
+			outputMsg(Styles.red, "You need at least %u. level to change your avatar!", minLevel)
 			return
 		end
 	end

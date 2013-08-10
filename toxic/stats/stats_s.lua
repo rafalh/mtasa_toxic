@@ -120,6 +120,12 @@ function StMapStop(room)
 	DdMapStop(room)
 end
 
+function StSetupScoreboard(res)
+	if(Settings.scoreboard_lvl) then
+		call(res, 'scoreboardAddColumn', 'lvl', g_Root, 30, 'Lvl', false)
+	end
+end
+
 local function StInit()
 	StLoadRanks()
 	

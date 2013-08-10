@@ -21,4 +21,8 @@
 	<config src="../conf/ranks.xml" type="server" />
 	
 	<export function="getPlayersStats" http="true" />
+	
+	<settings>
+		<setting group="Statistics" name="*scoreboard_lvl" friendlyname="Display Level in Scoreboard" accept="true,false" value="true"  />
+	</settings>
 </meta>

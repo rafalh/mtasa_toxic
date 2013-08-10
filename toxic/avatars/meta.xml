@@ -6,6 +6,12 @@
 	<script src="avatars_c.lua" type="client" />
 	<script src="avatarView_c.lua" type="client" />
 	
+	<settings>
+		<setting group="Avatars" name="*scoreboard_avatar" friendlyname="Display Avatar in Scoreboard" accept="true,false" value="true" />
+		<setting group="Avatars" name="*avatar_price" friendlyname="Default Avatar price" accept="0-1000000" value="10000" />
+		<setting group="Avatars" name="*avatar_min_level" friendlyname="Minimal Level for Avatar" accept="1-1000" value="1" type="shared" />
+	</settings>
+	
 	<file src="img/1.png" avatarCost="100000" />
 	<file src="img/10.png" avatarCost="100000" />
 	<file src="img/11.png" avatarCost="100000" />
