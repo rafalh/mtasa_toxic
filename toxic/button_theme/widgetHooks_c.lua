@@ -1,7 +1,11 @@
+-- Settings
+#HAVE_HOVER_IMG = true
+local LABEL_COLOR = {0, 0, 0}
+
+-- Globals
 local g_LabelFromBtn = {}
 local g_TempHoverImg, g_TempHoverLabel
 local g_ActiveImg
-#HAVE_HOVER_IMG = true
 
 local hoverProc
 
@@ -21,7 +25,7 @@ local function createBtnGUI(x, y, w, h, text, imgPath, relative, parent)
 	local label = guiCreateLabel(0, 0, 1, 0.9, text, true, img)
 	guiLabelSetHorizontalAlign(label, 'center')
 	guiLabelSetVerticalAlign(label, "center")
-	guiLabelSetColor(label, 0, 0, 0)
+	guiLabelSetColor(label, unpack(LABEL_COLOR))
 	guiSetFont(label, 'default-bold-small')
 	guiSetProperty(label, 'MousePassThroughEnabled', 'True')
 	
