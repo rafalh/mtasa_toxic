@@ -18,13 +18,10 @@ g_ListStyle.iconPos = 'left'
 
 local g_Items = {}
 local g_Wnd, g_List
-local g_UserAvatarImg, g_UserLabel, g_LogInOutBtn
+local g_UserAvatarView, g_UserLabel, g_LogInOutBtn
 local g_CurrentItem = false
 local g_Hiding = false
 local g_PanelH
-
--- Events
-addEvent("main.onAvatarChange", true)
 
 -- Functions
 
@@ -106,13 +103,6 @@ local function UpSetAccount(accountName)
 	guiSetText(g_LogInOutBtn, accountName and "Log Out" or "Log In")
 end
 
-local function UpSetAvatar(filename)
-	if(g_UserAvatarImg) then
-		local path = filename and 'avatars/img/'..filename
-		guiStaticImageLoadImage(g_UserAvatarImg, path or 'img/no_img.png')
-	end
-end
-
 local function UpLogInOut()
 	if(g_UserName) then
 		RPC('logOutReq'):exec()
@@ -132,12 +122,8 @@ end
 
 local function UpCreateLocalUserBlock(x, y, w, wnd)
 	local curX = x + 10
-	if(AvtOpenGUI) then
-		local avtPath = g_LocalAvatar and 'avatars/img/'..g_LocalAvatar
-		if(avtPath and not fileExists(avtPath)) then avtPath = false end
-		g_UserAvatarImg = guiCreateStaticImage(curX, y, 48, 48, avtPath or 'img/no_img.png', false, wnd)
-		setElementData(g_UserAvatarImg, 'tooltip', "Click to change your avatar")
-		addEventHandler('onClientGUIClick', g_UserAvatarImg, AvtOpenGUI, false)
+	if(AvatarView) then
+		g_UserAvatarView = AvatarView(curX, y, 48, 48, localPlayer, true, wnd)
 		curX = curX + 55
 	end
 	
@@ -256,4 +242,3 @@ end
 
 addEventHandler('onClientResourceStart', g_ResRoot, UpInit)
 addEventHandler('main.onAccountChange', g_ResRoot, UpSetAccount)
-addEventHandler("main.onAvatarChange", localPlayer, UpSetAvatar)
