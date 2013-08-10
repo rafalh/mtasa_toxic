@@ -4,7 +4,7 @@ local SCALE = 6
 local HEALTH_BAR_WIDTH = 160
 local HEALTH_BAR_HEIGHT = 11
 local HEALTH_BAR_BORDER = 1
-local AVATAR_ALPHA = 255
+local AVATAR_ALPHA = 128
 local AVATAR_CLR = tocolor(255, 255, 255, AVATAR_ALPHA)
 
 local g_Root = getRootElement()
