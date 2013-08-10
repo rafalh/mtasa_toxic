@@ -60,7 +60,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 159,
+	currentVer = 160,
 	list = {
 		{
 			ver = 153,
@@ -134,6 +134,15 @@ Updater = {
 				if(not DbQuerySync('DROP INDEX IF EXISTS '..DbPrefix..'mutes_idx') or
 					not DbQuerySync('CREATE UNIQUE INDEX '..DbPrefix..'mutes_idx ON '..MutesTable..' (serial)')) then
 					return 'Failed to recreate rafalh_mutes_idx'
+				end
+				return false
+			end
+		},
+		{
+			ver = 160,
+			func = function()
+				if(not DbQuery('ALTER TABLE '..PlayersTable..' ADD COLUMN avatar VARCHAR(255) NOT NULL DEFAULT \'\'')) then
+					return 'Failed to add avatar column'
 				end
 				return false
 			end

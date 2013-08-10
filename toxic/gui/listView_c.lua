@@ -79,7 +79,9 @@ end
 
 function ListView:clear()
 	for i, item in ipairs(self.items) do
-		destroyElement(item.el)
+		destroyElement(item.bgEl)
+		destroyElement(item.imgEl)
+		destroyElement(item.titleEl)
 	end
 	self.items = {}
 	self.itemsMap = {}

@@ -1,12 +1,7 @@
---------------
--- Includes --
---------------
-
+-- Includes
 #include 'include/internal_events.lua'
 
----------------------
--- Local variables --
----------------------
+-- Variables
 
 local PANEL_COLUMNS = 1
 local PANEL_ALPHA = 0.9
@@ -22,12 +17,16 @@ g_ListStyle.active = g_ListStyle.hover
 g_ListStyle.iconPos = 'left'
 
 local g_Items = {}
-local g_Wnd, g_List, g_UserLabel, g_LogInOutBtn
+local g_Wnd, g_List
+local g_UserAvatarImg, g_UserLabel, g_LogInOutBtn
 local g_CurrentItem = false
 local g_Hiding = false
 local g_PanelH
 
--- Local functions
+-- Events
+addEvent("main.onAvatarChange", true)
+
+-- Functions
 
 local function UpHide()
 	--outputDebugString('UpHide', 3)
@@ -107,6 +106,13 @@ local function UpSetAccount(accountName)
 	guiSetText(g_LogInOutBtn, accountName and "Log Out" or "Log In")
 end
 
+local function UpSetAvatar(filename)
+	if(g_UserAvatarImg) then
+		local path = filename and 'avatars/img/'..filename
+		guiStaticImageLoadImage(g_UserAvatarImg, path or 'img/no_img.png')
+	end
+end
+
 local function UpLogInOut()
 	if(g_UserName) then
 		RPC('logOutReq'):exec()
@@ -116,9 +122,38 @@ local function UpLogInOut()
 	end
 end
 
+local function UpGetLocalUserBlockHeight()
+	if(AvtOpenGUI) then
+		return 50
+	else
+		return 30
+	end
+end
+
+local function UpCreateLocalUserBlock(x, y, w, wnd)
+	local curX = x + 10
+	if(AvtOpenGUI) then
+		local avtPath = g_LocalAvatar and 'avatars/img/'..g_LocalAvatar
+		if(avtPath and not fileExists(avtPath)) then avtPath = false end
+		g_UserAvatarImg = guiCreateStaticImage(curX, y, 48, 48, avtPath or 'img/no_img.png', false, wnd)
+		setElementData(g_UserAvatarImg, 'tooltip', "Click to change your avatar")
+		addEventHandler('onClientGUIClick', g_UserAvatarImg, AvtOpenGUI, false)
+		curX = curX + 55
+	end
+	
+	g_UserLabel = guiCreateLabel(curX, y, w - 100, 20, '', false, wnd)
+	guiSetFont(g_UserLabel, 'default-bold-small')
+	
+	g_LogInOutBtn = guiCreateButton(x + w - 90, y, 80, 25, "Logout", false, wnd)
+	addEventHandler('onClientGUIClick', g_LogInOutBtn, UpLogInOut, false)
+	
+	UpSetAccount(g_UserName)
+end
+
 local function UpCreateGui()
+	local userH = UpGetLocalUserBlockHeight()
 	local w = ITEM_W * PANEL_COLUMNS + math.max(VIEW_W + 10, 20)
-	local h = 90 + ITEM_H * math.ceil(#g_Items / PANEL_COLUMNS)
+	local h = 60 + userH + ITEM_H * math.ceil(#g_Items / PANEL_COLUMNS)
 	local x = (g_ScreenSize[1] - w) / 2
 	local y = (g_ScreenSize[2] - h) / 2
 	g_Wnd = guiCreateWindow(x, y, w, h, "User Panel", false)
@@ -126,18 +161,12 @@ local function UpCreateGui()
 	guiWindowSetSizable(g_Wnd, false)
 	g_PanelH = h
 	
-	g_UserLabel = guiCreateLabel(10, 20, w - 100, 20, '', false, g_Wnd)
-	guiSetFont(g_UserLabel, 'default-bold-small')
+	UpCreateLocalUserBlock(0, 20, w, g_Wnd)
 	
-	g_LogInOutBtn = guiCreateButton(w - 90, 20, 80, 25, "Logout", false, g_Wnd)
-	addEventHandler('onClientGUIClick', g_LogInOutBtn, UpLogInOut, false)
-	
-	UpSetAccount(g_UserName)
-	
-	local listSize = {ITEM_W * PANEL_COLUMNS, h - 90}
+	local listSize = {ITEM_W * PANEL_COLUMNS, h - 60 - userH}
 	local itemSize = {ITEM_W, ITEM_H}
 	
-	g_List = ListView.create({10, 50}, listSize, g_Wnd, itemSize, {ICON_W, ICON_H}, g_ListStyle)
+	g_List = ListView.create({10, 20 + userH}, listSize, g_Wnd, itemSize, {ICON_W, ICON_H}, g_ListStyle)
 	g_List.onClickHandler = onItemClick
 	
 	for i, item in ipairs(g_Items) do
@@ -227,3 +256,4 @@ end
 
 addEventHandler('onClientResourceStart', g_ResRoot, UpInit)
 addEventHandler('main.onAccountChange', g_ResRoot, UpSetAccount)
+addEventHandler("main.onAvatarChange", localPlayer, UpSetAvatar)
