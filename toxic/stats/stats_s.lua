@@ -230,9 +230,11 @@ function StPlayerFinish(player, rank, ms)
 	if(not mapType) then return end
 	
 	if(room.isRace or rank == 1) then
+#if(RACE_STATS) then
 		if(room.isRace) then
 			pdata.accountData:add('racesFinished', 1)
 		end
+#end
 		
 		local cashadd = math.floor(1000 * g_PlayersCount / rank)
 		local pointsadd = math.floor(g_PlayersCount / rank)
