@@ -1,9 +1,19 @@
+-- Includes
+#include 'include/config.lua'
+
+-- Globals
 local g_Stats = {
 	'cash', 'points',
 	'mapsPlayed', 'mapsBought', 'mapsRated',
+#if(DM_STATS) then
 	'dmVictories', 'huntersTaken', 'dmPlayed',
+#end
+#if(DD_STATS) then
 	'ddVictories', 'ddPlayed',
+#end
+#if(RACE_STATS) then
 	'raceVictories', 'racesFinished', 'racesPlayed',
+#end
 	'maxWinStreak', 'toptimes_count',
 	'bidlvl', 'time_here', 'exploded', 'drowned'}
 
@@ -19,14 +29,20 @@ PlayersTable:addColumns{
 	{'mapsPlayed',    'MEDIUMINT UNSIGNED', default = 0},
 	{'mapsBought',    'MEDIUMINT UNSIGNED', default = 0},
 	{'mapsRated',     'SMALLINT UNSIGNED',  default = 0},
+#if(DM_STATS) then
 	{'huntersTaken',  'MEDIUMINT UNSIGNED', default = 0},
 	{'dmVictories',   'MEDIUMINT UNSIGNED', default = 0},
+	{'dmPlayed',      'MEDIUMINT UNSIGNED', default = 0},
+#end
+#if(DD_STATS) then
 	{'ddVictories',   'MEDIUMINT UNSIGNED', default = 0},
+	{'ddPlayed',      'MEDIUMINT UNSIGNED', default = 0},
+#end
+#if(RACE_STATS) then
 	{'raceVictories', 'MEDIUMINT UNSIGNED', default = 0},
 	{'racesFinished', 'MEDIUMINT UNSIGNED', default = 0},
-	{'dmPlayed',      'MEDIUMINT UNSIGNED', default = 0},
-	{'ddPlayed',      'MEDIUMINT UNSIGNED', default = 0},
 	{'racesPlayed',   'MEDIUMINT UNSIGNED', default = 0},
+#end
 	{'achvCount',     'TINYINT UNSIGNED',   default = 0},
 	
 	-- Effectiveness (TODO)
@@ -112,14 +128,83 @@ end
 
 -- Called from maps
 function StMapStart(room)
-	DdMapStart(room)
+	local mapTypeCounter = false
+	
+	if(false) then
+#if(RACE_STATS) then
+	elseif(room.isRace) then
+		mapTypeCounter = 'racesPlayed'
+#end
+#if(DM_STATS) then
+	elseif(mapType.name == 'DM') then
+		mapTypeCounter = 'dmPlayed'
+#end
+#if(DD_STATS) then
+	elseif(mapType.name == 'DD') then
+		mapTypeCounter = 'ddPlayed'
+#end
+	end
+	
+	for player, pdata in pairs(g_Players) do
+		pdata.accountData:add('mapsPlayed', 1)
+		if(mapTypeCounter) then
+			pdata.accountData:add(mapTypeCounter, 1)
+		end
+	end
+	
+	if(DdMapStart) then
+		DdMapStart(room)
+	end
 end
 
 -- Called from maps
 function StMapStop(room)
-	DdMapStop(room)
+	if(DdMapStop) then
+		DdMapStop(room)
+	end
 end
 
+function StPlayerWin(player)
+	local room = player.room
+	local map = getCurrentMap(room)
+	local mapType = map and map:getType()
+	local winCounter = false
+	if(not mapType) then
+		outputDebugString('unknown map type', 2)
+#if(RACE_STATS) then
+	elseif(room.isRace) then
+		winCounter = 'raceVictories'
+#end
+#if(DM_STATS) then
+	elseif(mapType.name == 'DM') then
+		winCounter = 'dmVictories'
+#end
+#if(DD_STATS) then
+	elseif(mapType.name == 'DD') then
+		winCounter = 'ddVictories'
+#end
+	end
+	
+	if(winCounter) then
+		player.accountData:add(winCounter, 1)
+	end
+	
+	if(room.winStreakPlayer == player.el) then
+		room.winStreakLen = room.winStreakLen + 1
+		if(g_PlayersCount > 1) then
+			scriptMsg("%s is on a winning streak! It's his %u. victory.", player:getName(), room.winStreakLen)
+		end
+	else
+		room.winStreakPlayer = player.el
+		room.winStreakLen = 1
+	end
+	local maxStreak = player.accountData.maxWinStreak
+	if(room.winStreakLen > maxStreak) then
+		player.accountData.maxWinStreak = room.winStreakLen
+	end
+end
+
+-- Called from core
 function StSetupScoreboard(res)
 	if(Settings.scoreboard_lvl) then
 		call(res, 'scoreboardAddColumn', 'lvl', g_Root, 30, 'Lvl', false)

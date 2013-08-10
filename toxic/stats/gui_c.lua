@@ -1,7 +1,7 @@
----------------------
--- Local variables --
----------------------
+-- Includes
+#include 'include/config.lua'
 
+-- Globals
 local g_Timer = nil
 
 local StatsPanel = {
@@ -24,6 +24,7 @@ local STATS = {
 		return formatNumber(stats.points)
 	end},
 	{"Rank:", '_rank'},
+#if(DM_STATS) then
 	{"DM Victories:", function(stats)
 		local dmVictRate = stats.dmVictories / math.max(stats.dmPlayed, 1) * 100
 		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmVictRate)
@@ -32,14 +33,19 @@ local STATS = {
 		local huntRate = stats.huntersTaken / math.max(stats.dmPlayed, 1) * 100
 		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRate)
 	end},
+#end
+#if(DD_STATS) then
 	{"DD Victories:", function(stats)
 		local ddVictRate = stats.ddVictories / math.max(stats.ddPlayed, 1) * 100
 		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate)
 	end},
+#end
+#if(RACE_STATS) then
 	{"Race Victories:", function(stats)
 		local raceVictRate = stats.raceVictories / math.max(stats.racesPlayed, 1) * 100
 		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceVictRate)
 	end},
+#end
 	{"Maximal Win Streak:", 'maxWinStreak'},
 	{"Top Times held:", 'toptimes_count'},
 	{"Bidlevel:", 'bidlvl'},

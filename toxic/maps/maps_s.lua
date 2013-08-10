@@ -184,23 +184,6 @@ local function onMapStart(map, room)
 		DbQuery('UPDATE '..MapsTable..' SET played=played+1, played_timestamp=? WHERE map=?', now, map_id)
 		prof2:cp('onMapStart 2')
 		
-		local mapTypeCounter = false
-		if(room.isRace) then
-			mapTypeCounter = 'racesPlayed'
-		elseif(mapType.name == 'DD') then
-			mapTypeCounter = 'ddPlayed'
-		elseif(mapType.name == 'DM') then
-			mapTypeCounter = 'dmPlayed'
-		end
-		
-		for player, pdata in pairs(g_Players) do
-			pdata.accountData:add('mapsPlayed', 1)
-			if(mapTypeCounter) then
-				pdata.accountData:add(mapTypeCounter, 1)
-			end
-		end
-		prof2:cp('onMapStart 3')
-		
 		local was_queued = (g_StartingQueuedMap == map)
 		g_StartingQueuedMap = false
 		
@@ -346,36 +329,7 @@ local function handlePlayerWin(player)
 	
 	GbFinishBets(player)
 	
-	local map = getCurrentMap(room)
-	local mapType = map and map:getType()
-	local winCounter = false
-	if(not mapType) then
-		outputDebugString('unknown map type', 2)
-	elseif(room.isRace) then
-		winCounter = 'raceVictories'
-	elseif(mapType.name == 'DM') then
-		winCounter = 'dmVictories'
-	elseif(mapType.name == 'DD') then
-		winCounter = 'ddVictories'
-	end
-	
-	if(winCounter) then
-		pdata.accountData:add(winCounter, 1)
-	end
-	
-	if(room.winStreakPlayer == player) then
-		room.winStreakLen = room.winStreakLen + 1
-		if(g_PlayersCount > 1) then
-			scriptMsg("%s is on a winning streak! It's his %u. victory.", getPlayerName(player), room.winStreakLen)
-		end
-	else
-		room.winStreakPlayer = player
-		room.winStreakLen = 1
-	end
-	local maxStreak = pdata.accountData.maxWinStreak
-	if(room.winStreakLen > maxStreak) then
-		pdata.accountData:set('maxWinStreak', room.winStreakLen)
-	end
+	StPlayerWin(pdata)
 end
 
 local function setPlayerFinalRank(player, rank)

@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 function getPlayersStats(player, order, desc, limit, start, online)
 	-- Validate parameters
 	limit = math.min(touint(limit, 20), 20)
@@ -31,7 +34,15 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	end
 	
 	local query = 'SELECT player, name, cash, points, '..
-		'dmVictories, huntersTaken, dmPlayed, ddVictories, ddPlayed, raceVictories, racesFinished, racesPlayed, '..
+#if(DM_STATS) then
+		'dmVictories, huntersTaken, dmPlayed, '..
+#end
+#if(DD_STATS) then
+		'ddVictories, ddPlayed, '..
+#end
+#if(RACE_STATS) then
+		'raceVictories, racesFinished, racesPlayed, '..
+#end
 		'mapsPlayed, maxWinStreak, toptimes_count, achvCount, bidlvl, '..
 		'time_here, first_visit, last_visit, online, ip, serial, account '..
 		'FROM '..PlayersTable..where
