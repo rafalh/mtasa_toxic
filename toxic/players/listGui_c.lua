@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 ---------------------
 -- Local variables --
 ---------------------
@@ -10,10 +13,15 @@ local g_Stats = {
 	{'cash',		"Cash",			0.14,	true,	formatMoney},
 	{'time_here',	"Playtime",		0.12,	true,	function(n) return formatTimePeriod(n, 0) end},
 	{'toptimes_count', "Top times", 0.09,	true,	formatNumber},
+#if(DM_STATS) then
 	{'dmVictories',	"DM Vict",		0.08,	true,	formatNumber},
+#end
+#if(DD_STATS) then
 	{'ddVictories',	"DD Vict",		0.08,	true,	formatNumber},
+#end
+#if(RACE_STATS) then
 	{'raceVictories', "Race Vict",	0.08,	true,	formatNumber},
-	
+#end
 }
 	
 local g_Col = {}

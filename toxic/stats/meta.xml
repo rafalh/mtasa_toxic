@@ -17,6 +17,7 @@
 	
 	<file src="img/icon.png" />
 	<file src="img/skull.png" />
+	<file src="img/coins.png" />
 	
 	<config src="../conf/ranks.xml" type="server" />
 	
