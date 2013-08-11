@@ -119,6 +119,6 @@ end
 local _guiSetText = guiSetText
 function guiSetText(el, text)
 	local label = g_LabelFromBtn[el]
-	if(not label) then _guiSetText(el, text)
-	else _guiSetText(label, text) end
+	if(not label) then return _guiSetText(el, text)
+	else return _guiSetText(label, text) end
 end

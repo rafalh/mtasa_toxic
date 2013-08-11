@@ -240,8 +240,9 @@ end
 
 function GUI.prepareTempLabel(font)
 	if(not GUI.tempLabel) then
-		GUI.tempLabel = guiCreateLabel(0, 0, 100, 100, '', false)
-		--guiSetVisible(GUI.tempLabel, false)
+		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
+		if(not GUI.tempLabel) then return false end
+		guiSetVisible(GUI.tempLabel, false)
 	end
 	if(not guiSetFont(GUI.tempLabel, font or 'default-normal')) then return false end
 	return true
