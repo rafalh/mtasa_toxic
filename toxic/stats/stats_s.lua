@@ -269,9 +269,14 @@ local function StInit()
 	StLoadRanks()
 	
 	for player, pdata in pairs(g_Players) do
-		local pts = pdata.accountData:get('points')
 		if(not pdata.is_console) then
+			local pts = pdata.accountData.points
 			setPlayerAnnounceValue(player, 'score', tostring(pts))
+			
+			if(Settings.scoreboard_lvl) then
+				local lvl = LvlFromExp(pts)
+				setElementData(pdata.el, 'lvl', lvl)
+			end
 		end
 	end
 	

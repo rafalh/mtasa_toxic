@@ -16,7 +16,9 @@ function StDetectLevelChange(player, oldExp, newExp)
 	local oldLvl = LvlFromExp(oldExp)
 	local newLvl = LvlFromExp(newExp)
 	if(newLvl ~= oldLvl) then
-		setElementData(player.el, 'lvl', newLvl)
+		if(Settings.scoreboard_lvl) then
+			setElementData(player.el, 'lvl', newLvl)
+		end
 		player:addNotify{
 			icon = 'stats/img/icon.png',
 			{"You have reached %u. level!", newLvl}}
