@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 ---------------------
 -- Local variables --
 ---------------------
@@ -175,10 +178,16 @@ local function CmdStats(msg, arg)
 	
 	scriptMsg("%s's statistics:", getPlayerName(player))
 	scriptMsg("Points: %s - Maps played: %s - Top Times held: %s - Win Streak: %s", formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.toptimes_count), formatNumber(stats.maxWinStreak))
+#if(DM_STATS) then
 	--scriptMsg("DM Victories: %s / %s (%.2f%%)", formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmRatio*100)
 	scriptMsg("DM Hunters: %s / %s (%.2f%%)", formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRatio*100)
+#end
+#if(DD_STATS) then
 	scriptMsg("DD Victories: %s / %s (%.2f%%)", formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddRatio*100)
+#end
+#if(RACE_STATS) then
 	scriptMsg("Race Victories: %s / %s (%.2f%%)", formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceRatio*100)
+#end
 end
 
 CmdRegister ('stats', CmdStats, false, "Shows player statistics")
