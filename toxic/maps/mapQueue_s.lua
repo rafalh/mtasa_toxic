@@ -114,6 +114,20 @@ local function MqOnAddReq(mapResName)
 	end
 end
 
+local function MqOnRaceStateChanging(state, oldState)
+	if(state ~= 'PostFinish') then return end
+	
+	local room = g_RootRoom
+	local nextMap = MqPop(room)
+	if(not nextMap) then return end
+	
+	local res = getResourceFromName('race')
+	if(res and getResourceState(res) == 'running') then
+		call(res, 'setNextMap', nextMap.res)
+	end
+end
+
 addInitFunc(function()
 	addEventHandler('onAddMapToQueueReq', g_ResRoot, MqOnAddReq)
+	addEventHandler('onRaceStateChanging', g_ResRoot, MqOnRaceStateChanging)
 end)
