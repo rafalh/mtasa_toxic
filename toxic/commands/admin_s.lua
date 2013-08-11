@@ -346,8 +346,8 @@ CmdRegister('delacc', CmdDelAcc, 'resource.'..g_ResName..'.resetstats', "Deletes
 local function CmdSqlQuery(message, arg)
 	local query = #arg >= 2 and message:sub (arg[1]:len () + 2)
 	if (query) then
-		local rows = DbQuery(query)
-		if(rows) then
+		local rows = DbQuerySync(query)
+		if(type(rows) == 'table') then
 			privMsg(source, "SQL query succeeded (%u rows)", #rows)
 			for i, data in ipairs(rows) do
 				local tbl = {}
@@ -358,6 +358,8 @@ local function CmdSqlQuery(message, arg)
 				privMsg(source, buf:sub(1, 512))
 				if(i > 10) then break end
 			end
+		elseif(rows) then
+			privMsg(source, "SQL query succeeded: ", tostring(rows))
 		else
 			privMsg(source, "SQL query failed")
 		end

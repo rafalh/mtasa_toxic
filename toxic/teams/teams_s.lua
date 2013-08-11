@@ -23,7 +23,7 @@ TeamsTable = Database.Table{
 	{'aclGroup', 'VARCHAR(255)', default = ''},
 	{'color', 'VARCHAR(7)', default = ''},
 	{'priority', 'INT'},
-	{'lastUsage INT UNSIGNED DEFAULT 0', default = 0},
+	{'lastUsage', 'INT UNSIGNED', default = 0},
 }
 
 addEvent('onPlayerChangeTeam')
