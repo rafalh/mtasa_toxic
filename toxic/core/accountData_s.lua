@@ -163,6 +163,7 @@ function AccountData.create(id)
 		AccountData.map[id] = self
 	else
 		self.cache = table.copy(getDefaultData())
+		self.allCached = true
 	end
 	
 	return setmetatable(self, AccountData.__mt)
