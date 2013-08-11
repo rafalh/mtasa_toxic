@@ -196,7 +196,7 @@ local function onMapStart(map, room)
 			for i, map_type2 in ipairs (g_MapTypes) do
 				if (map_type2 ~= mapType) then
 					map_type2.others_in_row = map_type2.others_in_row + 1
-					dbg_buf = dbg_buf..', '..map_type2.name..': '..map_type2.others_in_row..'('..map_type2.max_others_in_row..')'
+					dbg_buf = dbg_buf..', '..map_type2.name..': '..map_type2.others_in_row..'('..tostring(map_type2.max_others_in_row)..')'
 				else
 					map_type2.others_in_row = 0
 				end

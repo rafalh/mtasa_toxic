@@ -180,12 +180,13 @@ function Map:isForbidden(room)
 	end
 	
 	local mapType = self:getType()
-	local forced = mapType.others_in_row >= mapType.max_others_in_row
+	local forced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
 	
 	-- if it's not forced, let's check if there are other forced types
 	if(not forced) then
 		for i, mapType in ipairs(g_MapTypes) do
-			if(mapType.others_in_row >= mapType.max_others_in_row) then
+			local curForced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
+			if(curForced) then
 				return "You can vote only for race map now! Allowed types: %s.", mapType.name
 			end
 		end
