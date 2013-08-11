@@ -102,6 +102,8 @@ local function CmdPoints (message, arg)
 end
 
 CmdRegister ('points', CmdPoints, false, "Shows player points count")
+CmdRegisterAlias ('pts', 'points')
+CmdRegisterAlias ('exp', 'points')
 
 local function CmdRank (message, arg)
 	local player = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source

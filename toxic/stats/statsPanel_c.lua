@@ -18,7 +18,7 @@ local g_StatsView
 --------------------------------
 
 local function SpInitGui()
-	local h = StatsView.getHeight() + 20
+	local h = StatsView.getHeight() + 30
 	
 	g_Wnd = guiCreateWindow(g_ScreenSize[1] + g_Width, g_PosY, g_Width, h, "Statistics", false)
 	guiSetAlpha(g_Wnd, 0.8)

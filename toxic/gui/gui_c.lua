@@ -254,7 +254,7 @@ function GUI.getTextWidth(text, font)
 end
 
 function GUI.getFontHeight(font)
-	if(not font or font == 'default-normal') then return 18 end -- HACK
+	if(not font or font == 'default-normal') then return 15 end -- HACK
 	if(not GUI.prepareTempLabel(font)) then return false end
 	return guiLabelGetFontHeight(GUI.tempLabel)
 end

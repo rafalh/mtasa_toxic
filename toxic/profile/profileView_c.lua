@@ -49,7 +49,7 @@ function ProfileView.create(id, name)
 		curY = curY + 40
 	else
 		self.nameLabel = guiCreateLabel(10, curY, w - 20, 20, name or "Unknown", false, self.wnd)
-		curY = curY + 25
+		curY = curY + 20
 	end
 	guiSetFont(self.nameLabel, 'default-bold-small')
 	

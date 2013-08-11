@@ -99,6 +99,7 @@ local function EbAccountChange()
 end
 
 local function EbInit()
+	if(not Settings.exp_bar) then return end
 	addEventHandler('onClientRender', g_Root, EbRender)
 	addEventHandler('onClientRestore', g_Root, EbRestore)
 	g_CurrentId = g_MyId or g_Me

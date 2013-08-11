@@ -2,11 +2,11 @@ addEvent('stats.onDDKillersList', true)
 
 local function onKillersList(killer, assist)
 	local victimPlayer = Player.fromEl(client)
-	local killerPlayer = Player.fromEl(killer)
+	local killerPlayer = killer and Player.fromEl(killer)
 	local assistPlayer = assist and Player.fromEl(assist)
 	
 	local map = victimPlayer and getCurrentMap(victimPlayer.room)
-	if(not victimPlayer or not killerPlayer or not map
+	if(not victimPlayer or not map
 		or killerPlayer == victimPlayer or assistPlayer == victimPlayer) then
 		outputDebugString('Invalid args for onKillersList', 2)
 		return
@@ -31,6 +31,9 @@ local function onKillersList(killer, assist)
 	elseif(not respawn) then
 		victimPlayer.killed = true
 	end
+	
+	-- Check if there is any killer
+	if(not killerPlayer) then return end
 	
 	--local killerLvl = LvlFromExp(killerPlayer.accountData.exp)
 	victimPlayer:addNotify{
