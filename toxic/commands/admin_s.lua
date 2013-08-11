@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 local function CmdPBan(message, arg)
 	local player = (#arg >= 2 and Player.find(arg[2]))
 	local reason = arg[3]
@@ -238,14 +241,20 @@ local function CmdMergeAccounts(message, arg)
 		newData.mapsPlayed = player.accountData.mapsPlayed + src_data.mapsPlayed
 		newData.mapsBought = player.accountData.mapsBought + src_data.mapsBought
 		-- mapsRated are set later
+#if(DM_STATS) then
 		newData.huntersTaken = player.accountData.huntersTaken + src_data.huntersTaken
 		newData.dmVictories = player.accountData.dmVictories + src_data.dmVictories
+		newData.dmPlayed = player.accountData.dmPlayed + src_data.dmPlayed
+#end
+#if(DD_STATS) then
 		newData.ddVictories = player.accountData.ddVictories + src_data.ddVictories
+		newData.ddPlayed = player.accountData.ddPlayed + src_data.ddPlayed
+#end
+#if(RACE_STATS) then
 		newData.raceVictories = player.accountData.raceVictories + src_data.raceVictories
 		newData.racesFinished = player.accountData.racesFinished + src_data.racesFinished
-		newData.dmPlayed = player.accountData.dmPlayed + src_data.dmPlayed
-		newData.ddPlayed = player.accountData.ddPlayed + src_data.ddPlayed
 		newData.racesPlayed = player.accountData.racesPlayed + src_data.racesPlayed
+#end
 		
 		-- Join Msg
 		if(player.accountData.joinmsg == '' and src_data.joinmsg ~= '') then
