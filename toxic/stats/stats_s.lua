@@ -129,6 +129,8 @@ end
 -- Called from maps
 function StMapStart(room)
 	local mapTypeCounter = false
+	local map = getCurrentMap(room)
+	local mapType = map:getType()
 	
 	if(false) then
 #if(RACE_STATS) then
