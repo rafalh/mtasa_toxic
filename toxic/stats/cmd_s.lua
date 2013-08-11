@@ -167,25 +167,23 @@ CmdRegister('playtime', CmdPlayTime, false, "Shows time player spent in game")
 CmdRegisterAlias('timehere', 'playtime')
 
 local function CmdStats(msg, arg)
-	local player = (#arg >= 2 and findPlayer(msg:sub (arg[1]:len() + 2))) or source
-	local pdata = Player.fromEl(player)
-	local stats = pdata.accountData:getTbl()
+	local player = (#arg >= 2 and Player.find(msg:sub(arg[1]:len() + 2))) or Player.fromEl(source)
+	local stats = player.accountData:getTbl()
 	
-	local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
-	local huntRatio = stats.huntersTaken/math.max(stats.dmPlayed, 1)
-	local ddRatio = stats.ddVictories/math.max(stats.ddPlayed, 1)
-	local raceRatio = stats.raceVictories/math.max(stats.racesPlayed, 1)
-	
-	scriptMsg("%s's statistics:", getPlayerName(player))
+	scriptMsg("%s's statistics:", player:getName())
 	scriptMsg("Points: %s - Maps played: %s - Top Times held: %s - Win Streak: %s", formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.toptimes_count), formatNumber(stats.maxWinStreak))
 #if(DM_STATS) then
+	local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
+	local huntRatio = stats.huntersTaken/math.max(stats.dmPlayed, 1)
 	--scriptMsg("DM Victories: %s / %s (%.2f%%)", formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmRatio*100)
 	scriptMsg("DM Hunters: %s / %s (%.2f%%)", formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRatio*100)
 #end
 #if(DD_STATS) then
+	local ddRatio = stats.ddVictories/math.max(stats.ddPlayed, 1)
 	scriptMsg("DD Victories: %s / %s (%.2f%%)", formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddRatio*100)
 #end
 #if(RACE_STATS) then
+	local raceRatio = stats.raceVictories/math.max(stats.racesPlayed, 1)
 	scriptMsg("Race Victories: %s / %s (%.2f%%)", formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceRatio*100)
 #end
 end
