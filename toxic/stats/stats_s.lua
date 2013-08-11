@@ -102,13 +102,18 @@ end
 
 local function StOnPlayerJoin()
 	local player = Player.fromEl(source)
-	local pts = player.accountData:get('points')
+	local pts = player.accountData.points
 	setPlayerAnnounceValue(source, 'score', tostring(pts))
+	
+	if(Settings.scoreboard_lvl) then
+		local lvl = LvlFromExp(pts)
+		setElementData(player.el, 'lvl', lvl)
+	end
 end
 
 local function StOnPlayerWasted(totalAmmo, killer, weapon)
 	local player = Player.fromEl(source)
-	if(wasEventCancelled() or not player) then return end
+	if(not player) then return end
 	
 	if(weapon == 53) then -- drowned
 		player.accountData:add('drowned', 1)
@@ -268,14 +273,14 @@ end
 local function StInit()
 	StLoadRanks()
 	
-	for player, pdata in pairs(g_Players) do
-		if(not pdata.is_console) then
-			local pts = pdata.accountData.points
-			setPlayerAnnounceValue(player, 'score', tostring(pts))
+	for el, player in pairs(g_Players) do
+		if(not player.is_console) then
+			local pts = player.accountData.points
+			setPlayerAnnounceValue(player.el, 'score', tostring(pts))
 			
 			if(Settings.scoreboard_lvl) then
 				local lvl = LvlFromExp(pts)
-				setElementData(pdata.el, 'lvl', lvl)
+				setElementData(player.el, 'lvl', lvl)
 			end
 		end
 	end
