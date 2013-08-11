@@ -152,10 +152,10 @@ function StMapStart(room)
 #end
 	end
 	
-	for player, pdata in pairs(g_Players) do
-		pdata.accountData:add('mapsPlayed', 1)
+	for el, player in pairs(g_Players) do
+		player.accountData:add('mapsPlayed', 1)
 		if(mapTypeCounter) then
-			pdata.accountData:add(mapTypeCounter, 1)
+			player.accountData:add(mapTypeCounter, 1)
 		end
 	end
 	
@@ -223,7 +223,7 @@ function StHunterTaken(player)
 	player.accountData:add('huntersTaken', 1)
 	player.accountData:add('points', ptsAdd)
 	
-	pdata:addNotify{
+	player:addNotify{
 		icon = 'stats/img/icon.png',
 		{"You earned %s points. Total: %s.", formatNumber(ptsAdd), formatNumber(player.accountData.points)},
 	}
@@ -239,7 +239,7 @@ function StPlayerFinish(player, rank, ms)
 	if(room.isRace or rank == 1) then
 #if(RACE_STATS) then
 		if(room.isRace) then
-			pdata.accountData:add('racesFinished', 1)
+			player.accountData:add('racesFinished', 1)
 		end
 #end
 		
