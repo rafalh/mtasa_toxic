@@ -176,7 +176,9 @@ function getTopTime(map_res, cp_times)
 			'WHERE bt.map=? AND b.id=bt.cp_times ORDER BY bt.time LIMIT 1', map_id)
 		for i, row in ipairs(rows) do
 			assert(row.cp_times:len() > 0)
-			row.cp_times = zlibUncompress(row.cp_times)
+			if(zlibUncompress) then
+				row.cp_times = zlibUncompress(row.cp_times)
+			end
 			if(not row.cp_times) then
 				outputDebugString('Failed to uncompress '..row.cp_times:len(), 2)
 				row.cp_times = {}

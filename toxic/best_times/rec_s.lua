@@ -49,7 +49,9 @@ local function RcOnRecording(map_id, recording)
 		if(foundRow or #rows < $(MAX_RECORDINGS)) then
 			outputDebugString('Saving ghost trace (stage 2): '..pdata:getName(), 3)
 			local encoded = RcEncodeTrace(recording)
-			encoded = zlibCompress(encoded)
+			if(zlibCompress) then
+				encoded = zlibCompress(encoded)
+			end
 			local blob = DbBlob(encoded)
 			if(foundRow and foundRow.rec ~= 0) then
 				DbQuery('UPDATE '..BlobsTable..' SET data='..blob..' WHERE id=?', foundRow.rec)
@@ -95,7 +97,10 @@ function RcStartRecording(room, map_id)
 	if(row and Settings.ghost) then
 		outputDebugString('Showing ghost', 3)
 		
-		local recCoded = zlibUncompress(row.data)
+		local recCoded = row.data
+		if(zlibUncompress) then
+			recCoded = zlibUncompress(recCoded)
+		end
 		if(not recCoded) then outputDebugString('Failed to uncompress', 2) end
 		prof2:cp('RcStartRecording 3')
 		
@@ -179,7 +184,9 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 				prevTime = t
 			end
 			buf = buf..('%x'):format(time - prevTime)
-			buf = zlibCompress(buf)
+			if(zlibCompress) then
+				buf = zlibCompress(buf)
+			end
 			local blob = DbBlob(buf)
 			
 			if(foundRow.cp_times ~= 0) then
