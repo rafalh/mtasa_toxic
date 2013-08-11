@@ -350,22 +350,27 @@ local function onPlayerFinish(rank, ms)
 end
 
 local function onPlayerFinishDD(rank, timePassed)
-	if(rank == 1) then
-		handlePlayerWin(source)
-		triggerClientEvent(root, 'main.onPlayerWinDD', source)
-		
-		--[[local game_weight = 0.007 * g_PlayersCount / 32
-		local pdata = Player.fromEl(source)
-		for player, pdata in pairs(g_Players) do
-			local efectiveness_dd = pdata.accountData.efectiveness_dd
-			local rank = (player == source) and 1 or g_PlayersCount
-			efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
-			pdata.accountData:set('efectiveness_dd', efectiveness_dd)
-		end]]
+	if(rank ~= 1) then
+		local player = Player.fromEl(source)
+		StPlayerFinish(player, rank, timePassed)
 	end
+end
+
+local function onPlayerWinDD()
+	handlePlayerWin(source)
+	triggerClientEvent(root, 'main.onPlayerWinDD', source)
 	
 	local player = Player.fromEl(source)
-	StPlayerFinish(player, rank, timePassed)
+	StPlayerFinish(player, 1)
+	
+	--[[local game_weight = 0.007 * g_PlayersCount / 32
+	local pdata = Player.fromEl(source)
+	for player, pdata in pairs(g_Players) do
+		local efectiveness_dd = pdata.accountData.efectiveness_dd
+		local rank = (player == source) and 1 or g_PlayersCount
+		efectiveness_dd = efectiveness_dd * (1 - game_weight) + (rank - 1) / g_PlayersCount * game_weight
+		pdata.accountData:set('efectiveness_dd', efectiveness_dd)
+	end]]
 end
 
 local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
@@ -517,6 +522,7 @@ addInitFunc(function()
 	end)
 	addEventHandler('onPlayerFinish', g_Root, onPlayerFinish)
 	addEventHandler('onPlayerFinishDD', g_Root, onPlayerFinishDD)
+	addEventHandler('onPlayerWinDD', g_Root, onPlayerWinDD)
 	addEventHandler('onPlayerPickUpRacePickup', g_Root, onPlayerPickUpRacePickup)
 	addEventHandler('onChangeMapReq', g_ResRoot, onChangeMapReq)
 end)
