@@ -5,7 +5,13 @@
 	<script src="rankingboard_s.lua" type="server" />
 	<script src="rankingboard_c.lua" type="client" />
 	
+	<file src="eye.png" />
+	
 	<include resource="rafalh_shared" />
 	
 	<export function="widgetCtrl" type="client" />
+	
+	<settings>
+		<setting group="Spectators" name="*spec_eye" friendlyname="Spectators" accept="true,false" value="false" desc="Show eye icon next to each spectator" />
+	</settings>
 </meta>

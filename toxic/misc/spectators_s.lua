@@ -12,17 +12,21 @@ local function updateSpectators()
 	for player, pdata in pairs(g_Players) do
 		local target = not pdata.is_console and getCameraTarget(player)
 		if(target) then
-			local spectators = getPlayerSpectators(target)
-			--outputDebugString(getPlayerName(player)..' - '..getPlayerName(target)..' has '..#spectators..' spectators', 3)
-			for i, player2 in ipairs(spectators) do
+			local specList = getPlayerSpectators(target)
+			--outputDebugString(getPlayerName(player)..' - '..getPlayerName(target)..' has '..#specList..' spectators', 3)
+			
+			local specNameList = {}
+			for i, player2 in ipairs(specList) do
 				local r, g, b = getPlayerNametagColor(player2)
 				local name = getPlayerName(player2)
-				spectators[i] = ('#%02X%02X%02X%s'):format(r, g, b, name)
+				table.insert(specNameList, ('#%02X%02X%02X%s'):format(r, g, b, name))
 			end
-			local spectatorsStr = #spectators > 0 and table.concat(spectators, '#FFFFFF, ')
+			
+			local spectatorsStr = #specNameList > 0 and table.concat(specNameList, '#FFFFFF, ')
 			if(pdata.lastSpecList ~= spectatorsStr) then
 				pdata.lastSpecList = spectatorsStr
 				triggerClientEvent(player, 'onClientSetSpectators', g_Root, spectatorsStr)
+				triggerClientEvent(player, 'toxic.onSpecListChange', g_Root, specList)
 			end
 		else
 			--outputDebugString('no target', 3)

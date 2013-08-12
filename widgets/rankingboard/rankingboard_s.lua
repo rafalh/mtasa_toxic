@@ -1,17 +1,17 @@
 local g_Root = getRootElement ()
 local g_ReadyPlayers = {}
 local g_Items = {} -- in chronology order
-local TEST = false
+#TEST = false
 
 addEvent("rb_onPlayerReady", true)
 
 local function RbAddItem(player, rank, time)
 	-- don't add the same player twice
-	if(not TEST) then
-		for i, item in ipairs(g_Items) do
-			if(item[1] == player) then return end
-		end
+#if(not TEST) then
+	for i, item in ipairs(g_Items) do
+		if(item[1] == player) then return end
 	end
+#end
 	
 	-- add new item
 	local item = {player, rank, time}
@@ -30,8 +30,18 @@ local function RbClear()
 	end
 end
 
-local function RbPlayerFinish(rank, time)
+local function RbPlayerFinishRace(rank, time)
 	RbAddItem(source, rank, time/1000)
+end
+
+local function RbPlayerFinishDD(rank, time)
+	if(rank ~= 1) then
+		RbAddItem(source, rank, time/1000)
+	end
+end
+
+local function RbPlayerWinDD(time)
+	RbAddItem(source, 1, time/1000)
 end
 
 local function RbMapStart(mapRes)
@@ -65,14 +75,15 @@ local function RbPlayerQuit()
 	end
 end
 
-addEventHandler("onPlayerFinish", root, RbPlayerFinish)
-addEventHandler("onPlayerFinishDD", root, RbPlayerFinish)
+addEventHandler("onPlayerFinish", root, RbPlayerFinishRace)
+addEventHandler("onPlayerFinishDD", root, RbPlayerFinishDD)
+addEventHandler("onPlayerWinDD", root, RbPlayerWinDD)
 addEventHandler("onPlayerQuit", root, RbPlayerQuit)
 addEventHandler("onGamemodeMapStart", root, RbMapStart)
 addEventHandler("onGamemodeMapStop", root, RbMapStop)
 addEventHandler("rb_onPlayerReady", resourceRoot, RbPlayerReady)
 
-if(TEST) then
+#if(TEST) then
 	addCommandHandler("testrb", function(player, cmd, arg, arg2)
 		local n = tonumber(arg) or 1
 		local dir = arg2 and true
@@ -84,4 +95,4 @@ if(TEST) then
 			RbAddItem(player, pos, sec)
 		end
 	end)
-end
+#end

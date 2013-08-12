@@ -2,22 +2,22 @@
 -- Includes --
 --------------
 
-#include "../../include/serv_verification.lua"
-#include "../../include/widgets.lua"
+#include '../../include/serv_verification.lua'
+#include '../../include/widgets.lua'
 
 ---------------------
 -- Local variables --
 ---------------------
 
 local SCALE = 1
-local FONT = "default"
-local PLAYER_FONT = "default-bold"
+local FONT = 'default'
+local PLAYER_FONT = 'default-bold'
 local FONT_HEIGHT = dxGetFontHeight(SCALE, FONT)
 local WHITE = tocolor(255, 255, 255)
 local BLACK = tocolor(0, 0, 0)
 local POS_OFFSET = 30
 local USE_RENDER_TARGET = true
-local g_WidgetName = {"Ranking board", pl = "Tablica wyników"}
+local g_WidgetName = {'Ranking board', pl = 'Tablica wyników'}
 
 local g_Root = getRootElement ()
 local g_Me = getLocalPlayer ()
@@ -30,9 +30,11 @@ local g_FirstTime = false
 local g_MaxNameW = 0
 local g_InsertTicks, g_InsertRank = false, false
 local g_Buffer = false
+local g_EyeTexture
+local g_SpecMap = {}
 
-addEvent("rb_addItem", true)
-addEvent("rb_clear", true)
+addEvent('rb_addItem', true)
+addEvent('rb_clear', true)
 
 ---------------------
 -- Local functions --
@@ -45,9 +47,9 @@ function formatTimePeriod(t, decimals)
 	local s = t % 60
 	
 	if(h > 0) then
-		return ("%u:%02u:%05.2f"):format(h, m, s)
+		return ('%u:%02u:%05.2f'):format(h, m, s)
 	else
-		return ("%u:%05.2f"):format(m, s)
+		return ('%u:%05.2f'):format(m, s)
 	end
 end
 
@@ -82,17 +84,23 @@ local function RbRenderBoard(x, y, w, h, anim)
 			end
 			first = false
 			
-			local text = rank..")"
-			dxDrawText(text, x+1, itemY+1, x+POS_OFFSET+1, itemY+1, black, SCALE, PLAYER_FONT, "right")
-			dxDrawText(text, x, itemY, x+POS_OFFSET, itemY, white, SCALE, PLAYER_FONT, "right")
+			local text = rank..')'
+			dxDrawText(text, x+1, itemY+1, x+POS_OFFSET+1, itemY+1, black, SCALE, PLAYER_FONT, 'right')
+			dxDrawText(text, x, itemY, x+POS_OFFSET, itemY, white, SCALE, PLAYER_FONT, 'right')
 			
 			local r, g, b = unpack(item.clr)
 			local color = tocolor(r, g, b, itemAlpha)
-			dxDrawText(item.name2..":", x+5+POS_OFFSET+1, itemY+1, 0, 0, black, SCALE, PLAYER_FONT)
-			dxDrawText(item.name..":", x+5+POS_OFFSET, itemY, 0, 0, color, SCALE, PLAYER_FONT, "left", "top", false, false, false, true)
+			dxDrawText(item.name2..':', x+5+POS_OFFSET+1, itemY+1, 0, 0, black, SCALE, PLAYER_FONT)
+			dxDrawText(item.name..':', x+5+POS_OFFSET, itemY, 0, 0, color, SCALE, PLAYER_FONT, 'left', 'top', false, false, false, true)
 			
-			dxDrawText(item[2], x+5+POS_OFFSET+g_MaxNameW+5+1, itemY+1, 0, 0, black, SCALE, FONT)
-			dxDrawText(item[2], x+5+POS_OFFSET+g_MaxNameW+5, itemY, 0, 0, white, SCALE, FONT)
+			local tmX = x+5+POS_OFFSET+g_MaxNameW+5
+			dxDrawText(item.tm, tmX + 1, itemY + 1, 0, 0, black, SCALE, FONT)
+			dxDrawText(item.tm, tmX, itemY, 0, 0, white, SCALE, FONT)
+			
+			if(item.spec) then
+				local eyeX = x+5+POS_OFFSET+g_MaxNameW+5+1 + item.tmW + 5
+				dxDrawImage(eyeX, itemY, 22, 16, g_EyeTexture)
+			end
 			
 			y = y + FONT_HEIGHT
 			if(y + FONT_HEIGHT > maxY) then return end
@@ -157,14 +165,14 @@ local function RbUpdateBuffer()
 		g_Buffer = dxCreateRenderTarget(g_Size[1], g_Size[2], true)
 	end
 	dxSetRenderTarget(g_Buffer, true)
-	dxSetBlendMode("modulate_add")
+	dxSetBlendMode('modulate_add')
 	RbRenderBoard(0, 0, g_Size[1], g_Size[2], false)
-	dxSetBlendMode("blend")
+	dxSetBlendMode('blend')
 	dxSetRenderTarget()
 end
 
 local function RbClear()
-	--outputDebugString("RbClear", 3)
+	--outputDebugString('RbClear', 3)
 	g_Items = {}
 	g_FirstTime = false
 	g_InsertTicks = false
@@ -181,9 +189,9 @@ local function RbAddItem(player, rank, time)
 	if(g_FirstTime) then
 		local dt = time - g_FirstTime
 		assert(dt >= 0)
-		timeStr = "+"..formatTimePeriod(dt)
+		timeStr = '+'..formatTimePeriod(dt)
 	else
-		timeStr = " "..formatTimePeriod(time)
+		timeStr = ' '..formatTimePeriod(time)
 		g_FirstTime = time
 	end
 	
@@ -193,19 +201,26 @@ local function RbAddItem(player, rank, time)
 	end
 	
 	-- add item (table still doesnt have holes)
-	local item = {player, timeStr, time}
-	if(type(player)=="userdata") then
+	local item = {}
+	if(type(player) == 'userdata') then
+		item.p = player
 		item.name = getPlayerName(player)
 		item.clr = {getPlayerNametagColor(player)}
+		item.spec = g_SpecMap[player] or false
 	else
+		item.p = false
 		item.name = tostring(player)
 		item.clr = {255, 255, 255}
+		item.spec = false
 	end
-	item.name2 = item.name:gsub("#%x%x%x%x%x%x", "")
-	item.nameW = dxGetTextWidth(item.name2..":", SCALE, PLAYER_FONT)
+	item.name2 = item.name:gsub('#%x%x%x%x%x%x', '')
+	item.nameW = dxGetTextWidth(item.name2..':', SCALE, PLAYER_FONT)
 	if(item.nameW > g_MaxNameW) then
 		g_MaxNameW = item.nameW + 10
 	end
+	
+	item.tm = timeStr
+	item.tmW = dxGetTextWidth(item.tm, SCALE, FONT)
 	
 	g_Items[rank] = item
 	g_InsertTicks = getTickCount()
@@ -218,22 +233,22 @@ end
 
 local function RbPlayerQuit()
 	for rank, item in ipairs(g_Items) do
-		if(item and item[1] == source) then
+		if(item and item.p == source) then
 			local playerName = getPlayerName(source)
 			local r, g, b = getPlayerNametagColor(source)
-			playerName = ("#%02X%02X%02X"):format(r, g, b)..playerName
-			item[1] = playerName
+			playerName = ('#%02X%02X%02X'):format(r, g, b)..playerName
+			item.p = false
 		end
 	end
 end
 
 local function RbPlayerChangeNick()
 	for rank, item in ipairs(g_Items) do
-		if(item and item[1] == source) then
+		if(item and item.p == source) then
 			item.name = getPlayerName(source)
-			item.name2 = item.name:gsub("#%x%x%x%x%x%x", "")
-			item.clr = {getPlayerNametagColor(item[1])}
-			item.nameW = dxGetTextWidth(item.name2..":", SCALE, PLAYER_FONT)
+			item.name2 = item.name:gsub('#%x%x%x%x%x%x', '')
+			item.clr = {getPlayerNametagColor(item.p)}
+			item.nameW = dxGetTextWidth(item.name2..':', SCALE, PLAYER_FONT)
 			if(item.nameW > g_MaxNameW) then
 				g_MaxNameW = item.nameW + 10
 			end
@@ -245,17 +260,30 @@ local function RbPlayerChangeNick()
 	end
 end
 
-local function RbRestore()
+function RbSetSpecList(list)
+	g_SpecMap = {}
+	for i, spec in ipairs(list) do
+		g_SpecMap[spec] = true
+	end
 	
+	for rank, item in ipairs(g_Items) do
+		if(item) then
+			item.spec = g_SpecMap[item.p] or false
+		end
+	end
+	
+	if(USE_RENDER_TARGET) then
+		RbUpdateBuffer()
+	end
 end
 
 g_WidgetCtrl[$(wg_show)] = function(b)
 	if((g_Show and b) or (not g_Show and not b)) then return end
 	g_Show = b
 	if(b) then
-		addEventHandler("onClientRender", g_Root, RbRender)
+		addEventHandler('onClientRender', g_Root, RbRender)
 	else
-		removeEventHandler("onClientRender", g_Root, RbRender)
+		removeEventHandler('onClientRender', g_Root, RbRender)
 	end
 end
 
@@ -264,11 +292,11 @@ g_WidgetCtrl[$(wg_isshown)] = function()
 end
 
 g_WidgetCtrl[$(wg_move)] = function(x, y)
-	g_Pos = { x, y }
+	g_Pos = {x, y}
 end
 
 g_WidgetCtrl[$(wg_resize)] = function(w, h)
-	g_Size = { w, h }
+	g_Size = {w, h}
 	
 	if(g_Buffer) then
 		destroyElement(g_Buffer)
@@ -304,20 +332,25 @@ end
 -- Code --
 ----------
 
-#VERIFY_SERVER_BEGIN("C1D8B0E1B3B359CF45DFADB93EC56B62")
-	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
-	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
-	addEventHandler("onRafalhGetWidgets", g_Root, function()
-		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
+#VERIFY_SERVER_BEGIN('C1D8B0E1B3B359CF45DFADB93EC56B62')
+	g_WidgetCtrl[$(wg_reset)]() -- reset pos, size, visiblity
+	triggerEvent('onRafalhAddWidget', g_Root, getThisResource(), g_WidgetName)
+	addEventHandler('onRafalhGetWidgets', g_Root, function()
+		triggerEvent('onRafalhAddWidget', g_Root, getThisResource(), g_WidgetName)
 	end)
 	
-	addEventHandler("rb_clear", resourceRoot, RbClear)
-	addEventHandler("rb_addItem", resourceRoot, RbAddItem)
-	addEventHandler("onClientPlayerQuit", root, RbPlayerQuit)
-	addEventHandler("onClientPlayerChangeNick", root, RbPlayerChangeNick)
+	g_EyeTexture = dxCreateTexture('eye.png', 'argb', false)
+	
+	addEventHandler('rb_clear', resourceRoot, RbClear)
+	addEventHandler('rb_addItem', resourceRoot, RbAddItem)
+	addEventHandler('onClientPlayerQuit', root, RbPlayerQuit)
+	addEventHandler('onClientPlayerChangeNick', root, RbPlayerChangeNick)
 	if(USE_RENDER_TARGET) then
-		addEventHandler("onClientRestore", root, RbUpdateBuffer)
+		addEventHandler('onClientRestore', root, RbUpdateBuffer)
 	end
+	
+	addEvent('toxic.onSpecListChange', true)
+	addEventHandler('toxic.onSpecListChange', root, RbSetSpecList)
 	
 	triggerServerEvent("rb_onPlayerReady", resourceRoot)
 #VERIFY_SERVER_END()
