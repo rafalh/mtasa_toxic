@@ -377,26 +377,26 @@ end
 local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 	local prof = DbgPerf()
 	
-	local pdata = Player.fromEl(source)
-	local room = pdata.room
+	local player = Player.fromEl(source)
+	local room = player.room
 	local map = getCurrentMap(room)
 	local mapType = map and map:getType()
 	
-	if(pickupType == 'vehiclechange' and mapType and mapType.winning_veh and vehicleModel and mapType.winning_veh[vehicleModel] and not pdata.winner) then
-		pdata.winner = true
-		scriptMsg("Warning! %s has been given to %s.", getVehicleNameFromModel (vehicleModel), getPlayerName (source))
+	if(pickupType == 'vehiclechange' and mapType and mapType.winning_veh and vehicleModel and mapType.winning_veh[vehicleModel] and not player.winner) then
+		player.winner = true
+		scriptMsg("Warning! %s has been given to %s.", getVehicleNameFromModel(vehicleModel), player:getName())
 		if(GmIsEnabled(room)) then
 			GmSet(room, false)
 		end
 		
-		StHunterTaken(pdata)
+		StHunterTaken(player)
 		
 		local race_res = getResourceFromName('race')
 		local ms = race_res and call(race_res, 'getTimePassed')
 		if(ms) then
-			local n = handlePlayerTime(source, ms)
+			local n = handlePlayerTime(player.el, ms)
 			local improvedBestTime = (n >= 1)
-			RcFinishRecordingPlayer(source, ms, map:getId(), improvedBestTime)
+			RcFinishRecordingPlayer(player.el, ms, map:getId(), improvedBestTime)
 		end
 	end
 	

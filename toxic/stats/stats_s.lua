@@ -65,7 +65,10 @@ local function StAccountDataChange(accountData, name, newValue)
 			setElementData(player.el, 'exp', formatNumber(newValue))
 		end
 		
-		StDetectRankChange(player, accountData.points, newValue)
+		if(StDetectRankChange) then
+			StDetectRankChange(player, accountData.points, newValue)
+		end
+		
 		StDetectLevelChange(player, accountData.points, newValue)
 	end
 	
@@ -299,7 +302,9 @@ function StSetupScoreboard(res)
 end
 
 local function StInit()
-	StLoadRanks()
+	if(StLoadRanks) then
+		StLoadRanks()
+	end
 	
 	for el, player in pairs(g_Players) do
 		if(not player.is_console) then

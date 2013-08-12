@@ -1,6 +1,19 @@
 -- Includes
 #include 'include/config.lua'
 
+local FIELDS = 'player, name, cash, points, '..
+#if(DM_STATS) then
+	'dmVictories, huntersTaken, dmPlayed, '..
+#end
+#if(DD_STATS) then
+	'ddVictories, ddPlayed, '..
+#end
+#if(RACE_STATS) then
+	'raceVictories, racesFinished, racesPlayed, '..
+#end
+	'mapsPlayed, maxWinStreak, toptimes_count, achvCount, bidlvl, '..
+	'time_here, first_visit, last_visit, online, ip, serial, account'
+
 function getPlayersStats(player, order, desc, limit, start, online)
 	-- Validate parameters
 	limit = math.min(touint(limit, 20), 20)
@@ -15,7 +28,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	if(player_id) then
 		table.insert(cond, 'player='..player_id)
 		limit = 1
-	elseif(player) then
+	elseif(player and player ~= '') then
 		table.insert(cond, 'name LIKE '..DbStr('%'..tostring(player)..'%'))
 	end
 	if(online) then
@@ -33,24 +46,12 @@ function getPlayersStats(player, order, desc, limit, start, online)
 		players_count = rows[1].c
 	end
 	
-	local query = 'SELECT player, name, cash, points, '..
-#if(DM_STATS) then
-		'dmVictories, huntersTaken, dmPlayed, '..
-#end
-#if(DD_STATS) then
-		'ddVictories, ddPlayed, '..
-#end
-#if(RACE_STATS) then
-		'raceVictories, racesFinished, racesPlayed, '..
-#end
-		'mapsPlayed, maxWinStreak, toptimes_count, achvCount, bidlvl, '..
-		'time_here, first_visit, last_visit, online, ip, serial, account '..
-		'FROM '..PlayersTable..where
-	if ( order ) then
-		query = query..' ORDER BY '..tostring ( order )..( ( desc and ' DESC' ) or '' )
+	local query = 'SELECT '..FIELDS..' FROM '..PlayersTable..where
+	if(order) then
+		query = query..' ORDER BY '..tostring(order)..((desc and ' DESC') or '')
 	end
 	query = query..' LIMIT '
-	if ( start ) then
+	if(start) then
 		query = query..start..','
 	end
 	query = query..limit
@@ -71,6 +72,19 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	
 	return rows, players_count
 end
+
+function getPlayerStats(playerId)
+	playerId = touint(playerId)
+	if(not playerId) then
+		outputDebugString('Wrong id', 2)
+		return false
+	end
+	
+	local rows = DbQuery('SELECT '..FIELDS..' FROM '..PlayersTable..' WHERE player=?', playerId)
+	local data = rows and rows[1]
+	return data
+end
+RPC.allow('getPlayerStats')
 
 addInitFunc(function()
 	addEvent('main_onPlayersListReq', true)
