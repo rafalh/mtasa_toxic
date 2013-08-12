@@ -108,4 +108,3 @@ local function EbInit()
 end
 
 addInternalEventHandler($(EV_CLIENT_INIT), EbInit)
-

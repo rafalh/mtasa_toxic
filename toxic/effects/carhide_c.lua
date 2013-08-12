@@ -96,9 +96,9 @@ end
 local function ChToggle()
 	ChSetEnabled(not g_CarHide)
 	if(g_CarHide) then
-		outputMsg(Styles.green, "Car Hide is enabled")
+		outputMsg(Styles.green, "Car Hide has been enabled")
 	else
-		outputMsg(Styles.red, "Car Hide is disabled")
+		outputMsg(Styles.red, "Car Hide has been disabled")
 	end
 end
 
@@ -115,9 +115,14 @@ end
 local function ChInit()
 	ChPulse()
 	setTimer(ChPulse, 1000, 0)
+	
+	addCommandHandler('carhide', ChToggle, false)
+	local key = getKeyBoundToCommand('carhide') or 'O'
+	bindKey(key, 'down', 'carhide')
 end
 
-addCommandHandler('carhide', ChToggle, false)
+
+
 addEventHandler('onClientResourceStart', resourceRoot, ChInit)
 
 Settings.register

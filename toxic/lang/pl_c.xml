@@ -224,4 +224,7 @@
 	<msg id="yesterday">wczoraj</msg>
 	<msg id="%u days ago">%u dni temu</msg>
 	<msg id="Update players">Aktualizuj graczy</msg>
+	
+	<msg id="Car Hide has been enabled">Car Hide został włączony</msg>
+	<msg id="Car Hide has been disabled">Car Hide został wyłączony</msg>
 </strings>

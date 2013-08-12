@@ -352,5 +352,5 @@ end
 	addEvent('toxic.onSpecListChange', true)
 	addEventHandler('toxic.onSpecListChange', root, RbSetSpecList)
 	
-	triggerServerEvent("rb_onPlayerReady", resourceRoot)
+	triggerServerEvent('rb_onPlayerReady', resourceRoot)
 #VERIFY_SERVER_END()
