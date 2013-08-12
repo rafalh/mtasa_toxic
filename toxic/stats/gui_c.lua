@@ -20,8 +20,8 @@ local STATS = {
 	{"Cash:", function(stats)
 		return formatMoney(stats.cash)
 	end},
-	{"Points:", function(stats)
-		return formatNumber(stats.points)
+	{"EXP:", function(stats)
+		return formatNumber(stats.points)..' '..MuiGetMsg('(level %u)'):format(LvlFromExp(stats.points))
 	end},
 	{"Rank:", '_rank'},
 #if(DM_STATS) then

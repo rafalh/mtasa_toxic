@@ -150,7 +150,7 @@ local function CmdRedo (message, arg)
 	if(dt < redoLimit) then
 		privMsg(source, "You cannot redo yet! Please wait %u seconds.", redoLimit - dt)
 	elseif(map) then
-		GbCancelBets ()
+		GbCancelBets()
 		g_LastRedo = now
 		map:start(room)
 	end

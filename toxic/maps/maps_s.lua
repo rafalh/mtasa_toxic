@@ -112,7 +112,7 @@ end
 
 function getRandomMap()
 	local maps = getMapsList()
-	local i = math.random (1, maps:getCount())
+	local i = math.random(1, maps:getCount())
 	local map
 	while(maps:getCount() > 0) do
 		map = maps:get(i)
@@ -170,6 +170,7 @@ local function onMapStart(map, room)
 		room.mapRepeats = 1
 	end
 	room.currentMap = map
+	room.mapsInit = true
 	prof2:cp('onMapStart 1')
 	
 	if(rows[1].removed ~= '') then

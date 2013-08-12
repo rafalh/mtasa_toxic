@@ -56,11 +56,21 @@ local function StAccountDataChange(accountData, name, newValue)
 	if(not table.find(g_Stats, name)) then return end -- not a stat
 	
 	local player = Player.fromId(accountData.id)
-	if(player and name == 'points') then
+	if(not player) then return end
+	
+	if(name == 'points') then
 		setPlayerAnnounceValue(player.el, 'score', tostring(newValue))
+		
+		if(Settings.scoreboard_exp) then
+			setElementData(player.el, 'exp', formatNumber(newValue))
+		end
 		
 		StDetectRankChange(player, accountData.points, newValue)
 		StDetectLevelChange(player, accountData.points, newValue)
+	end
+	
+	if(name == 'cash' and Settings.scoreboard_cash) then
+		setElementData(player.el, 'cash', formatMoney(newValue))
 	end
 end
 
@@ -100,15 +110,27 @@ local function StPlayerStatsSyncCallback(idOrPlayer)
 	return data
 end
 
-local function StOnPlayerJoin()
-	local player = Player.fromEl(source)
+local function StUpdatePlayerScoreboardData(player)
 	local pts = player.accountData.points
-	setPlayerAnnounceValue(source, 'score', tostring(pts))
+	setPlayerAnnounceValue(player.el, 'score', tostring(pts))
 	
 	if(Settings.scoreboard_lvl) then
 		local lvl = LvlFromExp(pts)
 		setElementData(player.el, 'lvl', lvl)
 	end
+	
+	if(Settings.scoreboard_exp) then
+		setElementData(player.el, 'exp', formatNumber(pts))
+	end
+	
+	if(Settings.scoreboard_cash) then
+		setElementData(player.el, 'cash', formatMoney(player.accountData.cash))
+	end
+end
+
+local function StOnPlayerJoin()
+	local player = Player.fromEl(source)
+	StUpdatePlayerScoreboardData(player)
 end
 
 local function StOnPlayerWasted(totalAmmo, killer, weapon)
@@ -123,7 +145,7 @@ end
 local function StOnVehicleExplode()
 	local playerEl = getVehicleOccupant(source)
 	local player = playerEl and Player.fromEl(playerEl)
-	if(wasEventCancelled() or not player) then return end
+	if(not player) then return end
 	
 	-- Note: Blow in Admin Panel generates two onVehicleExplode but only one has health > 0
 	if(getElementHealth(source) > 0) then
@@ -266,7 +288,13 @@ end
 -- Called from core
 function StSetupScoreboard(res)
 	if(Settings.scoreboard_lvl) then
-		call(res, 'scoreboardAddColumn', 'lvl', g_Root, 30, 'Lvl', false)
+		call(res, 'scoreboardAddColumn', 'lvl', g_Root, 25, 'Lvl', false)
+	end
+	if(Settings.scoreboard_exp) then
+		call(res, 'scoreboardAddColumn', 'exp', g_Root, 40, 'EXP', false)
+	end
+	if(Settings.scoreboard_cash) then
+		call(res, 'scoreboardAddColumn', 'cash', g_Root, 70, 'Cash', false)
 	end
 end
 
@@ -275,13 +303,7 @@ local function StInit()
 	
 	for el, player in pairs(g_Players) do
 		if(not player.is_console) then
-			local pts = player.accountData.points
-			setPlayerAnnounceValue(player.el, 'score', tostring(pts))
-			
-			if(Settings.scoreboard_lvl) then
-				local lvl = LvlFromExp(pts)
-				setElementData(player.el, 'lvl', lvl)
-			end
+			StUpdatePlayerScoreboardData(player)
 		end
 	end
 	

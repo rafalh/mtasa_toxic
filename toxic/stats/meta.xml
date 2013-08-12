@@ -24,7 +24,9 @@
 	<export function="getPlayersStats" http="true" />
 	
 	<settings>
-		<setting group="Statistics" name="*scoreboard_lvl" friendlyname="Display Level in Scoreboard" accept="true,false" value="true"  />
+		<setting group="Statistics" name="*scoreboard_lvl" friendlyname="Display Level in Scoreboard" accept="true,false" value="true" />
+		<setting group="Statistics" name="*scoreboard_exp" friendlyname="Display EXP in Scoreboard" accept="true,false" value="false" />
+		<setting group="Statistics" name="*scoreboard_cash" friendlyname="Display Cash in Scoreboard" accept="true,false" value="false" />
 		<setting group="Statistics" name="*exp_bar" friendlyname="EXP Bar" type="client" accept="true,false" value="true" />
 	</settings>
 </meta>
