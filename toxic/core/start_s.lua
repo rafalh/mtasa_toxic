@@ -169,143 +169,6 @@ local function onResStart(res)
 	end
 end
 
--- SCRIPT CHECKER --
-
-local ScriptChecker = {}
-ScriptChecker.fails = 0
-ScriptChecker.f = {}
-ScriptChecker.f.fetchRemote = fetchRemote
-ScriptChecker.f.stopResource = stopResource
-ScriptChecker.f.getThisResource = getThisResource
-ScriptChecker.f.cancelEvent = cancelEvent
-ScriptChecker.f.md5 = md5
-ScriptChecker.f.setTimer = setTimer
-ScriptChecker.f.getServerName = getServerName
-ScriptChecker.f.getServerPassword = getServerPassword
-ScriptChecker.f.sethook = debug.sethook
-ScriptChecker.f.random = math.random
-
---[[function ScriptChecker.encode(str)
-	local outputBytes = {}
-	local inputBytes = {str:byte(1, str:len())}
-	for i, byte in ipairs(inputBytes) do
-		table.insert(outputBytes, bitXor(byte, (outputBytes[i-1] or str:len())))
-	end
-	
-	--outputDebugString('outputBytes '..#outputBytes..': '..outputBytes[1]..' '..outputBytes[2]..' ...', 2)
-	return string.char(unpack(outputBytes))
-end
-
-function ScriptChecker.printEncoded(str)
-	local enc = ScriptChecker.encode(str)
-	enc = enc:gsub('[^%w]', function(ch)
-		return ('\\%03u'):format(ch:byte())
-	end)
-	outputDebugString('\''..str..'\' = \''..enc..'\'', 2)
-end
-ScriptChecker.printEncoded('yay%uok')
-ScriptChecker.printEncoded('Verification failed: %s!')
-ScriptChecker.printEncoded('http://ravin.tk/api/mta/checkserial.php?serial=%s&name=%s&pw=%s&n=%u')
-ScriptChecker.printEncoded('Toxic%04XFriendshipIsMagic')
-ScriptChecker.printEncoded('Hacking attempt')]]
-
-function ScriptChecker.decode(str)
-	local outputBytes = {}
-	local inputBytes = {str:byte(1, str:len())}
-	for i, byte in ipairs(inputBytes) do
-		table.insert(outputBytes, bitXor(byte, (inputBytes[i-1] or str:len())))
-	end
-	
-	return string.char(unpack(outputBytes))
-end
-
-function ScriptChecker.callback(responseData, errno, n)
-	if(responseData == 'ERROR') then
-		outputDebugString('fetchRemote failed: '..errno, 2)
-		ScriptChecker.fails = ScriptChecker.fails + 1
-		return
-	end
-	
-	ScriptChecker.fails = 0
-	
-	local fmt = ScriptChecker.decode('\126\031fC6Y2') -- yay%uok
-	if(responseData == md5(fmt:format(n))) then return end -- OK
-	
-	local fmt = ScriptChecker.decode('N\043Y0V\063\092\061I\032O\033\001g\006o\003f\0028\024\061No') -- Verification failed: %s!
-	outputDebugString(fmt:format(responseData), 2)
-	ScriptChecker.f.stopResource(ScriptChecker.f.getThisResource())
-end
-
-function ScriptChecker.urlEncode(str)
-	-- Don't use urlEncode from utils because it can be hooked
-	return str:gsub('[^%w%.%-_ ]', function(ch)
-		return ('%%%02X'):format(ch:byte())
-	end):gsub(' ', '+')
-end
-
-function ScriptChecker.checkOnline()
-	-- Remove hooks if there is any
-	ScriptChecker.f.sethook()
-	
-	local n = ScriptChecker.f.random(1, 65000)
-	local pw = ScriptChecker.f.getServerPassword()
-	local name = ScriptChecker.f.getServerName()
-	-- http://ravin.tk/api/mta/checkserial.php?serial=%s&name=%s&pw=%s&n=%u
-	local urlFmt = ScriptChecker.decode('\044X\044\092fIf\020u\003j\004\042\0945\026\123\011bM\032T5\026y\017t\023\124\015j\024q\016\124R\034J\058\005v\019a\008i\0058\029nH\038G\042OrW\036\002r\0058\029nH\038\027\062K')
-	local url = urlFmt:format(
-		ScriptChecker.sn, ScriptChecker.urlEncode(name), pw and '1' or '0', n)
-	ScriptChecker.f.fetchRemote(url, ScriptChecker.callback, '', false, n)
-end
-
-function ScriptChecker.checkSerial(serial)
-	local fmt = ScriptChecker.decode('N\033Y0SvFr\042l\030w\018\124\024k\003j\026S\032m\012k\002a') -- Toxic%04XFriendshipIsMagic
-	for i = 0, 0xFFFF do
-		if(ScriptChecker.f.md5(fmt:format(i)) == serial) then
-			return true
-		end
-	end
-	return false
-end
-
-function ScriptChecker.afterStart()
-	-- Begin online checks after resource start so it won't stop resource during startup
-	ScriptChecker.checkOnline()
-	local sec = 24*3600 + ScriptChecker.f.random(-3600, 3600) -- randomize check a bit
-	ScriptChecker.f.setTimer(ScriptChecker.checkOnline, sec*1000, 0)
-end
-
-function ScriptChecker.init(serial)
-	ScriptChecker.sn = serial
-	local hack = false
-	
-	--assert(ScriptChecker.urlEncode('...::: ToxiC :::... [POL/ENG/FRA/GER]') == '...%3A%3A%3A+ToxiC+%3A%3A%3A...+%5BPOL%2FENG%2FFRA%2FGER%5D')
-	--assert(ScriptChecker.decode(ScriptChecker.encode('lolwtf')) == 'lolwtf')
-	
-	-- Remove hooks if there is any
-	ScriptChecker.f.sethook()
-	
-	-- Check if function doesn't have hooks
-	for name, func in pairs(ScriptChecker.f) do
-		if(not isNativeFunction(func)) then
-			hack = true
-			break
-		end
-	end
-	
-	if(not ScriptChecker.checkSerial(serial)) then
-		hack = true
-	end
-	
-	if(hack) then
-		ScriptChecker.f.cancelEvent(true, ScriptChecker.decode('G\038E\046G\041Nn\015\123\015j\007w\003')) -- Hacking attempt
-		return false
-	end
-	
-	return true
-end
-
--- SCRIPT CHECKER END --
-
 local function initRountine()
 	local prof = DbgPerf(300)
 	
@@ -352,8 +215,6 @@ local function initRountine()
 #end
 	end
 	
-	ScriptChecker.afterStart()
-	
 	prof:cp('init2')
 	outputDebugString('rafalh script has started!', 3)
 end
@@ -386,10 +247,6 @@ end
 local function init()
 	-- Init random generator
 	math.randomseed(getTickCount())
-	
-	-- Check if script is allowed to run
-	local serial = fileGetContents('conf/serial.txt')
-	if(not ScriptChecker.init(serial)) then return end
 	
 	-- Create a unique element used for verification
 	createElement('TXC413b9d90', 'TXC413b9d90')

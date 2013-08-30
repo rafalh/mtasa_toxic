@@ -5,8 +5,8 @@ addEvent ('onCommandsListReq', true)
 addEvent ('onClientCommandsList', true)
 
 function CmdRegister (name, func, access, description, ignore_console, ignore_chat)
-	assert (name and not g_Commands[name] and func, tostring (name))
-	assert (access ~= nil)
+	assert(name and func and access ~= nil, 'Wrong args for CmdRegister: '..tostring(name))
+	assert(not g_Commands[name], 'Command already exists: '..tostring(name))
 	
 	g_Commands[name] = { f = func, access = access, descr = description, ignore_con = ignore_console, ignore_chat = ignore_chat }
 end

@@ -45,7 +45,7 @@ local function CmdWarn(message, arg)
 			outputMsg(root, Styles.red, "%s has been banned by %s after %u warnings!",
 				playerName, adminName, Settings.max_warns)
 			addBan(nil, nil, player:getSerial(), source.el,
-				'Warnings limit reached ('.Settings.max_warns.')', Settings.warn_ban*24*3600)
+				'Warnings limit reached ('..Settings.max_warns..')', Settings.warn_ban*24*3600)
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
 end
