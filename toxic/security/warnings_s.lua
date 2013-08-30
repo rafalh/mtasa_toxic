@@ -4,9 +4,8 @@ PlayersTable:addColumns{
 
 function warnPlayer(player, source)
 	local maxWarns = Settings.max_warns
-	if(maxWarns > 0 and player.accountData.warnings == maxWarns) then
+	if(maxWarns > 0 and player.accountData.warnings >= maxWarns) then
 		player.accountData.warnings = 0
-		addBan(nil, nil, player:getSerial(), source.el, 'Warnings limit reached', Settings.warn_ban*24*3600)
 		return true
 	else
 		player.accountData:add('warnings', 1)
@@ -36,14 +35,17 @@ local function CmdWarn(message, arg)
 	local sourcePlayer = Player.fromEl(source)
 	
 	if(player) then
+		local playerName = player:getName(true)
+		local adminName = sourcePlayer:getName(true)
+		
 		if(not warnPlayer(player, sourcePlayer)) then
 			outputMsg(root, Styles.red, "%s has been warned by %s and has now %u/%u warnings.",
-				player:getName(true), sourcePlayer:getName(true),
-				player.accountData.warnings, Settings.max_warns)
+				playerName, adminName, player.accountData.warnings, Settings.max_warns)
 		else
 			outputMsg(root, Styles.red, "%s has been banned by %s after %u warnings!",
-				player:getName(true), sourcePlayer:getName(true), Settings.max_warns)
-			kickPlayer(player.el, source, 'Warnings limit reached ('..Settings.max_warns..')')
+				playerName, adminName, Settings.max_warns)
+			addBan(nil, nil, player:getSerial(), source.el,
+				'Warnings limit reached ('.Settings.max_warns.')', Settings.warn_ban*24*3600)
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
 end

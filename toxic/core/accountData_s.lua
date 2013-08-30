@@ -131,6 +131,8 @@ function AccountData:set(arg1, arg2, arg3)
 			end
 		end
 	end
+	
+	return result
 end
 
 function AccountData:add(name, num)
