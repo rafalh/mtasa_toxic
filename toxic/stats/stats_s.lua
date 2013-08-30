@@ -131,7 +131,7 @@ local function StUpdatePlayerScoreboardData(player)
 	end
 end
 
-local function StOnPlayerJoin()
+local function StOnPlayerJoinOrLogin()
 	local player = Player.fromEl(source)
 	StUpdatePlayerScoreboardData(player)
 end
@@ -314,7 +314,9 @@ local function StInit()
 	
 	addSyncer('stats', StPlayerStatsSyncCallback)
 	
-	addEventHandler('onPlayerJoin', g_Root, StOnPlayerJoin)
+	addEventHandler('onPlayerJoin', g_Root, StOnPlayerJoinOrLogin)
+	addEventHandler('onPlayerLogin', g_Root, StOnPlayerJoinOrLogin)
+	addEventHandler('onPlayerLogout', g_Root, StOnPlayerJoinOrLogin)
 	addEventHandler('onPlayerWasted', g_Root, StOnPlayerWasted)
 	addEventHandler('onVehicleExplode', g_Root, StOnVehicleExplode)
 	table.insert(AccountData.onChangeHandlers, StAccountDataChange)
