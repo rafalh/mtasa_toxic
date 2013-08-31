@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include "..\\include\\serv_verification.lua"
-
 -------------
 -- Defines --
 -------------
@@ -324,7 +318,7 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN("13B8ACB2C0389B52D0EA7DA16B794CBC")
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	addEventHandler("onClientVehicleEnter", g_Root, NitOnVehicleEnter)
 	addEventHandler("onClientVehicleExit", g_Root, NitOnVehicleExit)
 	addEventHandler("onClientPlayerWasted", g_Me, NitOnPlayerWasted)
@@ -333,4 +327,4 @@ end
 	addEventHandler("nitro.onPickUp", g_ResRoot, NitOnPickUpNitro)
 	
 	NitInit()
-#VERIFY_SERVER_END()
+end)

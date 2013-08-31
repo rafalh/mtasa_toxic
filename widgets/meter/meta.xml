@@ -9,7 +9,5 @@
 	<file src="hp.png" />
 	<file src="needle.png" />
 	
-	<include resource="rafalh_shared" />
-	
 	<export function="widgetCtrl" type="client" />
 </meta>

@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include "..\\include\\serv_verification.lua"
-
 -----------------
 -- Definitions --
 -----------------
@@ -133,10 +127,10 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN ( "62443A6D1AA2D8A266064C951C92E266" )
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	g_Verified = true
 	--[[if(DEBUG) then
 		local bar = createAnimatedProgressBar(100, 100, 200, 10, false, false, false)
 		setAnimatedProgressBarProgress(bar, 34)
 	end]]
-#VERIFY_SERVER_END ()
+end)

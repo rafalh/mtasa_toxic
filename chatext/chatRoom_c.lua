@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include "..\\include\\serv_verification.lua"
-
 ---------------------
 -- Local variables --
 ---------------------
@@ -156,8 +150,7 @@ end
 ------------
 -- Events --
 ------------
-
-#VERIFY_SERVER_BEGIN("4D61E3FEBAC07FBBE5539F4C2E332743")
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	triggerServerEvent("chatext.onReady", resourceRoot)
 	guiSetInputMode("no_binds_when_editing")
-#VERIFY_SERVER_END()
+end)

@@ -2,7 +2,6 @@
 -- Includes --
 --------------
 
-#include "../../include/serv_verification.lua"
 #include "../../include/widgets.lua"
 
 ---------------------
@@ -110,7 +109,7 @@ end
 -- Init --
 ----------
 
-#VERIFY_SERVER_BEGIN ( "01D16B92486D3BBE949B49D5A481BAEE" )
+local function init()
 	g_Textures.front = dxCreateTexture ( "logo.jpg" )
 	g_TexSize = {dxGetMaterialSize(g_Textures.front)}
 	
@@ -120,4 +119,6 @@ end
 	addEventHandler("onRafalhGetWidgets", g_Root, function()
 		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	end)
-#VERIFY_SERVER_END ()
+end
+
+addEventHandler('onClientResourceStart', resourceRoot, init)

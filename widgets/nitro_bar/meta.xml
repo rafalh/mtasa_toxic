@@ -8,7 +8,6 @@
 	<file src="images/bar.png" />
 	
 	<include resource="rafalh_nitro" />
-	<include resource="rafalh_shared" />
 	
 	<export function="widgetCtrl" type="client" />
 </meta>

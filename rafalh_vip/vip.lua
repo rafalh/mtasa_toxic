@@ -159,6 +159,8 @@ local function VipUpdateVehicle(player, veh)
 end
 
 local function VipAvatarCallback(data, errno, player)
+	if(not isElement(player)) then return end
+	
 	if(errno == 0 and data:len() > 0) then
 		if(data:len() > 1024 * 64) then
 			outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
@@ -173,8 +175,10 @@ local function VipAvatarCallback(data, errno, player)
 end
 
 local function VipHttpResult(data, player)
-	VipAvatarCallback(data, data and 0 or -1, player)
-	g_Players[player].avatar_req_el = false
+	if(g_Players[player]) then
+		VipAvatarCallback(data, data and 0 or -1, player)
+		g_Players[player].avatar_req_el = false
+	end
 end
 
 addEvent("onHttpResult")

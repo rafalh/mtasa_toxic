@@ -6,7 +6,5 @@
 	<file src="disc.png" />
 	<file src="needle.png" />
 	
-	<include resource="rafalh_shared" />
-	
 	<export function="widgetCtrl" type="client" />
 </meta>

@@ -1,5 +1,4 @@
-
-#include "..\\include\\serv_verification.lua"
+-- Includes
 #include "..\\include\\widgets.lua"
 
 ---------------------
@@ -761,8 +760,8 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN("391B3F7ABE5BE708D973349E47113A5C")
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	addEventHandler("vip.onVerified", g_Root, VipOnClientVip)
 	addEventHandler("onRafalhAddWidget", g_Root, VipOnAddWidget)
 	VipInit()
-#VERIFY_SERVER_END ()
+end)

@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include "../include/serv_verification.lua"
-
 -----------------
 -- Definitions --
 -----------------
@@ -199,8 +193,8 @@ end
 -- Events --
 ------------
 
-#VERIFY_SERVER_BEGIN("6B3737E598A38774517058B15CF09700")
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	addEventHandler("particles_onConfig", resourceRoot, onConfig)
 	
 	triggerServerEvent("particles_onPlayerReady", resourceRoot)
-#VERIFY_SERVER_END()
+end)

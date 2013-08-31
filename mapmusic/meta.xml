@@ -2,7 +2,7 @@
 	<info type="script" name="Music manager" author="Rafalh" version="2.0.0"></info>
 	
 	<script src="music_c.lua" type="client" />
-	<script src="music.lua" />
+	<script src="music_s.lua" type="server" />
 	<script src="effect_c.lua" type="client" />
 	
 	<export function="setMusicVolume" type="client" />

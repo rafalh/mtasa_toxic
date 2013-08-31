@@ -1,3 +1,5 @@
+-- Include guard
+#if(includeGuard()) then return end
 
 #local bit = require("bit")
 

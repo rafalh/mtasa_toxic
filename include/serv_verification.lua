@@ -1,6 +1,9 @@
 -- Includes
 #include 'obfuscation.lua'
 
+-- Include guard
+#if(includeGuard()) then return end
+
 -- Deprecated
 #EV_SERVER_VERIFICATION = "\"onClientRafalhShared1\""
 #VERIFY_SERVER_FUNC = "verify"

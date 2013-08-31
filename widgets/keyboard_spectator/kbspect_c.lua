@@ -2,7 +2,6 @@
 -- Includes --
 --------------
 
-#include "../../include/serv_verification.lua"
 #include "../../include/widgets.lua"
 
 ---------------------
@@ -135,11 +134,11 @@ end
 -- Code --
 ----------
 
-#VERIFY_SERVER_BEGIN ( "27089FB4854792A93A52CFB143022E86" )
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	g_WidgetCtrl[$(wg_reset)]() -- reset pos, size, visiblity
 	addEventHandler("onClientPlayerControls", g_Root, KbspOnPlayerControls)
 	triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	addEventHandler("onRafalhGetWidgets", g_Root, function()
 		triggerEvent("onRafalhAddWidget", g_Root, getThisResource(), g_WidgetName)
 	end)
-#VERIFY_SERVER_END ()
+end)

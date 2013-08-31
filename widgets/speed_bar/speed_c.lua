@@ -2,7 +2,6 @@
 -- Includes --
 --------------
 
-#include "../../include/serv_verification.lua"
 #include "../../include/widgets.lua"
 
 -----------------
@@ -153,10 +152,12 @@ end
 -- Code --
 ----------
 
-#VERIFY_SERVER_BEGIN ( "63F48BA32C6EED46CEABEB38FA458739" )
+local function init()
 	g_WidgetCtrl[$(wg_reset)] () -- reset pos, size, visiblity
 	triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Speed bar" )
 	addEventHandler ( "onRafalhGetWidgets", g_Root, function ()
 		triggerEvent ( "onRafalhAddWidget", g_Root, getThisResource (), "Speed bar" )
 	end )
-#VERIFY_SERVER_END ()
+end
+
+addEventHandler('onClientResourceStart', resourceRoot, init)

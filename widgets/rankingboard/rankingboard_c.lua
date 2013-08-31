@@ -2,7 +2,6 @@
 -- Includes --
 --------------
 
-#include '../../include/serv_verification.lua'
 #include '../../include/widgets.lua'
 
 ---------------------
@@ -332,7 +331,7 @@ end
 -- Code --
 ----------
 
-#VERIFY_SERVER_BEGIN('C1D8B0E1B3B359CF45DFADB93EC56B62')
+addEventHandler('onClientResourceStart', resourceRoot, function()
 	g_WidgetCtrl[$(wg_reset)]() -- reset pos, size, visiblity
 	triggerEvent('onRafalhAddWidget', g_Root, getThisResource(), g_WidgetName)
 	addEventHandler('onRafalhGetWidgets', g_Root, function()
@@ -353,4 +352,4 @@ end
 	addEventHandler('toxic.onSpecListChange', root, RbSetSpecList)
 	
 	triggerServerEvent('rb_onPlayerReady', resourceRoot)
-#VERIFY_SERVER_END()
+end)
