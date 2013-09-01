@@ -15,7 +15,9 @@ end
 
 local function onPlayerFinish(rank)
 	if(rank <= 3) then
-		g_Winners[rank] = Player.fromEl(source):getName(true)
+		-- Note: player can be nil if player just left the game
+		local player = Player.fromEl(source)
+		g_Winners[rank] = player and player:getName(true) or 'Unknown'
 	end
 end
 
