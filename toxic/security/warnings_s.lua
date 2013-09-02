@@ -32,19 +32,19 @@ CmdRegisterAlias('warns', 'warnings')
 
 local function CmdWarn(message, arg)
 	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
-	local sourcePlayer = Player.fromEl(source)
+	local admin = Player.fromEl(source)
 	
 	if(player) then
 		local playerName = player:getName(true)
-		local adminName = sourcePlayer:getName(true)
+		local adminName = admin:getName(true)
 		
-		if(not warnPlayer(player, sourcePlayer)) then
+		if(not warnPlayer(player, admin)) then
 			outputMsg(root, Styles.red, "%s has been warned by %s and has now %u/%u warnings.",
 				playerName, adminName, player.accountData.warnings, Settings.max_warns)
 		else
 			outputMsg(root, Styles.red, "%s has been banned by %s after %u warnings!",
 				playerName, adminName, Settings.max_warns)
-			addBan(nil, nil, player:getSerial(), source.el,
+			addBan(nil, nil, player:getSerial(), admin.el,
 				'Warnings limit reached ('..Settings.max_warns..')', Settings.warn_ban*24*3600)
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
@@ -54,12 +54,12 @@ CmdRegister('warn', CmdWarn, 'resource.'..g_ResName..'.warn', "Adds player warni
 
 local function CmdUnwarn (message, arg)
 	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
-	local sourcePlayer = Player.fromEl(source)
+	local admin = Player.fromEl(source)
 	
 	if(player) then
 		if(unwarnPlayer(player)) then
 			outputMsg(root, Styles.green, "%s's warning has been removed by %s!",
-				player:getName(true), sourcePlayer:getName(true))
+				player:getName(true), admin:getName(true))
 		else
 			privMsg(source, "%s has no warnings!", player:getName())
 		end
