@@ -254,14 +254,14 @@ function GifLoad ( str, is_string )
 	
 	-- Note: size should be power of 2
 	local ln2 = math_log ( 2 )
-	scr_w = 2 ^ ( math_ceil ( math_log ( scr_w ) / ln2 ) ) -- round up to power of 2
-	scr_h = 2 ^ ( math_ceil ( math_log ( scr_h ) / ln2 ) ) -- round up to power of 2
+	local texW = 2 ^ ( math_ceil ( math_log ( scr_w ) / ln2 ) ) -- round up to power of 2
+	local texH = 2 ^ ( math_ceil ( math_log ( scr_h ) / ln2 ) ) -- round up to power of 2
 	
 	-- Note: MTA fails to display properly images with w <> h
-	local max_wh = math.max ( scr_w, scr_h )
-	scr_w, scr_h = max_wh, max_wh
+	local maxWH = math.max ( texW, texH )
+	texW, texH = maxWH, maxWH
 	
-	DbgPrint ( "new w %u h %u", scr_w, scr_h )
+	DbgPrint ( "texture size: w %u h %u", texW, texH )
 	
 	local gct = false
 	if ( hasbit ( flags, 128 ) ) then -- GCTF
@@ -271,9 +271,9 @@ function GifLoad ( str, is_string )
 		gct = GifLoadColorTable ( stream, gct_size )
 	end
 	
-	local tmp = dxCreateTexture ( scr_w, scr_h, "argb" )
-	local pixels = dxGetTexturePixels ( tmp )
-	--local pixels = string_rep ( "\0\0\0\0", scr_w * scr_h )..GifWordToStr ( scr_w )..GifWordToStr ( scr_h )
+	local emptyTex = dxCreateTexture(texW, texH, "argb")
+	local pixels = dxGetTexturePixels(emptyTex)
+	--local pixels = string_rep ( "\0\0\0\0", texW * texH )..GifWordToStr ( texW )..GifWordToStr ( texH )
 	local frame = false
 	local x, y, w, h
 	
@@ -285,11 +285,16 @@ function GifLoad ( str, is_string )
 			DbgPerfInit ( 3 )
 			
 			if ( frame and frame.disp >= 2 ) then -- previous frame
-				-- clear background
-				for x2 = x, w - 1, 1 do
-					for y2 = y, h - 1, 1 do
-						local ret = _dxSetPixelColor ( pixels, x2, y2, 0, 0, 0, 0 )
-						--_assert ( ret )
+				if(x == 0 and y == 0 and w == scr_w and h == scr_h) then
+					-- Shortcut ;)
+					pixels = dxGetTexturePixels(emptyTex)
+				else
+					-- clear background
+					for x2 = x, w - 1, 1 do
+						for y2 = y, h - 1, 1 do
+							local ret = _dxSetPixelColor ( pixels, x2, y2, 0, 0, 0, 0 )
+							--_assert ( ret )
+						end
 					end
 				end
 				
@@ -394,6 +399,8 @@ function GifLoad ( str, is_string )
 		
 		DbgPerfCp ( "Block 0x%X", 2, intr )
 	end
+	
+	destroyElement(emptyTex)
 	
 	DbgPerfCp ( "GIF loading", 1 )
 	
