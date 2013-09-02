@@ -1,19 +1,15 @@
 <meta>
 	<info author="rafalh" version="1.0" name="Rafalh Shared" description="Files shared by rafalh scripts" type="script" />
 	
-	<script src="main.lua" />
-	<script src="main_c.lua" type="client" />
 	<script src="color_dlg_c.lua" type="client" />
 	<script src="animated_bar_c.lua" type="client" />
-	<script src="http.lua" />
+	<script src="http_s.lua" type="server" />
 	<script src="debug.lua" type="client" />
 	<script src="gif_c.lua" type="client" />
 	
 	<file src="img/palette.jpg" />
 	<file src="img/bar_fg.png" />
 	<file src="img/bar_bg.png" />
-	
-	<export function="verify" type="client" />
 	
 	<export function="createColorDlg" type="client" />
 	

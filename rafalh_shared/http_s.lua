@@ -236,6 +236,6 @@ function HttpEncodeUrl ( url )
 	return url
 end
 
-addEventHandler ( "onSockOpened", g_Root, HttpSockOpened )
-addEventHandler ( "onSockClosed", g_Root, HttpSockClosed )
-addEventHandler ( "onSockData", g_Root, HttpSockData )
+addEventHandler ( "onSockOpened", resourceRoot, HttpSockOpened )
+addEventHandler ( "onSockClosed", resourceRoot, HttpSockClosed )
+addEventHandler ( "onSockData", resourceRoot, HttpSockData )

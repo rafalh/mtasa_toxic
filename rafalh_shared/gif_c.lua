@@ -436,4 +436,4 @@ local function GifOnResStop ( res )
 	end
 end
 
-addEventHandler ( "onClientResourceStop", g_Root, GifOnResStop )
+addEventHandler ( "onClientResourceStop", resourceRoot, GifOnResStop )
