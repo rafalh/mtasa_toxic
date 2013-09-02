@@ -65,7 +65,7 @@ local function NmtRender()
 	local myDim = getElementDimension(localPlayer)
 	local nametags = {}
 	
-	for i, player in ipairs(getElementsByType('player')) do
+	for player, pdata in pairs(g_Players) do
 		setPlayerNametagShowing(player, false)
 		local veh = getPedOccupiedVehicle(player)
 		local alpha = getElementAlpha(player)
@@ -196,12 +196,19 @@ local function NmtInitPlayer(player)
 	NmtUpdateAvatar(player)
 end
 
-local function NmtInit()
-	g_HealthTex = dxCreateTexture('img/nametag_health.png')
-	
+local function NmtInitAllPlayers()
 	for i, player in ipairs(getElementsByType('player')) do
 		NmtInitPlayer(player)
 	end
+end
+
+local function NmtInit()
+	-- Load health bar texture
+	g_HealthTex = dxCreateTexture('img/nametag_health.png')
+	if(not g_HealthTex) then cancelEvent() return end
+	
+	-- Delay avatars loading to allow rafalh_shared resource start
+	setTimer(NmtInitAllPlayers, 50, 1)
 end
 
 local function NmtOnPlayerJoin()
