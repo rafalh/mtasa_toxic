@@ -35,10 +35,10 @@ local g_DbgPerfData = {}
 	end
 
 	function DbgPerfCp ( title, channel, ... )
-		local dt = getTickCount () - g_DbgPerfData[channel or 1]
-		local args = { ... }
-		args[#args + 1] = dt
 #		if(PERF_DEBUG) then
+			local dt = getTickCount () - g_DbgPerfData[channel or 1]
+			local args = { ... }
+			args[#args + 1] = dt
 			DbgPrint ( title.." has taken %u ms", unpack ( args ) )
 #		end
 		g_DbgPerfData[channel or 1] = getTickCount ()

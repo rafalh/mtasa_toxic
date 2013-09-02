@@ -2,6 +2,8 @@
 -- http://www.w3.org/Graphics/GIF/spec-gif89a.txt
 -- http://www.eecis.udel.edu/~amer/CISC651/lzw.and.gif.explained.html
 
+#USE_BIT_API = true
+
 local string_byte = string.byte
 local string_char = string.char
 local string_sub = string.sub
@@ -12,14 +14,20 @@ local math_min = math.min
 local math_ceil = math.ceil
 local math_floor = math.floor
 local math_log = math.log
+local math_huge = math.huge
 local table_concat = table.concat
 local table_insert = table.insert
 local _assert = assert
 local _dxSetPixelColor = dxSetPixelColor
 
-local function hasbit(x, p)
-	return x %(p + p) >= p
-end
+#if(USE_BIT_API) then
+	local _bitTest = bitTest
+	local _bitExtract = bitExtract
+#else
+	local function _bitTest(x, p)
+		return x % (p + p) >= p
+	end
+#end
 
 local function GifInitStream(str)
 	return {str, 1}
@@ -53,7 +61,13 @@ end
 -- i is indexed from 0
 function GifGetBits(stream, i, c)
 	--_assert(c > 0)
-	
+# if(USE_BIT_API) then
+	--_assert(c <= 12)
+	local byte_begin = math_floor(i / 8) + 1
+	local b1, b2, b3 = string_byte(stream[1], byte_begin, byte_begin + 2)
+	local x = b1 + ((b2 or 0) + ((b3 or 0)*256))*256
+	return _bitExtract(x, i % 8, c)
+# else
 	local byte_begin = math_floor(i / 8) + 1
 	local byte_end = math_floor((i + c - 1) / 8) + 1
 	
@@ -67,6 +81,7 @@ function GifGetBits(stream, i, c)
 	ret = ret % (2 ^ c)
 	
 	return ret
+# end
 end
 
 local function GifCreateDict(min_code_size)
@@ -206,6 +221,15 @@ local function GifOnDestroy()
 	end
 end
 
+local function GifClearRect(pixels, x, y, w, h)
+	for x2 = x, w - 1, 1 do
+		for y2 = y, h - 1, 1 do
+			local ret = _dxSetPixelColor(pixels, x2, y2, 0, 0, 0, 0)
+			--_assert(ret)
+		end
+	end
+end
+
 function GifLoad(str, is_string)
 	if(not getElementByID("TXC413b9d90")) then return false end
 	
@@ -264,7 +288,7 @@ function GifLoad(str, is_string)
 	DbgPrint("texture size: w %u h %u", texW, texH)
 	
 	local gct = false
-	if(hasbit(flags, 128)) then -- GCTF
+	if(_bitTest(flags, 128)) then -- GCTF
 		local gct_size = 2 ^ (1 + flags %(2 ^ 3)) -- flags & 7
 		
 		--DbgPrint("GCT %u", gct_size)
@@ -276,6 +300,7 @@ function GifLoad(str, is_string)
 	--local pixels = string_rep("\0\0\0\0", texW * texH)..GifWordToStr(texW)..GifWordToStr(texH)
 	local frame = false
 	local x, y, w, h
+	local dirtyX1, dirtyY1, dirtyX2, dirtyY2 = math_huge, math_huge, -math_huge, -math_huge
 	
 	while(true) do
 		DbgPerfInit(2)
@@ -284,32 +309,46 @@ function GifLoad(str, is_string)
 		if(intr == 0x2c) then -- Image Block
 			DbgPerfInit(3)
 			
-			if(frame and frame.disp >= 2) then -- previous frame
-				if(x == 0 and y == 0 and w == scr_w and h == scr_h) then
-					-- Shortcut ;)
+			local newX = GifGetWord(stream) or 0
+			local newY = GifGetWord(stream) or 0
+			local newW = GifGetWord(stream) or 0
+			local newH = GifGetWord(stream) or 0
+			local flags = GifGetByte(stream) or 0
+			DbgPrint("Image Block #%u: x %u y %u w %u h %u f %x", #gif.frames + 1, newX, newY, newW, newH, flags)
+			
+			local clearBg = (frame and frame.disp >= 2)
+			if(clearBg) then -- previous frame
+				if(x <= dirtyX1 and y <= dirtyY1 and x + w >= dirtyX2 and y + h >= dirtyY2) then
+					-- Clear entire logical screen
 					pixels = dxGetTexturePixels(emptyTex)
-				else
-					-- clear background
-					for x2 = x, w - 1, 1 do
-						for y2 = y, h - 1, 1 do
-							local ret = _dxSetPixelColor(pixels, x2, y2, 0, 0, 0, 0)
-							--_assert(ret)
-						end
+					dirtyX1, dirtyY1, dirtyX2, dirtyY2 = math_huge, math_huge, -math_huge, -math_huge
+					clearBg = false
+				else -- Clear background
+					if(y < newY) then
+						-- Clear top
+						GifClearRect(pixels, x, y, w, newY - y)
+					end
+					if(y + h > newY + newH) then
+						-- Clear bottom
+						GifClearRect(pixels, x, newY + newH, w, (y + h) - (newY + newH))
+					end
+					if(x < newX) then
+						-- Clear left
+						GifClearRect(pixels, x, y, newX - x, h)
+					end
+					if(x + h > newX + newH) then
+						-- Clear right
+						GifClearRect(pixels, newX + newH, y, (x + h) - (newX + newH), h)
 					end
 				end
 				
 				DbgPerfCp("Clearing frame", 3)
 			end
 			
-			x = GifGetWord(stream) or 0
-			y = GifGetWord(stream) or 0
-			w = GifGetWord(stream) or 0
-			h = GifGetWord(stream) or 0
-			local flags = GifGetByte(stream) or 0
-			DbgPrint("Image Block #%u: x %u y %u w %u h %u f %x", #gif.frames + 1, x, y, w, h, flags)
+			x, y, w, h = newX, newY, newW, newH
 			
 			local lct = false
-			if(hasbit(flags, 128)) then -- LCTF
+			if(_bitTest(flags, 128)) then -- LCTF
 				local lct_size = 2 ^ (1 + flags %(2 ^ 3)) -- flags & 7
 				
 				--DbgPrint("LCT %u", lct_size)
@@ -337,7 +376,7 @@ function GifLoad(str, is_string)
 				image_rows[y] = row
 			end
 			
-			if(hasbit(flags, 64)) then -- interflace
+			if(_bitTest(flags, 64)) then -- interflace
 				DbgPrint("interflace 0x%x", flags)
 				image_rows = GifFixRows(image_rows)
 			end
@@ -358,9 +397,16 @@ function GifLoad(str, is_string)
 					if(clr) then
 						local ret = _dxSetPixelColor(pixels, x + x2, y + y2, clr[1], clr[2], clr[3])
 						--_assert(ret) -- "x "..x2.." y "..y2.." w "..scr_w.." h "..scr_h)
+					elseif(clearBg) then
+						_dxSetPixelColor(pixels, x + x2, y + y2, 0, 0, 0, 0)
 					end
 				end
 			end
+			
+			dirtyX1, dirtyY1 = math_min(dirtyX1, x), math_min(dirtyY1, y)
+			dirtyX2, dirtyY2 = math_max(dirtyX2, x + w), math_max(dirtyY2, y + h)
+			
+			DbgPerfCp("Updating pixels", 3)
 			
 			frame.tex = dxCreateTexture(pixels, "argb", false)
 			
@@ -380,9 +426,13 @@ function GifLoad(str, is_string)
 				
 				gc = {}
 				local flags = string_byte(data, 1)
-				gc.tr_idx = hasbit(flags, 1) and string_byte(data, 4)
+				gc.tr_idx = _bitTest(flags, 1) and string_byte(data, 4)
 				gc.delay = GifStrToWord(string_sub(data, 2, 3)) * 10
+#if(USE_BIT_API) then
+				gc.disp = _bitExtract(flags, 2, 3)
+#else
 				gc.disp = math_floor(flags / (2 ^ 2)) % (2 ^ 3)
+#end
 				
 				if(gc.delay == 0) then
 					gc.delay = 100
