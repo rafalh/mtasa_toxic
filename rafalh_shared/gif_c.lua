@@ -63,16 +63,16 @@ function GifGetBits(stream, i, c)
 	--_assert(c > 0)
 # if(USE_BIT_API) then
 	--_assert(c <= 12)
-	local byte_begin = math_floor(i / 8) + 1
-	local b1, b2, b3 = string_byte(stream[1], byte_begin, byte_begin + 2)
+	local byteBegin = math_floor(i / 8) + 1
+	local b1, b2, b3 = string_byte(stream[1], byteBegin, byteBegin + 2)
 	local x = b1 + ((b2 or 0) + ((b3 or 0)*256))*256
 	return _bitExtract(x, i % 8, c)
 # else
-	local byte_begin = math_floor(i / 8) + 1
-	local byte_end = math_floor((i + c - 1) / 8) + 1
+	local byteBegin = math_floor(i / 8) + 1
+	local byteEnd = math_floor((i + c - 1) / 8) + 1
 	
 	local ret, j = 0, 0
-	for i = byte_begin, byte_end, 1 do
+	for i = byteBegin, byteEnd, 1 do
 		ret = ret + string_byte(stream[1], i) * (2 ^ j)
 		j = j + 8
 	end
@@ -84,26 +84,26 @@ function GifGetBits(stream, i, c)
 # end
 end
 
-local function GifCreateDict(min_code_size)
+local function GifCreateDict(minCodeSize)
 	local dict = {}
-	for i = 0, 2 ^ min_code_size - 1, 1 do
+	for i = 0, 2 ^ minCodeSize - 1, 1 do
 		dict[i] = string_char(i)
 	end
 	
-	local cc = 2 ^ min_code_size
-	local eoi = 2 ^ min_code_size + 1
+	local cc = 2 ^ minCodeSize
+	local eoi = 2 ^ minCodeSize + 1
 	dict[cc] = false
 	dict[eoi] = false
 	
 	return dict, cc, eoi
 end
 
-local function GifDecompress(data, min_code_size)
+local function GifDecompress(data, minCodeSize)
 	local ret_tbl = {}
-	local dict, cc, eoi = GifCreateDict(min_code_size)
+	local dict, cc, eoi = GifCreateDict(minCodeSize)
 	
 	local i, bits = 0, string_len(data) * 8
-	local code_size = min_code_size + 1
+	local code_size = minCodeSize + 1
 	local old_code = false
 	
 	local stream = GifInitStream(data)
@@ -114,8 +114,8 @@ local function GifDecompress(data, min_code_size)
 		i = i + code_size
 		
 		if(code == cc) then
-			dict = GifCreateDict(min_code_size)
-			code_size = min_code_size + 1
+			dict = GifCreateDict(minCodeSize)
+			code_size = minCodeSize + 1
 			old_code = false
 		elseif(code == eoi) then
 			break
@@ -166,8 +166,8 @@ local function GifLoadColorTable(stream, size)
 	return tbl
 end
 
-local function GifFixColorTable(tbl, tr_idx)
-	if(not tr_idx) then
+local function GifFixColorTable(tbl, trIdx)
+	if(not trIdx) then
 		return tbl
 	end
 	
@@ -176,8 +176,8 @@ local function GifFixColorTable(tbl, tr_idx)
 		ret[i] = tbl[i]
 	end
 	
-	ret[tr_idx] = false
-	--DbgPrint("%u is transparent", tr_idx)
+	ret[trIdx] = false
+	--DbgPrint("%u is transparent", trIdx)
 	
 	return ret
 end
@@ -199,19 +199,19 @@ local function GifLoadDataStram(stream)
 end
 
 local function GifFixRows(rows, interflace)
-	local new_rows = {}
+	local newRows = {}
 	local i = 0
 	local passes = { { 8, 0 }, { 8, 4 }, { 4, 2 }, { 2, 1 } }
 	local h = #rows + 1
 	
 	for j, pass in ipairs(passes) do
 		for y = pass[2], h - 1, pass[1] do
-			new_rows[y] = rows[i]
+			newRows[y] = rows[i]
 			i = i + 1
 		end
 	end
 	
-	return new_rows
+	return newRows
 end
 
 local function GifOnDestroy()
@@ -349,25 +349,25 @@ function GifLoad(str, is_string)
 			
 			local lct = false
 			if(_bitTest(flags, 128)) then -- LCTF
-				local lct_size = 2 ^ (1 + flags %(2 ^ 3)) -- flags & 7
+				local lctSize = 2 ^ (1 + flags %(2 ^ 3)) -- flags & 7
 				
-				--DbgPrint("LCT %u", lct_size)
-				lct = GifLoadColorTable(stream, lct_size)
+				--DbgPrint("LCT %u", lctSize)
+				lct = GifLoadColorTable(stream, lctSize)
 			end
 			
-			local min_code_size = GifGetByte(stream) or 0
-			--DbgPrint("min_code_size 0x%X", min_code_size)
+			local minCodeSize = GifGetByte(stream) or 0
+			--DbgPrint("minCodeSize 0x%X", minCodeSize)
 			
 			local data = GifLoadDataStram(stream)
 			
 			DbgPerfCp("Reading image data", 3)
 			
-			local data_dec = GifDecompress(data, min_code_size)
+			local data_dec = GifDecompress(data, minCodeSize)
 			_assert(#data_dec == w * h)
 			
 			DbgPerfCp("Decompressing data", 3)
 			
-			local clr_tbl = GifFixColorTable(lct or gct, gc.tr_idx)
+			local clrTbl = GifFixColorTable(lct or gct, gc.tr_idx)
 			local image_rows = {}
 			
 			for y = 0, h - 1, 1 do
@@ -390,9 +390,9 @@ function GifLoad(str, is_string)
 			for x2 = 0, w - 1, 1 do
 				for y2 = 0, h - 1, 1 do
 					local idx = image_rows[y2][x2 + 1]
-					--_assert(idx and idx >= 0 and idx <= #clr_tbl) -- tostring(idx).." "..#clr_tbl.." ("..x2.." "..y2..")")
+					--_assert(idx and idx >= 0 and idx <= #clrTbl) -- tostring(idx).." "..#clrTbl.." ("..x2.." "..y2..")")
 					
-					local clr = clr_tbl[idx]
+					local clr = clrTbl[idx]
 					
 					if(clr) then
 						local ret = _dxSetPixelColor(pixels, x + x2, y + y2, clr[1], clr[2], clr[3])
@@ -456,15 +456,15 @@ function GifLoad(str, is_string)
 	
 	gif.res = sourceResource
 	
-	local gif_el = createElement("gif")
-	setElementData(gif_el, "gif", gif, false)
-	addEventHandler("onElementDestroy", gif_el, GifOnDestroy)
+	local gifEl = createElement("gif")
+	setElementData(gifEl, "gif", gif, false)
+	addEventHandler("onElementDestroy", gifEl, GifOnDestroy)
 	
-	return gif_el
+	return gifEl
 end
 
-function GifRender(x, y, w, h, gif_el, ...)
-	local gif = getElementData(gif_el, "gif")
+function GifRender(x, y, w, h, gifEl, ...)
+	local gif = getElementData(gifEl, "gif")
 	local ticks = getTickCount()
 	local t = gif.time > 0 and ticks % gif.time or 0
 	
@@ -478,16 +478,16 @@ function GifRender(x, y, w, h, gif_el, ...)
 	end
 end
 
-function GifGetSize(gif_el)
-	local gif = getElementData(gif_el, "gif")
+function GifGetSize(gifEl)
+	local gif = getElementData(gifEl, "gif")
 	return gif.w, gif.h
 end
 
 local function GifOnResStop(res)
-	for i, gif_el in ipairs(getElementsByType("gif")) do
-		local gif = getElementData(gif_el, "gif")
+	for i, gifEl in ipairs(getElementsByType("gif")) do
+		local gif = getElementData(gifEl, "gif")
 		if(gif.res == res) then
-			destroyElement(gif_el)
+			destroyElement(gifEl)
 			outputDebugString("GIF parent resource died", 3)
 		end
 	end
