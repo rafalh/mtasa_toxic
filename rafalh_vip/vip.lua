@@ -2,6 +2,8 @@
 -- Global variables --
 ----------------------
 
+#USE_SHARED_HTTP = false
+
 g_Root = getRootElement()
 g_ThisRes = getThisResource()
 g_ResRoot = getResourceRootElement(g_ThisRes)
@@ -158,69 +160,65 @@ local function VipUpdateVehicle(player, veh)
 	end
 end
 
-local function VipAvatarCallback(data, errno, player)
-	if(not isElement(player)) then return end
+local function VipAvatarCallback(data, errno, player, reqID)
+	local pdata = g_Players[player]
+	if(not pdata) then return end
 	
-	if(errno == 0 and data:len() > 0) then
-		if(data:len() > 1024 * 64) then
-			outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
-		else
-			setElementData(player, "avatar", data)
-			local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
-			outputDebugString(playerName.." avatar set ("..data:len().." bytes)", 3)
-		end
-	else
+	if(pdata.avatarReq ~= reqID) then return end
+	
+	if(errno ~= 0 or data:len() == 0) then
 		outputChatBox("Failed to download avatar: "..tostring(errno), player, 255, 0, 0)
+		return
+	end
+	
+	if(data:len() > 1024 * 64) then
+		outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
+	else
+		setElementData(player, "avatar", data)
+		local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
+		outputDebugString(playerName.." avatar set ("..data:len().." bytes)", 3)
 	end
 end
 
-local function VipHttpResult(data, player)
-	if(g_Players[player]) then
-		VipAvatarCallback(data, data and 0 or -1, player)
-		g_Players[player].avatar_req_el = false
+#if(USE_SHARED_HTTP) then
+	local function VipHttpResult(data, player)
+		local pdata = g_Players[player]
+		if(pdata) then
+			VipAvatarCallback(data, data and 0 or -1, player, pdata.avatarReq)
+			pdata.avatarReq = false
+		end
 	end
-end
 
-addEvent("onHttpResult")
+	addEvent("onHttpResult")
+#end
 
 local function VipSetAvatar(player, avatar)
 	local pdata = g_Players[player]
-	if(pdata.avatar_req_el) then
-		destroyElement(pdata.avatar_req_el)
+	if(pdata.avatarReq) then
+		destroyElement(pdata.avatarReq)
 	end
 	
 	-- remove previous avatar first (in case of error no avatar is set)
 	setElementData(player, "avatar", false)
 	
-	if(curl_init and false) then -- crashes
-		local curl = curl_init()
-		local avatar = "mtatoxic.tk"
-		outputDebugString("cURL detected: "..avatar.." ("..curl_escape(curl, avatar)..")", 3)
-		local avatar2 = curl_escape(curl, avatar)
-		curl_setopt(curl, CURLOPT_URL, avatar2)
-		local code = curl_perform(curl, {
-			writefunction = function(data)
-				outputDebugString("Avatar: "..#data, 2)
-			end,
-			headerfunction = function(data)
-				outputDebugString("Header: "..#data, 2)
-			end})
-		if(ret ~= CURLE_OK) then
-			outputDebugString("curl_perform failed: "..curl_strerror(curl, code), 2)
-		end
-		curl_close(curl)
+	if(false) then
+#if(USE_SHARED_HTTP) then
 	elseif(sockOpen) then
 		outputDebugString("Sockets module detected", 3)
 		local sharedRes = getResourceFromName("rafalh_shared")
-		local req_el = sharedRes and getResourceState(sharedRes) == "running" and call(sharedRes, "HttpSendRequest", avatar, false, false, false, player)
-		if(req_el) then
-			pdata.avatar_req_el = req_el
-			addEventHandler("onHttpResult", req_el, VipHttpResult)
+		local reqEl = sharedRes and getResourceState(sharedRes) == "running" and call(sharedRes, "HttpSendRequest", avatar, false, false, false, player)
+		if(reqEl) then
+			pdata.avatarReq = reqEl
+			addEventHandler("onHttpResult", reqEl, VipHttpResult)
 		else
 			outputChatBox("Invalid URL: "..avatar, player, 255, 0, 0)
 		end
-	elseif(not fetchRemote(avatar, VipAvatarCallback, "", false, player)) then
-		outputDebugString("Failed to download avatar "..avatar, 2)
+#end
+	else
+		pdata.avatarReq = (pdata.avatarReq or 0) + 1
+		if(not fetchRemote(avatar, VipAvatarCallback, "", false, player, pdata.avatarReq)) then
+			outputDebugString("Failed to download avatar "..avatar, 2)
+		end
 	end
 end
 
