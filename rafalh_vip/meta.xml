@@ -1,7 +1,7 @@
 <meta>
 	<info name="Modifications for VIPs" author="rafalh" version="1.1" type="script" description="Modifications for VIPs" />
 
-	<script src="vip.lua" type="server" />
+	<script src="vip_s.lua" type="server" />
 	<script src="vip_c.lua" type="client" />
 	<script src="mui_c.lua" type="client" />
 	<script src="promo_c.lua" type="client" />

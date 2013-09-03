@@ -194,15 +194,17 @@ end
 
 local function VipSetAvatar(player, avatar)
 	local pdata = g_Players[player]
+# if(USE_SHARED_HTTP) then
 	if(pdata.avatarReq) then
 		destroyElement(pdata.avatarReq)
 	end
+# end
 	
 	-- remove previous avatar first (in case of error no avatar is set)
 	setElementData(player, "avatar", false)
 	
 	if(false) then
-#if(USE_SHARED_HTTP) then
+# if(USE_SHARED_HTTP) then
 	elseif(sockOpen) then
 		outputDebugString("Sockets module detected", 3)
 		local sharedRes = getResourceFromName("rafalh_shared")
@@ -213,7 +215,7 @@ local function VipSetAvatar(player, avatar)
 		else
 			outputChatBox("Invalid URL: "..avatar, player, 255, 0, 0)
 		end
-#end
+# end
 	else
 		pdata.avatarReq = (pdata.avatarReq or 0) + 1
 		if(not fetchRemote(avatar, VipAvatarCallback, "", false, player, pdata.avatarReq)) then
