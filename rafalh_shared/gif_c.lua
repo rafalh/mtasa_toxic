@@ -22,6 +22,7 @@ local _assert = assert
 local _dxSetPixelColor = dxSetPixelColor
 
 local DEF_GC = {tr_idx = false, delay = 0, disp = 0}
+local g_GifMap = {}
 
 #if(USE_BIT_API) then
 	local _bitTest = bitTest
@@ -222,10 +223,11 @@ local function GifFixRows(rows, interflace)
 end
 
 local function GifOnDestroy()
-	local gif = getElementData(source, 'gif')
+	local gif = g_GifMap[source]
 	for i, frame in ipairs(gif.frames) do
 		destroyElement(frame.tex)
 	end
+	g_GifMap[source] = nil
 end
 
 function GifLoad(str, isString)
@@ -437,14 +439,15 @@ function GifLoad(str, isString)
 	gif.res = sourceResource
 	
 	local gifEl = createElement('gif')
-	setElementData(gifEl, 'gif', gif, false)
+	g_GifMap[gifEl] = gif
 	addEventHandler('onElementDestroy', gifEl, GifOnDestroy)
 	
 	return gifEl
 end
 
 function GifRender(x, y, w, h, gifEl, ...)
-	local gif = getElementData(gifEl, 'gif')
+	DbgPerfInit(1)
+	local gif = g_GifMap[gifEl]
 	local ticks = getTickCount()
 	local t = gif.time > 0 and ticks % gif.time or 0
 	
@@ -452,25 +455,30 @@ function GifRender(x, y, w, h, gifEl, ...)
 		t = t - frame.delay
 		if(t <= 0) then
 			dxDrawImageSection(x, y, w, h, 0, 0, gif.w, gif.h, frame.tex, ...)
+			--dxDrawImage(x, y, w, h, frame.tex, ...)
 			--dxDrawText('frame #'..i..' ('..gif.w..' '..gif.h..')', x, y + h + 5, x + w, 0, tocolor(255, 255, 255), 1, 'default', 'center')
 			break
 		end
 	end
+	DbgPerfCp('GifRender', 1)
 end
 
 function GifGetSize(gifEl)
-	local gif = getElementData(gifEl, 'gif')
+	local gif = g_GifMap[gifEl]
 	return gif.w, gif.h
 end
 
 local function GifOnResStop(res)
+	DbgPerfInit(1)
 	for i, gifEl in ipairs(getElementsByType('gif')) do
-		local gif = getElementData(gifEl, 'gif')
+		local gif = g_GifMap[gifEl]
 		if(gif.res == res) then
 			destroyElement(gifEl)
+			g_GifMap[gifEl] = nil
 			outputDebugString('GIF parent resource died', 3)
 		end
 	end
+	DbgPerfCp('GifOnResStop', 1)
 end
 
 addEventHandler('onClientResourceStop', resourceRoot, GifOnResStop)
