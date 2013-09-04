@@ -3,6 +3,7 @@
 -- http://www.eecis.udel.edu/~amer/CISC651/lzw.and.gif.explained.html
 
 #USE_BIT_API = false
+#DEBUG_PERF = false
 
 local string_byte = string.byte
 local string_char = string.char
@@ -24,6 +25,7 @@ local _assert = assert
 
 local DEF_GC = {tr_idx = false, delay = 0, disp = 0}
 local g_GifMap = {}
+local g_LoaderThread, g_LoaderTimer = false, false
 
 #if(USE_BIT_API) then
 	local _bitTest = bitTest
@@ -211,40 +213,10 @@ local function GifOnDestroy()
 	g_GifMap[source] = nil
 end
 
-function GifLoad(str, isString)
-	if(not getElementByID('TXC413b9d90')) then return false end
-	
+local function GifLoadInternal(gif, stream)
 	DbgPerfInit(1)
 	
-	if(not isString) then
-		DbgPrint('Loading '..str)
-		local file = fileOpen(str, true)
-		if(not file) then
-			outputDebugString('fileOpen failed: '..str, 1)
-			return false
-		end
-		
-		str = fileRead(file, fileGetSize(file))
-		fileClose(file)
-	end
-	
-	local stream = GifInitStream(str)
-	
-	local sig = GifGetBytes(stream, 3)
-	if(sig ~= 'GIF') then
-		outputDebugString('Wrong signature '..sig, 1)
-		return false
-	end
-	
-	local ver = GifGetBytes(stream, 3)
-	if(ver ~= '87a' and ver ~= '89a') then
-		outputDebugString('Unknown version '..ver, 1)
-		return false
-	end
-	
-	local gif = {frames = {}, time = 0}
 	local gc = DEF_GC
-	
 	local scrW = GifGetWord(stream) or 0
 	local scrH = GifGetWord(stream) or 0
 	local flags = GifGetByte(stream) or 0
@@ -389,6 +361,9 @@ function GifLoad(str, isString)
 			gif.frames[#gif.frames + 1] = frame
 			
 			gc = DEF_GC -- reset Graphic Control
+# if(not DEBUG_PERF) then
+			coroutine.yield()
+# end
 		elseif(intr == 0x21) then -- Extension Block
 			local label = GifGetByte(stream)
 			--DbgPrint('Extension Block: label 0x%X', label)
@@ -423,13 +398,101 @@ function GifLoad(str, isString)
 		DbgPerfCp('Block 0x%X', 2, intr)
 	end
 	
+	gif.loaded = true
+	gif.stream = false
 	DbgPerfCp('GIF loading', 1)
+end
+
+local function GifLoaderProc()
+	while(true) do
+		for el, gif in pairs(g_GifMap) do
+			if(not gif.loaded) then
+				GifLoadInternal(gif, gif.stream)
+			end
+		end
+		coroutine.yield(true)
+	end
+end
+
+local function GifWakeUpLoader(isTimer)
+	-- If timer exists, let him do the job
+	if(not isTimer and g_LoaderTimer) then return end
+	g_LoaderTimer = false
 	
+	local startTicks = getTickCount()
+	while(true) do
+		if(g_LoaderThread) then
+			-- Resume GIF loading
+			coroutine.resume(g_LoaderThread)
+		else
+			-- Found new GIF to load
+			for el, gif in pairs(g_GifMap) do
+				if(not gif.loaded) then
+					g_LoaderThread = coroutine.create(GifLoadInternal)
+					coroutine.resume(g_LoaderThread, gif, gif.stream)
+					break
+				end
+			end
+			
+			if(not g_LoaderThread) then
+				return -- All images are loaded
+			end
+		end
+		
+		_assert(g_LoaderThread)
+		if(coroutine.status(g_LoaderThread) == 'dead') then
+			-- GIF has been loaded
+			g_LoaderThread = false
+		end
+		
+		-- Check if we should pause for a moment
+		local dt = getTickCount() - startTicks
+		if(dt > 50) then
+			g_LoaderTimer = setTimer(GifWakeUpLoader, 50, 1, true)
+			return
+		end
+	end
+end
+
+function GifLoad(str, isString)
+	if(not getElementByID('TXC413b9d90')) then return false end
+	
+	if(not isString) then
+		DbgPrint('Loading '..str)
+		local file = fileOpen(str, true)
+		if(not file) then
+			outputDebugString('fileOpen failed: '..str, 1)
+			return false
+		end
+		
+		str = fileRead(file, fileGetSize(file))
+		fileClose(file)
+	end
+	
+	local stream = GifInitStream(str)
+	
+	local sig = GifGetBytes(stream, 3)
+	if(sig ~= 'GIF') then
+		outputDebugString('Wrong signature '..sig, 1)
+		return false
+	end
+	
+	local ver = GifGetBytes(stream, 3)
+	if(ver ~= '87a' and ver ~= '89a') then
+		outputDebugString('Unknown version '..ver, 1)
+		return false
+	end
+	
+	local gif = {frames = {}, time = 0}
 	gif.res = sourceResource
+	gif.loaded = false
+	gif.stream = stream
 	
 	local gifEl = createElement('gif')
 	g_GifMap[gifEl] = gif
 	addEventHandler('onElementDestroy', gifEl, GifOnDestroy)
+	
+	GifWakeUpLoader()
 	
 	return gifEl
 end
@@ -437,13 +500,17 @@ end
 function GifRender(x, y, w, h, gifEl, ...)
 	DbgPerfInit(1)
 	local gif = g_GifMap[gifEl]
+	if(not gif.loaded) then return end
+	
 	local ticks = getTickCount()
 	local t = gif.time > 0 and ticks % gif.time or 0
 	
 	for i, frame in _ipairs(gif.frames) do
 		t = t - frame.delay
 		if(t <= 0) then
-			dxDrawImageSection(x, y, w, h, 0, 0, gif.w, gif.h, frame.tex, ...)
+			if(frame.tex) then
+				dxDrawImageSection(x, y, w, h, 0, 0, gif.w, gif.h, frame.tex, ...)
+			end
 			--dxDrawText('frame #'..i..' ('..gif.w..' '..gif.h..')', x, y + h + 5, x + w, 0, tocolor(255, 255, 255), 1, 'default', 'center')
 			break
 		end
