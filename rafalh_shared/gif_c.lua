@@ -2,7 +2,7 @@
 -- http://www.w3.org/Graphics/GIF/spec-gif89a.txt
 -- http://www.eecis.udel.edu/~amer/CISC651/lzw.and.gif.explained.html
 
-#USE_BIT_API = true
+#USE_BIT_API = false
 
 local string_byte = string.byte
 local string_char = string.char
@@ -18,8 +18,9 @@ local math_log = math.log
 local math_huge = math.huge
 local table_concat = table.concat
 local table_insert = table.insert
+local table_remove = table.remove
+local _ipairs = ipairs
 local _assert = assert
-local _dxSetPixelColor = dxSetPixelColor
 
 local DEF_GC = {tr_idx = false, delay = 0, disp = 0}
 local g_GifMap = {}
@@ -44,7 +45,7 @@ local function GifGetBytes(stream, count)
 end
 
 local function GifStrToWord(str)
-	return string_byte(str, 1) + (2 ^ 8) * string_byte(str, 2)
+	return string_byte(str, 1) + 256 * string_byte(str, 2)
 end
 
 local function GifWordToStr(dw)
@@ -52,7 +53,7 @@ local function GifWordToStr(dw)
 	return string_char(bitAnd(dw, 0xFF), bitRShift(dw, 8))
 # else
 	return string_char(
-		dw % (2 ^ 8), math_floor(dw / (2 ^ 8)) % (2 ^ 8))
+		dw % 256, math_floor(dw / 256) % 256)
 # end
 end
 
@@ -69,26 +70,14 @@ end
 -- i is indexed from 0
 function GifGetBits(stream, i, c)
 	--_assert(c > 0)
-# if(USE_BIT_API) then
 	--_assert(c <= 12)
-	local byteBegin = math_floor(i / 8) + 1
-	local b1, b2, b3 = string_byte(stream[1], byteBegin, byteBegin + 2)
+	local byteIdx = math_floor(i / 8) + 1
+	local b1, b2, b3 = string_byte(stream[1], byteIdx, byteIdx + 2)
 	local x = b1 + ((b2 or 0) + ((b3 or 0)*256))*256
+# if(USE_BIT_API) then
 	return _bitExtract(x, i % 8, c)
 # else
-	local byteBegin = math_floor(i / 8) + 1
-	local byteEnd = math_floor((i + c - 1) / 8) + 1
-	
-	local ret, j = 0, 0
-	for i = byteBegin, byteEnd, 1 do
-		ret = ret + string_byte(stream[1], i) * (2 ^ j)
-		j = j + 8
-	end
-	
-	ret = math_floor(ret / (2 ^ (i % 8)))
-	ret = ret % (2 ^ c)
-	
-	return ret
+	return math_floor(x / (2 ^ (i % 8))) % (2^c)
 # end
 end
 
@@ -174,19 +163,11 @@ local function GifLoadColorTable(stream, size)
 	return tbl
 end
 
-local function GifFixColorTable(tbl, trIdx)
-	if(not trIdx) then
-		return tbl
-	end
-	
+local function GifCopyTable(tbl)
 	local ret = {}
 	for i = 0, #tbl do
 		ret[i] = tbl[i]
 	end
-	
-	ret[trIdx] = false
-	--DbgPrint('%u is transparent', trIdx)
-	
 	return ret
 end
 
@@ -212,7 +193,7 @@ local function GifFixRows(rows, interflace)
 	local passes = { {8, 0}, {8, 4}, {4, 2}, {2, 1} }
 	local h = #rows
 	
-	for j, pass in ipairs(passes) do
+	for j, pass in _ipairs(passes) do
 		for y = pass[2], h - 1, pass[1] do
 			newRows[y + 1] = rows[i]
 			i = i + 1
@@ -224,7 +205,7 @@ end
 
 local function GifOnDestroy()
 	local gif = g_GifMap[source]
-	for i, frame in ipairs(gif.frames) do
+	for i, frame in _ipairs(gif.frames) do
 		destroyElement(frame.tex)
 	end
 	g_GifMap[source] = nil
@@ -280,7 +261,7 @@ function GifLoad(str, isString)
 	local texH = 2 ^ (math_ceil(math_log(scrH) / ln2)) -- round up to power of 2
 	
 	-- Note: MTA fails to display properly images with w <> h
-	--local maxWH = math.max(texW, texH)
+	--local maxWH = math_max(texW, texH)
 	--texW, texH = maxWH, maxWH
 	
 	DbgPrint('texture size: w %u h %u', texW, texH)
@@ -296,7 +277,7 @@ function GifLoad(str, isString)
 	local bgClr = '\0\0\0\0' -- gct and gct[bgClrIdx] or '\0\0\0\0'
 	
 	local frame = false
-	local oldImgRows = false
+	local imageRows = {}
 	local cleanRow = string_rep(bgClr, texW)
 	
 	while(true) do
@@ -333,17 +314,28 @@ function GifLoad(str, isString)
 			
 			DbgPerfCp('Decompressing data', 3)
 			
-			local clrTbl = GifFixColorTable(lct or gct, gc.tr_idx)
-			local imageRows = {}
+			local clrTbl
+			if(gc.tr_idx) then
+				clrTbl = lct or GifCopyTable(gct)
+				clrTbl[gc.tr_idx] = false
+			else
+				clrTbl = lct or gct
+			end
+			
 			local usePrevFrame = (frame and frame.disp <= 1)
+			local rowPrefix = string_rep(bgClr, frameX)
+			local rowPostfix = string_rep(bgClr, texW - (frameX + frameW))
 			
 			for y = 0, texH - 1 do
-				local oldRow = oldImgRows and oldImgRows[y + 1] or cleanRow
+				local oldRow = imageRows[y + 1] or cleanRow
 				local row
 				if(y >= frameY and y < frameY + frameH) then
-					row = ''
+					local rowPrefix, rowPostfix = '', ''
 					if(frameX > 0) then
-						row = string_sub(oldRow, 1, frameX)
+						rowPrefix = string_sub(oldRow, 1, frameX*4)
+					end
+					if(frameX + frameW < texW) then
+						rowPostfix = string_sub(oldRow, (frameX + frameW)*4 + 1)
 					end
 					
 					local rowTbl = {string_byte(dataDec, (y - frameY) * frameW + 1, (y - frameY) * frameW + frameW)}
@@ -361,11 +353,8 @@ function GifLoad(str, isString)
 						end
 						rowTbl[x + 1] = clr
 					end
-					row = row..table.concat(rowTbl)
 					
-					if(frameX + frameW < texW) then
-						row = row..string_sub(oldRow, (frameX + frameW)*4 + 1)
-					end
+					row = rowPrefix..table_concat(rowTbl)..rowPostfix
 				else
 					row = oldRow
 				end
@@ -380,15 +369,15 @@ function GifLoad(str, isString)
 				imageRows = GifFixRows(imageRows)
 			end
 			
-			DbgPerfCp('Processing indicates', 3)
+			DbgPerfCp('Building raw string', 3)
 			
 			frame = {} -- new frame
 			frame.delay = gc.delay
 			frame.disp = gc.disp
 			
-			table.insert(imageRows, GifWordToStr(texW)..GifWordToStr(texH))
-			local pixels = table.concat(imageRows)
-			oldImgRows = imageRows
+			table_insert(imageRows, GifWordToStr(texW)..GifWordToStr(texH))
+			local pixels = table_concat(imageRows)
+			table_remove(imageRows)
 			
 			_assert(string_len(pixels) == texW*texH*4 + 4)
 			frame.tex = dxCreateTexture(pixels, 'argb', false)
@@ -422,7 +411,7 @@ function GifLoad(str, isString)
 					gc.delay = 100
 				end
 				
-				DbgPrint('Graphic Control Extension Block delay %u disp %u', gc.delay, gc.disp)
+				DbgPrint('Graphic Control Extension Block tr_idx %d delay %u disp %u', gc.tr_idx or -1, gc.delay, gc.disp)
 			end
 		elseif(intr == 0x3b) then -- trailer
 			break
@@ -451,11 +440,10 @@ function GifRender(x, y, w, h, gifEl, ...)
 	local ticks = getTickCount()
 	local t = gif.time > 0 and ticks % gif.time or 0
 	
-	for i, frame in ipairs(gif.frames) do
+	for i, frame in _ipairs(gif.frames) do
 		t = t - frame.delay
 		if(t <= 0) then
 			dxDrawImageSection(x, y, w, h, 0, 0, gif.w, gif.h, frame.tex, ...)
-			--dxDrawImage(x, y, w, h, frame.tex, ...)
 			--dxDrawText('frame #'..i..' ('..gif.w..' '..gif.h..')', x, y + h + 5, x + w, 0, tocolor(255, 255, 255), 1, 'default', 'center')
 			break
 		end
@@ -470,7 +458,7 @@ end
 
 local function GifOnResStop(res)
 	DbgPerfInit(1)
-	for i, gifEl in ipairs(getElementsByType('gif')) do
+	for i, gifEl in _ipairs(getElementsByType('gif')) do
 		local gif = g_GifMap[gifEl]
 		if(gif.res == res) then
 			destroyElement(gifEl)
