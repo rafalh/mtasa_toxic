@@ -14,8 +14,7 @@ Settings.register
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
-		local text = MuiGetMsg("Race Audio Volume: %u%%"):format(Settings.raceVolume)
-		local label = guiCreateLabel(x, y + 5, 190, 15, text, false, wnd)
+		local label = FormattedLabel(x, y + 5, 190, 15, wnd, "Race Audio Volume: %u%%", Settings.raceVolume)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
 		setElementData(bar, 'tooltip', "Changes volume for Count Down, Checkpoints and Race Voice sounds")
 		guiScrollBarSetScrollPosition(bar, Settings.raceVolume)
@@ -26,8 +25,7 @@ Settings.register
 	end,
 	acceptGui = function(info)
 		local vol = guiScrollBarGetScrollPosition(info[2])
-		local text = MuiGetMsg("Race Audio Volume: %u%%"):format(vol)
-		guiSetText(info[1], text)
+		info[1]:setText("Race Audio Volume: %u%%", vol)
 		Settings.raceVolume = vol
 	end,
 }
@@ -43,8 +41,7 @@ Settings.register
 		McSetVolume(newVal)
 	end,
 	createGui = function(wnd, x, y, w, onChange)
-		local text = MuiGetMsg("Commands Volume: %u%%"):format(Settings.cmdVolume)
-		local label = guiCreateLabel(x, y + 5, 190, 15, text, false, wnd)
+		local label = FormattedLabel(x, y + 5, 190, 15, wnd, "Commands Volume: %u%%", Settings.cmdVolume)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
 		setElementData(bar, 'tooltip', "Changes volume for commands with sound")
 		guiScrollBarSetScrollPosition(bar, Settings.cmdVolume)
@@ -55,8 +52,7 @@ Settings.register
 	end,
 	acceptGui = function(info)
 		local vol = guiScrollBarGetScrollPosition(info[2])
-		local text = MuiGetMsg("Commands Volume: %u%%"):format(vol)
-		guiSetText(info[1], text)
+		info[1]:setText("Commands Volume: %u%%", vol)
 		Settings.cmdVolume = vol
 	end,
 }
@@ -76,8 +72,7 @@ Settings.register
 		end
 	end,
 	createGui = function(wnd, x, y, w, onChange)
-		local text = MuiGetMsg("Map Music Volume: %u%%"):format(Settings.musicVolume)
-		local label = guiCreateLabel(x, y + 5, 190, 15, text, false, wnd)
+		local label = FormattedLabel(x, y + 5, 190, 15, wnd, "Map Music Volume: %u%%", Settings.musicVolume)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
 		setElementData(bar, 'tooltip', "Changes volume for map music")
 		guiScrollBarSetScrollPosition(bar, Settings.musicVolume)
@@ -88,8 +83,7 @@ Settings.register
 	end,
 	acceptGui = function(info)
 		local vol = guiScrollBarGetScrollPosition(info[2])
-		local text = MuiGetMsg("Map Music Volume: %u%%"):format(vol)
-		guiSetText(info[1], text)
+		info[1]:setText("Map Music Volume: %u%%", vol)
 		Settings.musicVolume = vol
 	end,
 }

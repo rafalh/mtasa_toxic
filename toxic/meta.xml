@@ -65,6 +65,7 @@
 	<script src="gui/tooltip_c.lua" type="client" />
 	<script src="gui/onOffBtn_c.lua" type="client" />
 	<script src="gui/notify_c.lua" type="client" />
+	<script src="gui/formattedLabel_c.lua" type="client" />
 	
 	<!-- MODULES -->
 	<module src="maps" />
