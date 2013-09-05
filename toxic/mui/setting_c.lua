@@ -15,7 +15,7 @@ Settings.register
 	priority = 0,
 	cast = tostring,
 	onChange = function(oldVal, newVal)
-		if(g_Ready) then
+		if(not g_Init) then
 			triggerServerEvent('main.onSetLocaleReq', g_ResRoot, newVal)
 		end
 	end,

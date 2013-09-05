@@ -9,6 +9,7 @@ Styles = {
 	red = {'#FF0000', '#EEEEEE'},
 	green = {'#00FF00', '#EEEEEE'},
 }
+g_Init = true
 
 -- Custom events
 addEvent('main.onAccountChange', true)
@@ -47,6 +48,8 @@ local function onClientInit(accountId, settings, isNew, localeId)
 		local statsPanelKey = getKeyBoundToCommand('StatsPanel') or '-'
 		outputMsg(Styles.help, "Press %s to open User Panel and %s to open Statistics Panel!", userPanelKey, statsPanelKey)
 	end
+	
+	g_Init = false
 end
 
 local function clearChat()

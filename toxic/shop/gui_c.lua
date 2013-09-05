@@ -104,41 +104,51 @@ local function ShpOnInventoryListClick(itemId)
 	end
 end
 
-local function ShpBuyClick ()
-	if(not guiGetEnabled(g_BuyButton)) then return end
+local function ShpBuyClick()
 	local itemId = g_ShopList:getActiveItem()
+	local item = itemId and g_ShopItems[itemId]
+	if(not item) then return end -- no item has been selected
 	
-	if(itemId) then -- item is selected
-		local item = g_ShopItems[itemId]
-		if(item.onBuy) then
-			item.onBuy()
-		else
-			triggerServerInternalEvent($(EV_BUY_SHOP_ITEM_REQUEST), g_Me, itemId)
-		end
+	if(not guiGetEnabled(g_BuyButton)) then
+		outputMsg(Styles.red, "You cannot buy %s right now!", item.name)
+		return
+	end
+	
+	if(item.onBuy) then
+		item.onBuy()
+	else
+		triggerServerInternalEvent($(EV_BUY_SHOP_ITEM_REQUEST), g_Me, itemId)
 	end
 end
 
-local function ShpSellClick ()
-	if(not guiGetEnabled(g_SellButton)) then return end
+local function ShpSellClick()
 	local itemId = g_InventoryList:getActiveItem()
+	local item = itemId and g_ShopItems[itemId]
+	if(not item) then return end -- no item has been selected
 	
-	if(itemId) then -- item is selected
-		triggerServerInternalEvent($(EV_SELL_SHOP_ITEM_REQUEST), g_Me, itemId)
+	if(not guiGetEnabled(g_SellButton)) then
+		outputMsg(Styles.red, "You cannot sell %s right now!", item.name)
+		return
 	end
+	
+	triggerServerInternalEvent($(EV_SELL_SHOP_ITEM_REQUEST), g_Me, itemId)
+
 end
 
-local function ShpUseClick ()
-	if(not guiGetEnabled(g_UseButton)) then return end
+local function ShpUseClick()
 	local itemId = g_InventoryList:getActiveItem()
+	local item = itemId and g_ShopItems[itemId]
+	if(not item) then return end -- no item has been selected
 	
-	if(itemId) then -- item is selected
-		local item = g_ShopItems[itemId]
-		
-		if(item.onUse) then
-			item.onUse(g_Inventory[itemId])
-		else
-			triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
-		end
+	if(not guiGetEnabled(g_UseButton)) then
+		outputMsg(Styles.red, "You cannot use %s right now!", item.name)
+		return
+	end
+	
+	if(item.onUse) then
+		item.onUse(g_Inventory[itemId])
+	else
+		triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
 	end
 end
 
@@ -159,7 +169,7 @@ end
 local function ShpCreateGui(panel)
 	local w, h = guiGetSize(panel, false)
 	
-	guiCreateStaticImage(10, 10, 32, 32, 'img/shop/coins.png', false, panel)
+	guiCreateStaticImage(10, 10, 32, 32, 'shop/img/coins.png', false, panel)
 	g_CashLabel = guiCreateLabel(45, 15, 160, 15, formatMoney(g_Cash), false, panel)
 	
 	local label = guiCreateLabel(10, 45, 160, 15, "All items:", false, panel)

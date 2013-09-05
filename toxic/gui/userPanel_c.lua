@@ -5,9 +5,9 @@
 
 local PANEL_COLUMNS = 1
 local PANEL_ALPHA = 0.9
-local ITEM_W, ITEM_H = 140, 36
+local ITEM_W, ITEM_H = 130, 36
 local FADE_DELAY = 200
-local VIEW_W = 400
+local VIEW_W = 440
 local ICON_W, ICON_H = 32, 32
 
 local g_ListStyle = {}
@@ -138,7 +138,7 @@ end
 
 local function UpCreateGui()
 	local userH = UpGetLocalUserBlockHeight()
-	local w = ITEM_W * PANEL_COLUMNS + math.max(VIEW_W + 10, 20)
+	local w = 10 + ITEM_W * PANEL_COLUMNS + math.max(VIEW_W, 10)
 	local h = 60 + userH + ITEM_H * math.ceil(#g_Items / PANEL_COLUMNS)
 	local x = (g_ScreenSize[1] - w) / 2
 	local y = (g_ScreenSize[2] - h) / 2

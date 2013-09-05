@@ -10,7 +10,7 @@ local g_Panel, g_ScrollPane
 local g_SettingGui = {}
 local g_Save = false
 
-local SAVE_BTN = false
+#SAVE_BTN = false
 
 local SettingsPanel = {
 	name = "Settings",
@@ -38,7 +38,7 @@ function SettingsPanel.createScrollPane(x, y, w, h, panel)
 	local y = 0
 	for key, item in ipairs(Settings.localSorted) do
 		if(item.createGui) then
-			local h, gui = item.createGui(g_ScrollPane, 0, y, w, not SAVE_BTN and SettingsPanel.onSaveClick)
+			local h, gui = item.createGui(g_ScrollPane, 0, y, w, not $(SAVE_BTN) and SettingsPanel.onSaveClick)
 			g_SettingGui[item.name] = gui
 			y = y + h
 		end
@@ -58,11 +58,11 @@ function SettingsPanel.initGui(panel)
 		paneH = h - 50
 	end
 	
-	if(SAVE_BTN) then
+# if(SAVE_BTN) then
 		local btn = guiCreateButton(x, h - 35, 80, 25, "Save", false, panel)
 		addEventHandler('onClientGUIClick', btn, SettingsPanel.onSaveClick, false)
 		paneH = h - 50
-	end
+# end
 	
 	SettingsPanel.createScrollPane(10, 10, w - 20, paneH, panel)
 end
