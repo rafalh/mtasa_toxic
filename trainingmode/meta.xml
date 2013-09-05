@@ -1,5 +1,5 @@
 <meta>
-	<info author="~pS|Arezu &amp; Rafalh" type="script" name="DM training/respawn script" version="1.3" />
+	<info author="~pS|Arezu &amp; Rafalh" type="script" name="DM training/respawn script" version="1.4" />
 	<script src="respawn_c.lua" type="client" />
 	<script src="respawn_s.lua" type="server" />
 	<script src="visibility_c.lua" type="client" />

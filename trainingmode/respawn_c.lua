@@ -77,7 +77,9 @@ local function TmSaveVehData ()
 	data.health = getElementHealth ( veh )
 	data.model = getElementModel ( veh )
 	data.dimension = getElementDimension ( veh )
-	data.fire = getControlState ( "vehicle_fire" )
+	data.fire = getControlState('vehicle_fire')
+	data.hovercars = isWorldSpecialPropertyEnabled('hovercars')
+	data.aircars = isWorldSpecialPropertyEnabled('aircars')
 	
 	data.nitro = false
 	local upgrades = getVehicleUpgrades ( veh )
@@ -176,7 +178,10 @@ local function TmUnfreeze2 ( data )
 	setVehicleTurnVelocity ( veh, unpack ( data.turn_vel ) )
 	setVehicleGravity ( veh, unpack ( data.grav ) )
 	setElementDimension ( veh, data.dimension )
-	setControlState ( "vehicle_fire", data.fire )
+	setControlState ( 'vehicle_fire', data.fire )
+	
+	setWorldSpecialPropertyEnabled('hovercars', data.hovercars)
+	setWorldSpecialPropertyEnabled('aircars', data.aircars)
 end
 
 local function TmUnfreeze ( data )
