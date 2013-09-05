@@ -5,6 +5,4 @@
 	<script src="nametags_c.lua" type="client" />
 	
 	<file src="img/nametag_health.png" type="client" />
-	
-	<include resource="rafalh_shared" />
 </meta>
