@@ -24,6 +24,7 @@ local _ipairs = ipairs
 local _assert = assert
 
 local DEF_GC = {tr_idx = false, delay = 0, disp = 0}
+local INTERLACE_PASSES = { {8, 0}, {8, 4}, {4, 2}, {2, 1} }
 local g_GifMap = {}
 local g_LoaderThread, g_LoaderTimer = false, false
 
@@ -47,7 +48,7 @@ local function GifGetBytes(stream, count)
 end
 
 local function GifStrToWord(str)
-	return string_byte(str, 1) + 256 * string_byte(str, 2)
+	return (string_byte(str, 1) or 0) + 256 * (string_byte(str, 2) or 0)
 end
 
 local function GifWordToStr(dw)
@@ -189,22 +190,6 @@ local function GifLoadDataStram(stream)
 	return table_concat(tbl)
 end
 
-local function GifFixRows(rows, interflace)
-	local newRows = {}
-	local i = 1
-	local passes = { {8, 0}, {8, 4}, {4, 2}, {2, 1} }
-	local h = #rows
-	
-	for j, pass in _ipairs(passes) do
-		for y = pass[2], h - 1, pass[1] do
-			newRows[y + 1] = rows[i]
-			i = i + 1
-		end
-	end
-	
-	return newRows
-end
-
 local function GifOnDestroy()
 	local gif = g_GifMap[source]
 	for i, frame in _ipairs(gif.frames) do
@@ -251,6 +236,9 @@ local function GifLoadInternal(gif, stream)
 	local frame = false
 	local imageRows = {}
 	local cleanRow = string_rep(bgClr, texW)
+	for y = scrH, texH - 1 do
+		imageRows[y + 1] = cleanRow
+	end
 	
 	while(true) do
 		DbgPerfInit(2)
@@ -287,59 +275,82 @@ local function GifLoadInternal(gif, stream)
 			DbgPerfCp('Decompressing data', 3)
 			
 			local clrTbl
-			if(gc.tr_idx) then
-				clrTbl = lct or GifCopyTable(gct)
-				clrTbl[gc.tr_idx] = false
+			if(not lct and gc.tr_idx) then
+				clrTbl = GifCopyTable(gct)
 			else
 				clrTbl = lct or gct
 			end
 			
-			local usePrevFrame = (frame and frame.disp <= 1)
-			local rowPrefix = string_rep(bgClr, frameX)
-			local rowPostfix = string_rep(bgClr, texW - (frameX + frameW))
+			-- Setup transparent color
+			if(gc.tr_idx) then
+				clrTbl[gc.tr_idx] = not usePrevFrame and bgClr
+			end
 			
-			for y = 0, texH - 1 do
-				local oldRow = imageRows[y + 1] or cleanRow
-				local row
-				if(y >= frameY and y < frameY + frameH) then
-					local rowPrefix, rowPostfix = '', ''
-					if(frameX > 0) then
-						rowPrefix = string_sub(oldRow, 1, frameX*4)
-					end
-					if(frameX + frameW < texW) then
-						rowPostfix = string_sub(oldRow, (frameX + frameW)*4 + 1)
-					end
-					
-					local rowTbl = {string_byte(dataDec, (y - frameY) * frameW + 1, (y - frameY) * frameW + frameW)}
-					for x = 0, frameW - 1 do
-						local idx = rowTbl[x + 1]
-						--_assert(idx and idx >= 0 and idx <= #clrTbl) -- tostring(idx)..' '..#clrTbl..' ('..x..' '..y..')')
-						
-						local clr = clrTbl[idx]
-						if(not clr) then
-							if(usePrevFrame) then
-								clr = string_sub(oldRow, x*4 + 1, x*4 + 4)
-							else
-								clr = bgClr
-							end
-						end
-						rowTbl[x + 1] = clr
-					end
-					
-					row = rowPrefix..table_concat(rowTbl)..rowPostfix
-				else
-					row = oldRow
+			-- Load some flags into variables
+			local usePrevFrame = (frame and frame.disp <= 1)
+			local interlace = _bitTest(flags, 64)
+			if(interlace) then
+				DbgPrint('interlace 0x%x', flags)
+			end
+			
+			-- Clean top and bottom rows if needed
+			if(not usePrevFrame) then
+				for y = 0, frameY - 1 do
+					imageRows[y + 1] = cleanRow
+				end
+				for y = frameY + frameH, scrH - 1 do
+					imageRows[y + 1] = cleanRow
+				end
+			end
+			
+			DbgPerfCp('Misc', 3)
+			
+			local interlacePass = 1
+			local y = interlace and INTERLACE_PASSES[1][2] or 0
+			
+			for i = 0, frameH - 1 do
+				-- Prepare row prefix and postfix
+				local oldRow = imageRows[frameY + y + 1] or cleanRow
+				local rowPrefix, rowPostfix = '', ''
+				if(frameX > 0) then
+					rowPrefix = string_sub(oldRow, 1, frameX*4)
+				end
+				if(frameX + frameW < texW) then
+					rowPostfix = string_sub(oldRow, (frameX + frameW)*4 + 1)
 				end
 				
+				-- Change indices into colors
+				local rowTbl = {string_byte(dataDec, i * frameW + 1, i * frameW + frameW)}
+				for x = 0, frameW - 1 do
+					local idx = rowTbl[x + 1]
+					--_assert(idx and idx >= 0 and idx <= #clrTbl) -- tostring(idx)..' '..#clrTbl..' ('..x..' '..y..')')
+					
+					local clr = clrTbl[idx]
+					if(not clr) then
+						clr = string_sub(oldRow, x*4 + 1, x*4 + 4)
+					end
+					rowTbl[x + 1] = clr
+				end
+				
+				-- Build row string
+				local row = rowPrefix..table_concat(rowTbl)..rowPostfix
+				
 				--_assert(string_len(row) == texW*4)
-				imageRows[y + 1] = row
+				imageRows[frameY + y + 1] = row
+				
+				-- Move to the next row
+				if(interlace) then
+					y = y + INTERLACE_PASSES[interlacePass][1]
+					if(y > frameH) then -- if y == frameH, its end of this image
+						interlacePass = interlacePass + 1
+						y = INTERLACE_PASSES[interlacePass][2]
+					end
+				else
+					y = y + 1
+				end
 			end
-			_assert(#imageRows == texH)
 			
-			if(_bitTest(flags, 64)) then -- interflace
-				DbgPrint('interflace 0x%x', flags)
-				imageRows = GifFixRows(imageRows)
-			end
+			_assert(#imageRows == texH)
 			
 			DbgPerfCp('Building raw string', 3)
 			
@@ -421,15 +432,16 @@ local function GifWakeUpLoader(isTimer)
 	
 	local startTicks = getTickCount()
 	while(true) do
+		local status, err
 		if(g_LoaderThread) then
 			-- Resume GIF loading
-			coroutine.resume(g_LoaderThread)
+			status, err = coroutine.resume(g_LoaderThread)
 		else
 			-- Found new GIF to load
 			for el, gif in pairs(g_GifMap) do
 				if(not gif.loaded) then
 					g_LoaderThread = coroutine.create(GifLoadInternal)
-					coroutine.resume(g_LoaderThread, gif, gif.stream)
+					status, err = coroutine.resume(g_LoaderThread, gif, gif.stream)
 					break
 				end
 			end
@@ -442,12 +454,15 @@ local function GifWakeUpLoader(isTimer)
 		_assert(g_LoaderThread)
 		if(coroutine.status(g_LoaderThread) == 'dead') then
 			-- GIF has been loaded
+			if(not status) then
+				outputDebugString('Failed to load GIF: '..err, 2)
+			end
 			g_LoaderThread = false
 		end
 		
 		-- Check if we should pause for a moment
 		local dt = getTickCount() - startTicks
-		if(dt > 50) then
+		if(dt > 20) then
 			g_LoaderTimer = setTimer(GifWakeUpLoader, 50, 1, true)
 			return
 		end
