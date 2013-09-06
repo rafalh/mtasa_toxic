@@ -1,0 +1,12 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Toxic Genuine" type="script" />
+	<min_mta_version client="1.3.2" server="1.3.2" />
+	
+	<script src="genuine_s.lua" type="server" />
+	<script src="genuine_c.lua" type="client" />
+	
+	<aclrequest>
+		<right name="function.getServerName" access="true" />
+		<right name="function.getServerPassword" access="true" />
+	</aclrequest>
+</meta>
