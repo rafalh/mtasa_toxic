@@ -1,7 +1,5 @@
-local function isNativeFunction(func)
-	local info = debug.getinfo(func, 'S')
-	return info.what == 'C'
-end
+-- Includes
+#include 'include/nativeFunction.lua'
 
 local f = {
 	rnd = math.random,
@@ -14,14 +12,13 @@ local f = {
 	triggerEvent = triggerEvent,
 }
 
-for i, f in pairs(f) do
-	if(not isNativeFunction(f)) then return end
-end
+-- Check if functions are hooked
+if(not areNativeFunctions(f)) then return end
 
 local EvVerifierReady = 'AOGltgWlbU'
 local EvVerifyReq = 'YSRDCiwdyY'
 local EvVerified = '0CqFvjg0uc'
-local EvResStart = triggerClientEvent and "onResourceStart" or "onClientResourceStart"
+local EvResStart = triggerClientEvent and 'onResourceStart' or 'onClientResourceStart'
 
 local g_ResStarted = false
 
