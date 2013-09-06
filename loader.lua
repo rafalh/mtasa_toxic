@@ -1,5 +1,14 @@
+-- Options
+#ENCRYPT = false
+#ENCRYPTION_KEY = 'key!'
+#DEBUG_PERF = true
+
 -- Includes
 #include 'include/nativeFunction.lua'
+#include 'include/decrypt.lua'
+#if(ENCRYPT) then
+#  load 'include/encrypt.lua'
+#end
 
 local f = {
 	rnd = math.random,
@@ -52,11 +61,30 @@ tryVerify = function()
 			end
 		end
 		
-		local code = %s
+#if(DEBUG_PERF) then
+		local startTicks = getTickCount()
+#end
+		
+#if(ENCRYPT) then
+		local code = {
+# local LUA_CHUNK = __LUA_CHUNK_TBL__
+# for i, part in ipairs(LUA_CHUNK) do
+#	part = encrypt(part, ENCRYPTION_KEY)
+	$(('%q'):format(part)),
+# end
+		}
+#else
+		local code = __LUA_CHUNK_TBL__
+#end
+		
 		local i = 0
 		local function reader()
 			i = i + 1
+#if(ENCRYPT) then
+			return decrypt(code[i], '$(ENCRYPTION_KEY)')
+#else
 			return code[i]
+#end
 		end
 		
 		--outputDebugString('Loading code ('..getResourceName(resource)..' - '..side..')')
@@ -65,6 +93,13 @@ tryVerify = function()
 			outputDebugString('Failed to load '..getResourceName(resource)..': '..err, 1)
 			return
 		end
+		
+#if(DEBUG_PERF) then
+		local dt = getTickCount() - startTicks
+		if(dt > 50) then
+			outputDebugString('Loading '..getResourceName(resource)..' ('..side..') has taken '..dt..' ms!', 3)
+		end
+#end
 		
 		--outputDebugString('Running code ('..getResourceName(resource)..' - '..side..')')
 		func()

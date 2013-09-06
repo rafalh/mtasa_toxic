@@ -1,4 +1,12 @@
-local function encrypt(str, key)
+
+#if(isLoaded()) then
+ local bit = require('bit')
+ local bitXor = bit.bxor
+ 
+ function encrypt(str, key)
+#else
+ local function encrypt(str, key)
+#end
 	local strBytes = {str:byte(1, #str)}
 	local keyBytes = {key:byte(1, #key)}
 	
