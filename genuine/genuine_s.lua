@@ -37,7 +37,7 @@ local function fileGetContents(path)
 	return buf
 end
 
-#TEST_CIPHER = true
+#TEST_CIPHER = false
 #if(TEST_CIPHER) then
 #	include '../include/decrypt.lua'
 #	include '../include/randomStr.lua'
