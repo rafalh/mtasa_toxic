@@ -34,6 +34,7 @@ local g_SpecMap = {}
 
 addEvent('rb_addItem', true)
 addEvent('rb_clear', true)
+addEvent('rb.onSpecListChange', true)
 
 ---------------------
 -- Local functions --
@@ -348,8 +349,7 @@ addEventHandler('onClientResourceStart', resourceRoot, function()
 		addEventHandler('onClientRestore', root, RbUpdateBuffer)
 	end
 	
-	addEvent('toxic.onSpecListChange', true)
-	addEventHandler('toxic.onSpecListChange', root, RbSetSpecList)
+	addEventHandler('rb.onSpecListChange', resourceRoot, RbSetSpecList)
 	
 	triggerServerEvent('rb_onPlayerReady', resourceRoot)
 end)

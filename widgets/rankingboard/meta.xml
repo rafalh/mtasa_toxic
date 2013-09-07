@@ -3,6 +3,7 @@
 	<min_mta_version client="1.3.0-9.04431" />
 	
 	<script src="rankingboard_s.lua" type="server" />
+	<script src="spectators_s.lua" type="server" />
 	<script src="rankingboard_c.lua" type="client" />
 	
 	<file src="eye.png" />
