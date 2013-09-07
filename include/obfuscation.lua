@@ -1,13 +1,13 @@
 -- Include guard
 #if(includeGuard()) then return end
 
-#local bit = require("bit")
+#local bitXor = bit32 and bit32.bxor or require('bit').bxor
 
 #local function encode(str)
 #	local outputBytes = {}
 #	local inputBytes = {str:byte(1, str:len())}
 #	for i, byte in ipairs(inputBytes) do
-#		table.insert(outputBytes, bit.bxor(byte, (outputBytes[i-1] or str:len())))
+#		table.insert(outputBytes, bitXor(byte, (outputBytes[i-1] or str:len())))
 #	end
 #	
 #	return string.char(unpack(outputBytes))

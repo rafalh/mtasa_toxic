@@ -171,7 +171,7 @@ end
 
 #end
 
-#local TEST = true
+#local TEST = false
 #if(TEST) then
 #	print('List test is active!')
 	local function test(val1, val2, ln)
