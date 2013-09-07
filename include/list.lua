@@ -1,9 +1,16 @@
+-- Include Guard
+--#if(includeGuard()) then return end
+
 -- Use single big table or many small tables?
 #local LIST_IN_SINGLE_TBL = false
 
 #local ENTRY_CACHE = false
+#local LAST_REF = true
 
 #if(LIST_IN_SINGLE_TBL) then
+
+#local FIRST = 1
+#local LAST = 2
 
 local function listCreate(tbl)
 	local lst = {false, false}
@@ -12,17 +19,27 @@ local function listCreate(tbl)
 		lst[i*2 - 1] = i*2 + 1
 		lst[i*2 + 2] = tbl[i]
 	end
+#if(LAST_REF) then
+	lst[$LAST] = #tbl*2 + 1
+#end
 	return lst
 end
 
 local function listInsert(lst, v, hint)
+#if(LAST_REF) then
+	local i = hint or lst[$LAST] or 1
+#else
 	local i = hint or 1
+#end
 	while(lst[i]) do
 		i = lst[i]
 	end
 	local newIdx = #lst + 1
 	lst[i] = newIdx
 	lst[newIdx + 1] = v
+#if(LAST_REF) then
+	lst[$LAST] = newIdx
+#end
 	return newIdx
 end
 
@@ -36,6 +53,11 @@ local function listRemove(lst, n)
 	if(lst[i]) then
 		local nextIdx = lst[i]
 		local v = lst[nextIdx + 1]
+#if(LAST_REF) then
+		if(not lst[nextIdx]) then
+			lst[$LAST] = i
+		end
+#end
 		lst[i] = lst[nextIdx]
 		--lst[nextIdx] = nil
 		--lst[nextIdx + 1] = nil
@@ -61,38 +83,53 @@ end
 #local VAL = 1
 #local NEXT = 2
 
+#local LAST = VAL
+#local FIRST = NEXT
+
 #if(ENTRY_CACHE) then
 	local g_ListEntryCache = {}
 #end
 
 local function listCreate(tbl)
-	local head = {}
+	local head = {false, false}
 	if(not tbl) then return head end
 	local entry = head
+	local newEntry
 	for i = 1, #tbl do
 #if(ENTRY_CACHE) then
-		local newEntry = table.remove(g_ListEntryCache)
+		newEntry = table.remove(g_ListEntryCache)
 		if(newEntry) then
 			newEntry[$VAL], newEntry[$NEXT] = tbl[i], false
 		else
 			newEntry = {tbl[i], false}
 		end
 #else
-		local newEntry = {tbl[i], false}
+		newEntry = {tbl[i], false}
 #end
 		entry[$NEXT] = newEntry
 		entry = newEntry
 	end
+#if(LAST_REF) then
+	head[$LAST] = newEntry
+#end
 	return head
 end
 
 local function listInsert(head, v, hint)
+#if(LAST_REF) then
+	local entry = hint or head[$LAST] or head
+#else
 	local entry = hint or head
+#end
 	while(entry[$NEXT]) do
 		entry = entry[$NEXT]
 	end
-	entry[$NEXT] = {v, false}
-	return entry[$NEXT]
+	local newEntry = {v, false}
+	entry[$NEXT] = newEntry
+#if(LAST_REF) then
+	head[$LAST] = newEntry
+#end
+	return newEntry
 end
 
 local function listRemove(head, n)
@@ -102,12 +139,18 @@ local function listRemove(head, n)
 		n = n - 1
 	end
 	
-	if(entry and entry[$NEXT]) then
-		local v = entry[$NEXT][$VAL]
-#if(ENTRY_CACHE) then
-		table.insert(g_ListEntryCache, entry[$NEXT])
+	local nextEntry = entry[$NEXT]
+	if(entry and nextEntry) then
+		local v = nextEntry[$VAL]
+#if(LAST_REF) then
+		if(not nextEntry[$NEXT]) then
+			head[$LAST] = entry
+		end
 #end
-		entry[$NEXT] = entry[$NEXT][$NEXT]
+#if(ENTRY_CACHE) then
+		table.insert(g_ListEntryCache, nextEntry)
+#end
+		entry[$NEXT] = nextEntry[$NEXT]
 		return v
 	end
 end

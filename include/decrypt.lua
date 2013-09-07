@@ -1,3 +1,9 @@
+-- Includes
+#include 'list.lua'
+
+-- Options
+#local USE_LIST = false
+
 local string_char = string.char
 local table_concat = table.concat
 local table_remove = table.remove
@@ -18,21 +24,33 @@ local table_remove = table.remove
 	local keyIdx = 0
 	local holesCnt = strLen
 	local resultBytes = {}
+	--[[for i = 1, #strBytes do
+		resultBytes[i] = false
+	end]]
 	
 	local indices = {}
 	for i = 1, 256 do
 		indices[i] = i
 	end
+#if(USE_LIST) then
+	indices = listCreate(indices)
+#end
 	
 	for i = 1, strLen do
 		local keyByte = keyBytes[keyIdx + 1]
 		keyIdx = (keyIdx + 1) % keyLen
 		
-		local holeIdx = keyByte % holesCnt
-		local resultIdx = indices[holeIdx + 1] - 1
-		table_remove(indices, holeIdx + 1)
+		local holeIdx = (keyByte % holesCnt) + 1
+		
+#if(USE_LIST) then
+		local resultIdx = listRemove(indices, holeIdx)
+		listInsert(indices, i + 256)
+#else
+		local resultIdx = table_remove(indices, holeIdx)
 		indices[256] = indices[255] + 1
-		resultBytes[resultIdx + 1] = strBytes[i]
+#end
+		
+		resultBytes[resultIdx] = strBytes[i]
 		holesCnt = holesCnt - 1
 	end
 	
