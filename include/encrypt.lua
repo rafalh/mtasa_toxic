@@ -1,5 +1,5 @@
 -- Defined
-#local USE_LIST = true
+#local USE_LIST = false
 #local USE_TABLE_REMOVE = false
 
 -- Includes
@@ -55,9 +55,8 @@ local table_remove = table.remove
 		local strByte = table_remove(strBytes, strIdx + 1)
 #else
 		local strByte = strBytes[indices[strIdx + 1]]
-		for i = strIdx + 1, 256 do
-			indices[i] = indices[i] + 1
-		end
+		table_remove(indices, strIdx + 1)
+		indices[256] = indices[255] + 1
 #end
 		strLen = strLen - 1
 		table_insert(resultTbl, string_char(strByte))

@@ -1,5 +1,6 @@
 local string_char = string.char
 local table_concat = table.concat
+local table_remove = table.remove
 
 #if(isLoaded()) then
  local bitXor = bit32 and bit32.bxor or require('bit').bxor
@@ -29,10 +30,8 @@ local table_concat = table.concat
 		
 		local holeIdx = keyByte % holesCnt
 		local resultIdx = indices[holeIdx + 1] - 1
-		for j = holeIdx + 1, 255 do
-			indices[j] = indices[j + 1]
-		end
-		indices[256] = indices[256] + 1
+		table_remove(indices, holeIdx + 1)
+		indices[256] = indices[255] + 1
 		resultBytes[resultIdx + 1] = strBytes[i]
 		holesCnt = holesCnt - 1
 	end
