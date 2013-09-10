@@ -24,3 +24,7 @@ function Room.onDestroy()
 	local self = Room.elMap[source]
 	self:destroy()
 end
+
+function Room.pairs()
+	return pairs(Room.elMap)
+end

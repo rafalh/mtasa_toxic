@@ -1,5 +1,5 @@
 Player = {}
-Player.__mt = {__index = {}}
+Player.__mt = {__index = {cls = Player}}
 Player.idMap = {}
 Player.elMap = {}
 g_Players = Player.elMap -- FIXME
@@ -144,7 +144,10 @@ function Player.onRoomChange(roomEl)
 	local self = Player.fromEl(source)
 	local room = Room.create(roomEl)
 	self.room = room
-	BtSendMapInfo(self.room, self.new, self.el)
+	MiSendMapInfo(self)
+	if(self.new) then
+		MiShow(self)
+	end
 end
 
 function Player.onTeamChange(team)

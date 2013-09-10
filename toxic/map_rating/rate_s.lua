@@ -40,7 +40,7 @@ function RtPlayerRate(rate)
 		DbQuery('UPDATE '..MapsTable..' SET rates=?, rates_count=? WHERE map=?', mapData.rates, mapData.rates_count, map_id)
 		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates / mapData.rates_count)
 		
-		BtSendMapInfo(false)
+		MiUpdateInfo()
 	else
 		privMsg(source, "You rated this map before: %u!", oldRate)
 	end

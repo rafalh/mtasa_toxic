@@ -20,8 +20,7 @@ local function CmdRemTopTime(message, arg)
 						AccountData.create(rows[4].player):add('toptimes_count', 1)
 					end
 				end
-				BtDeleteCache()
-				BtSendMapInfo(false)
+				MiUpdateTops(map_id)
 				
 				local f = fileExists('logs/remtoptime.log') and fileOpen('logs/remtoptime.log') or fileCreate('logs/remtoptime.log')
 				if(f) then

@@ -233,8 +233,11 @@ local function onPlayerReady(localeId)
 	
 	pdata.acl:send(pdata)
 	
-	if(BtSendMapInfo) then
-		BtSendMapInfo(pdata.room, pdata.new, client)
+	if(MiSendMapInfo) then
+		MiSendMapInfo(pdata)
+		if(pdata.new) then
+			MiShow(pdata)
+		end
 	end
 	
 	local account = getPlayerAccount(client)

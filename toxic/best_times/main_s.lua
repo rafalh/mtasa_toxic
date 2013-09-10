@@ -1,12 +1,6 @@
 
 -- Note: '' <> x'' in SQLite
 
-#include 'include/internal_events.lua'
-
-local g_MapInfo = false
-local g_TopTimes = false
-local g_PlayerTimes = {}
-
 BestTimesTable = Database.Table{
 	name = 'besttimes',
 	{'player', 'INT UNSIGNED', fk = {'players', 'player'}},
@@ -59,7 +53,7 @@ function addPlayerTime(player_id, map_id, time)
 			end
 		end
 		
-		BtDeleteCache() -- invalidate cache
+		MiUpdateTops(map_id) -- invalidate cache
 	end
 	
 	prof:cp('addPlayerTime')
@@ -85,47 +79,29 @@ function BtDeleteTimes(cond, ...)
 	end
 end
 
-function BtSendMapInfo(room, show, player)
-	local prof = DbgPerf()
-	local map = getCurrentMap(room)
-	if(not map) then return end
-	
-	local map_id = map:getId()
-	
-	if(not g_TopTimes) then
-		-- this takes long...
-		--local start = getTickCount()
-		--for i = 1, 100, 1 do
-			g_TopTimes = DbQuery(
-				'SELECT bt.player, bt.time, p.name '..
-				'FROM '..BestTimesTable..' bt '..
-				'INNER JOIN '..PlayersTable..' p ON bt.player=p.player '..
-				'WHERE bt.map=? ORDER BY time LIMIT 8', map_id)
-		--end
-		for i, data in ipairs(g_TopTimes) do
-			data.time = formatTimePeriod(data.time / 1000)
-		end
-		--outputDebugString('Toptimes: '..(getTickCount()-start)..' ms', 2)
+function BtGetTops(map)
+	-- this takes long...
+	--local start = getTickCount()
+	--for i = 1, 100, 1 do
+	local rows = DbQuery(
+		'SELECT bt.player, bt.time, p.name '..
+		'FROM '..BestTimesTable..' bt '..
+		'INNER JOIN '..PlayersTable..' p ON bt.player=p.player '..
+		'WHERE bt.map=? ORDER BY time LIMIT 8', map:getId())
+	--end
+	for i, data in ipairs(rows) do
+		data.time = formatTimePeriod(data.time / 1000)
 	end
-	
-	if(not g_MapInfo) then
-		local rows = DbQuery('SELECT played, rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
-		g_MapInfo = rows and rows[1]
-		g_MapInfo.name = map:getName()
-		g_MapInfo.rating = (g_MapInfo.rates_count > 0 and g_MapInfo.rates/g_MapInfo.rates_count) or 0
-		g_MapInfo.author = map:getInfo('author')
-	end
-	
-	local players = {player}
-	if(not player) then
-		players = getElementsByType('player')
-	end
-	
+	--outputDebugString('Toptimes: '..(getTickCount()-start)..' ms', 2)
+	return rows
+end
+
+function BtUpdatePlayerTops(playerTimes, map, players)
 	local idList = {}
 	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
-		if(pdata and g_PlayerTimes[player] == nil and pdata.id) then
-			g_PlayerTimes[player] = false
+		if(pdata and playerTimes[player] == nil and pdata.id) then
+			playerTimes[player] = false
 			table.insert(idList, pdata.id)
 		end
 	end
@@ -137,31 +113,13 @@ function BtSendMapInfo(room, show, player)
 				'SELECT COUNT(*) FROM '..BestTimesTable..' AS bt2 '..
 				'WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos '..
 			'FROM '..BestTimesTable..' bt1 '..
-			'WHERE bt1.map=? AND bt1.player IN (??)', map_id, table.concat(idList, ','))
+			'WHERE bt1.map=? AND bt1.player IN (??)', map:getId(), table.concat(idList, ','))
 		for i, data in ipairs(rows) do
 			local player = Player.fromId(data.player)
 			data.time = formatTimePeriod(data.time / 1000)
-			g_PlayerTimes[player.el] = data
+			playerTimes[player.el] = data
 		end
 	end
-	
-	prof2:cp('retreiving toptimes')
-	
-	for i, player in ipairs(players) do
-		triggerClientInternalEvent(player, $(EV_CLIENT_MAP_INFO), g_Root,
-				show, g_MapInfo, g_TopTimes, g_PlayerTimes[player])
-	end
-	prof:cp('BtSendMapInfo')
-end
-
-function BtDeleteCache()
-	g_MapInfo = false
-	g_TopTimes = false
-	g_PlayerTimes = {}
-end
-
-local function BtGamemodeMapStop()
-	BtDeleteCache()
 end
 
 -- race_delay_indicator uses it
@@ -208,7 +166,3 @@ function BtPrintTimes(room, map_id)
 		end
 	end
 end
-
-addInitFunc(function()
-	addEventHandler('onGamemodeMapStop', g_Root, BtGamemodeMapStop)
-end)

@@ -9,6 +9,7 @@ local function CmdSetMapName(message, arg)
 			local newName = message:sub(arg[1]:len() + 2)
 			
 			if(map:setInfo('name', newName)) then
+				MiUpdateInfo()
 				scriptMsg("New map name: %s", newName)
 			else
 				privMsg(source, "Error! Cannot set map name.")
@@ -33,6 +34,7 @@ local function CmdSetMapType(message, arg)
 			local newName = '['..new_map_type..'] '..(name:match('^%[%w+%]%s*(.*)$') or name)
 			
 			if(map:setInfo('name', newName)) then
+				MiUpdateInfo()
 				scriptMsg("New map name: %s", newName)
 			else
 				privMsg(source, "Error! Cannot set map name.")
@@ -53,6 +55,7 @@ local function CmdSetMapCreator(message, arg)
 			local newAuthor = message:sub(arg[1]:len() + 2)
 			
 			if(map:setInfo('author', newAuthor)) then
+				MiUpdateInfo()
 				scriptMsg("New map creator: %s", newAuthor)
 			else
 				privMsg(source, "Error! Cannot set map creator.")

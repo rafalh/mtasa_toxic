@@ -10,6 +10,7 @@
 	<script src="mapOptionsCmd_s.lua" type="server" />
 	<script src="mapFixingCmd_s.lua" type="server" />
 	<script src="mapInfoCmd_s.lua" type="server" />
+	<script src="mapInfo_s.lua" type="server" />
 	<script src="mapInfoGui_c.lua" type="client" />
 	<script src="mapsListGui_c.lua" type="client" />
 	<script src="http_s.lua" type="server" />

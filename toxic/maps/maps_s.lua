@@ -207,7 +207,8 @@ local function onMapStart(map, room)
 		prof2:cp('onMapStart 4')
 		
 		-- show toptimes
-		BtSendMapInfo(room, true)
+		MiSendMapInfo(room)
+		MiShow(room)
 		
 		-- init some players data
 		for player, pdata in pairs (g_Players) do
@@ -315,7 +316,7 @@ local function handlePlayerTime(player, ms)
 		end
 		
 		if (n <= 8) then
-			BtSendMapInfo(pdata.room, true)
+			MiShow(pdata.room)
 		end
 	end
 	
