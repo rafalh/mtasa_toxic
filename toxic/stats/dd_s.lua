@@ -30,7 +30,7 @@ local function onKillersList(killer, assist)
 		return
 	end
 	
-	outputDebugString('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()), 3)
+	--outputDebugString('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()), 3)
 	
 	local respawn = map and map:getRespawn()
 	if(not respawn and victimPlayer:isAlive()) then
@@ -137,7 +137,7 @@ function DdUpdatePlayerTops(playerTops, map, players)
 			'SELECT v1.player, v1.victCount, ('..
 				'SELECT COUNT(*) FROM '..VictoriesTable..' AS v2 '..
 				'WHERE v2.map=v1.map AND v2.victCount>=v1.victCount) AS pos '..
-			'FROM '..BestTimesTable..' v1 '..
+			'FROM '..VictoriesTable..' v1 '..
 			'WHERE v1.map=? AND v1.player IN (??)', map:getId(), table.concat(idList, ','))
 		for i, data in ipairs(rows) do
 			local player = Player.fromId(data.player)
@@ -168,7 +168,7 @@ local function onPlayerWasted()
 	
 	if(player.room.ddKilersDetection) then
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
-		outputDebugString('onPlayerWasted '..player:getName(), 3)
+		--outputDebugString('onPlayerWasted '..player:getName(), 3)
 	end
 end
 
