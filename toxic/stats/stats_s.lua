@@ -9,7 +9,7 @@ local g_Stats = {
 	'dmVictories', 'huntersTaken', 'dmPlayed',
 #end
 #if(DD_STATS) then
-	'ddVictories', 'ddPlayed',
+	'ddVictories', 'ddPlayed', 'kills',
 #end
 #if(RACE_STATS) then
 	'raceVictories', 'racesFinished', 'racesPlayed',
@@ -37,6 +37,7 @@ PlayersTable:addColumns{
 #if(DD_STATS) then
 	{'ddVictories',   'MEDIUMINT UNSIGNED', default = 0},
 	{'ddPlayed',      'MEDIUMINT UNSIGNED', default = 0},
+	{'kills',         'MEDIUMINT UNSIGNED', default = 0},
 #end
 #if(RACE_STATS) then
 	{'raceVictories', 'MEDIUMINT UNSIGNED', default = 0},

@@ -1,6 +1,9 @@
 -- Includes
 #include 'include/config.lua'
 
+-- Defines
+#POINTS_FOR_KILLS = true
+
 -- Events
 --addEvent('stats.onDDKillersList', true)
 
@@ -50,28 +53,40 @@ local function onKillersList(killer, assist)
 	-- Check if there is any killer
 	if(not killerPlayer) then return end
 	
-	--local killerLvl = LvlFromExp(killerPlayer.accountData.exp)
+	local killerLvl = LvlFromExp(killerPlayer.accountData.points)
 	victimPlayer:addNotify{
 		icon = 'stats/img/skull.png',
-		{"You have been killed by %s", killerPlayer:getName()}}
+		{"You have been killed by %s (%u. level)", killerPlayer:getName(), killerLvl}}
 	
-	--local victimExp = victimPlayer.accountData.exp
-	--local victimLvl = LvlFromExp(victimExp)
-	--local expBonus = math.floor(victimLvl^0.5*5)
+	local victimExp = victimPlayer.accountData.points
+	local victimLvl = LvlFromExp(victimExp)
 	
+#if(POINTS_FOR_KILLS) then
+	local expBonus = math.floor(victimLvl^0.5*5)
 	killerPlayer:addNotify{
 		icon = 'stats/img/skull.png',
-		{"You have killed %s", victimPlayer:getName()}}
-	--killerPlayer.accountData:add('exp', expBonus)
-	--killerPlayer.accountData:add('kills', 1)
+		{"You have killed %s (%u. level) and receive %s", victimPlayer:getName(), victimLvl, expBonus..' EXP'}}
+	killerPlayer.accountData:add('points', expBonus)
+#else
+	killerPlayer:addNotify{
+		icon = 'stats/img/skull.png',
+		{"You have killed %s (%u. level)", victimPlayer:getName(), victimLvl}}
+#end
+	killerPlayer.accountData:add('kills', 1)
 	killerPlayer.currentMapKills = (killerPlayer.currentMapKills or 0) + 1
 	
 	if(assistPlayer) then
-		--local expBonus = math.floor(expBonus/2)
+#if(POINTS_FOR_KILLS) then
+		local expBonus = math.floor(expBonus/2)
+		assistPlayer:addNotify{
+			icon = 'stats/img/skull.png',
+			{"You have killed %s (assist) and receive %s", victimPlayer:getName(), expBonus..' EXP'}}
+		assistPlayer.accountData:add('points', expBonus)
+#else
 		assistPlayer:addNotify{
 			icon = 'stats/img/skull.png',
 			{"You have killed %s (assist)", victimPlayer:getName()}}
-		--assistPlayer.accountData:add('exp', expBonus)
+#end
 	end
 end
 

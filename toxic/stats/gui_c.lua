@@ -39,6 +39,9 @@ local STATS = {
 		local ddVictRate = stats.ddVictories / math.max(stats.ddPlayed, 1) * 100
 		return ('%s/%s (%.1f%%)'):format(formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddVictRate)
 	end},
+	{"DD Kills:", function(stats)
+		return formatNumber(stats.kills)
+	end},
 #end
 #if(RACE_STATS) then
 	{"Race Victories:", function(stats)
