@@ -220,7 +220,7 @@ local function onMapStart(map, room)
 		
 		-- start recording
 		local winning_veh = mapType and mapType.winning_veh
-		room.recording = (room.isRace or winning_veh) and Settings.recorder
+		room.recording = (room.isRace or winning_veh) and RcStartRecording and Settings.recorder
 		if(room.isRace or winning_veh) then
 			if(room.recording) then
 				RcStartRecording(room, map_id)

@@ -3,7 +3,7 @@
 
 local function mergeMaps(mapDst, mapSrc)
 	-- Rates
-	local rows = DbQuery('SELECT rS.player FROM '..RatesTable..' rS, '..RatesTable..' rD WHERE rS.map=? AND rD.map=? AND rS.player=rD.player', mapSrc, mapDst)
+	local rows = DbQuerySync('SELECT rS.player FROM '..RatesTable..' rS, '..RatesTable..' rD WHERE rS.map=? AND rD.map=? AND rS.player=rD.player', mapSrc, mapDst)
 	if(not rows) then return false end
 	
 	local players = {}
@@ -14,13 +14,13 @@ local function mergeMaps(mapDst, mapSrc)
 	end
 	if(#players > 0) then
 		local questionMarksStr = table.concat(questionMarks, ',')
-		DbQuery('DELETE FROM '..RatesTable..' WHERE map=? AND player IN ('..questionMarksStr..')', mapSrc, unpack(players)) -- remove duplicates
-		DbQuery('UPDATE '..PlayersTable..' SET mapsRated=mapsRated-1 WHERE player IN ('..questionMarksStr..')', unpack(players)) -- remove duplicates
-		DbQuery('UPDATE '..RatesTable..' SET map=? WHERE map=?', mapDst, mapSrc)
+		DbQuerySync('DELETE FROM '..RatesTable..' WHERE map=? AND player IN ('..questionMarksStr..')', mapSrc, unpack(players)) -- remove duplicates
+		DbQuerySync('UPDATE '..PlayersTable..' SET mapsRated=mapsRated-1 WHERE player IN ('..questionMarksStr..')', unpack(players)) -- remove duplicates
+		DbQuerySync('UPDATE '..RatesTable..' SET map=? WHERE map=?', mapDst, mapSrc)
 	end
 	
 	-- Best times
-	local rows = DbQuery('SELECT btS.player, btS.time AS timeSrc, btD.time AS timeDst FROM '..BestTimesTable..' btS, '..BestTimesTable..' btD WHERE btS.map=? AND btD.map=? AND btS.player=btD.player', mapSrc, mapDst)
+	local rows = DbQuerySync('SELECT btS.player, btS.time AS timeSrc, btD.time AS timeDst FROM '..BestTimesTable..' btS, '..BestTimesTable..' btD WHERE btS.map=? AND btD.map=? AND btS.player=btD.player', mapSrc, mapDst)
 	local playersSrc, playersDst = {}, {}
 	local questionMarksSrc, questionMarksDst = {}, {}
 	
@@ -30,15 +30,15 @@ local function mergeMaps(mapDst, mapSrc)
 		if(data.timeSrc < data.timeDst) then -- src besttime is better
 			table.insert(playersDst, data.player)
 			table.insert(questionMarksDst, '?')
-			rows2 = DbQuery('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', mapDst, data.timeDst)
+			rows2 = DbQuerySync('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', mapDst, data.timeDst)
 		else -- dst besttime is better
 			table.insert(playersSrc, data.player)
 			table.insert(questionMarksSrc, '?')
-			rows2 = DbQuery('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', mapSrc, data.timeSrc)
+			rows2 = DbQuerySync('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', mapSrc, data.timeSrc)
 		end
 		
 		if(rows2[1].pos <= 3) then
-			DbQuery('UPDATE '..PlayersTable..' SET toptimes_count=toptimes_count-1 WHERE player=?', data.player)
+			DbQuerySync('UPDATE '..PlayersTable..' SET toptimes_count=toptimes_count-1 WHERE player=?', data.player)
 		end
 	end
 	if(#playersDst > 0) then
@@ -49,16 +49,16 @@ local function mergeMaps(mapDst, mapSrc)
 		local questionMarksStr = table.concat(questionMarksSrc, ',')
 		BtDeleteTimes('map=? AND player IN ('..questionMarksStr..')', mapSrc, unpack(playersSrc)) -- remove duplicates
 	end
-	DbQuery('UPDATE '..BestTimesTable..' SET map=? WHERE map=?', mapDst, mapSrc) -- set new best times map
+	DbQuerySync('UPDATE '..BestTimesTable..' SET map=? WHERE map=?', mapDst, mapSrc) -- set new best times map
 	
 	-- Map
-	local rows = DbQuery('SELECT * FROM '..MapsTable..' WHERE map=?', mapSrc)
+	local rows = DbQuerySync('SELECT * FROM '..MapsTable..' WHERE map=?', mapSrc)
 	local data = rows and rows[1]
-	DbQuery('UPDATE '..MapsTable..' SET '..
+	DbQuerySync('UPDATE '..MapsTable..' SET '..
 		'played=played+?, rates=rates+?, rates_count=rates_count+?, '..
 		'played_timestamp=max(played_timestamp, ?), added_timestamp=min(added_timestamp, ?) WHERE map=?',
 		data.played, data.rates, data.rates_count, data.played_timestamp, data.added_timestamp, mapDst)
-	DbQuery('DELETE FROM '..MapsTable..' WHERE map=?', mapSrc) -- remove map
+	DbQuerySync('DELETE FROM '..MapsTable..' WHERE map=?', mapSrc) -- remove map
 	return true
 end
 
@@ -68,12 +68,12 @@ Updater = {
 		{
 			ver = 149,
 			func = function()
-				local rows = DbQuery("SELECT DISTINCT serial FROM "..PlayersTable.." WHERE pmuted=1")
+				local rows = DbQuerySync('SELECT DISTINCT serial FROM '..PlayersTable..' WHERE pmuted=1')
 				local now = getRealTime().timestamp
 				for i, data in ipairs(rows) do
-					DbQuery("INSERT INTO "..MutesTable.." (serial, timestamp, duration) VALUES(?, ?, ?)", data.serial, now, 3600*24*31)
+					DbQuerySync('INSERT INTO '..MutesTable..' (serial, timestamp, duration) VALUES(?, ?, ?)', data.serial, now, 3600*24*31)
 				end
-				outputDebugString(#rows.." pmutes updated", 3)
+				outputDebugString(#rows..' pmutes updated', 3)
 			end
 		},
 		{
@@ -81,26 +81,26 @@ Updater = {
 			func = function()
 				if(not BestTimesTable) then return end
 				
-				local rows = DbQuery("SELECT map, player, rec, cp_times FROM "..BestTimesTable.." WHERE length(rec)>0 OR length(cp_times)>0")
-				DbQuery("UPDATE "..BestTimesTable.." SET rec=0 WHERE length(rec)=0")
-				DbQuery("UPDATE "..BestTimesTable.." SET cp_times=0 WHERE length(cp_times)=0")
+				local rows = DbQuerySync('SELECT map, player, rec, cp_times FROM '..BestTimesTable..' WHERE length(rec)>0 OR length(cp_times)>0')
+				DbQuerySync('UPDATE '..BestTimesTable..' SET rec=0 WHERE length(rec)=0')
+				DbQuerySync('UPDATE '..BestTimesTable..' SET cp_times=0 WHERE length(cp_times)=0')
 				for i, data in ipairs(rows) do
-					if(data.rec ~= "") then
-						DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.rec)..")")
+					if(data.rec ~= '') then
+						DbQuerySync('INSERT INTO '..BlobsTable..' (data) VALUES('..DbBlob(data.rec)..')')
 						local id = Database.getLastInsertID()
-						if(id == 0) then outputDebugString("last insert ID == 0", 2) end
-						DbQuery("UPDATE "..BestTimesTable.." SET rec=? WHERE map=? AND player=?", id, data.map, data.player)
+						if(id == 0) then outputDebugString('last insert ID == 0', 2) end
+						DbQuerySync('UPDATE '..BestTimesTable..' SET rec=? WHERE map=? AND player=?', id, data.map, data.player)
 					end
-					if(data.cp_times ~= "") then
-						DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.cp_times)..")")
+					if(data.cp_times ~= '') then
+						DbQuerySync('INSERT INTO '..BlobsTable..' (data) VALUES('..DbBlob(data.cp_times)..')')
 						local id = Database.getLastInsertID()
-						if(id == 0) then outputDebugString("last insert ID == 0", 2) end
-						DbQuery("UPDATE "..BestTimesTable.." SET cp_times=? WHERE map=? AND player=?", id, data.map, data.player)
+						if(id == 0) then outputDebugString('last insert ID == 0', 2) end
+						DbQuerySync('UPDATE '..BestTimesTable..' SET cp_times=? WHERE map=? AND player=?', id, data.map, data.player)
 					end
 					
 					coroutine.yield()
 				end
-				outputDebugString(#rows.." best times updated", 3)
+				outputDebugString(#rows..' best times updated', 3)
 			end
 		},
 		{
@@ -108,37 +108,41 @@ Updater = {
 			func = function()
 				if(not BestTimesTable) then return end
 				
-				DbQuery("UPDATE "..BestTimesTable.." SET timestamp=0 WHERE timestamp IS NULL")
+				DbQuerySync('UPDATE '..BestTimesTable..' SET timestamp=0 WHERE timestamp IS NULL')
 				if(not DbRecreateTable(BestTimesTable)) then
-					return "Failed to recreate best times table"
+					return 'Failed to recreate best times table'
 				end
 			end
 		},
 		{
 			ver = 152,
 			func = function()
-				DbQuery("UPDATE "..PlayersTable.." SET account=NULL WHERE account=''")
+				DbQuerySync('UPDATE '..PlayersTable..' SET account=NULL WHERE account=\'\'')
 				
 				-- Only for AwesomeGamers
 #if(AWESOME_GAMERS) then
-				if(not DbQuery('ALTER TABLE '..PlayersTable..' ADD COLUMN warnings TINYINT UNSIGNED NOT NULL DEFAULT 0')) then
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN warnings TINYINT UNSIGNED NOT NULL DEFAULT 0')) then
 					return 'Failed to add warnings column'
 				end
 				
-				if(not DbQuery("ALTER TABLE "..DbPrefix.."settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL")) then
-					return "Failed to add backupTimestamp column."
+				if(not DbQuerySync('ALTER TABLE '..DbPrefix..'settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL')) then
+					return 'Failed to add backupTimestamp column.'
+				end
+				
+				if(not DbQuerySync('UPDATE '..PlayersTable..' SET points=exp')) then
+					return 'Failed to update points'
 				end
 #end
 				
 				if(not DbRecreateTable(PlayersTable)) then
-					return "Failed to recreate players table"
+					return 'Failed to recreate players table'
 				end
 			end
 		},
 		{
 			ver = 153,
 			func = function()
-				if(not DbQuery('ALTER TABLE '..MapsTable..' ADD COLUMN patcherSeq SMALLINT NOT NULL DEFAULT 0')) then
+				if(not DbQuerySync('ALTER TABLE '..MapsTable..' ADD COLUMN patcherSeq SMALLINT NOT NULL DEFAULT 0')) then
 					return 'Failed to add patcherSeq column'
 				end
 				return false
@@ -147,20 +151,20 @@ Updater = {
 		{
 			ver = 154,
 			func = function()
-				if(not DbQuery('INSERT INTO '..SerialsTable..' (serial) '..
+				if(not DbQuerySync('INSERT INTO '..SerialsTable..' (serial) '..
 						'SELECT DISTINCT serial '..
 						'FROM '..PlayersTable)) then
 					return 'Failed to init serials table'
 				end
 
-				if(not DbQuery('INSERT INTO '..AliasesTable..' (serial, name) '..
+				if(not DbQuerySync('INSERT INTO '..AliasesTable..' (serial, name) '..
 						'SELECT DISTINCT s.id AS serial, n.name '..
 						'FROM '..PlayersTable..' p, '..SerialsTable..' s, '..DbPrefix..'names n '..
 						'WHERE p.player=n.player AND p.serial=s.serial')) then
 					return 'Failed to init aliases table'
 				end
 				
-				if(not DbQuery('DROP TABLE '..DbPrefix..'names')) then
+				if(not DbQuerySync('DROP TABLE '..DbPrefix..'names')) then
 					return 'Failed to delete names table'
 				end
 				
@@ -170,8 +174,8 @@ Updater = {
 		{
 			ver = 155,
 			func = function()
-				if(not DbQuery('DROP INDEX IF EXISTS '..DbPrefix..'rates_idx') or
-					not DbQuery('CREATE UNIQUE INDEX '..DbPrefix..'rates_idx ON '..RatesTable..' (map, player)')) then
+				if(not DbQuerySync('DROP INDEX IF EXISTS '..DbPrefix..'rates_idx') or
+					not DbQuerySync('CREATE UNIQUE INDEX '..DbPrefix..'rates_idx ON '..RatesTable..' (map, player)')) then
 					return 'Failed to recreate rafalh_rates_idx'
 				end
 				return false
