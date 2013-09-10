@@ -274,6 +274,9 @@ function StPlayerFinish(player, rank, ms)
 	local mapType = map and map:getType()
 	if(not mapType) then return end
 	
+	local kills = player.currentMapKills or 0
+	player.currentMapKills = 0
+	
 	if(room.isRace or mapType.name == 'DD' or rank == 1) then
 #if(RACE_STATS) then
 		if(room.isRace) then
@@ -294,9 +297,7 @@ function StPlayerFinish(player, rank, ms)
 			{"%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash)},
 			{"You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points)},
 		}
-		if(mapType.name == 'DD') then
-			local kills = player.currentMapKills or 0
-			player.currentMapKills = 0
+		if(mapType.name == 'DD' and kills > 0) then
 			table.insert(notify, {"You have killed a total of %u players.", kills})
 		end
 		
