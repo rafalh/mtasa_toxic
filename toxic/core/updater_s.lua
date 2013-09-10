@@ -1,5 +1,5 @@
 -- Defines
-#AWESOME_GAMERS = true
+#AWESOME_GAMERS = false
 
 local function mergeMaps(mapDst, mapSrc)
 	-- Rates
