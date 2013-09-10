@@ -132,6 +132,8 @@ Updater = {
 				if(not DbQuerySync('UPDATE '..PlayersTable..' SET points=exp')) then
 					return 'Failed to update points'
 				end
+				
+				Settings.loadPrivate() -- for backupTimestamp
 #end
 				
 				if(not DbRecreateTable(PlayersTable)) then

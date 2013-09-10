@@ -14,7 +14,10 @@ local g_Stats = {
 #if(RACE_STATS) then
 	'raceVictories', 'racesFinished', 'racesPlayed',
 #end
-	'maxWinStreak', 'toptimes_count',
+	'maxWinStreak',
+#if(TOP_TIMES) then
+	'toptimes_count',
+#end
 	'bidlvl', 'time_here', 'exploded', 'drowned'}
 
 PlayersTable:addColumns{

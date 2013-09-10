@@ -50,7 +50,9 @@ local STATS = {
 	end},
 #end
 	{"Maximal Win Streak:", 'maxWinStreak'},
+#if(TOP_TIMES) then
 	{"Top Times held:", 'toptimes_count'},
+#end
 	{"Bidlevel:", 'bidlvl'},
 	{"Exploded:", function(stats)
 		return MuiGetMsg("%s times"):format(stats.exploded)
@@ -95,6 +97,7 @@ function StatsView:update()
 			else
 				value = stats[info[2]]
 			end
+			assert(value, info[1])
 			valCache[info.cache or i] = value
 		end
 		table.insert(values, value)
