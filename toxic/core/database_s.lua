@@ -1,3 +1,7 @@
+-- Defines
+#ALWAYS_WAIT = false
+
+-- Globals
 local g_Connection, g_Ready, g_Driver = false, false, false
 local g_Config = {}
 local SQLITE_DB_PATH = 'conf/db.sqlite'
@@ -58,7 +62,7 @@ function DbQuery(query, ...)
 	if(not g_Driver) then return false end
 	local prof = DbgPerf(100)
 	local result
-	if(query:sub(1, 6) == 'SELECT') then
+	if(query:sub(1, 6) == 'SELECT' or $ALWAYS_WAIT) then
 		result = g_Driver:query(query, ...)
 	else
 		result = g_Driver:exec(query, ...)
