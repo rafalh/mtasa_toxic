@@ -199,7 +199,8 @@ end
 
 -- Used by RPC
 function MiSetMapInfo(mapInfo, topTimes, myBestTime)
-	g_MapInfo, g_Tops = mapInfo, topTimes
+	g_Tops = topTimes or {}
+	g_MapInfo = mapInfo
 	g_MyBestTime = myBestTime and myBestTime.pos > #g_Tops and myBestTime
 	
 	if(USE_RENDER_TARGET) then
