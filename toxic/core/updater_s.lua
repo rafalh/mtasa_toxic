@@ -1,3 +1,6 @@
+-- Defines
+#AWESOME_GAMERS = true
+
 local function mergeMaps(mapDst, mapSrc)
 	-- Rates
 	local rows = DbQuery('SELECT rS.player FROM '..RatesTable..' rS, '..RatesTable..' rD WHERE rS.map=? AND rD.map=? AND rS.player=rD.player', mapSrc, mapDst)
@@ -62,6 +65,76 @@ end
 Updater = {
 	currentVer = 160,
 	list = {
+		{
+			ver = 149,
+			func = function()
+				local rows = DbQuery("SELECT DISTINCT serial FROM "..PlayersTable.." WHERE pmuted=1")
+				local now = getRealTime().timestamp
+				for i, data in ipairs(rows) do
+					DbQuery("INSERT INTO "..MutesTable.." (serial, timestamp, duration) VALUES(?, ?, ?)", data.serial, now, 3600*24*31)
+				end
+				outputDebugString(#rows.." pmutes updated", 3)
+			end
+		},
+		{
+			ver = 150,
+			func = function()
+				if(not BestTimesTable) then return end
+				
+				local rows = DbQuery("SELECT map, player, rec, cp_times FROM "..BestTimesTable.." WHERE length(rec)>0 OR length(cp_times)>0")
+				DbQuery("UPDATE "..BestTimesTable.." SET rec=0 WHERE length(rec)=0")
+				DbQuery("UPDATE "..BestTimesTable.." SET cp_times=0 WHERE length(cp_times)=0")
+				for i, data in ipairs(rows) do
+					if(data.rec ~= "") then
+						DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.rec)..")")
+						local id = Database.getLastInsertID()
+						if(id == 0) then outputDebugString("last insert ID == 0", 2) end
+						DbQuery("UPDATE "..BestTimesTable.." SET rec=? WHERE map=? AND player=?", id, data.map, data.player)
+					end
+					if(data.cp_times ~= "") then
+						DbQuery("INSERT INTO "..BlobsTable.." (data) VALUES("..DbBlob(data.cp_times)..")")
+						local id = Database.getLastInsertID()
+						if(id == 0) then outputDebugString("last insert ID == 0", 2) end
+						DbQuery("UPDATE "..BestTimesTable.." SET cp_times=? WHERE map=? AND player=?", id, data.map, data.player)
+					end
+					
+					coroutine.yield()
+				end
+				outputDebugString(#rows.." best times updated", 3)
+			end
+		},
+		{
+			ver = 151,
+			func = function()
+				if(not BestTimesTable) then return end
+				
+				DbQuery("UPDATE "..BestTimesTable.." SET timestamp=0 WHERE timestamp IS NULL")
+				if(not DbRecreateTable(BestTimesTable)) then
+					return "Failed to recreate best times table"
+				end
+			end
+		},
+		{
+			ver = 152,
+			func = function()
+				DbQuery("UPDATE "..PlayersTable.." SET account=NULL WHERE account=''")
+				
+				-- Only for AwesomeGamers
+#if(AWESOME_GAMERS) then
+				if(not DbQuery('ALTER TABLE '..PlayersTable..' ADD COLUMN warnings TINYINT UNSIGNED NOT NULL DEFAULT 0')) then
+					return 'Failed to add warnings column'
+				end
+				
+				if(not DbQuery("ALTER TABLE "..DbPrefix.."settings ADD COLUMN backupTimestamp INT DEFAULT 0 NOT NULL")) then
+					return "Failed to add backupTimestamp column."
+				end
+#end
+				
+				if(not DbRecreateTable(PlayersTable)) then
+					return "Failed to recreate players table"
+				end
+			end
+		},
 		{
 			ver = 153,
 			func = function()
@@ -138,14 +211,16 @@ Updater = {
 				return false
 			end
 		},
+#if(not AWESOME_GAMERS) then
 		{
 			ver = 160,
 			func = function()
-				if(not DbQuery('ALTER TABLE '..PlayersTable..' ADD COLUMN avatar VARCHAR(255) NOT NULL DEFAULT \'\'')) then
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN avatar VARCHAR(255) NOT NULL DEFAULT \'\'')) then
 					return 'Failed to add avatar column'
 				end
 				return false
 			end
 		},
+#end
 	}
 }
