@@ -1,6 +1,9 @@
 -- Includes
 #include 'include/config.lua'
 
+-- Defines
+#POINTS_FACTOR = 1
+
 -- Globals
 local g_Stats = {
 	'cash', 'points',
@@ -271,7 +274,7 @@ function StPlayerFinish(player, rank, ms)
 	local mapType = map and map:getType()
 	if(not mapType) then return end
 	
-	if(room.isRace or rank == 1) then
+	if(room.isRace or mapType.name == 'DD' or rank == 1) then
 #if(RACE_STATS) then
 		if(room.isRace) then
 			player.accountData:add('racesFinished', 1)
@@ -279,18 +282,25 @@ function StPlayerFinish(player, rank, ms)
 #end
 		
 		local cashadd = math.floor(1000 * g_PlayersCount / rank)
-		local pointsadd = math.floor(g_PlayersCount / rank)
+		local pointsadd = math.floor($POINTS_FACTOR * g_PlayersCount / rank)
 		
 		local stats = {}
 		stats.cash = player.accountData.cash + cashadd
 		stats.points = player.accountData.points + pointsadd
 		player.accountData:set(stats)
 		
-		player:addNotify{
+		local notify = {
 			icon = 'stats/img/coins.png',
 			{"%s added to your cash! Total: %s.", formatMoney(cashadd), formatMoney(stats.cash)},
 			{"You earned %s points. Total: %s.", formatNumber(pointsadd), formatNumber(stats.points)},
 		}
+		if(mapType.name == 'DD') then
+			local kills = player.currentMapKills or 0
+			player.currentMapKills = 0
+			table.insert(notify, {"You have killed a total of %u players.", kills})
+		end
+		
+		player:addNotify(notify)
 	end
 	
 	if(rank == 1) then

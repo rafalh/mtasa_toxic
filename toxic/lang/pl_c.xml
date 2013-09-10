@@ -48,6 +48,7 @@
 	<msg id="DM Victories:">Wygrane DM:</msg>
 	<msg id="Hunters taken:">Zdobyte Huntery:</msg>
 	<msg id="DD Victories:">Wygrane DD:</msg>
+	<msg id="DD Kills:">Zabicia na DD:</msg>
 	<msg id="Race Victories:">Wygrane wyścigi:</msg>
 	<msg id="Maximal Win Streak:">Maks. Win Streak:</msg>
     <msg id="Top Times held:">Liczba Top Time&apos;ów:</msg>
@@ -170,8 +171,11 @@
     <msg id="Rating:">Ocena:</msg>
 	<msg id="(%u rates)">(%u ocen)</msg>
     <msg id="Top Times:">Najlepsze Czasy:</msg>
+	<msg id="Top Winners:">Najlepsi Zwyciężcy:</msg>
     <msg id="Pos">Lp</msg>
     <msg id="Time">Czas</msg>
+	<msg id="Wins">Zwycięstwa</msg>
+	<msg id="Player">Gracz</msg>
     <msg id="Empty">Puste</msg>
 	
 	<msg id="Rate this map">Oceń tę mapę</msg>

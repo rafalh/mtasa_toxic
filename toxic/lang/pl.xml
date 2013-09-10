@@ -142,4 +142,10 @@
 	<msg id="%s has been banned by %s after %u warnings!">%s został zbanowany przez %s po %u ostrzeżeniach.</msg>
 	<msg id="%s's warning has been removed by %s!">Ostrzeżenie gracza %s zostało usunięte przez %s!</msg>
 	<msg id="%s has no warnings!">%s nie ma żadnych ostrzeżeń!</msg>
+	
+	<msg id="You have been killed by %s (%u. level)!">Zostałeś zabity przez %s (%u. level)!</msg>
+	<msg id="You have killed %s (%u. level) and receive %s!">Zabiłes %s (%u. level) i otrzymałeś %s!</msg>
+	<msg id="You have killed %s (assist) and receive %s!">Zabiłes %s (asysta) i otrzymałeś %s!</msg>
+	<msg id="You have killed a total of %u players.">Zabiłeś łącznie %u graczy.</msg>
+	
 </strings>
