@@ -87,6 +87,7 @@ function RcStartRecording(room, map_id)
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room) then
 			pdata.recording = true
+			pdata.cp_times = Settings.cp_recorder and room.isRace and {}
 		end
 	end
 	prof2:cp('RcStartRecording 1')

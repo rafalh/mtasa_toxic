@@ -194,7 +194,7 @@ local function onMapStart(map, room)
 		-- update others_in_row for map types
 		if(not was_queued) then -- queue updates others_in_row when new map is added
 			local dbg_buf = 'Starting map type: '..mapType.name
-			for i, map_type2 in ipairs (g_MapTypes) do
+			for i, map_type2 in ipairs(g_MapTypes) do
 				if (map_type2 ~= mapType) then
 					map_type2.others_in_row = map_type2.others_in_row + 1
 					dbg_buf = dbg_buf..', '..map_type2.name..': '..map_type2.others_in_row..'('..tostring(map_type2.max_others_in_row)..')'
@@ -211,9 +211,8 @@ local function onMapStart(map, room)
 		MiShow(room)
 		
 		-- init some players data
-		for player, pdata in pairs (g_Players) do
+		for player, pdata in pairs(g_Players) do
 			if(pdata.room == room) then
-				pdata.cp_times = Settings.cp_recorder and room.isRace and {}
 				pdata.winner = false
 			end
 		end
@@ -222,8 +221,8 @@ local function onMapStart(map, room)
 		-- start recording
 		local winning_veh = mapType and mapType.winning_veh
 		room.recording = (room.isRace or winning_veh) and Settings.recorder
-		if (room.isRace or winning_veh) then
-			if (room.recording) then
+		if(room.isRace or winning_veh) then
+			if(room.recording) then
 				RcStartRecording(room, map_id)
 			end
 		end
@@ -243,7 +242,9 @@ local function onMapStart(map, room)
 		prof2:cp('onMapStart 7')
 		
 		-- show best times
-		BtPrintTimes(room, map_id)
+		if(BtPrintTimes) then
+			BtPrintTimes(room, map_id)
+		end
 		
 		-- allow bets
 		GbStartBets()
