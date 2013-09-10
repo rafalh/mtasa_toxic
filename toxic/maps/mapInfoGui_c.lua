@@ -49,20 +49,30 @@ local function MiRenderMapInfo(x, y, w, h)
 	-- Top times
 	if(#g_Tops == 0) then return end
 	
-	dxDrawText("Top Times:", x + 10, y + 75)
-	
-	dxDrawText("Pos", x + 10, y + 90)
-	dxDrawText("Time", x + 45, y + 90)
-	dxDrawText("Player", x + 120, y + 90)
+	-- Draw header
+	if(g_MapInfo.type == 'DD') then
+		dxDrawText("Top Winners:", x + 10, y + 75)
+		
+		dxDrawText("Pos", x + 10, y + 90)
+		dxDrawText("Wins", x + 45, y + 90)
+		dxDrawText("Player", x + 120, y + 90)
+	else
+		dxDrawText("Top Times:", x + 10, y + 75)
+		
+		dxDrawText("Pos", x + 10, y + 90)
+		dxDrawText("Time", x + 45, y + 90)
+		dxDrawText("Player", x + 120, y + 90)
+	end
 	
 	dxDrawLine(x + 10, y + 105, x + w - 10, y + 105)
 	
-	for i, data in ipairs ( g_Tops ) do
+	-- Draw tops
+	for i, data in ipairs(g_Tops) do
 		local itemY = y + 95 + i * 14
 		local clr = (data.player == g_MyId) and MYSELF_COLOR or TEXT_COLOR
 		
 		dxDrawText(tostring(i), x + 10, itemY, x + 45, itemY + 15, clr, 1, 'default-bold')
-		dxDrawText(data.time, x + 45, itemY, x + 120, itemY + 15, clr, 1, 'default-bold')
+		dxDrawText(data.time or data.victCount, x + 45, itemY, x + 120, itemY + 15, clr, 1, 'default-bold')
 		dxDrawText(data.name, x + 120, itemY, x + w, itemY + 15, clr, 1, 'default-bold', 'left', 'top', true, false, false, true)
 	end
 	
@@ -77,7 +87,7 @@ local function MiRenderMapInfo(x, y, w, h)
 		end
 		
 		dxDrawText(g_MyBestTime.pos, x + 10, itemY, x + 45, itemY + 15, MYSELF_COLOR, 1, 'default-bold')
-		dxDrawText(g_MyBestTime.time, x + 45, itemY, x + 120, itemY + 15, MYSELF_COLOR, 1, 'default-bold')
+		dxDrawText(g_MyBestTime.time or g_MyBestTime.victCount, x + 45, itemY, x + 120, itemY + 15, MYSELF_COLOR, 1, 'default-bold')
 		dxDrawText(getPlayerName(g_Me), x + 120, itemY, x + w, itemY + 15, MYSELF_COLOR, 1, 'default-bold', 'left', 'top', true, false, false, true)
 	end
 end

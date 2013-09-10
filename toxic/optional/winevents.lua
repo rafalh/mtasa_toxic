@@ -30,7 +30,7 @@ local function WePlayerWinDD ()
 	local x, y, z = getElementPosition ( el )
 	if ( event == 1 ) then
 		setGravity ( 0 )
-		triggerClientInternalEvent ( g_Root, $(EV_SET_GRAVITY), g_Root, 0 )
+		RPC('setGravity', 0):exec()
 	elseif ( event == 2 ) then
 		local vx, vy, vz = math.random (), math.random (), math.random ()
 		setElementVelocity ( el, vx, vy, vz )

@@ -234,6 +234,10 @@ function StPlayerWin(player)
 	if(room.winStreakLen > maxStreak) then
 		player.accountData.maxWinStreak = room.winStreakLen
 	end
+	
+	if(DdAddVictory) then
+		DdAddVictory(player, map)
+	end
 end
 
 -- Called from maps

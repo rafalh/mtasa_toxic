@@ -79,7 +79,7 @@ function BtDeleteTimes(cond, ...)
 	end
 end
 
-function BtGetTops(map)
+function BtGetTops(map, count)
 	-- this takes long...
 	--local start = getTickCount()
 	--for i = 1, 100, 1 do
@@ -87,7 +87,7 @@ function BtGetTops(map)
 		'SELECT bt.player, bt.time, p.name '..
 		'FROM '..BestTimesTable..' bt '..
 		'INNER JOIN '..PlayersTable..' p ON bt.player=p.player '..
-		'WHERE bt.map=? ORDER BY time LIMIT 8', map:getId())
+		'WHERE bt.map=? ORDER BY time LIMIT ?', map:getId(), count)
 	--end
 	for i, data in ipairs(rows) do
 		data.time = formatTimePeriod(data.time / 1000)
