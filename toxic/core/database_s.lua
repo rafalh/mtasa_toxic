@@ -276,7 +276,7 @@ function Database.Drivers.SQLite:createTable(tbl)
 		if(col[2]) then -- normal column
 			if(col.pk) then -- Primary Key
 				-- AUTO_INCREMENT is not needed for SQLite (and is called different)
-				local colDef = col[1]..' INTEGER PRIMARY KEY'
+				local colDef = col[1]..' INTEGER PRIMARY KEY NOT NULL'
 				table.insert(cols, colDef)
 			else
 				local colDef = self:getColDef(col, constr)
