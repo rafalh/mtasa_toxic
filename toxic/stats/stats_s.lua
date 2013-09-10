@@ -206,15 +206,15 @@ function StPlayerWin(player)
 #if(RACE_STATS) then
 	elseif(room.isRace) then
 		winCounter = 'raceVictories'
-#end
+#end -- RACE_STATS
 #if(DM_STATS) then
 	elseif(mapType.name == 'DM') then
 		winCounter = 'dmVictories'
-#end
+#end -- DM_STATS
 #if(DD_STATS) then
 	elseif(mapType.name == 'DD') then
 		winCounter = 'ddVictories'
-#end
+#end -- DD_STATS
 	end
 	
 	if(winCounter) then
@@ -235,9 +235,11 @@ function StPlayerWin(player)
 		player.accountData.maxWinStreak = room.winStreakLen
 	end
 	
-	if(DdAddVictory) then
+#if(DD_TOPS) then
+	if(mapType and mapType.name == 'DD' and DdAddVictory) then
 		DdAddVictory(player, map)
 	end
+#end -- DD_TOPS
 end
 
 -- Called from maps

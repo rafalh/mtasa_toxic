@@ -291,14 +291,14 @@ local function handlePlayerTime(player, ms)
 	
 	local map = getCurrentMap(pdata.room)
 	local default_speed = tonumber(map:getSetting('gamespeed')) or 1
-	local speed = getGameSpeed ()
+	local speed = getGameSpeed()
 	if(math.abs(speed - default_speed) > 0.001) then
 		outputDebugString('Invalid game speed (default: '..default_speed..', current: '..speed..')', 3)
 		return 0
 	end
 	
 	local map_id = map:getId()
-	local n = addPlayerTime(pdata.id, map_id, ms)
+	local n = addPlayerTime and addPlayerTime(pdata.id, map_id, ms) or 0
 	if(n >= 1) then -- improved best time
 		pdata:addNotify{
 			icon = 'best_times/race.png',

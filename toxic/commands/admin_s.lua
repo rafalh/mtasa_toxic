@@ -278,35 +278,37 @@ local function CmdMergeAccounts(message, arg)
 		newData.mapsRated = rows[1].c
 		
 		-- Best times
-		local rows = DbQuery('SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM '..BestTimesTable..' bt1, '..BestTimesTable..' bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map', player.id, id)
-		local mapsSrc, mapsDst = {}, {}
-		local questionMarksSrc, questionMarksDst = {}, {}
-		newData.toptimes_count = player.accountData.toptimes_count + src_data.toptimes_count
-		
-		for i, data in ipairs(rows) do
-			local delTime = math.max(data.time1, data.time2)
-			if(data.time1 > data.time2) then -- old besttime was better
-				table.insert(mapsDst, data.map)
-				table.insert(questionMarksDst, '?')
-			else -- new besttime is better
-				table.insert(mapsSrc, data.map)
-				table.insert(questionMarksSrc, '?')
-			end
+		if(BestTimesTable) then
+			local rows = DbQuery('SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM '..BestTimesTable..' bt1, '..BestTimesTable..' bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map', player.id, id)
+			local mapsSrc, mapsDst = {}, {}
+			local questionMarksSrc, questionMarksDst = {}, {}
+			newData.toptimes_count = player.accountData.toptimes_count + src_data.toptimes_count
 			
-			local rows = DbQuery('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', data.map, delTime)
-			if(rows[1].pos <= 3) then
-				newData.toptimes_count = newData.toptimes_count - 1
+			for i, data in ipairs(rows) do
+				local delTime = math.max(data.time1, data.time2)
+				if(data.time1 > data.time2) then -- old besttime was better
+					table.insert(mapsDst, data.map)
+					table.insert(questionMarksDst, '?')
+				else -- new besttime is better
+					table.insert(mapsSrc, data.map)
+					table.insert(questionMarksSrc, '?')
+				end
+				
+				local rows = DbQuery('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', data.map, delTime)
+				if(rows[1].pos <= 3) then
+					newData.toptimes_count = newData.toptimes_count - 1
+				end
 			end
+			if(#mapsDst > 0) then
+				local questionMarksStr = table.concat(questionMarksDst, ',')
+				BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', player.id, unpack(mapsDst)) -- remove duplicates
+			end
+			if(#mapsSrc > 0) then
+				local questionMarksStr = table.concat(questionMarksSrc, ',')
+				BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', id, unpack(mapsSrc)) -- remove duplicates
+			end
+			DbQuery('UPDATE '..BestTimesTable..' SET player=? WHERE player=?', player.id, id) -- set new best times owner
 		end
-		if(#mapsDst > 0) then
-			local questionMarksStr = table.concat(questionMarksDst, ',')
-			BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', player.id, unpack(mapsDst)) -- remove duplicates
-		end
-		if(#mapsSrc > 0) then
-			local questionMarksStr = table.concat(questionMarksSrc, ',')
-			BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', id, unpack(mapsSrc)) -- remove duplicates
-		end
-		DbQuery('UPDATE '..BestTimesTable..' SET player=? WHERE player=?', player.id, id) -- set new best times owner
 		
 		-- Profile fields
 		local rows = DbQuery('SELECT p1.field FROM '..ProfilesTable..' p1, '..ProfilesTable..' p2 WHERE p1.player=? AND p2.player=? AND p1.field=p2.field', player.id, id)
@@ -342,7 +344,9 @@ local function CmdDelAcc(message, arg)
 		
 		DbQuery('DELETE FROM '..NamesTable..' WHERE player=?', playerId)
 		DbQuery('DELETE FROM '..RatesTable..' WHERE player=?', playerId) -- FIXME: maps.rates
-		BtDeleteTimes('player=?', playerId)
+		if(BtDeleteTimes) then
+			BtDeleteTimes('player=?', playerId)
+		end
 		DbQuery('DELETE FROM '..ProfilesTable..' WHERE player=?', playerId)
 		DbQuery('DELETE FROM '..PlayersTable..' WHERE player=?', playerId)
 		
