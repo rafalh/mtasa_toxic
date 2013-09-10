@@ -1,3 +1,4 @@
+addEvent('onRaceStateChanging')
 addEvent('onAddMapToQueueReq', true)
 
 function MqAdd(room, map, display_msg, player)
