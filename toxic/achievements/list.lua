@@ -71,7 +71,8 @@ AchvRegister{
 	checkStats = function(stats) return stats.raceVictories >= 1000 end,
 	prize = 100000,
 }
-#end
+#end -- RACE_STATS
+
 #if(DM_STATS) then
 AchvRegister{
 	id = 9,
@@ -100,7 +101,8 @@ AchvRegister{
 	checkStats = function(stats) return stats.huntersTaken >= 1000 end,
 	prize = 100000,
 }
-#end
+#end -- DM_STATS
+
 #if(DD_STATS) then
 AchvRegister{
 	id = 13,
@@ -129,7 +131,7 @@ AchvRegister{
 	checkStats = function(stats) return stats.ddVictories >= 1000 end,
 	prize = 100000,
 }
-#end
+#end -- DD_STATS
 AchvRegister{
 	id = 17,
 	name = "Play 50 matches",
@@ -258,6 +260,7 @@ AchvRegister{
 	prize = 20000,
 }
 
+#if(TOP_TIMES) then
 AchvRegister{
 	id = 34,
 	name = "1st Top Time",
@@ -288,6 +291,7 @@ AchvRegister{
 	save = true,
 	prize = 300000,
 }
+#end -- TOP_TIMES
 
 AchvRegister{
 	id = 38,

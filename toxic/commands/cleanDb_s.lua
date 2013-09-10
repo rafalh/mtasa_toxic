@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 local function FixIntegerFields()
 	local rows = DbQuery('SELECT tbl_name, sql FROM sqlite_master WHERE type=? AND tbl_name LIKE ?', 'table', 'rafalh_%')
 	for i, data in ipairs(rows) do
@@ -75,7 +78,11 @@ local function RemoveTempPlayers(fix)
 	local rows = DbQuery('SELECT count(player) AS c FROM '..PlayersTable)
 	local totalPlayersCount = rows[1].c
 	
+#if(TOP_TIMES) then
 	local rows = DbQuery('SELECT player FROM '..PlayersTable..' WHERE time_here < 60 AND online=0 AND toptimes_count=0')
+#else
+	local rows = DbQuery('SELECT player FROM '..PlayersTable..' WHERE time_here < 60 AND online=0')
+#end
 	local tempPlayersCount = #rows
 	if(fix and #rows > 0) then
 		local idList = {}
@@ -107,24 +114,32 @@ local function RemoveUnknownMaps(fix)
 	end
 	
 	if(fix and #unkMaps > 0) then
-		for i, mapId in ipairs(unkMaps) do
-			-- Decrement Top Times count
-			local rows = DbQuery('SELECT player FROM '..BestTimesTable..' WHERE map=? ORDER BY time LIMIT 3', mapId)
-			for j, data in ipairs(rows) do
-				local accountData = AccountData.create(data.player)
-				accountData:add('toptimes_count', -1)
+		local unkMapsStr = table.concat(unkMaps, ',')
+		
+		if(BestTimesTable) then
+			for i, mapId in ipairs(unkMaps) do
+				-- Decrement Top Times count
+				local rows = DbQuery('SELECT player FROM '..BestTimesTable..' WHERE map=? ORDER BY time LIMIT 3', mapId)
+				for j, data in ipairs(rows) do
+					local accountData = AccountData.create(data.player)
+					accountData:add('toptimes_count', -1)
+				end
 			end
+			
+			DbQuery('DELETE FROM '..BestTimesTable..' WHERE map IN ('..unkMapsStr..')')
 		end
 		
-		local unkMapsStr = table.concat(unkMaps, ',')
+		if(RatesTable) then
+			DbQuery('DELETE FROM '..RatesTable..' WHERE map IN ('..unkMapsStr..')')
+		end
+		
 		DbQuery('DELETE FROM '..MapsTable..' WHERE map IN ('..unkMapsStr..')')
-		DbQuery('DELETE FROM '..BestTimesTable..' WHERE map IN ('..unkMapsStr..')')
-		DbQuery('DELETE FROM '..RatesTable..' WHERE map IN ('..unkMapsStr..')')
 	end
 	
 	privMsg(source, 'Unknown maps'..(fix and ' (fixed)' or '')..': %u/%u', #unkMaps, totalMapsCount)
 end
 
+#if(TOP_TIMES) then
 local function RecalcTopTimesCount()
 	DbQuery('UPDATE '..PlayersTable..' SET toptimes_count=0')
 	
@@ -138,6 +153,7 @@ local function RecalcTopTimesCount()
 	
 	scriptMsg("Finished updating top times statistics!")
 end
+#end -- TOP_TIMES
 
 local function CheckAchievements(fix)
 	local rows = DbQuery('SELECT count(player) AS c FROM '..PlayersTable..'')
@@ -194,9 +210,11 @@ local function CmdCleanDb (message, arg)
 		DbQuery('VACUUM')
 		scriptMsg("Optimized database!")
 	end
+#if(TOP_TIMES) then
 	if(fix == 'toptimes') then
 		RecalcTopTimesCount()
 	end
+#end
 	CheckAchievements(fix == 'achievements')
 	
 	if(not fix) then

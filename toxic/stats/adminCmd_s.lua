@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 local function CmdSetAddCash (message, arg)
 	local player = (#arg >= 3 and Player.find(arg[2])) or Player.fromEl(source)
 	local cash = toint ((#arg >= 3 and arg[3]) or arg[2])
@@ -44,7 +47,10 @@ local function CmdResetStats(message, arg)
 	local pdata = player and Player.fromEl(player)
 	if(pdata and pdata.id) then
 		DbQuery('DELETE FROM '..BestTimesTable..' WHERE player=?', pdata.id)
-		local stats = {cash = 0, bidlvl = 0, points = 0, toptimes_count = 0} -- TODO: reset all stats
+		local stats = {cash = 0, bidlvl = 0, points = 0} -- TODO: reset all stats
+#if(TOP_TIMES) then
+		stats.toptimes_count = 0
+#end
 		pdata.accountData:set(stats)
 		scriptMsg("Statistics has been reset for %s!", getPlayerName(player))
 	else privMsg(source, "Usage: %s", arg[1]..' <player>') end

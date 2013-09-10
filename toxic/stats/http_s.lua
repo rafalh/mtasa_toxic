@@ -11,7 +11,10 @@ local FIELDS = 'player, name, cash, points, '..
 #if(RACE_STATS) then
 	'raceVictories, racesFinished, racesPlayed, '..
 #end
-	'mapsPlayed, maxWinStreak, toptimes_count, achvCount, bidlvl, '..
+#if(TOP_TIMES) then
+	'toptimes_count, '..
+#end
+	'mapsPlayed, maxWinStreak, achvCount, bidlvl, '..
 	'time_here, first_visit, last_visit, online, ip, serial, account'
 
 function getPlayersStats(player, order, desc, limit, start, online)

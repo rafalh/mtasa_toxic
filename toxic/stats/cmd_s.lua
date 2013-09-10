@@ -171,7 +171,11 @@ local function CmdStats(msg, arg)
 	local stats = player.accountData:getTbl()
 	
 	scriptMsg("%s's statistics:", player:getName())
+#if(TOP_TIMES) then
 	scriptMsg("Points: %s - Maps played: %s - Top Times held: %s - Win Streak: %s", formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.toptimes_count), formatNumber(stats.maxWinStreak))
+#else
+	scriptMsg("Points: %s - Maps played: %s - Win Streak: %s", formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.maxWinStreak))
+#end
 #if(DM_STATS) then
 	local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
 	local huntRatio = stats.huntersTaken/math.max(stats.dmPlayed, 1)

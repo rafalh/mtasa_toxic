@@ -12,7 +12,9 @@ local g_Stats = {
 	{'points', 		"Points",		0.10,	true,	formatNumber},
 	{'cash',		"Cash",			0.14,	true,	formatMoney},
 	{'time_here',	"Playtime",		0.12,	true,	function(n) return formatTimePeriod(n, 0) end},
+#if(TOP_TIMES) then
 	{'toptimes_count', "Top times", 0.09,	true,	formatNumber},
+#end
 #if(DM_STATS) then
 	{'dmVictories',	"DM Vict",		0.08,	true,	formatNumber},
 #end
