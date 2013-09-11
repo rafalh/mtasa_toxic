@@ -18,6 +18,10 @@
 	<export function="giveVip" type="server" />
 	<export function="openVipPanel" type="client" />
 	
+	<aclrequest>
+		<right name="function.fetchRemote" access="true" />
+	</aclrequest>
+	
 	<settings>
 		<setting name="*promo_end" value="0" desc="" group="Promotion" friendlyname="Promotion end timestamp" />
 	</settings>
