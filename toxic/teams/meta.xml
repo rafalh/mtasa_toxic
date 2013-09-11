@@ -7,6 +7,7 @@
 	<script src="admin_c.lua" type="client" />
 	
 	<settings>
-		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Player with tags will have they own teams" friendlyname="Clan teams" />
+		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Players with tags will have they own teams." friendlyname="Clan teams" />
+		<setting group="General" name="*min_team" accept="1-32" value="1" desc="Minimal number of players needed to create a team." friendlyname="Minimal team" />
 	</settings>
 </meta>

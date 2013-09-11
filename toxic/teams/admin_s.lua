@@ -22,19 +22,18 @@ function Teams.updateItem(teamInfo)
 			teamCopy[k] = v
 		end
 		Teams.fromName[teamCopy.name] = teamCopy
-		if(not DbQuery('UPDATE '..DbPrefix..'teams '..
-				'SET name=?, tag=?, aclGroup=?, color=? WHERE id=?',
+		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=? WHERE id=?',
 				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.id)) then
 			return false
 		end
 	else
-		local rows = DbQuery('SELECT id FROM '..DbPrefix..'teams WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
+		local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
 		if(rows and rows[1]) then
 			privMsg(client, "Failed to add team %s", teamInfo.name)
 			return false
 		end
 		
-		DbQuery('INSERT INTO '..DbPrefix..'teams (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)',
+		DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)',
 			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, #Teams.list + 1)
 		local rows = DbQuery('SELECT last_insert_rowid() AS id')
 		teamInfo.id = rows[1].id
@@ -57,8 +56,8 @@ function Teams.delItem(id)
 		return false
 	end
 	
-	DbQuery('UPDATE '..DbPrefix..'teams SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
-	DbQuery('DELETE FROM '..DbPrefix..'teams WHERE id=?', teamInfo.id)
+	DbQuery('UPDATE '..TeamsTable..' SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
+	DbQuery('DELETE FROM '..TeamsTable..' WHERE id=?', teamInfo.id)
 	table.removeValue(Teams.list, teamInfo)
 	Teams.fromName[teamInfo.name] = nil
 	Teams.fromID[teamInfo.id] = nil
@@ -81,8 +80,8 @@ function Teams.changePriority(id, up)
 	Teams.list[j] = teamInfo
 	Teams.list[i] = teamInfo2
 	
-	DbQuery('UPDATE '..DbPrefix..'teams SET priority=? WHERE id=?', teamInfo.priority, teamInfo.id)
-	DbQuery('UPDATE '..DbPrefix..'teams SET priority=? WHERE id=?', teamInfo2.priority, teamInfo2.id)
+	DbQuery('UPDATE '..TeamsTable..' SET priority=? WHERE id=?', teamInfo.priority, teamInfo.id)
+	DbQuery('UPDATE '..TeamsTable..' SET priority=? WHERE id=?', teamInfo2.priority, teamInfo2.id)
 	
 	return Teams.list
 end
