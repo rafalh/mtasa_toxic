@@ -1,0 +1,15 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Multiserver" description="Multiserver" type="script" />
+	
+	<script src="multiserv.lua" />
+	
+	<export function="getServerStatus" http="true" />
+	<export function="outputGlobalChat" http="true" />
+	
+	<settings>
+		<setting name="*ip" value="" friendlyname="IP" />
+		<setting name="*serv_status_cmd" value="servstatus" friendlyname="Servers status command" />
+		<setting name="*global_cmd" value="global" friendlyname="Global say command" />
+		<setting name="*join_quit" accept="false,true" value="true" friendlyname="Join-quit messages" />
+	</settings>
+</meta>
