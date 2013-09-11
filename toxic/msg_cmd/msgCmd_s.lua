@@ -4,7 +4,7 @@
 
 local g_MsgCommands = {}
 
-local MODIFY_MSG_CMD = false
+#local MODIFY_MSG_CMD = false
 
 --------------------------
 -- Function definitions --
@@ -93,12 +93,9 @@ local function McInit()
 	end
 end
 
+#if(MODIFY_MSG_CMD) then
+
 local function CmdAddCom(message, arg)
-	if(not MODIFY_MSG_CMD) then
-		privMsg (source, "Command is disabled!")
-		return
-	end
-	
 	if(#arg >= 3) then
 		arg[2] = arg[2]:lower()
 		if(not g_MsgCommands[arg[2]]) then
@@ -190,5 +187,7 @@ local function CmdEditCom(message, arg)
 end
 
 CmdRegister('editcom', CmdEditCom, 'resource.'..g_ResName..'.addcom', "Changes custom command message")
+
+#end -- MODIFY_MSG_CMD
 
 addInitFunc(McInit)
