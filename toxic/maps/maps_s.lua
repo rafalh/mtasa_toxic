@@ -355,6 +355,7 @@ end
 local function onPlayerFinishDD(rank, timePassed)
 	if(rank ~= 1) then
 		local player = Player.fromEl(source)
+		assert(player)
 		StPlayerFinish(player, rank, timePassed)
 	end
 end
@@ -364,6 +365,7 @@ local function onPlayerWinDD()
 	triggerClientEvent(root, 'main.onPlayerWinDD', source)
 	
 	local player = Player.fromEl(source)
+	assert(player)
 	StPlayerFinish(player, 1)
 	
 	--[[local game_weight = 0.007 * g_PlayersCount / 32

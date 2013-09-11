@@ -229,7 +229,6 @@ Updater = {
 				return false
 			end
 		},
-
 		{
 			ver = 161,
 			func = function()
@@ -241,6 +240,5 @@ Updater = {
 				return false
 			end
 		},
-		AWESOME_GAMERS
 	}
 }
