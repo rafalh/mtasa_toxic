@@ -1,7 +1,7 @@
 -- Options
 #ENCRYPT = false
 #ENCRYPTION_KEY = 'key!'
-#DEBUG_PERF = true
+#DEBUG_PERF = false
 
 -- Includes
 #include 'include/nativeFunction.lua'
@@ -64,15 +64,23 @@ tryVerify = function()
 #if(DEBUG_PERF) then
 		local startTicks = getTickCount()
 #end
-		
+
 #if(ENCRYPT) then
+# local encStartTicks
+# if(DEBUG_PERF) then
+#  encStartTicks = os.clock()*1000
+# end
 		local code = {
 # local LUA_CHUNK = __LUA_CHUNK_TBL__
 # for i, part in ipairs(LUA_CHUNK) do
 #	part = encrypt(part, ENCRYPTION_KEY)
 	$(('%q'):format(part)),
 # end
-		}
+	}
+# if(DEBUG_PERF) then
+#  local dt = os.clock()*1000 - encStartTicks
+#  if(dt > 50) then print(__FILE__..' encryption has taken '..dt..' ms') end
+# end
 #else
 		local code = __LUA_CHUNK_TBL__
 #end

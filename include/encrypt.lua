@@ -47,15 +47,18 @@ local table_remove = table.remove
 		keyIdx = (keyIdx + 1) % keyLen
 		
 		--local strIdx = strLen - 1
-		local strIdx = keyByte % strLen
+		local strIdx = (keyByte % strLen) + 1
 		--local strIdx = 0
 #if(USE_LIST) then
-		local strByte = listRemove(strBytesList, strIdx + 1)
+		local strByte = listRemove(strBytesList, strIdx)
 #elseif(USE_TABLE_REMOVE) then
-		local strByte = table_remove(strBytes, strIdx + 1)
+		local strByte = table_remove(strBytes, strIdx)
 #else
-		local strByte = strBytes[indices[strIdx + 1]]
-		table_remove(indices, strIdx + 1)
+		local strByte = strBytes[indices[strIdx]]
+		--[[for i = strIdx + 1, 255 do
+			indices[i] = indices[i + 1]
+		end]]
+		table_remove(indices, strIdx)
 		indices[256] = indices[255] + 1
 #end
 		strLen = strLen - 1

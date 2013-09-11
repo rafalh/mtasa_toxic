@@ -102,7 +102,7 @@ local function CmdMapStats(message, arg)
 			stats.played = stats.played + maps_data[map_id].played
 		end
 	end
-	scriptMsg("Total maps count: %u", #maps)
+	scriptMsg("Total maps count: %u", maps:getCount())
 	for map_type, stats in pairs(map_type_stats) do
 		local rating = 0
 		if(stats.rates_count > 0) then
