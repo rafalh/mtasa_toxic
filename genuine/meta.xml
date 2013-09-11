@@ -6,7 +6,6 @@
 	<script src="genuine_c.lua" type="client" />
 	
 	<aclrequest>
-		<right name="function.getServerName" access="true" />
 		<right name="function.getServerPassword" access="true" />
 	</aclrequest>
 </meta>

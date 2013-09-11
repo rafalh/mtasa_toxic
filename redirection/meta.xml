@@ -6,6 +6,10 @@
 	
 	<file src="info.png" />
 	
+	<aclrequest>
+		<right name="function.redirectPlayer" access="true" />
+	</aclrequest>
+	
 	<settings>
 		<setting name="*ip" value="" friendlyname="IP" />
 		<setting name="*port" value="22003" friendlyname="Port" />
