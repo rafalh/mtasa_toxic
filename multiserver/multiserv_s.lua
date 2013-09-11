@@ -1,18 +1,10 @@
-local g_ServersList = {
-	{name = 'ToxiC',     ip = '185.5.98.175', port = 22003, http_port = 22005, cmd = 'toxic'},
-	{name = 'ToxiC Dev', ip = '185.5.98.175', port = 22006, http_port = 22006, cmd = 'dev'},
-}
+local g_ServersList = {}
 
 local g_Root = getRootElement()
 local g_ResRoot = getResourceRootElement(getThisResource())
 local g_ResName = getResourceName(getThisResource())
 local g_StatusQueries = false
 local g_ThisServ = false
-
-local function MsIsCurrentServ(id)
-	local data = g_ServersList[id]
-	return (data.ip == get('ip') and data.port == tonumber(getServerPort()))
-end
 
 local function CmdRedirect(source, cmd)
 	for id, data in ipairs(g_ServersList) do
@@ -27,36 +19,31 @@ local function CmdRedirect(source, cmd)
 	end
 end
 
-local function MsStatusCallback(id, player_names)
+local function MsStatusCallback(id, playerNames)
 	if(id ~= 'ERROR' and g_ServersList[id]) then
 		local data = g_ServersList[id]
 		--outputDebugString('MsStatusCallback '..data.name, 2)
 		
-		local msg = data.name..' - '..#player_names..' players'
-		if(#player_names > 0) then
-			msg = msg..'('..table.concat(player_names, ', ')..')'
-		end
+		local msg = data.name..' - '..#playerNames..' players'
 		
-		if(msg:len() > 128) then
-			msg = msg:sub(1, 122)..'...)'
+		if(get('display_player_names') == 'true' and #playerNames > 0) then
+			local namesStr = table.concat(playerNames, ', ')
+			if(namesStr:len() > 128) then
+				namesStr = namesStr:sub(1, 128)..'...'
+			end
+			msg = msg..' ('..namesStr..')'
 		end
 		
 		for player, v in pairs(g_StatusQueries) do
 			outputChatBox(msg, player, 255, 255, 0)
 		end
 	else
-		outputDebugString('Cannot query server: '..tostring(id)..' '..tostring(player_names), 1)
+		outputDebugString('Cannot query server: '..tostring(id)..' '..tostring(playerNames), 1)
 	end
 	g_StatusQueries = false
 end
 
-local function CmdServStatus(source)
-	--outputDebugString('CmdServStatus', 2)
-	
-	if(g_StatusQueries and g_StatusQueries[source]) then
-		outputChatBox('Please wait...', source, 255, 0, 0)
-	end
-	
+local function MsRequestStatus(el)
 	if(not g_StatusQueries) then
 		--outputDebugString('new call', 2)
 		
@@ -72,7 +59,17 @@ local function CmdServStatus(source)
 		g_StatusQueries = {}
 	end
 	
-	g_StatusQueries[source] = true
+	g_StatusQueries[el] = true
+end
+
+local function CmdServStatus(source)
+	outputDebugString('CmdServStatus', 3)
+	
+	if(g_StatusQueries and g_StatusQueries[source]) then
+		outputChatBox('Please wait...', source, 255, 0, 0)
+	end
+	
+	MsRequestStatus(source)
 end
 
 local function MsBroadcastMsg(msg)
@@ -118,13 +115,48 @@ local function CmdGlobal(source, cmd, ...)
 	outputChatBox('[GLOBAL] '..msg, g_Root, 255, 255, 0, true)
 end
 
+local function MsLoadServers()
+	local node = xmlLoadFile('servers.xml')
+	if(node) then
+		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+			local attr = xmlNodeGetAttributes(subnode)
+			attr.port = tonumber(attr.port)
+			attr.http_port = tonumber(attr.http_port)
+			
+			if(attr.name and attr.ip and attr.port and attr.http_port) then
+				table.insert(g_ServersList, attr)
+			else
+				outputDebugString('Entry for server '..tostring(attr.name)..' is invalid!', 2)
+			end
+		end
+		xmlUnloadFile(node)
+	else
+		outputDebugString('Failed to load servers.xml', 2)
+	end
+end
+
 local function MsInit()
-	addCommandHandler(get('serv_status_cmd') or 'servstatus', CmdServStatus, false, false)
-	addCommandHandler(get('global_cmd') or 'global', CmdGlobal, false, false)
+	MsLoadServers()
+	
+	local servStatusCmd = get('serv_status_cmd') or ''
+	if(servStatusCmd ~= '') then
+		addCommandHandler(servStatusCmd, CmdServStatus, false, false)
+	end
+	
+	local globalChatCmd = get('global_cmd') or ''
+	if(globalChatCmd ~= '') then
+		addCommandHandler(globalChatCmd, CmdGlobal, false, false)
+	end
+	
+	local statusInt = tonumber(get('serv_status_int')) or 0
+	if(statusInt > 0) then
+		setTimer(MsRequestStatus, statusInt*1000, 0, g_Root)
+	end
 	
 	for id, data in ipairs(g_ServersList) do
 		if(data.ip == get('ip') and data.port == getServerPort()) then
 			g_ThisServ = data
+			outputDebugString('This server: '..data.name, 3)
 		elseif(data.cmd) then
 			addCommandHandler(data.cmd, CmdRedirect, false, false)
 		end
@@ -134,7 +166,7 @@ end
 -- EXPORTS
 
 function getServerStatus(id)
-	--outputDebugString('getServerStatus '..tostring(id), 2)
+	outputDebugString('getServerStatus '..tostring(id), 3)
 	
 	local names = {}
 	for i, player in ipairs(getElementsByType('player')) do

@@ -1,15 +1,19 @@
 <meta>
-	<info author="rafalh" version="1.0" name="Multiserver" description="Multiserver" type="script" />
+	<info name="Multiserver" version="1.0" author="rafalh" type="script" />
 	
-	<script src="multiserv.lua" />
+	<script src="multiserv_s.lua" type="server" />
+	
+	<config src="servers.xml" type="server" />
 	
 	<export function="getServerStatus" http="true" />
 	<export function="outputGlobalChat" http="true" />
 	
 	<settings>
-		<setting name="*ip" value="" friendlyname="IP" />
-		<setting name="*serv_status_cmd" value="servstatus" friendlyname="Servers status command" />
-		<setting name="*global_cmd" value="global" friendlyname="Global say command" />
-		<setting name="*join_quit" accept="false,true" value="true" friendlyname="Join-quit messages" />
+		<setting name="*ip" value="127.0.0.1" friendlyname="IP" />
+		<setting name="*serv_status_cmd" value="servstatus" friendlyname="Servers status command" desc="Sets name of command which dispays servers status. Leave empty to disable the command." />
+		<setting name="*display_player_names" accept="false,true" value="true" friendlyname="Display player names" desc="Set to true to display player names in server status." />
+		<setting name="*serv_status_int" accept="0-3600" value="0" friendlyname="Server status interval" desc="Set to 0 to disable automatic servers status message. Otherwise set number of seconds between such messages." />
+		<setting name="*global_cmd" value="global" friendlyname="Global say command" desc="Sets name of command for global chat, which is bradcast messages to all servers. Leave empty to disable the command." />
+		<setting name="*join_quit" accept="false,true" value="true" friendlyname="Join-quit messages" desc="Set to true if you want messages about players joining and quiting servers." />
 	</settings>
 </meta>
