@@ -127,8 +127,8 @@ local function CmdRemCom(message, arg)
 			local i = 0
 			while(xmlFindChild(node, 'command', i) ~= false) do
 				local subnode = xmlFindChild (node, 'command', i)
-				local handler = xmlNodeGetAttribute (subnode, 'handler')
-				if (handler == arg[2]) then
+				local cmd = xmlNodeGetAttribute (subnode, 'cmd')
+				if (cmd == arg[2]) then
 					xmlDestroyNode (subnode)
 				end
 				i = i + 1
@@ -156,15 +156,15 @@ local function CmdEditCom(message, arg)
 				local i = 0
 				while(xmlFindChild(node, 'command', i) ~= false) do
 					local subnode = xmlFindChild(node, 'command', i)
-					local handler = xmlNodeGetAttribute(subnode, 'handler')
-					if(handler == arg[2]) then
+					local cmd = xmlNodeGetAttribute(subnode, 'cmd')
+					if(cmd == arg[2]) then
 						xmlDestroyNode(subnode)
 					end
 					i = i + 1
 				end
 				local subnode = xmlCreateChild(node, 'command')
 				if(subnode) then
-					xmlNodeSetAttribute(subnode, 'handler', arg[2])
+					xmlNodeSetAttribute(subnode, 'cmd', arg[2])
 					xmlNodeSetAttribute(subnode, 'msg', msg)
 					xmlSaveFile(node)
 					g_MsgCommands[arg[2]] = {text = msg}
