@@ -26,8 +26,14 @@ local function onPlayerFinish(rank)
 	end
 end
 
+local function onPlayerWinDD()
+	local player = Player.fromEl(source)
+	g_Winners[1] = player and player:getName(true) or 'Unknown'
+end
+
 addInitFunc(function()
 	addEventHandler('onRaceStateChanging', root, onRaceStateChange)
 	addEventHandler('onPlayerFinish', root, onPlayerFinish)
 	addEventHandler('onPlayerFinishDD', root, onPlayerFinish)
+	addEventHandler('onPlayerWinDD', root, onPlayerWinDD)
 end)
