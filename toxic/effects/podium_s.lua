@@ -1,6 +1,11 @@
+-- Globals
 local LOC_COUNT = 6
-
 local g_Winners = {}
+
+-- Events
+addEvent('onRaceStateChanging')
+addEvent('onPlayerFinish')
+addEvent('onPlayerFinishDD')
 
 local function onRaceStateChange(state)
 	if(state == 'PostFinish') then
