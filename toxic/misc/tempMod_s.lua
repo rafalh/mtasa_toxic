@@ -99,6 +99,8 @@ end
 CmdRegister('checkmods', CmdCheckMods, true)
 
 local function onPlayerLogin(prevAccount, account)
+	local player = Player.fromEl(source)
+	
 	local timestamp = getAccountData(account, 'toxic.tempModLimit')
 	if(not timestamp) then return end
 	
@@ -109,7 +111,7 @@ local function onPlayerLogin(prevAccount, account)
 	if(isObjectInACLGroup(objStr, g_TempModGroup)) then
 		aclGroupRemoveObject(g_TempModGroup, objStr)
 		outputServerLog('Temporary Moderator deactivated for '..getAccountName(account)..'.')
-		outputMsg(player, Styles.red, "Your Moderator rank has been deactivated!")
+		outputMsg(player, Styles.red, "Your Moderator rank has expired!")
 	end
 end
 
