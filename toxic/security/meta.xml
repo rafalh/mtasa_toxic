@@ -25,6 +25,7 @@
 		<setting group="Antilag" name="*max_ping_time" accept="0-3600" value="3" desc="Number of seconds the player has to have ping above maximal, to be kicked." friendlyname="Maximal ping time" />
 		<setting group="Antilag" name="*min_fps_div" accept="0-100" value="2" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of averange FPS devided by this number and &apos;Minimal FPS&apos; setting. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS divisor" />
 		<setting group="Antilag" name="*min_fps" accept="0-100" value="15" desc="If equal 0, this setting does not control minimal FPS. Otherwise minimal FPS is equal minimum of this number and averange FPS devided by &apos;Minimal FPS divisor&apos;. If player has got smaller FPS, he is kicked." friendlyname="Minimal FPS" />
+		<setting group="Antilag" name="*min_fps_time" accept="0-3600" value="30" desc="Number of seconds the player has to have FPS below minimal, to be kicked." friendlyname="Minimal FPS time" />
 		
 		<setting group="Anticheat" name="*max_viel" accept="0-10000" value="300" desc="Max speed of players in horizontal plane. If 0 detecting of speed cheaters will be disabled." friendlyname="Max vielocity" />
 		<setting group="Anticheat" name="*max_viel_kick" accept="false,true" value="false" desc="If true players with too big speed will be kicked. Otherwise only chat message will be generated." friendlyname="Kicking speed cheaters" />

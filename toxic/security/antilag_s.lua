@@ -65,6 +65,7 @@ local function AlCheckPlayer(player)
 		
 		if(fps and fps < g_MinFps) then -- lagger
 			if(not bGhostmode and not isPedDead(player)) then -- player can collide
+				local minFpsTime = Settings.min_fps_time
 				local ticks = getTickCount()
 				
 				if(not lowfps) then
@@ -74,10 +75,10 @@ local function AlCheckPlayer(player)
 					lowfps[1] = ticks
 				end
 				
-				if(lowfps[3] > 30000) then
+				if(lowfps[3] > minFpsTime*1000) then
 					scriptMsg("Kicking %s for too low FPS. His FPS: %u. Minimal FPS: %.1f.", getPlayerName(player), fps, g_MinFps)
 					return kickPlayer(player, "FPS is too low")
-				elseif(lowfps[3] > 15000 and not lowfps[2]) then
+				elseif(lowfps[3] > minFpsTime*1000/2 and not lowfps[2]) then
 					lowfps[2] = addScreenMsg("Warning! Your FPS is too low!", player)
 				end
 			elseif(lowfps and lowfps[2]) then -- remove screen message
