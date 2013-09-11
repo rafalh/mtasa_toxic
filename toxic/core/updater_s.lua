@@ -63,7 +63,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 160,
+	currentVer = 161,
 	list = {
 		{
 			ver = 149,
@@ -217,16 +217,30 @@ Updater = {
 				return false
 			end
 		},
-#if(not AWESOME_GAMERS) then
+
 		{
 			ver = 160,
 			func = function()
+#if(not AWESOME_GAMERS) then
 				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN avatar VARCHAR(255) NOT NULL DEFAULT \'\'')) then
 					return 'Failed to add avatar column'
 				end
+#end
 				return false
 			end
 		},
+
+		{
+			ver = 161,
+			func = function()
+#if(not AWESOME_GAMERS) then
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN kills MEDIUMINT UNSIGNED NOT NULL DEFAULT 0')) then
+					return 'Failed to add kills column'
+				end
 #end
+				return false
+			end
+		},
+		AWESOME_GAMERS
 	}
 }
