@@ -1,5 +1,6 @@
 local g_Achievements = {}
 local g_NameToAchv = {}
+local g_IdToAchv = {}
 
 addEvent('main.onAchvActivate', true)
 --addEvent('main.onAchvListReq', true)
@@ -27,7 +28,12 @@ function AchvGetActive(player)
 	local activeList = {string.byte(achvStr, 1, achvStr:len())}
 	local activeSet = {}
 	for i, id in ipairs(activeList) do
-		activeSet[id] = true
+		-- make sure invalid IDs are ignored
+		if(not g_IdToAchv[id]) then
+			table.remove(activeList, i)
+		else
+			activeSet[id] = true
+		end
 	end
 	
 	local stats = pdata.accountData:getTbl()
@@ -66,9 +72,11 @@ function AchvCheckPlayer(player)
 end
 
 function AchvRegister(achv)
-	table.insert(g_Achievements, achv)
 	assert(not g_NameToAchv[achv.name])
+	assert(not g_IdToAchv[achv.id])
+	table.insert(g_Achievements, achv)
 	g_NameToAchv[achv.name] = achv
+	g_IdToAchv[achv.id] = achv
 end
 
 function AchvActivate(player, names)
