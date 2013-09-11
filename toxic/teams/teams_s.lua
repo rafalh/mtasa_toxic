@@ -50,6 +50,7 @@ local function Teams_updatePlayerTeam(player, name)
 	local clanTag = Teams_getClanFromName(name)
 	local foundTeamInfo = false
 	
+	-- Find team for specified player
 	for i, teamInfo in ipairs(Teams.list) do
 		if(teamInfo.aclGroup ~= '' and accName and isObjectInACLGroup('user.'..accName, aclGetGroup(teamInfo.aclGroup))) then
 			foundTeamInfo = teamInfo
@@ -62,15 +63,25 @@ local function Teams_updatePlayerTeam(player, name)
 	end
 	
 	if(not foundTeamInfo and Settings.clan_teams and clanTag and not Teams.fromName[clanTag]) then
+		-- Create team for clan tag
 		foundTeamInfo = {name = clanTag}
 	end
 	
 	if(foundTeamInfo) then
-		local now = getRealTime().timestamp
-		DbQuery('UPDATE '..TeamsTable..' SET lastUsage=? WHERE id=?', now, foundTeamInfo.id)
+		if(foundTeamInfo.id) then
+			-- Update last team usage field
+			local now = getRealTime().timestamp
+			DbQuery('UPDATE '..TeamsTable..' SET lastUsage=? WHERE id=?', now, foundTeamInfo.id)
+		end
+		
+		-- Check if team aready exitsts
 		local team = getTeamFromName(foundTeamInfo.name)
 		if(not team) then
-			local r, g, b = getColorFromString(foundTeamInfo.color)
+			-- Create team
+			local r, g, b
+			if(foundTeamInfo.color) then
+				r, g, b = getColorFromString(foundTeamInfo.color)
+			end
 			if(not r) then
 				r, g, b = math.random(0, 255), math.random(0, 255), math.random(0, 255)
 			end
