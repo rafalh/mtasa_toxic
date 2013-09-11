@@ -100,16 +100,16 @@ local function CmdAddCom(message, arg)
 		arg[2] = arg[2]:lower()
 		if(not g_MsgCommands[arg[2]]) then
 			local node = xmlLoadFile('conf\\msg_cmd.xml')
-			if (node) then
+			if(node) then
 				local subnode = xmlCreateChild (node, 'command')
 				if(subnode) then
 					xmlNodeSetAttribute(subnode, 'cmd', arg[2])
 					xmlNodeSetAttribute(subnode, 'msg', message:sub ((arg[1]..arg[2]):len () + 3))
-					xmlSaveFile (node)
-					local msg = message:sub ((arg[1]..arg[2]):len () + 3)
-					g_MsgCommands[arg[2]] = msg
-					CmdRegister (arg[2], McHandleCommand, false, 'Says: '..msg)
-					scriptMsg ("Added command: %s", arg[2])
+					xmlSaveFile(node)
+					local msg = message:sub((arg[1]..arg[2]):len() + 3)
+					g_MsgCommands[arg[2]] = {text = msg}
+					CmdRegister(arg[2], McHandleCommand, false, 'Says: '..msg)
+					scriptMsg("Added command: %s", arg[2])
 				end
 				xmlUnloadFile(node)
 			end
@@ -120,17 +120,12 @@ end
 CmdRegister('addcom', CmdAddCom, 'resource.'..g_ResName..'.addcom', "Adds a custom command")
 
 local function CmdRemCom(message, arg)
-	if(not MODIFY_MSG_CMD) then
-		privMsg(source, "Command is disabled!")
-		return
-	end
-	
 	if(#arg >= 2) then
 		arg[2] = arg[2]:lower()
 		local node = xmlLoadFile('conf\\msg_cmd.xml')
 		if(node) then
 			local i = 0
-			while(xmlFindChild (node, 'command', i) ~= false) do
+			while(xmlFindChild(node, 'command', i) ~= false) do
 				local subnode = xmlFindChild (node, 'command', i)
 				local handler = xmlNodeGetAttribute (subnode, 'handler')
 				if (handler == arg[2]) then
@@ -152,17 +147,12 @@ end
 CmdRegister('remcom', CmdRemCom, 'resource.'..g_ResName..'.remcom', "Removes a custom command")
 
 local function CmdEditCom(message, arg)
-	if(not MODIFY_MSG_CMD) then
-		privMsg(source, "Command is disabled!")
-		return
-	end
-	
 	if(#arg >= 3) then
 		arg[2] = arg[2]:lower()
 		local msg = message:sub((arg[1]..arg[2]):len () + 3)
 		if(g_MsgCommands[arg[2]]) then
 			local node = xmlLoadFile('conf\\msg_cmd.xml')
-			if (node) then
+			if(node) then
 				local i = 0
 				while(xmlFindChild(node, 'command', i) ~= false) do
 					local subnode = xmlFindChild(node, 'command', i)
@@ -173,11 +163,11 @@ local function CmdEditCom(message, arg)
 					i = i + 1
 				end
 				local subnode = xmlCreateChild(node, 'command')
-				if (subnode) then
+				if(subnode) then
 					xmlNodeSetAttribute(subnode, 'handler', arg[2])
 					xmlNodeSetAttribute(subnode, 'msg', msg)
 					xmlSaveFile(node)
-					g_MsgCommands[arg[2]] = msg
+					g_MsgCommands[arg[2]] = {text = msg}
 					scriptMsg("Changed command: %s", arg[2])
 				end
 				xmlUnloadFile(node)
