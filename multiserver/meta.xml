@@ -8,6 +8,12 @@
 	<export function="getServerStatus" http="true" />
 	<export function="outputGlobalChat" http="true" />
 	
+	<aclrequest>
+		<right name="function.redirectPlayer" access="true" />
+		<right name="function.callRemote" access="true" />
+		<right name="function.getPlayerIP" access="true" />
+	</aclrequest>
+	
 	<settings>
 		<setting name="*ip" value="127.0.0.1" friendlyname="IP" />
 		<setting name="*serv_status_cmd" value="servstatus" friendlyname="Servers status command" desc="Sets name of command which dispays servers status. Leave empty to disable the command." />

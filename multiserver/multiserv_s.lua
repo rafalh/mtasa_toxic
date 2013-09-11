@@ -5,6 +5,8 @@ local g_ResRoot = getResourceRootElement(getThisResource())
 local g_ResName = getResourceName(getThisResource())
 local g_StatusQueries = false
 local g_ThisServ = false
+local g_MsgClr = '#FFFF00'
+local g_MsgR, g_MsgG, g_MsgB = getColorFromString(g_MsgClr)
 
 local function CmdRedirect(source, cmd)
 	for id, data in ipairs(g_ServersList) do
@@ -35,7 +37,7 @@ local function MsStatusCallback(id, playerNames)
 		end
 		
 		for player, v in pairs(g_StatusQueries) do
-			outputChatBox(msg, player, 255, 255, 0)
+			outputChatBox(msg, player, g_MsgR, g_MsgG, g_MsgB)
 		end
 	else
 		outputDebugString('Cannot query server: '..tostring(id)..' '..tostring(playerNames), 1)
@@ -63,7 +65,7 @@ local function MsRequestStatus(el)
 end
 
 local function CmdServStatus(source)
-	outputDebugString('CmdServStatus', 3)
+	--outputDebugString('CmdServStatus', 3)
 	
 	if(g_StatusQueries and g_StatusQueries[source]) then
 		outputChatBox('Please wait...', source, 255, 0, 0)
@@ -72,11 +74,11 @@ local function CmdServStatus(source)
 	MsRequestStatus(source)
 end
 
-local function MsBroadcastMsg(msg)
+local function MsBroadcastMsg(fmt, ...)
 	for id, data in ipairs(g_ServersList) do
 		if(data ~= g_ThisServ) then
 			local host = data.ip..':'..data.http_port
-			callRemote(host, g_ResName, 'outputGlobalChat', function() end, id, msg)
+			callRemote(host, g_ResName, 'outputGlobalChat', function() end, id, fmt, ...)
 		end
 	end
 end
@@ -97,7 +99,7 @@ end
 		end
 		
 		cancelEvent()
-		--MsBroadcastMsg(msg)
+		--MsBroadcastMsg('%s', msg)
 	end
 end]]
 
@@ -110,9 +112,10 @@ local function CmdGlobal(source, cmd, ...)
 		r, g, b = getPlayerNametagColor(source)
 	end
 	local color =('#%02X%02X%02X'):format(r, g, b)
+	MsBroadcastMsg('%s: %s', color..name, table.concat({ ...}, ' '))
+	
 	local msg = color..name..': #FFFF00'..table.concat({ ...}, ' ')
-	MsBroadcastMsg(msg)
-	outputChatBox('[GLOBAL] '..msg, g_Root, 255, 255, 0, true)
+	outputChatBox('[GLOBAL] '..msg, g_Root, g_MsgR, g_MsgG, g_MsgB, true)
 end
 
 local function MsLoadServers()
@@ -156,17 +159,21 @@ local function MsInit()
 	for id, data in ipairs(g_ServersList) do
 		if(data.ip == get('ip') and data.port == getServerPort()) then
 			g_ThisServ = data
-			outputDebugString('This server: '..data.name, 3)
+			outputDebugString('This server has been detected: '..data.name, 3)
 		elseif(data.cmd) then
 			addCommandHandler(data.cmd, CmdRedirect, false, false)
 		end
+	end
+	
+	if(not g_ThisServ) then
+		outputDebugString('This server has not been found in servers.xml!', 2)
 	end
 end
 
 -- EXPORTS
 
 function getServerStatus(id)
-	outputDebugString('getServerStatus '..tostring(id), 3)
+	--outputDebugString('getServerStatus '..tostring(id), 3)
 	
 	local names = {}
 	for i, player in ipairs(getElementsByType('player')) do
@@ -177,20 +184,23 @@ function getServerStatus(id)
 	return id, names
 end
 
-function outputGlobalChat(id, msg)
-	outputChatBox('[GLOBAL] '..msg, g_Root, 255, 255, 0, true)
-	outputServerLog('[GLOBAL] '..msg:gsub('#%x%x%x%x%x%x', ''))
+function outputGlobalChat(id, fmt, ...)
+	fmt = fmt:gsub('%%s', '%%s'..g_MsgClr)
+	local text = fmt:format(...)
+	
+	outputChatBox('[GLOBAL] '..text, g_Root, g_MsgR, g_MsgG, g_MsgB, true)
+	outputServerLog('[GLOBAL] '..text:gsub('#%x%x%x%x%x%x', ''))
 end
 
 local function MsPlayerJoin()
 	if(get('join_quit') == 'true') then
-		MsBroadcastMsg('* ' .. getPlayerName(source) .. ' has joined '..g_ThisServ.name)
+		MsBroadcastMsg('* %s has joined %s', getPlayerName(source), g_ThisServ.name)
 	end
 end
 
 local function MsPlayerQuit()
 	if(get('join_quit') == 'true') then
-		MsBroadcastMsg('* ' .. getPlayerName(source) .. ' has left '..g_ThisServ.name)
+		MsBroadcastMsg('* %s has left %s', getPlayerName(source), g_ThisServ.name)
 	end
 end
 
