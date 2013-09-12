@@ -3,6 +3,7 @@ local g_ResRoot = getResourceRootElement()
 local g_Players = {}
 local g_Music = {}
 local g_ServerAddress = get('server_address')
+local g_GuestAcl = aclGet('Auto_MapMusic_HttpGuest') or aclCreate('Auto_MapMusic_HttpGuest')
 
 addEvent('mapmusic.onStartReq', true)
 addEvent('mapmusic.onStopReq', true)
@@ -39,16 +40,27 @@ end
 
 local function startMusic(res, room)
 	--outputDebugString('startMusic', 3)
-	local res_name = getResourceName(res)
-	local path = getResourceInfo(res, 'music') or get(res_name..'.music')
+	
+	if(g_Music[room]) then
+		stopMusic(room)
+	end
+	
+	local resName = getResourceName(res)
+	local path = getResourceInfo(res, 'music') or get(resName..'.music')
 	if(path) then
 		g_Music[room] = {}
 		g_Music[room].res = res
-		g_Music[room].res_name = res_name
+		g_Music[room].resName = resName
 		g_Music[room].path = path
 		local url = path
 		if(not url:match('^%a+://')) then
-			url =  'http://'..g_ServerAddress..'/'..g_Music[room].res_name..'/'..path
+			-- Music file is on this server
+			url =  'http://'..g_ServerAddress..'/'..g_Music[room].resName..'/'..path
+			
+			-- Give access to map resource for HTTP guests
+			g_Music[room].right = 'resource.'..resName..'.http'
+			local ret = aclSetRight(g_GuestAcl, g_Music[room].right, true)
+			--outputDebugString('aclSetRight '..g_Music[room].right..': '..tostring(ret), 3)
 		end
 		g_Music[room].url = url
 		
@@ -65,8 +77,14 @@ end
 local function stopMusic(room)
 	if(not g_Music[room]) then return end
 	
+	-- Remove right access for HTTP guests
+	if(g_Music[room].right) then
+		aclRemoveRight(g_GuestAcl, g_Music[room].right)
+	end
+	
 	g_Music[room] = false
 	
+	-- Notify all players in this room
 	for player, playerRoom in pairs(g_Players) do
 		if(playerRoom == room) then
 			triggerClientEvent(player, 'mapmusic.onStopReq', g_ResRoot)

@@ -9,6 +9,12 @@
 	<export function="setEffectEnabled" type="client" />
 	<export function="isEffectEnabled" type="client" />
 	
+	<aclrequest>
+		<right name="function.aclCreate" access="true" />
+		<right name="function.aclSetRight" access="true" />
+		<right name="function.aclRemoveRight" access="true" />
+	</aclrequest>
+	
 	<settings>
 		<setting name="*server_address" value="[ '127.0.0.1:22005' ]" />
 	</settings>

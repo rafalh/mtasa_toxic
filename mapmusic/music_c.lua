@@ -75,9 +75,9 @@ local function startMusicReq(url)
 	g_SoundUrl = url
 	invalidateSound()
 	
-	local msg = 'Press '%s' to toggle the music On/Off'
+	local msg = 'Press "%s" to toggle the music On/Off'
 	if(getElementData(g_Me, 'lang') == 'pl') then
-		msg = 'Wciśnij '%s' by włączyć/wyłączyć muzykę'
+		msg = 'Wciśnij "%s" by włączyć/wyłączyć muzykę'
 	end
 	outputChatBox(msg:format('#ffffffM#ffff00'), 255, 255, 0, true)
 	
