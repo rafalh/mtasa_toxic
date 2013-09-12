@@ -39,7 +39,7 @@ local function onKillersList(killer, assist)
 	end
 	
 	if(map.isRace or map:getType().name ~= 'DD') then
-		outputDebugString('Wrong map type: '..map:getType().name.." "..map:getName(), 2)
+		outputDebugString('Wrong map type: '..map:getType().name..' '..map:getName(), 2)
 		return
 	end
 	

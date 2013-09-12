@@ -31,7 +31,7 @@ local function NfProcessText(x, y, item, render)
 			end
 				
 			if(render) then
-				dxDrawText(text, curX, curY, curX, curY, font.clr, font.scale, font.face, "left", "top", false, false, POST_GUI)
+				dxDrawText(text, curX, curY, curX, curY, font.clr, font.scale, font.face, 'left', 'top', false, false, POST_GUI)
 			end
 			curX = curX + dxGetTextWidth(text, font.scale, font.face)
 		end

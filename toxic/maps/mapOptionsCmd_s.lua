@@ -91,7 +91,7 @@ local function CmdSetMapRespawn(message, arg)
 				map:setSetting('respawntime', respawntime)
 			end
 			if(map:setSetting('respawn', respawn)) then
-				scriptMsg("Respawn will be set to %s(%s) in the next round!", respawn or "auto", respawntime or "auto")
+				scriptMsg("Respawn will be set to %s (%s) in the next round!", respawn or 'auto', respawntime or 'auto')
 			else
 				privMsg(source, "Failed to set respawn.")
 			end

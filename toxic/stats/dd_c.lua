@@ -7,7 +7,7 @@ end
 local function onVehCol(hitElement)
 	if(source ~= getPedOccupiedVehicle(localPlayer)) then return end
 	
-	local hitPlayer = hitElement and getElementType(hitElement) == "vehicle" and getVehicleOccupant(hitElement)
+	local hitPlayer = hitElement and getElementType(hitElement) == 'vehicle' and getVehicleOccupant(hitElement)
 	if(not hitPlayer) then return end
 	
 	g_LastCol[hitPlayer] = getTickCount()
@@ -43,8 +43,8 @@ function DdGetKillers()
 	
 	if(#killersSorted > 0) then
 		local killerName = getPlayerName(killersSorted[1])
-		local assistName = killersSorted[2] and getPlayerName(killersSorted[2]) or "no"
-		outputDebugString("Killer "..killerName.." assist "..assistName, 3)
+		local assistName = killersSorted[2] and getPlayerName(killersSorted[2]) or 'no'
+		outputDebugString('Killer '..killerName..' assist '..assistName, 3)
 	end
 	
 	g_LastCol = {}
@@ -62,14 +62,14 @@ function DdSetKillersDetectionEnabled(enabled)
 	--outputDebugString('DD killers detection: '..tostring(enabled), 3)
 	
 	if(enabled) then
-		addEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
-		addEventHandler("onClientVehicleCollision", g_Root, onVehCol)
-		--addEventHandler("onClientPlayerWasted", g_Me, onMyselfWasted)
+		addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
+		addEventHandler('onClientVehicleCollision', g_Root, onVehCol)
+		--addEventHandler('onClientPlayerWasted', g_Me, onMyselfWasted)
 		g_LastCol = {}
 	else
-		removeEventHandler("onClientPlayerQuit", g_Root, onPlayerQuit)
-		removeEventHandler("onClientVehicleCollision", g_Root, onVehCol)
-		--removeEventHandler("onClientPlayerWasted", g_Me, onMyselfWasted)
+		removeEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
+		removeEventHandler('onClientVehicleCollision', g_Root, onVehCol)
+		--removeEventHandler('onClientPlayerWasted', g_Me, onMyselfWasted)
 		g_LastCol = false
 	end
 end

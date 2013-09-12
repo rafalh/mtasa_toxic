@@ -1,18 +1,14 @@
---------------
--- Includes --
---------------
-
+-- Includes
 #include 'include/internal_events.lua'
 
----------------------
--- Local variables --
----------------------
+-- Events
+addEvent('onPlayerWinDD')
+addEvent('onGamemodeMapStop')
 
+-- Local variables
 g_CreatedObjects = {} -- fixme: used by shop.lua
 
---------------------------------
--- Local function definitions --
---------------------------------
+-- Local function definitions
 
 local function WeMapStop ( map )
 	for i, object in ipairs ( g_CreatedObjects ) do
@@ -59,9 +55,7 @@ local function WePlayerWinDD ()
 	end
 end
 
-------------
--- Events --
-------------
+-- Events
 
 addEventHandler ( 'onGamemodeMapStop', g_Root, WeMapStop )
 addEventHandler ( 'onPlayerWinDD', g_Root, WePlayerWinDD )

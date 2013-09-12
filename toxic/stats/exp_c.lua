@@ -1,5 +1,5 @@
 -- Includes
-#include "include/internal_events.lua"
+#include 'include/internal_events.lua'
 
 -- Settings
 local USE_RENDER_TARGET = true
@@ -58,9 +58,9 @@ local function EbUpdateBuffer()
 	end
 	
 	dxSetRenderTarget(g_Buffer, true)
-	dxSetBlendMode("modulate_add")
+	dxSetBlendMode('modulate_add')
 	EbRenderBar(0, 0, w, h)
-	dxSetBlendMode("blend")
+	dxSetBlendMode('blend')
 	dxSetRenderTarget()
 end
 
@@ -77,9 +77,9 @@ local function EbRender()
 	end
 	
 	if(g_Buffer) then
-		dxSetBlendMode("add")
+		dxSetBlendMode('add')
 		dxDrawImage(x, y, w, h, g_Buffer, 0, 0, 0, WHITE, POST_GUI)
-		dxSetBlendMode("blend")
+		dxSetBlendMode('blend')
 	else
 		EbRenderBar(x, y, w, h, POST_GUI)
 	end

@@ -15,11 +15,12 @@ MapsTable = Database.Table{
 
 addEvent('onPlayerFinish')
 addEvent('onPlayerFinishDD')
+addEvent('onPlayerWinDD')
+addEvent('onPlayerPickUpRacePickup')
 addEvent('onRoomMapStart')
 addEvent('onRoomMapStop')
 addEvent('onGamemodeMapStart')
 addEvent('onGamemodeMapStop')
-addEvent('onPlayerPickUpRacePickup')
 addEvent('onClientSetNextMap', true)
 addEvent('onChangeMapReq', true)
 

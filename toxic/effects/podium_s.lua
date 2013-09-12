@@ -6,6 +6,7 @@ local g_Winners = {}
 addEvent('onRaceStateChanging')
 addEvent('onPlayerFinish')
 addEvent('onPlayerFinishDD')
+addEvent('onPlayerWinDD')
 
 local function onRaceStateChange(state)
 	if(state == 'PostFinish') then
