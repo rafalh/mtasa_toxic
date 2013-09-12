@@ -228,12 +228,31 @@ local function initGui()
 	addEventHandler("onClientGUIClick", applyBtn, applyChanges, false)
 end
 
-addCommandHandler("vehiclelights", function ()
-	if(g_LightsWindow) then
-		guiSetVisible(g_LightsWindow, not guiGetVisible(g_LightsWindow))
-		showCursor(guiGetVisible(g_LightsWindow))
-	else
+local function closeCustomLightsWnd()
+	if(not g_LightsWindow) then return end
+	guiSetVisible(g_LightsWindow, false)
+	showCursor(false)
+end
+
+function openCustomLightsWnd()
+	if(not g_LightsWindow or not guiGetVisible(g_LightsWindow)) then
+		if(g_LightsWindow) then
+			guiSetVisible(g_LightsWindow, true)
+		else
+			initGui()
+		end
 		showCursor(true)
-		initGui()
 	end
-end, false, false)
+	guiBringToFront(g_LightsWindow)
+	
+end
+
+local function toggleConfigWnd()
+	if(g_LightsWindow and guiGetVisible(g_LightsWindow)) then
+		closeCustomLightsWnd()
+	else
+		openCustomLightsWnd()
+	end
+end
+
+addCommandHandler("vehiclelights", toggleConfigWnd, false, false)

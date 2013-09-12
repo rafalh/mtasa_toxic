@@ -75,9 +75,11 @@
 	<script src="lights_c.lua" type="client" />
 	<script src="cookie_c.lua" type="client" />
 	<script src="effect_c.lua" type="client" />
+	
 
 	<file src="lights.fx" />
 	
 	<export function="setEffectEnabled" type="client" />
 	<export function="isEffectEnabled" type="client" />
+	<export function="openEffectOptions" type="client" />
 </meta>

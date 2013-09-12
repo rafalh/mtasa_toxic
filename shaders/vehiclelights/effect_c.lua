@@ -1,17 +1,22 @@
-local g_EffectName = {"Replaced vehicle lights", pl = "Podmienione światła samochodów"}
+local g_EffectInfo = {
+	name = {"Replaced vehicle lights", pl = "Podmienione światła samochodów"},
+	res = resource,
+	hasOptions = true,
+}
+
 local g_AutoEnable = true
 
 local g_Enabled = false
 local g_Changed = false
 
-addEvent("onRafalhAddEffect")
-addEvent("onRafalhGetEffects")
+addEvent('toxic.onEffectInfo')
+addEvent('toxic.onEffectInfoReq')
 
 function setEffectEnabled(enable)
 	g_Changed = true
 	if(enable == g_Enabled) then return true end
 	
-	if ( not enable ) then
+	if(not enable) then
 		disableCustomLights()
 	else
 		enableCustomLights()
@@ -21,8 +26,12 @@ function setEffectEnabled(enable)
 	return true
 end
 
-function isEffectEnabled ()
+function isEffectEnabled()
 	return g_Enabled
+end
+
+function openEffectOptions()
+	openCustomLightsWnd()
 end
 
 local function initDelayed()
@@ -33,8 +42,8 @@ end
 
 addEventHandler("onClientResourceStart", resourceRoot, function()
 	setTimer(initDelayed, 1000, 1)
-	triggerEvent("onRafalhAddEffect", root, resource, g_EffectName)
-	addEventHandler("onRafalhGetEffects", root, function()
-		triggerEvent("onRafalhAddEffect", root, resource, g_EffectName)
+	triggerEvent('toxic.onEffectInfo', resourceRoot, g_EffectInfo)
+	addEventHandler('toxic.onEffectInfoReq', resourceRoot, function()
+		triggerEvent('toxic.onEffectInfo', resourceRoot, g_EffectInfo)
 	end)
 end)
