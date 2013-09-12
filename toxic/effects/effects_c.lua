@@ -18,6 +18,8 @@ local g_LowFpsSeconds = 0
 
 addEvent('onRafalhAddEffect')
 addEvent('onRafalhGetEffects')
+addEvent('toxic.onEffectInfo')
+addEvent('toxic.onEffectInfoReq')
 
 --------------------------------
 -- Local function definitions --
@@ -40,7 +42,7 @@ local function checkFps()
 	-- Allow low FPS for 20 seconds
 	if(g_LowFpsSeconds < 20) then return end
 	
-	for res, name in pairs(g_Effects) do
+	for res, info in pairs(g_Effects) do
 		local enabled = call(res, 'isEffectEnabled')
 		if(enabled) then
 			-- disable first enabled effect
@@ -50,6 +52,7 @@ local function checkFps()
 			g_LowFpsSeconds = 0
 			
 			-- display message for user
+			local name = info.name
 			if(type(name) == 'table') then
 				name = name[Settings.locale] or name[1]
 			end
@@ -65,6 +68,7 @@ end
 local function init()
 	-- Get all effects on startup
 	triggerEvent('onRafalhGetEffects', g_Root)
+	triggerEvent('toxic.onEffectInfoReq', g_Root)
 	
 	-- Check if FPS is not too low
 	setTimer(checkFps, 1000, 0)
@@ -80,21 +84,28 @@ local function onResStop(res)
 	invalidateSettingsGui()
 end
 
-local function onAddEffect(res, name)
-	assert(res)
+local function onEffectInfo(info)
+	-- Check parameters
+	assert(info and info.name and info.res)
 	
 	-- Register effect resource
-	g_Effects[res] = name
+	g_Effects[info.res] = info
 	
 	-- Apply effect settings
-	local resName = getResourceName(res)
+	local resName = getResourceName(info.res)
 	local enabled = g_Enabled[resName]
 	if(enabled ~= nil) then
-		call(res, 'setEffectEnabled', enabled)
+		call(info.res, 'setEffectEnabled', enabled)
 	end
 	
 	-- Effects list has changed
 	invalidateSettingsGui()
+end
+
+local function onAddEffect(res, name)
+	-- Old API
+	local info = {name = name, res = res}
+	onEffectInfo(info)
 end
 
 Settings.register
@@ -107,7 +118,7 @@ Settings.register
 		g_Enabled = fromJSON(newVal)
 		for res, enabled in pairs(g_Enabled) do
 			local res = getResourceFromName(res)
-			if(res) then
+			if(res and g_Effects[res]) then
 				call(res, 'setEffectEnabled', tobool(enabled))
 			end
 		end
@@ -120,8 +131,9 @@ Settings.register
 			onChange('effects')
 		end
 		
-		for res, name in pairs(g_Effects) do
+		for res, info in pairs(g_Effects) do
 			local enabled = call(res, 'isEffectEnabled')
+			local name = info.name
 			if(type(name) == 'table') then
 				name = name[Settings.locale] or name[1]
 			end
@@ -129,6 +141,13 @@ Settings.register
 				guiCreateLabel(x, y + h, 200, 20, name, false, wnd)
 				gui[res] = OnOffBtn.create(x + 200, y + h, wnd, enabled)
 				gui[res].onChange = onBtnToggle
+				
+				if(info.hasOptions) then
+					local optsBtn = guiCreateButton(x + 200 + OnOffBtn.w + 5, y + h, 60, OnOffBtn.h, 'Options', false, wnd)
+					addEventHandler('onClientGUIClick', optsBtn, function()
+						call(res, 'openEffectOptions')
+					end, false)
+				end
 				
 				h = h + 25
 			end
@@ -138,10 +157,9 @@ Settings.register
 	end,
 	acceptGui = function(gui)
 		for res, btn in pairs(gui) do
-			local enabled = btn.enabled -- guiCheckBoxGetSelected(cb)
 			if(g_Effects[res]) then
 				local resName = getResourceName(res)
-				g_Enabled[resName] = enabled
+				g_Enabled[resName] = btn:isEnabled()
 			end
 		end
 		Settings.effects = toJSON(g_Enabled)
@@ -155,3 +173,4 @@ Settings.register
 addEventHandler('onClientResourceStart', g_ResRoot, init)
 addEventHandler('onClientResourceStop', g_Root, onResStop)
 addEventHandler('onRafalhAddEffect', g_Root, onAddEffect)
+addEventHandler('toxic.onEffectInfo', g_Root, onEffectInfo)

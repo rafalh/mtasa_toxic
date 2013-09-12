@@ -161,6 +161,7 @@
 	<msg id="Commands Volume: %u%%">Głośność komend: %u%%</msg>
 	<msg id="Map Music Volume: %u%%">Głośność muzyki w mapach: %u%%</msg>
 	<msg id="Effects:">Efekty:</msg>
+	<msg id="Options">Opcje</msg>
 	<msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
 	
 	<msg id="Map Info">Informacje o mapie</msg>

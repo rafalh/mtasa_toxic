@@ -1,6 +1,8 @@
 OnOffBtn = {}
 OnOffBtn.__mt = {__index = OnOffBtn}
 OnOffBtn.elMap = {}
+OnOffBtn.w = 72
+OnOffBtn.h = 25
 
 function OnOffBtn.onClick()
 	local self = OnOffBtn.elMap[source]
@@ -17,6 +19,10 @@ function OnOffBtn.onDestroy()
 	self:destroy(true)
 end
 
+function OnOffBtn:isEnabled()
+	return self.enabled
+end
+
 function OnOffBtn:destroy(ignoreEl)
 	if(not ignoreEl) then
 		destroyElement(self.el)
@@ -26,7 +32,7 @@ end
 function OnOffBtn.create(x, y, parent, enabled)
 	local self = setmetatable({}, OnOffBtn.__mt)
 	self.enabled = enabled
-	local w, h = 72, 25
+	local w, h = OnOffBtn.w, OnOffBtn.h
 	local path = enabled and 'img/on.png' or 'img/off.png'
 	self.el = guiCreateStaticImage(x, y, w, h, path, false, parent)
 	addEventHandler('onClientGUIClick', self.el, OnOffBtn.onClick, false)
