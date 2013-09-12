@@ -8,9 +8,9 @@ local g_Volume = 100
 
 g_AutoStart = true
 
-addEvent("mapmusic.onStartReq", true)
-addEvent("mapmusic.onStopReq", true)
-addEvent("mapmusic.onPlayerReady", true)
+addEvent('mapmusic.onStartReq', true)
+addEvent('mapmusic.onStopReq', true)
+addEvent('mapmusic.onPlayerReady', true)
 
 local function onRadioSwitch(channel)
 	if(channel ~= 0) then
@@ -35,7 +35,7 @@ local function setupSound()
 	if(g_SoundUrl) then
 		g_Sound = playSound(g_SoundUrl, true)
 		if (not g_Sound) then
-			outputDebugString("playSound failed!", 2)
+			outputDebugString('playSound failed!', 2)
 		end
 	end
 end
@@ -54,14 +54,14 @@ local function setMusicEnabled(enabled)
 			setSoundVolume(g_Sound, 0)
 		end
 		g_MusicEnabled = false
-		removeEventHandler("onClientPlayerRadioSwitch", g_Root, onRadioSwitch)
-		removeEventHandler("onClientPlayerVehicleEnter", g_Me, onPlayerVehicleEnter)
+		removeEventHandler('onClientPlayerRadioSwitch', g_Root, onRadioSwitch)
+		removeEventHandler('onClientPlayerVehicleEnter', g_Me, onPlayerVehicleEnter)
 	else
 		setSoundVolume(g_Sound, g_Volume/100)
 		g_MusicEnabled = true
 		setRadioChannel(0)
-		addEventHandler("onClientPlayerRadioSwitch", g_Root, onRadioSwitch)
-		addEventHandler("onClientPlayerVehicleEnter", g_Me, onPlayerVehicleEnter)
+		addEventHandler('onClientPlayerRadioSwitch', g_Root, onRadioSwitch)
+		addEventHandler('onClientPlayerVehicleEnter', g_Me, onPlayerVehicleEnter)
 	end
 end
 
@@ -70,16 +70,16 @@ local function toggleMusic()
 end
 
 local function startMusicReq(url)
-	--outputDebugString("startMusicReq "..url, 3)
+	--outputDebugString('startMusicReq '..url, 3)
 	
 	g_SoundUrl = url
 	invalidateSound()
 	
-	local msg = "Press '%s' to toggle the music On/Off"
-	if(getElementData(g_Me, "lang") == "pl") then
-		msg = "Wciśnij '%s' by włączyć/wyłączyć muzykę"
+	local msg = 'Press '%s' to toggle the music On/Off'
+	if(getElementData(g_Me, 'lang') == 'pl') then
+		msg = 'Wciśnij '%s' by włączyć/wyłączyć muzykę'
 	end
-	outputChatBox(msg:format("#ffffffM#ffff00"), 255, 255, 0, true)
+	outputChatBox(msg:format('#ffffffM#ffff00'), 255, 255, 0, true)
 	
 	setMusicEnabled(g_AutoStart)
 end
@@ -98,12 +98,12 @@ local function stopMusicReq()
 end
 
 local function init()
-	triggerServerEvent("mapmusic.onPlayerReady", g_ResRoot)
+	triggerServerEvent('mapmusic.onPlayerReady', g_ResRoot)
 end
 
-addCommandHandler("music", toggleMusic)
-bindKey("m", "down", toggleMusic)
+addCommandHandler('music', toggleMusic)
+bindKey('m', 'down', toggleMusic)
 
-addEventHandler("mapmusic.onStartReq", g_ResRoot, startMusicReq)
-addEventHandler("mapmusic.onStopReq", g_ResRoot, stopMusicReq)
-addEventHandler("onClientResourceStart", g_ResRoot, init)
+addEventHandler('mapmusic.onStartReq', g_ResRoot, startMusicReq)
+addEventHandler('mapmusic.onStopReq', g_ResRoot, stopMusicReq)
+addEventHandler('onClientResourceStart', g_ResRoot, init)
