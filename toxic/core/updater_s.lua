@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 -- Defines
 #AWESOME_GAMERS = false
 
@@ -232,7 +235,7 @@ Updater = {
 		{
 			ver = 161,
 			func = function()
-#if(not AWESOME_GAMERS) then
+#if(not AWESOME_GAMERS and DD_STATS) then
 				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN kills MEDIUMINT UNSIGNED NOT NULL DEFAULT 0')) then
 					return 'Failed to add kills column'
 				end
