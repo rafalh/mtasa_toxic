@@ -20,6 +20,8 @@
 	
 	<aclrequest>
 		<right name="function.fetchRemote" access="true" />
+		<right name="function.aclCreateGroup" access="true" />
+		<right name="function.aclGroupAddObject" access="true" />
 		<right name="function.aclGroupRemoveObject" access="true" />
 	</aclrequest>
 	
