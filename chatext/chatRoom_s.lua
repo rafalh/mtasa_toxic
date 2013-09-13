@@ -21,7 +21,7 @@ function ChatRoom:onPlayerMsg(player, msg)
 	if(msg == "") then return end
 	if(self.info.checkAccess and not self.info.checkAccess(player)) then return end
 	
-	if(isPlayerMuted(player)) then
+	if(getElementType(player) == 'player' and isPlayerMuted(player)) then
 		outputChatBox(self.info.cmd..": You are muted!", player, 255, 128, 0)
 		return
 	end
@@ -37,7 +37,12 @@ function ChatRoom:onPlayerMsg(player, msg)
 	
 	if(utfSub(msg, 1, 1) ~= "/") then
 		local str = chatPrefix..playerName..": #EBDDB2"..msg
-		local r, g, b = getPlayerNametagColor(player)
+		local r, g, b 
+		if(getElementType(player) == 'player') then
+			r, g, b = getPlayerNametagColor(player)
+		else
+			r, g, b = 255, 0, 255
+		end
 		--local foundSender = false
 		for i, recipient in ipairs(recipients) do
 			outputChatBox(str, recipient, r, g, b, true)
