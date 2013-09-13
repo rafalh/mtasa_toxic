@@ -144,6 +144,20 @@
 	
 	<include resource="rafalh_shared" />
 	
+	<aclrequest>
+		<right name="general.ModifyOtherObjects" access="true" />
+		<right name="function.fetchRemote" access="true" />
+		<right name="function.setPlayerMuted" access="true" />
+		<right name="function.addBan" access="true" />
+		<right name="function.kickPlayer" access="true" />
+		<right name="function.executeCommandHandler" access="true" />
+		<right name="function.addAccount" access="true" />
+		<right name="function.setAccountPassword" access="true" />
+		<right name="function.aclSetRight" access="true" />
+		<right name="function.aclGroupAddObject" access="true" />
+		<right name="function.aclGroupRemoveObject" access="true" />
+	</aclrequest>
+	
 	<settings>
 		<setting group="General" name="*mute_time" friendlyname="Mute time" accept="0-3600" value="60" desc="Default mute duration for /mute command. If it equals 0, mute is permanent." />
 		<setting group="General" name="*loginWnd" friendlyname="Login window" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" />
