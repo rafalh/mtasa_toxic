@@ -63,7 +63,6 @@ local LOCATIONS = {
 
 local MIN_DIST_A = 0.2
 local ANIM_TIME = 1500
-local VEHICLE_MODEL = 411 -- Infernus
 local INFO_W = 180
 local INFO_BG = tocolor(0, 0, 0, 128)
 local TITLES = {'1st', '2nd', '3rd'}
@@ -125,7 +124,7 @@ function PodiumStart(winners, n)
 	g_Peds = {}
 	for i, player in ipairs(winners) do
 		local pos = g_Loc.pos + g_Loc.vehOff[i]
-		local veh = createVehicle(VEHICLE_MODEL, pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
+		local veh = createVehicle(Settings.podiumVeh, pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
 		local ped = createPed(0, pos[1], pos[2], pos[3])
 		warpPedIntoVehicle(ped, veh)
 		setElementParent(ped, veh)
@@ -153,8 +152,13 @@ function PodiumStop()
 	g_Vehicles = {}
 end
 
---[[setTimer(function()
+#local TEST = false
+#if(TEST) then
+
+setTimer(function()
 	if(Settings.debug) then
 		PodiumStart({'test', 'test2', 'test3'}, math.random(1, 6))
 	end
-end, 1000, 1)]]
+end, 1000, 1)
+
+#end -- TEST
