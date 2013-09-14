@@ -19,17 +19,35 @@ local function onRaceStateChange(state)
 	end
 end
 
+local function setWinner(playerEl, rank)
+	-- Note: player can be nil if player just left the game
+	local player = Player.fromEl(playerEl)
+	
+	local veh
+	if(player) then
+		local raceRes = getResourceFromName('race')
+		if(raceRes and getResourceState(raceRes) == 'running') then
+			veh = call(raceRes, 'getPlayerVehicle', player.el)
+		end
+		if(not veh) then
+			veh = getPedOccupiedVehicle(player.el)
+		end
+	end
+	
+	local name = player and player:getName(true) or "Unknown"
+	local vehModel = veh and getElementModel(veh) or 411 -- Infernus
+	local pedModel = player and getElementModel(player.el) or 0 -- CJ
+	g_Winners[rank] = {name, vehModel, pedModel}
+end
+
 local function onPlayerFinish(rank)
 	if(rank <= 3) then
-		-- Note: player can be nil if player just left the game
-		local player = Player.fromEl(source)
-		g_Winners[rank] = player and player:getName(true) or 'Unknown'
+		setWinner(source, rank)
 	end
 end
 
 local function onPlayerWinDD()
-	local player = Player.fromEl(source)
-	g_Winners[1] = player and player:getName(true) or 'Unknown'
+	setWinner(source, 1)
 end
 
 addInitFunc(function()

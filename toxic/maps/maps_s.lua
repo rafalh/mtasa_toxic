@@ -17,6 +17,7 @@ addEvent('onPlayerFinish')
 addEvent('onPlayerFinishDD')
 addEvent('onPlayerWinDD')
 addEvent('onPlayerPickUpRacePickup')
+addEvent('onRaceStateChanging')
 addEvent('onRoomMapStart')
 addEvent('onRoomMapStop')
 addEvent('onGamemodeMapStart')
@@ -408,6 +409,15 @@ local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 	prof:cp('onPlayerPickUpRacePickup')
 end
 
+local function onRaceStateChange(state)
+	local room = g_RootRoom
+	if(state == 'Running') then
+		room.gameStarted = true
+	elseif(state == 'PostFinish') then
+		room.gameStarted = false
+	end
+end
+
 function getMapList()
 	local prof = DbgPerf()
 	local prof2 = DbgPerf(20)
@@ -530,5 +540,6 @@ addInitFunc(function()
 	addEventHandler('onPlayerFinishDD', g_Root, onPlayerFinishDD)
 	addEventHandler('onPlayerWinDD', g_Root, onPlayerWinDD)
 	addEventHandler('onPlayerPickUpRacePickup', g_Root, onPlayerPickUpRacePickup)
+	addEventHandler('onRaceStateChanging', g_Root, onRaceStateChange)
 	addEventHandler('onChangeMapReq', g_ResRoot, onChangeMapReq)
 end)

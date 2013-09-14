@@ -92,7 +92,7 @@ local function PodiumRender()
 		local x, y = getScreenFromWorldPosition(vehPos[1], vehPos[2], vehPos[3])
 		if(x) then
 			local scale = 0.4/a
-			local name = g_Winners[i]
+			local name = g_Winners[i][1]
 			
 			local titleH = dxGetFontHeight(scale*TITLE_SCALE, FONT)
 			local nameH = dxGetFontHeight(scale*NAME_SCALE, FONT)
@@ -122,10 +122,10 @@ function PodiumStart(winners, n)
 	g_Loc = LOCATIONS[n]
 	g_Vehicles = {}
 	g_Peds = {}
-	for i, player in ipairs(winners) do
+	for i, winner in ipairs(winners) do
 		local pos = g_Loc.pos + g_Loc.vehOff[i]
-		local veh = createVehicle(Settings.podiumVeh, pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
-		local ped = createPed(0, pos[1], pos[2], pos[3])
+		local veh = createVehicle(winner[2], pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
+		local ped = createPed(winner[3], pos[1], pos[2], pos[3])
 		warpPedIntoVehicle(ped, veh)
 		setElementParent(ped, veh)
 		table.insert(g_Vehicles, veh)

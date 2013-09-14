@@ -10,9 +10,4 @@
 	<script src="podium_s.lua" type="server" />
 	<script src="podium_c.lua" type="client" />
 	<file src="broken_glass.png" />
-	
-	<settings>
-		<setting group="General" name="*podiumVeh" accept="300-700" value="411" type="client"
-			friendlyname="Podium Vehicle ID" desc="Sets vehicle ID used to create podium scene." />
-	</settings>
 </meta>

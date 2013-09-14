@@ -23,12 +23,16 @@ local function onKillersList(killer, assist)
 	local killerPlayer = killer and Player.fromEl(killer)
 	local assistPlayer = assist and Player.fromEl(assist)
 	
-	local map = victimPlayer and getCurrentMap(victimPlayer.room)
+	local room = victimPlayer and victimPlayer.room
+	local map = room and getCurrentMap(room)
 	if(not victimPlayer or not map
 		or killerPlayer == victimPlayer or assistPlayer == victimPlayer) then
 		outputDebugString('Invalid args for onKillersList', 2)
 		return
 	end
+	
+	-- Check if game has ended already
+	if(not room.gameStarted) then return end
 	
 	--outputDebugString('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()), 3)
 	
