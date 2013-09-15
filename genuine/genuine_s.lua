@@ -9,10 +9,14 @@ local g_Valid = false
 local g_Fails = 0
 local f = {
 	random = math.random,
+	getTickCount = getTickCount,
 	fetchRemote = fetchRemote,
 	stopResource = stopResource,
 	getThisResource = getThisResource,
 	cancelEvent = cancelEvent,
+	addEventHandler = addEventHandler,
+	triggerEvent = triggerEvent,
+	triggerClientEvent = triggerClientEvent,
 	md5 = md5,
 	setTimer = setTimer,
 	getServerName = getServerName,
@@ -62,11 +66,13 @@ local function callback(responseData, errno, n)
 	g_Fails = 0
 	
 	local fmt = $(OBFUSCATE('yay%uok'))
-	if(responseData == md5(fmt:format(n))) then return end -- OK
-	
-	local fmt = $(OBFUSCATE('Verification failed: %s!'))
-	outputDebugString(fmt:format(responseData), 2)
-	g_Valid = false
+	if(responseData == md5(fmt:format(n))) then
+		g_Valid = true -- OK
+	else
+		local fmt = $(OBFUSCATE('Verification failed: %s!'))
+		outputDebugString(fmt:format(responseData), 2)
+		g_Valid = false
+	end
 end
 
 local function urlEncode(str)
@@ -83,7 +89,10 @@ local function checkOnline()
 	local urlFmt = $(OBFUSCATE('http://ravin.tk/api/mta/checkserial.php?serial=%s&name=%s&pw=%s&n=%u'))
 	local url = urlFmt:format(
 		g_Serial, urlEncode(name), pw and '1' or '0', n)
-	f.fetchRemote(url, callback, '', false, n)
+	if(not f.fetchRemote(url, callback, '', false, n)) then
+		-- Access denied
+		g_Valid = false
+	end
 end
 
 local function checkSerial(serial)
@@ -99,7 +108,7 @@ end
 local function onKeyReq(tempKey)
 	if(type(tempKey) ~= "string") then return end
 	local key = encrypt($(SERV_VERIFICATION_KEY), tempKey)
-	triggerClientEvent(client, 'txgenuine.onKey', resourceRoot, key)
+	f.triggerClientEvent(client, 'txgenuine.onKey', resourceRoot, key)
 end
 
 local function onVerifyReq(n)
@@ -107,13 +116,13 @@ local function onVerifyReq(n)
 	n = tonumber(n)
 	if(g_Valid and n) then
 		local code = f.md5($(SERV_VERIFICATION_KEY)..tostring(n^2+93))
-		triggerEvent($(EV_VERIFIED), source, code)
+		f.triggerEvent($(EV_VERIFIED), source, code)
 	end
 end
 
 local function init()
 	-- Init random generator
-	math.randomseed(getTickCount())
+	math.randomseed(f.getTickCount())
 	
 	g_Serial = fileGetContents('serial.txt')
 	if(not g_Serial) then return end
@@ -137,16 +146,17 @@ local function init()
 		return
 	end
 	
+	-- Allow resources to start
+	g_Valid = true
+	
 	-- Begin online checks
 	checkOnline()
 	local sec = 24*3600 + f.random(-3600, 3600) -- randomize check a bit
 	f.setTimer(checkOnline, sec*1000, 0)
 	
-	g_Valid = true
-	
-	addEventHandler('txgenuine.onKeyReq', resourceRoot, onKeyReq)
-	addEventHandler($(EV_VERIFY_REQ), root, onVerifyReq)
-	triggerEvent($(EV_VERIFIER_READY), resourceRoot)
+	f.addEventHandler('txgenuine.onKeyReq', resourceRoot, onKeyReq)
+	f.addEventHandler($(EV_VERIFY_REQ), root, onVerifyReq)
+	f.triggerEvent($(EV_VERIFIER_READY), resourceRoot)
 end
 
 addEventHandler('onResourceStart', resourceRoot, init)
