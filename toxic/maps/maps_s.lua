@@ -56,7 +56,7 @@ function initRoomMaps(room)
 end
 
 function findMap(str, removed)
-	if(g_MapMgrNewRes:isRunning()) then
+	if(g_MapMgrNewRes:isReady()) then
 		local maps = g_MapMgrNewRes:call('findMaps', str)
 		for i, mapPath in ipairs(maps) do
 			local map = Map.create(mapPath)
