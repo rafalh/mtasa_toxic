@@ -56,9 +56,13 @@ tryVerify = function()
 		if(g_ResStarted) then
 			local _addEventHandler = addEventHandler
 			addEventHandler = function(event, element, func, ...)
-				_addEventHandler(event, element, func, ...)
-				if(event == EvResStart and (element == root or element == resourceRoot)) then
-					table.insert(initFuncTbl, func)
+				if(event and element and func) then
+					_addEventHandler(event, element, func, ...)
+					if(event == EvResStart and (element == root or element == resourceRoot)) then
+						table.insert(initFuncTbl, func)
+					end
+				else
+					outputDebugString(debug.traceback('Invalid argument for addEventHandler', 2), 2)
 				end
 			end
 		end
