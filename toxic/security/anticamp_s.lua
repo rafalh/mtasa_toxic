@@ -1,3 +1,5 @@
+local g_RaceRes = Resource('race')
+
 local function AcmpClear(player)
 	local pdata = Player.fromEl(player)
 	if(pdata.camp) then
@@ -22,8 +24,7 @@ local function AcmpCheckPlayer(player)
 		return false
 	end
 	
-	local raceRes = getResourceFromName('race')
-	if(raceRes and getResourceState(raceRes) == 'running' and (call(raceRes, 'getTimePassed') or 0) <= 0) then
+	if(g_RaceRes:isReady() and (g_RaceRes:call('getTimePassed') or 0) <= 0) then
 		AcmpClear(player)
 		return false
 	end

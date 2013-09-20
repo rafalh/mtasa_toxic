@@ -1,6 +1,8 @@
 local g_InitFuncs = {}
 local _addEventHandler
 local g_Co, g_CoTicks
+local g_ScoreBoardRes = Resource('scoreboard')
+
 #DBG_START_PERF = false
 
 local function setupDatabase()
@@ -151,23 +153,20 @@ local function LoadMapTypes()
 end
 
 local function setupScoreboard()
-	local scoreboardRes = getResourceFromName('scoreboard')
-	if(scoreboardRes and getResourceState(scoreboardRes) == 'running') then
-		call(scoreboardRes, 'scoreboardAddColumn', 'country', g_Root, 50, 'Country', false, 'country_img')
+	if(g_ScoreBoardRes:isReady()) then
+		g_ScoreBoardRes:call('scoreboardAddColumn', 'country', g_Root, 50, 'Country', false, 'country_img')
 		if(AvtSetupScoreboard) then
-			AvtSetupScoreboard(scoreboardRes)
+			AvtSetupScoreboard(g_ScoreBoardRes.el)
 		end
 		if(StSetupScoreboard) then
-			StSetupScoreboard(scoreboardRes)
+			StSetupScoreboard(g_ScoreBoardRes.el)
 		end
 	end
 end
 
-local function onResStart(res)
-	if(getResourceName(res) == 'scoreboard') then
-		setTimer(setupScoreboard, 1000, 1)
-	end
-end
+g_ScoreBoardRes:addReadyHandler(function()
+	setTimer(setupScoreboard, 1000, 1)
+end)
 
 local function initRountine()
 	local prof = DbgPerf(300)
@@ -189,7 +188,6 @@ local function initRountine()
 	LoadMapTypes()
 	
 	setupScoreboard()
-	addEventHandler('onResourceStart', g_Root, onResStart)
 	
 	for i, playerEl in ipairs (getElementsByType('player')) do
 		if(NbCheckPlayerAndFix) then

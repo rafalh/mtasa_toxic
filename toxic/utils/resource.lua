@@ -1,15 +1,16 @@
 Resource = Class('Resource')
 
 local g_Map = {}
+setmetatable(g_Map, {__mode = 'v'}) -- weak table
 
 addEvent('toxic.onResReady')
 
-function Resource.preInit(resName)
-	return g_Map[resName]
+function Resource.preInit(name)
+	return g_Map[name]
 end
 
-function Resource.__mt.__index:init(resName)
-	local res = getResourceFromName(resName)
+function Resource.__mt.__index:init(name)
+	local res = getResourceFromName(name)
 	local resRoot = res and getResourceRootElement(res)
 	local resState = res and getResourceState and getResourceState(res) or 'running'
 	local ready = resRoot and not getElementData(resRoot, 'toxic.notReady') and resState == 'running'
@@ -18,20 +19,20 @@ function Resource.__mt.__index:init(resName)
 		outputDebugString('Resource '..getResourceName(res)..' is ready when creating object!', 3)
 	end]]
 	
-	self.resName = resName
-	self.res = ready and res
+	self.name = name
+	self.el = ready and res
 	
 	self.readyHandlers = {}
-	g_Map[resName] = self
+	g_Map[name] = self
 end
 
 function Resource.__mt.__index:call(fnName, ...)
-	assert(self.res)
-	return call(self.res, fnName, ...)
+	assert(self.el)
+	return call(self.el, fnName, ...)
 end
 
 function Resource.__mt.__index:isReady()
-	return self.res and true
+	return self.el and true
 end
 
 function Resource.__mt.__index:addReadyHandler(fn)
@@ -51,7 +52,7 @@ local function onResStart(res)
 	local self = g_Map[resName]
 	if(not self) then return end
 	
-	self.res = res
+	self.el = res
 	for i, fn in ipairs(self.readyHandlers) do
 		fn(self)
 	end
@@ -64,7 +65,7 @@ local function onResStop(res)
 	local self = g_Map[resName]
 	if(not self) then return end
 	
-	self.res = false
+	self.el = false
 end
 
 local function onResReady(res)
@@ -74,7 +75,7 @@ local function onResReady(res)
 	
 	--outputDebugString('Resource '..getResourceName(res)..' is now ready!', 3)
 	
-	self.res = res
+	self.el = res
 	for i, fn in ipairs(self.readyHandlers) do
 		fn(self)
 	end

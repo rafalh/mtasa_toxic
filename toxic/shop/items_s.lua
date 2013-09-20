@@ -6,6 +6,9 @@
 
 addEvent('onBuyNextMapReq', true)
 
+local g_RaceRes = Resource('race')
+local g_VipRes = Resource('rafalh_vip')
+
 local JoinMsgItem = {
 	id = 'joinmsg',
 	cost = 20000,
@@ -81,8 +84,7 @@ local SelfDestrItem = {
 		return Player.fromEl(player).accountData:add('selfdestr', 1)
 	end,
 	onUse = function ( player, val )
-		local res = getResourceFromName ( 'race' )
-		if ( val > 0 and not isPedDead ( player ) and ( not res or getResourceState ( res ) ~= 'running' or call ( res, 'getTimePassed' ) > 5000 ) ) then
+		if(val > 0 and not isPedDead(player) and (not g_RaceRes:isReady() or g_RaceRes:call('getTimePassed') > 5000)) then
 			setTimer ( function ( player )
 				if ( not isPedDead ( player ) ) then
 					local el = getPedOccupiedVehicle ( player ) or player
@@ -218,8 +220,7 @@ local InvisibilityItem = {
 			return false
 		end
 		
-		local res = getResourceFromName ( 'race' )
-		if ( res and getResourceState ( res ) == 'running' and call ( res, 'getTimePassed' ) < 1000 ) then
+		if(g_RaceRes:isReady() and g_RaceRes:call('getTimePassed') < 1000) then
 			return false
 		end
 		
@@ -289,8 +290,7 @@ local ThunderItem = {
 			return false
 		end
 		
-		local res = getResourceFromName ( 'race' )
-		if ( res and getResourceState ( res ) == 'running' and call ( res, 'getTimePassed' ) < 3000 ) then
+		if(g_RaceRes:isReady() and g_RaceRes:call('getTimePassed') < 3000) then
 			return false
 		end
 		
@@ -372,10 +372,9 @@ local VipItem = {
 	cost = 2800000,
 	noDiscount = true,
 	onBuy = function ( player )
-		local res = getResourceFromName ( 'rafalh_vip' )
-		local success = res and call ( res, 'giveVip', player, 7 )
-		if ( not success ) then
-			privMsg ( player, "You have to be logged in!" )
+		local success = g_VipRes:isReady() and g_VipRes:call('giveVip', player, 7)
+		if(not success) then
+			privMsg(player, "You have to be logged in!")
 		end
 		return success
 	end

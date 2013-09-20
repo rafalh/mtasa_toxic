@@ -9,6 +9,7 @@
 --------------------------------
 
 local VIP_PRICE = 0.6
+local g_VipRes = Resource('rafalh_vip')
 
  -- name = {
 	-- cost - item cost,
@@ -44,8 +45,7 @@ local function ShpGetInventoryRequest ()
 		end
 	end
 	
-	local vipRes = getResourceFromName('rafalh_vip')
-	local isVip = vipRes and getResourceState(vipRes) == 'running' and call(vipRes, 'isVip', client)
+	local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', client)
 	
 	triggerClientInternalEvent(client, $(EV_CLIENT_INVENTORY), client, inventory, isVip)
 end
@@ -126,8 +126,7 @@ function ShpGetItemPrice(item_id, player)
 	local item = g_ShopItems[item_id]
 	local price = item.cost
 	if(player and not item.noDiscount) then
-		local vipRes = getResourceFromName('rafalh_vip')
-		local isVip = vipRes and getResourceState(vipRes) == 'running' and call(vipRes, 'isVip', player)
+		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', player)
 		if(isVip) then
 			price = math.ceil(price * VIP_PRICE)
 		end

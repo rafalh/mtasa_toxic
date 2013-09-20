@@ -1,3 +1,6 @@
+local g_RaceRes = Resource('race')
+local g_MapMgrNewRes = Resource('mapmgr')
+
 addEvent('onRaceStateChanging')
 addEvent('onAddMapToQueueReq', true)
 
@@ -102,8 +105,7 @@ local function MqOnAddReq(mapResName)
 	if(mapRes) then
 		map = Map.create(mapRes)
 	else
-		local mapMgrRes = getResourceFromName('mapmgr')
-		if(mapMgrRes and getResourceState(mapMgrRes) == 'running' and call(mapMgrRes, 'isMap', mapResName)) then
+		if(g_MapMgrNewRes:isReady() and g_MapMgrNewRes:call('isMap', mapResName)) then
 			map = Map.create(mapResName)
 		end
 	end
@@ -122,9 +124,8 @@ local function MqOnRaceStateChanging(state, oldState)
 	local nextMap = MqPop(room)
 	if(not nextMap) then return end
 	
-	local res = getResourceFromName('race')
-	if(res and getResourceState(res) == 'running') then
-		call(res, 'setNextMap', nextMap.res)
+	if(g_RaceRes:isReady()) then
+		g_RaceRes:call('setNextMap', nextMap.res)
 	end
 end
 

@@ -6,10 +6,11 @@ MutesTable = Database.Table{
 	{'duration', 'INT UNSIGNED'},
 }
 
+local g_VoiceRes = Resource('voice')
+
 local function setPlayerVoiceMuted(player, muted)
-	local voiceRes = getResourceFromName('voice')
-	if(voiceRes and getResourceState(voiceRes) == 'running') then
-		return call(voiceRes, 'setPlayerVoiceMuted', player, muted)
+	if(g_VoiceRes:isReady()) then
+		return g_VoiceRes:call('setPlayerVoiceMuted', player, muted)
 	end
 	return false
 end

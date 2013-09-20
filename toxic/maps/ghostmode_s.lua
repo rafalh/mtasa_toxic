@@ -1,5 +1,6 @@
 local g_NoGMWarningTimeLeft = 0
 local g_NoGMWarningMsg = {}
+local g_RaceRes = Resource('race')
 
 local function GmSetEnabled(room, enabled)
 	local map = getCurrentMap(room)
@@ -13,9 +14,8 @@ local function GmSetEnabled(room, enabled)
 	
 	enabled = tostring(enabled)
 	local oldEnabled = get('*race.ghostmode')
-	local raceRes = getResourceFromName('race')
 	
-	if(raceRes and getResourceState(raceRes) == 'running') then
+	if(g_RaceRes:isReady()) then
 		set('*race.ghostmode', enabled)
 		local raceResRoot = getResourceRootElement(raceRes)
 		triggerEvent('onSettingChange', raceResRoot, 'ghostmode', oldEnabled, enabled)
@@ -24,12 +24,11 @@ local function GmSetEnabled(room, enabled)
 	
 	return false]]
 	
-	local raceRes = getResourceFromName('race')
-	if(not raceRes or getResourceState(raceRes) ~= 'running') then
+	if(not g_RaceRes:isReady()) then
 		return false
 	end
 	
-	call(raceRes, 'setGhostmodeEnabled', enabled)
+	g_RaceRes:call('setGhostmodeEnabled', enabled)
 	return true
 end
 
@@ -81,12 +80,11 @@ function GmSet(room, enabled, quiet)
 end
 
 function GmIsEnabled(room)
-	local raceRes = getResourceFromName('race')
-	if(not raceRes or getResourceState(raceRes) ~= 'running') then
+	if(not g_RaceRes:isReady()) then
 		return false
 	end
 	
-	return call(raceRes, 'isGhostmodeEnabled')
+	return g_RaceRes:call('isGhostmodeEnabled')
 	
 	--[[local map = getCurrentMap(room)
 	if(not map) then return false end

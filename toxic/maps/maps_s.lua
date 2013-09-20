@@ -1,5 +1,11 @@
 g_RootRoom = false
 
+-- Locals
+local g_MapMgrRes = Resource('mapmanager')
+local g_MapMgrNewRes = Resource('mapmgr')
+local g_RoomMgrRes = Resource('roommgr')
+local g_RaceRes = Resource('race')
+
 MapsTable = Database.Table{
 	name = 'maps',
 	{'map', 'INT UNSIGNED', pk = true},
@@ -31,15 +37,13 @@ function initRoomMaps(room)
 	
 	local map = false
 	
-	local mapMgrRes = getResourceFromName('mapmanager')
-	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
-		local mapRes = call(mapMgrRes, 'getRunningGamemodeMap')
+	if(g_MapMgrRes:isReady()) then
+		local mapRes = g_MapMgrRes:call('getRunningGamemodeMap')
 		map = mapRes and Map.create(mapRes)
 	elseif(room.el ~= g_Root) then
-		local roomMgrRes = getResourceFromName('roommgr')
-		if(roomMgrRes and getResourceState(roomMgrRes) == 'running') then
+		if(g_RoomMgrRes:isReady()) then
 			outputDebugString(tostring(room.el), 3)
-			local mapPath = call(roomMgrRes, 'getRoomMap', room.el)
+			local mapPath = g_RoomMgrRes:call('getRoomMap', room.el)
 			map = mapPath and Map.create(mapPath)
 		end
 	end
@@ -52,9 +56,8 @@ function initRoomMaps(room)
 end
 
 function findMap(str, removed)
-	local mapMgrRes = getResourceFromName('mapmgr')
-	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
-		local maps = call(mapMgrRes, 'findMaps', str)
+	if(g_MapMgrNewRes:isRunning()) then
+		local maps = g_MapMgrNewRes:call('findMaps', str)
 		for i, mapPath in ipairs(maps) do
 			local map = Map.create(mapPath)
 			if(removed ~= nil) then
@@ -81,7 +84,7 @@ function findMap(str, removed)
 	local result = false
 	
 	for i, map in maps:ipairs() do
-		local map_name = getResourceInfo (map.res, 'name')
+		local map_name = getResourceInfo(map.res, 'name')
 		local matches = false
 		
 		if(getResourceName (map.res):lower () == strLower) then
@@ -397,8 +400,7 @@ local function onPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 		
 		StHunterTaken(player)
 		
-		local race_res = getResourceFromName('race')
-		local ms = race_res and call(race_res, 'getTimePassed')
+		local ms = g_RaceRes:isReady() and g_RaceRes:call('getTimePassed')
 		if(ms) then
 			local n = handlePlayerTime(player.el, ms)
 			local improvedBestTime = (n >= 1)
@@ -456,8 +458,7 @@ local function onChangeMapReq(mapResName)
 	if(mapRes) then
 		map = Map.create(mapRes)
 	else
-		local mapMgrRes = getResourceFromName('mapmgr')
-		if(mapMgrRes and getResourceState(mapMgrRes) == 'running' and call(mapMgrRes, 'isMap', mapResName)) then
+		if(g_MapMgrNewRes:isReady() and g_MapMgrNewRes:call('isMap', mapResName)) then
 			map = Map.create(mapResName)
 		end
 	end
@@ -492,25 +493,22 @@ function getCurrentMapElements(room, type)
 		return getElementsByType(type, map.resRoot)
 	end
 	
-	local roomMgrRes = getResourceFromName('roommgr')
-	if(roomMgrRes and getResourceState(roomMgrRes) == 'running') then
-		return call(roomMgrRes, 'getRoomMapElements', room.el, type)
+	if(g_RoomMgrRes:isReady()) then
+		return g_RoomMgrRes:call('getRoomMapElements', room.el, type)
 	end
 	
 	return false
 end
 
 function getMapsList()
-	local mapMgrRes = getResourceFromName('mapmanager')
-	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
-		local gamemodeRes = call(mapMgrRes, 'getRunningGamemode')
-		local mapResList = call(mapMgrRes, 'getMapsCompatibleWithGamemode', gamemodeRes)
+	if(g_MapMgrRes:isReady()) then
+		local gamemodeRes = g_MapMgrRes:call('getRunningGamemode')
+		local mapResList = g_MapMgrRes:call('getMapsCompatibleWithGamemode', gamemodeRes)
 		return MapList.create(mapResList)
 	end
 	
-	local mapMgrRes = getResourceFromName('mapmgr')
-	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
-		local mapList = call(mapMgrRes, 'getMapsList')
+	if(g_MapMgrNewRes:isReady()) then
+		local mapList = g_MapMgrNewRes:call('getMapsList')
 		return MapList.create(mapList)
 	end
 	

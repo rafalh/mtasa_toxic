@@ -2,6 +2,11 @@ Map = {}
 Map.__mt = {__index = Map}
 Map.idCache = {}
 
+local g_RoomMgrRes = Resource('roommgr')
+local g_MapMgrRes = Resource('mapmanager')
+local g_MapMgrNewRes = Resource('mapmgr')
+
+
 -- Used by map.lua and map_fixing.lua
 function setMetaSetting(node, setting, value)
 	local subnode = xmlFindChild(node, 'settings', 0)
@@ -75,9 +80,8 @@ function Map:getInfo(name)
 		return getResourceInfo(self.res, name)
 	end
 	
-	local mapMgrRes = getResourceFromName('mapmgr')
-	if(self.path and mapMgrRes and getResourceState(mapMgrRes) == 'running') then
-		return call(mapMgrRes, 'getMapInfo', self.path, name)
+	if(self.path and g_MapMgrNewRes:isReady()) then
+		return g_MapMgrNewRes:call('getMapInfo', self.path, name)
 	end
 	
 	return false
@@ -126,14 +130,12 @@ end
 function Map:start(room)
 	assert(room)
 	
-	local mapMgrRes = getResourceFromName('mapmanager')
-	if(mapMgrRes and getResourceState(mapMgrRes) == 'running') then
-		return call(mapMgrRes, 'changeGamemodeMap', self.res)
+	if(g_MapMgrRes:isReady()) then
+		return g_MapMgrRes:call('changeGamemodeMap', self.res)
 	end
 	
-	local roomMgrRes = getResourceFromName('roommgr')
-	if(roomMgrRes and getResourceState(roomMgrRes) == 'running') then
-		return call(roomMgrRes, 'startRoomMap', room.el, self.path)
+	if(g_RoomMgrRes:isReady()) then
+		return g_RoomMgrRes:call('startRoomMap', room.el, self.path)
 	end
 	
 	return false

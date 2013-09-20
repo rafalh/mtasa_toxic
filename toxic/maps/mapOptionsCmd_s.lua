@@ -1,4 +1,5 @@
 g_OldVehicleWeapons = nil
+local g_RaceRes = Resource('race')
 
 local function CmdSetMapName(message, arg)
 	if(#arg >= 2) then
@@ -220,8 +221,7 @@ CmdRegister('setmapwaveheight', CmdSetMapWaveHeight, 'resource.'..g_ResName..'.s
 CmdRegisterAlias('smwaveh', 'setmapwaveheight')
 
 local function CmdVehicleWeapons(message, arg)
-	local res = getResourceFromName('race')
-	if(res) then
+	if(g_RaceRes:isReady()) then
 		local old_enabled, enabled = get('*race.vehicleweapons')
 		if(not g_OldVehicleWeapons) then
 			g_OldVehicleWeapons = old_enabled
@@ -234,7 +234,7 @@ local function CmdVehicleWeapons(message, arg)
 			outputMsg(g_Root, Styles.red, "Vehicle weapons disabled by %s!", getPlayerName(source))
 		end
 		set('*race.vehicleweapons', enabled)
-		triggerEvent('onSettingChange', getResourceRootElement(res), 'vehicleweapons', g_OldVehicleWeapons, enabled)
+		triggerEvent('onSettingChange', getResourceRootElement(g_RaceRes.el), 'vehicleweapons', g_OldVehicleWeapons, enabled)
 	end
 end
 

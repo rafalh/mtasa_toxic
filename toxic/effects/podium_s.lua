@@ -1,6 +1,7 @@
 -- Globals
 local LOC_COUNT = 6
 local g_Winners = {}
+local g_RaceRes = Resource('race')
 
 -- Events
 addEvent('onRaceStateChanging')
@@ -25,9 +26,8 @@ local function setWinner(playerEl, rank)
 	
 	local veh
 	if(player) then
-		local raceRes = getResourceFromName('race')
-		if(raceRes and getResourceState(raceRes) == 'running') then
-			veh = call(raceRes, 'getPlayerVehicle', player.el)
+		if(g_RaceRes:isReady()) then
+			veh = g_RaceRes:call('getPlayerVehicle', player.el)
 		end
 		if(not veh) then
 			veh = getPedOccupiedVehicle(player.el)

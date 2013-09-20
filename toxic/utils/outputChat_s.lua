@@ -34,9 +34,9 @@ function scriptMsg ( fmt, ... )
 		
 		--outputServerLog ( part )
 		
-		local rafalh_webchat_res = getResourceFromName ( 'rafalh_webchat' )
-		if ( rafalh_webchat_res and getResourceState ( rafalh_webchat_res ) == 'running' ) then
-			call ( rafalh_webchat_res, 'addChatStr', '#ffc46e'..part )
+		local webChatRes = Resource('rafalh_webchat')
+		if(webChatRes:isReady()) then
+			webChatRes:call('addChatStr', '#ffc46e'..part)
 		end
 	end
 	
@@ -138,10 +138,10 @@ function outputMsg(visibleTo, style, fmt, ...)
 		local msg = fmt:format(...):gsub('#%x%x%x%x%x%x', '')
 		outputServerLog(msg)
 		
-		local webChatRes = getResourceFromName('rafalh_webchat')
-		if(webChatRes and getResourceState(webChatRes) == 'running') then
+		local webChatRes = Resource('rafalh_webchat')
+		if(webChatRes:isReady()) then
 			local msg = formatMsg(style, true, fmt, ...)
-			call(webChatRes, 'addChatStr', msg)
+			webChatRes:call('addChatStr', msg)
 		end
 	end
 	

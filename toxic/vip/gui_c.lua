@@ -2,6 +2,7 @@
 #include 'include/internal_events.lua'
 
 local VIP_INFO_URL = 'http://mtatoxic.tk/vip/'
+local g_VipRes = Resource('rafalh_vip')
 
 addEvent('vip.onStatus')
 
@@ -11,13 +12,12 @@ local VipPanel = {
 	tooltip = "You don't have VIP account. More info: "..VIP_INFO_URL,
 	noWnd = true,
 	onShow = function()
-		local vipRes = getResourceFromName('rafalh_vip')
-		if(not vipRes) then
+		if(not g_VipRes:isReady()) then
 			outputMsg(Styles.red, "VIP Panel is not running")
 			return false
 		end
 		
-		if(not call(vipRes, 'openVipPanel')) then
+		if(not g_VipRes:call('openVipPanel')) then
 			outputMsg(Styles.red, "You don't have VIP account. More info: %s", VIP_INFO_URL)
 			return false
 		end
@@ -35,14 +35,8 @@ local function onVipStatus(isVip)
 end
 
 local function init()
-	local isVip = false
-	local vipRes = getResourceFromName('rafalh_vip')
-	if(vipRes and call(vipRes, 'isVip')) then
-		isVip = true
-	end
-	
-	if(isVip) then
-		onVipStatus(isVip)
+	if(g_VipRes:isReady() and g_VipRes:call('isVip')) then
+		onVipStatus(true)
 	end
 end
 

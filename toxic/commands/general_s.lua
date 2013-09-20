@@ -1,3 +1,5 @@
+local g_AdminRes = Resource('admin')
+
 ----------------------------------
 -- Global functions definitions --
 ----------------------------------
@@ -88,8 +90,7 @@ CmdRegister('time', CmdTime, false, "Shows current time")
 
 local function CmdCountry(message, arg)
 	local player =(#arg >= 2 and findPlayer(message:sub(arg[1]:len() + 2))) or source
-	local admin_res = getResourceFromName('admin')
-	local country = admin_res and getResourceState(admin_res) == 'running' and call(admin_res, 'getPlayerCountry', player)
+	local country = g_AdminRes:isReady() and g_AdminRes:call('getPlayerCountry', player)
 	
 	if(g_Countries[country]) then
 		country = g_Countries[country]

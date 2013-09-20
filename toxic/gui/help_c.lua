@@ -6,6 +6,7 @@ local g_Commands
 local g_HelpTab
 local g_SearchEdit
 local g_CmdList
+local g_HelpMgrRes = Resource('helpmanager')
 
 -- CUSTOM EVENTS
 addEvent ( 'onCommandsListReq', true )
@@ -72,9 +73,8 @@ local function HlpTabShown ()
 end
 
 local function HlpInit ()
-	local hlmmgr = getResourceFromName ( 'helpmanager' )
-	if(hlmmgr) then
-		g_HelpTab = call(hlmmgr, 'addHelpTab', getThisResource(), true)
+	if(g_HelpMgrRes:isReady()) then
+		g_HelpTab = g_HelpMgrRes:call('addHelpTab', getThisResource(), true)
 		guiSetText(g_HelpTab, "Rafalh Scripts System")
 		
 		addEventHandler('onClientGUITabSwitched', g_HelpTab, HlpTabShown)

@@ -4,6 +4,9 @@ Player.idMap = {}
 Player.elMap = {}
 g_Players = Player.elMap -- FIXME
 
+local g_AdminRes = Resource('admin')
+local g_RoomMgrRes = Resource('roommgr')
+
 addEvent('onPlayerChangeRoom')
 addEvent('onPlayerChangeTeam')
 addEvent('main.onAccountChange')
@@ -193,9 +196,8 @@ function Player.create(el)
 	
 	-- get player room
 	local roomEl = g_Root
-	local roomMgrRes = getResourceFromName('roommgr')
-	if(not self.is_console and roomMgrRes and getResourceState(roomMgrRes) == 'running') then
-		roomEl = call(roomMgrRes, 'getPlayerRoom', self.el)
+	if(not self.is_console and g_RoomMgrRes:isReady()) then
+		roomEl = g_RoomMgrRes:call('getPlayerRoom', self.el)
 	end
 	self.room = roomEl and Room.create(roomEl)
 	
@@ -215,8 +217,7 @@ function Player.create(el)
 	local fullName = self:getName(true)
 	self.accountData:set('name', fullName, true)
 	
-	local adminRes = getResourceFromName('admin')
-	self.country = adminRes and getResourceState(adminRes) == 'running' and call(adminRes, 'getPlayerCountry', self.el)
+	self.country = g_AdminRes:isReady() and g_AdminRes:call('getPlayerCountry', self.el)
 	
 	setElementData(self.el, 'country', self.country)
 	local imgPath = self.country and ':admin/client/images/flags/'..self.country:lower()..'.png'

@@ -1,3 +1,5 @@
+local g_VoteMgrRes = Resource('votemanager')
+
 local function CmdNew (message, arg)
 	executeCommandHandler ('new', source, message:sub (arg[1]:len () + 2))
 end
@@ -29,8 +31,7 @@ end
 CmdRegister('voteredo', CmdVoteRedo, false, false, true)
 
 local function CmdCancel (message, arg)
-	local voteMgrRes = getResourceFromName ('votemanager')
-	if (voteMgrRes and getResourceState (voteMgrRes) == 'running' and call (voteMgrRes, 'stopPoll')) then
+	if (g_VoteMgrRes:isReady() and g_VoteMgrRes:call('stopPoll')) then
 		outputMsg(g_Root, Styles.red, "Vote cancelled by %s!", getPlayerName (source))
 	else
 		privMsg (source, "No vote in progress!")
@@ -47,21 +48,20 @@ end
 CmdRegister('votenext', CmdVoteNext, false, "Starts a vote for next map")
 
 local function CmdPoll(message, arg)
-	local title = message:sub (arg[1]:len () + 2)
+	local title = message:sub(arg[1]:len() + 2)
 	
-	local voteMgrRes = getResourceFromName('votemanager')
-	if (voteMgrRes and getResourceState(voteMgrRes) == 'running') then
-		local pollDidStart = call(voteMgrRes, 'startPoll', {
+	if(g_VoteMgrRes:isReady()) then
+		local pollDidStart = g_VoteMgrRes:call('startPoll', {
 			title = title,
 			percentage = 50,
 			timeout = 10,
 			allowchange = true,
 			visibleTo = g_Root,
-			[1] = { "Yes" },
-			[2] = { "No" },
+			[1] = {"Yes"},
+			[2] = {"No"},
 		})
-		if (pollDidStart) then
-			outputMsg(g_Root, Styles.poll, "%s started a poll: %s", getPlayerName (source), title)
+		if(pollDidStart) then
+			outputMsg(g_Root, Styles.poll, "%s started a poll: %s", getPlayerName(source), title)
 		else
 			privMsg (source, "Error! Poll did not start.")
 		end

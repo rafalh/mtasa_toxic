@@ -3,6 +3,7 @@
 ----------------------
 
 local g_MsgCommands = {}
+local g_VipRes = Resource('rafalh_vip')
 
 #local MODIFY_MSG_CMD = false
 
@@ -52,8 +53,7 @@ local function McHandleCommand(message, arg)
 	outputServerLog('MSGCMD: '..namePlain..': '..text)
 	
 	if(msg.sound) then
-		local vipRes = getResourceFromName('rafalh_vip')
-		local isVip = vipRes and getResourceState(vipRes) == 'running' and call(vipRes, 'isVip', source)
+		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', source)
 		if(isVip) then
 			local servAddr = get('mapmusic.server_address')
 			local url =  'http://'..servAddr..'/'..getResourceName(resource)..'/msg_cmd/sounds/'..msg.sound
