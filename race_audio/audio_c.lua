@@ -6,11 +6,13 @@ addEvent("race_audio.onPlayReq", true)
 addEvent("onClientPlayerOutOfTime", true)
 addEvent("onClientPlayerHitPickup", true)
 addEvent("onClientPlayerReachCheckpoint", true)
+addEvent("onClientRaceCountdown", true)
 addEvent("race.onCountdownStart")
 
 local function playAudio(filename)
 	local sound = playSound("audio/"..filename)
 	setSoundVolume(sound, g_SoundVolume)
+	--outputDebugString('Playing race sound ('..filename..'): '..tostring(sound), 3)
 end
 
 local function onRadioSwitch()
@@ -56,6 +58,7 @@ local function onFinish()
 end
 
 local function updateCountdown()
+	--outputDebugString("updateCountdown", 3)
 	if(g_CountdownValue > 0) then
 		playAudio("countdown.mp3")
 	else
@@ -73,14 +76,27 @@ local function onCountdownStart(name, sec)
 	end
 end
 
-function setRaceAudioVolume(val)
-	val = math.min(math.max(tonumber(val), 0), 1)
-	if(val) then
-		g_SoundVolume = val
-		return true
+local function onCountdown(num)
+	if(num > 0) then
+		playAudio("countdown.mp3")
 	else
-		return false
+		playAudio("go.mp3")
 	end
+end
+
+function setRaceAudioVolume(val)
+	val = tonumber(val)
+	if(not val) then return false end
+	val = math.min(math.max(val, 0), 1)
+	
+	g_SoundVolume = val
+	
+	--outputDebugString('setRaceAudioVolume('..val..') - updating '..#getElementsByType('sound', resourceRoot)..' sounds', 3)
+	for i, sound in ipairs(getElementsByType('sound', resourceRoot)) do
+		setSoundVolume(sound, g_SoundVolume)
+	end
+	
+	return true
 end
 
 local function onRaceVolumeCmd(cmd, value)
@@ -93,11 +109,12 @@ local function onRaceVolumeCmd(cmd, value)
 	end
 end
 
-addEventHandler("race_audio.onPlayReq", root, playAudio)
+addEventHandler("race_audio.onPlayReq", resourceRoot, playAudio)
 addEventHandler("onClientResourceStart", resourceRoot, onResStart)
 addEventHandler("onClientPlayerOutOfTime", root, onOutOfTime)
 addEventHandler("onClientPlayerHitPickup", localPlayer, onHitPickup)
 addEventHandler("onClientPlayerReachCheckpoint", localPlayer, onReachCheckpoint)
 addEventHandler("onClientPlayerFinish", localPlayer, onFinish)
+addEventHandler("onClientRaceCountdown", root, onCountdown)
 addEventHandler("race.onCountdownStart", root, onCountdownStart)
 addCommandHandler("racevolume", onRaceVolumeCmd, false, false)
