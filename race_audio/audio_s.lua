@@ -1,14 +1,14 @@
-local g_Root = getRootElement()
-local g_MapMode = ""
+local g_MapMode = ''
 local g_KillReq = false
 
-addEvent("onMapStarting")
-addEvent("onRequestKillPlayer", true)
-addEvent("onPlayerToptimeImprovement")
+addEvent('onMapStarting')
+addEvent('onRequestKillPlayer', true)
+addEvent('onPlayerToptimeImprovement')
+addEvent('onPlayerWinDD')
 
 local function playAudio(player, filename)
-	-- outputDebugString("play sound "..filename.." for "..getPlayerName(player))
-	triggerClientEvent(player, "race_audio.onPlayReq", resourceRoot, filename)
+	-- outputDebugString('play sound '..filename..' for '..getPlayerName(player))
+	triggerClientEvent(player, 'race_audio.onPlayReq', resourceRoot, filename)
 end
 
 local function onMapStarting(mapInfo)
@@ -16,12 +16,12 @@ local function onMapStarting(mapInfo)
 end
 
 local function onPlayerWasted()
-	if g_MapMode == "Destruction derby" then
-		playAudio(source, "jobfail.mp3")
+	if g_MapMode == 'Destruction derby' then
+		playAudio(source, 'jobfail.mp3')
 	elseif(g_KillReq) then
 		g_KillReq = false
 	else
-		playAudio(source, "wasted.mp3")
+		playAudio(source, 'wasted.mp3')
 	end
 end
 
@@ -32,16 +32,16 @@ end
 local function onPlayerToptimeImprovement(newPos, newTime, oldPos, oldTime, displayTopCount, validEntryCount)
 	--TODO: Fix this event
 	if newPos <= displayTopCount and newPos <= validEntryCount then
-		playAudio(source, "nicework.mp3")
+		playAudio(source, 'nicework.mp3')
 	end
 end
 
 local function onPlayerWinDD()
-	playAudio(source, "jobcomplete.mp3")
+	playAudio(source, 'jobcomplete.mp3')
 end
 
-addEventHandler('onMapStarting', g_Root, onMapStarting)
-addEventHandler('onPlayerWasted', g_Root, onPlayerWasted)
-addEventHandler('onRequestKillPlayer', g_Root, onRequestKillPlayer)
-addEventHandler("onPlayerToptimeImprovement", g_Root, onPlayerToptimeImprovement)
-addEventHandler("onPlayerWinDD", g_Root, onPlayerWinDD)
+addEventHandler('onMapStarting', root, onMapStarting)
+addEventHandler('onPlayerWasted', root, onPlayerWasted)
+addEventHandler('onRequestKillPlayer', root, onRequestKillPlayer)
+addEventHandler('onPlayerToptimeImprovement', root, onPlayerToptimeImprovement)
+addEventHandler('onPlayerWinDD', root, onPlayerWinDD)
