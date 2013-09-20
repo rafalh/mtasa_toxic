@@ -29,11 +29,13 @@ local EvVerifyReq = 'YSRDCiwdyY'
 local EvVerified = '0CqFvjg0uc'
 local EvResStart = triggerClientEvent and 'onResourceStart' or 'onClientResourceStart'
 
+local g_ResStarting = false
 local g_ResStarted = false
 
 f.addEvent(EvVerifierReady)
 f.addEvent(EvVerifyReq)
 f.addEvent(EvVerified)
+f.addEvent('toxic.onResReady')
 
 local tryVerify
 tryVerify = function()
@@ -122,6 +124,11 @@ tryVerify = function()
 		--end
 		--setTimer(loadScript, 50, 1)
 		--outputDebugString('Created timer')
+		
+		setElementData(resourceRoot, 'toxic.notReady', false, false)
+		if(not g_ResStarting) then
+			triggerEvent('toxic.onResReady', resourceRoot, resource)
+		end
 	end
 	
 	f.addEventHandler(EvVerified, resourceRoot, onVerified)
@@ -131,8 +138,12 @@ end
 
 local function onResStart()
 	g_ResStarted = true
+	g_ResStarting = true
 	f.addEventHandler(EvVerifierReady, root, tryVerify)
 	tryVerify()
+	g_ResStarting = false
 end
 
 f.addEventHandler(EvResStart, resourceRoot, onResStart)
+
+setElementData(resourceRoot, 'toxic.notReady', true, false)

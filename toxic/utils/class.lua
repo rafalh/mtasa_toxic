@@ -2,6 +2,12 @@ Class = {}
 Class.__mt = {__index = {cls = Class}}
 
 function Class.__mt:__call(...)
+	if(self.preInit) then
+		-- Allow some classes to limit instances count
+		local obj = self.preInit(...)
+		if(obj) then return obj end
+	end
+	
 	local obj = setmetatable({}, self.__mt)
 	if(obj.init) then
 		obj:init(...)
@@ -60,7 +66,7 @@ function mt.__concat(a, b)
 end
 setmetatable(Class, mt)
 
-#TEST = true
+#local TEST = true
 #if(TEST) then
 	A = Class('A')
 	A.x = 1
