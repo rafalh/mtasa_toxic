@@ -358,11 +358,12 @@ local function onPlayerFinish(rank, ms)
 end
 
 local function onPlayerFinishDD(rank, timePassed)
-	if(rank ~= 1) then
-		local player = Player.fromEl(source)
-		assert(player)
-		StPlayerFinish(player, rank, timePassed)
-	end
+	if(rank == 1) then return end -- ignore (use onPlayerWinDD instead)
+	
+	local player = Player.fromEl(source)
+	if(not player) then return end -- for example has been kicked
+	
+	StPlayerFinish(player, rank, timePassed)
 end
 
 local function onPlayerWinDD()
