@@ -2,13 +2,14 @@
 -- Global variables --
 ----------------------
 
-#USE_SHARED_HTTP = false
+#local ACTIVATION_URL = 'http://mtatoxic.tk/scripts/NGWm5LtQ5fmnnmpx/activate_code.php?code=%s'
 
 g_Root = getRootElement()
 g_ThisRes = getThisResource()
 g_ResRoot = getResourceRootElement(g_ThisRes)
 local g_Players = {}
-local g_VipGroup = aclGetGroup("VIP")
+local g_VipGroup = aclGetGroup('VIP')
+local g_VipRight = 'resource.rafalh_vip'
 
 -----------------
 -- Definitions --
@@ -180,47 +181,15 @@ local function VipAvatarCallback(data, errno, player, reqID)
 	end
 end
 
-#if(USE_SHARED_HTTP) then
-	local function VipHttpResult(data, player)
-		local pdata = g_Players[player]
-		if(pdata) then
-			VipAvatarCallback(data, data and 0 or -1, player, pdata.avatarReq)
-			pdata.avatarReq = false
-		end
-	end
-
-	addEvent("onHttpResult")
-#end
-
 local function VipSetAvatar(player, avatar)
 	local pdata = g_Players[player]
-# if(USE_SHARED_HTTP) then
-	if(pdata.avatarReq) then
-		destroyElement(pdata.avatarReq)
-	end
-# end
 	
 	-- remove previous avatar first (in case of error no avatar is set)
 	setElementData(player, "avatar", false)
 	
-	if(false) then
-# if(USE_SHARED_HTTP) then
-	elseif(sockOpen) then
-		outputDebugString("Sockets module detected", 3)
-		local sharedRes = getResourceFromName("rafalh_shared")
-		local reqEl = sharedRes and getResourceState(sharedRes) == "running" and call(sharedRes, "HttpSendRequest", avatar, false, false, false, player)
-		if(reqEl) then
-			pdata.avatarReq = reqEl
-			addEventHandler("onHttpResult", reqEl, VipHttpResult)
-		else
-			outputChatBox("Invalid URL: "..avatar, player, 255, 0, 0)
-		end
-# end
-	else
-		pdata.avatarReq = (pdata.avatarReq or 0) + 1
-		if(not fetchRemote(avatar, VipAvatarCallback, "", false, player, pdata.avatarReq)) then
-			outputDebugString("Failed to download avatar "..avatar, 2)
-		end
+	pdata.avatarReq = (pdata.avatarReq or 0) + 1
+	if(not fetchRemote(avatar, VipAvatarCallback, "", false, player, pdata.avatarReq)) then
+		outputDebugString("Failed to download avatar "..avatar, 2)
 	end
 end
 
@@ -317,189 +286,6 @@ local function VipOnPlayerPickUpRacePickup()
 	end
 end
 
-local function VipGetPlayerFromAccount(account)
-	for i, player in ipairs(getElementsByType("player")) do
-		if(getPlayerAccount(player) == account) then
-			return player
-		end
-	end
-	
-	return false
-end
-
-local function VipOnActivationResult(data, account)
-	local accName = account and getAccountName(account)
-	if(not accName) then
-		outputChatBox("Error! VIP activation failed: account is invalid. Please contact administrator.", g_Root, 255, 0, 0)
-		return
-	end
-	
-	local player = VipGetPlayerFromAccount(account)
-	local days, statusMsg = fromJSON(data)
-	
-	local days = tonumber(days)
-	local err = false
-	if(not days or days <= 0 or days > 100) then
-		if(statusMsg) then
-			err = tostring(statusMsg)
-		else
-			err = tostring(data):gsub("<[^>]+>", "")
-		end
-	elseif(not g_VipGroup) then
-		err = "VipGroup does not exist"
-	end
-	
-	if(err) then
-		outputChatBox("Error! VIP activation failed: "..err:sub(1, 64)..". Please contact administrator.", player or g_Root, 255, 0, 0)
-		return
-	end
-	
-	local msg, timestamp
-	local tm = getRealTime()
-	
-	aclGroupAddObject(g_VipGroup, "user."..accName)
-	timestamp = math.max(getAccountData(account, "rafalh_vip_time") or tm.timestamp, tm.timestamp)
-	timestamp = timestamp + days*24*3600
-	
-	if(tm.year*12*31 + tm.month*31 + tm.monthday >= $((PROMO_YEAR1-1900)*12*31+(PROMO_MONTH1-1)*31+PROMO_DAY1) and tm.year*12*31 + tm.month*31 + tm.monthday <= $((PROMO_YEAR2-1900)*12*31+(PROMO_MONTH2-1)*31+PROMO_DAY2)) then
-		timestamp = timestamp + $(PROMO_MONTHS)*30*24*3600
-		msg = "VIP activated successfully! $(PROMO_TEXT) Rank will be valid untill "
-	else
-		msg = "VIP activated successfully! Rank will be valid untill "
-	end
-	
-	setAccountData(account, "rafalh_vip_time", timestamp)
-	
-	tm = getRealTime(timestamp)
-	local limitStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
-	outputServerLog("VIP rank activated for "..accName..". It will be valid untill "..limitStr)
-	
-	if(player) then
-		outputChatBox(msg..limitStr, player, 0, 255, 0)
-		if(g_Players[player]) then
-			triggerClientEvent(player, "vip.onVerified", g_Root, timestamp)
-		end
-	end
-end
-
-addCommandHandler("activatevip", function(source, cmd, code)
-	local account = getPlayerAccount(source)
-	
-	if(isGuestAccount(account)) then
-		outputChatBox("PM: Register an account and log in before using this command.", source)
-	elseif(code) then
-		if(code == "PROMO") then
-			if(getAccountData(account, "rafalh_vip_promo")) then
-				outputChatBox("PM: You have already used VIP promotion code.", source, 255, 96, 96)
-			elseif(g_VipGroup) then
-				local accName = getAccountName(account)
-				setAccountData(account, "rafalh_vip_promo", 1)
-				aclGroupAddObject(g_VipGroup, "user."..accName)
-				local tm = getRealTime()
-				local t = math.max(getAccountData(account, "rafalh_vip_time") or tm.timestamp, tm.timestamp)
-				t = t + 60*60
-				setAccountData(account, "rafalh_vip_time", t)
-				
-				local tm = getRealTime(t)
-				local limitStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-				outputServerLog("VIP rank activated for "..accName..". It will be valid untill "..limitStr)
-				outputChatBox("VIP activated successfully! It will be valid for 1 hour untill "..limitStr, source, 0, 255, 0)
-			end
-		else
-			local err = false
-			
-			local shared_res = getResourceFromName("rafalh_shared")
-			if(shared_res and getResourceState(shared_res) == "running") then
-				local code_encoded = call(shared_res, "HttpEncodeUrl", code)
-				local url = "http://mtatoxic.tk/scripts/NGWm5LtQ5fmnnmpx/activate_code.php?code="..code_encoded
-				local req = call(shared_res, "HttpSendRequest", url, false, "GET", false, account, player)
-				if(req) then
-					addEventHandler("onHttpResult", req, VipOnActivationResult)
-				else
-					err = 2
-				end
-			else
-				err = 1
-			end
-			
-			if(err) then
-				outputChatBox("Error "..err.."! Failed to activate VIP account. Please contact administrator.", source, 255, 96, 96)
-			end
-		end
-	else
-		outputChatBox("PM: Usage: /activatevip <code>", source, 255, 96, 96)
-	end
-end, false, false)
-
-local function findPlayer(str)
-	if(not str) then
-		return false
-	end
-	
-	local player = getPlayerFromName(str) -- returns player or false
-	if(player) then
-		return player
-	end
-	
-	str = str:lower()
-	for i, player in ipairs(getElementsByType("player")) do
-		local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", ""):lower()
-		if(name:find(str, 1, true)) then
-			return player
-		end
-	end
-	
-	return false
-end
-
-addCommandHandler("givevip", function(source, cmd, name, days)
-	if(hasObjectPermissionTo(source, "resource.rafalh_vip.givevip", false)) then
-		local player = findPlayer(name)
-		local days = math.floor(tonumber(days) or 30)
-		local account = player and getPlayerAccount(player)
-		
-		if(giveVip(player, days)) then
-			local timestamp = getAccountData(account, "rafalh_vip_time")
-			local tm = timestamp and getRealTime(timestamp)
-			local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
-			
-			local limitStr = ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-			outputChatBox("PM: VIP rank successfully given to "..name.."! It will be valid untill "..limitStr, source, 255, 96, 96, true)
-			outputChatBox("VIP activated successfully! It will be valid untill "..limitStr, player, 0, 255, 0)
-		else
-			outputChatBox("PM: Usage: /givevip <name> [<days>]", source, 255, 96, 96)
-		end
-	else
-		outputChatBox("PM: Access is denied!", source, 255, 96, 96)
-	end
-end, false, false)
-
-addCommandHandler("isvip", function(source, cmd, name)
-	local player = findPlayer(name)
-	
-	if(player) then
-		local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
-		local is_vip, timestamp = isVip(player)
-		local tm = timestamp and getRealTime(timestamp)
-		
-		if(is_vip) then
-			if(timestamp) then
-				outputChatBox("PM: "..name.." is a VIP untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute), source, 255, 96, 96, true)
-			else
-				outputChatBox("PM: "..name.." is a VIP.", source, 255, 96, 96, true)
-			end
-		else
-			if(timestamp) then
-				outputChatBox("PM: "..name.." was a VIP untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute), source, 255, 96, 96, true)
-			else
-				outputChatBox("PM: "..name.." is not a VIP.", source, 255, 96, 96, true)
-			end
-		end
-	else
-		outputChatBox("PM: Usage: /isvip <name>", source, 255, 96, 96)
-	end
-end, false, false)
-
 local function VipInit()
 	if(not g_VipGroup) then
 		g_VipGroup = aclCreateGroup("VIP")
@@ -517,66 +303,240 @@ local function VipInit()
 	addEventHandler("onPlayerPickUpRacePickup", g_Root, VipOnPlayerPickUpRacePickup)
 end
 
+local function VipGetPlayerFromAccount(account)
+	for i, player in ipairs(getElementsByType("player")) do
+		if(getPlayerAccount(player) == account) then
+			return player
+		end
+	end
+	
+	return false
+end
+
+local function VipActivationError(reason, player)
+	local fmt = "VIP activation failed: %s. Please contact administrator."
+	outputChatBox(fmt:format(reason), player or root, 255, 0, 0)
+	outputDebugString('VIP activation failed: '..reason..' for '..(player and getPlayerName(player) or 'unknown'), 3)
+end
+
+local function VipActivatePlayerPromoCode(player)
+	local account = getPlayerAccount(player)
+	if(getAccountData(account, "rafalh_vip_promo")) then
+		outputChatBox("You have already used VIP promotion code.", player, 255, 0, 0)
+		return false
+	elseif(not g_VipGroup) then
+		VipActivationError("VIP group has not been found.")
+		return false
+	end
+	
+	local accName = getAccountName(account)
+	setAccountData(account, 'rafalh_vip_promo', 1)
+	
+	local status, limit = VipAdd(account, 60*60)
+	if(not status) then
+		VipActivationError("VipAdd failed")
+		return false
+	end
+	
+	outputChatBox("VIP activated successfully! Rank will be valid for 1 hour untill "..(limit and formatDateTime(limit) or 'N/A'), player, 0, 255, 0)
+	return true
+end
+
+local function VipActivationCallback(data, errno, account)
+	local player = VipGetPlayerFromAccount(account)
+	
+	if(errno ~= 0) then
+		VipActivationError("fetchRemote failed with code "..tostring(errno), player)
+		return
+	end
+	
+	local accName = account and getAccountName(account)
+	if(not accName) then
+		VipActivationError("account is invalid", player)
+		return
+	end
+	
+	local days, statusMsg = fromJSON(data)
+	local days = tonumber(days)
+	if(not days or days <= 0 or days > 100) then
+		if(statusMsg) then
+			statusMsg = tostring(statusMsg):sub(1, 64)
+		else
+			statusMsg = tostring(data):gsub("<[^>]+>", ""):sub(1, 64)
+		end
+		VipActivationError(statusMsg, player)
+		return
+	elseif(not g_VipGroup) then
+		VipActivationError("VipGroup does not exist", player)
+		return
+	end
+	
+	-- Check if this is a promotion
+	local tm = getRealTime()
+	local promo = false
+	if(tm.year*12*31 + tm.month*31 + tm.monthday >= $((PROMO_YEAR1-1900)*12*31+(PROMO_MONTH1-1)*31+PROMO_DAY1) and tm.year*12*31 + tm.month*31 + tm.monthday <= $((PROMO_YEAR2-1900)*12*31+(PROMO_MONTH2-1)*31+PROMO_DAY2)) then
+		days = days + $(PROMO_MONTHS)*30
+		promo = true
+	end
+	
+	local status, limit = VipAdd(account, days*24*3600)
+	if(not status) then
+		VipActivationError('giveVip failed', player)
+		return
+	end
+	
+	if(player) then
+		local limitStr = limit and formatDateTime(limit) or 'N/A'
+		local msg
+		if(not promo) then
+			msg = "VIP activated successfully! Rank will be valid untill "..limitStr
+		else
+			msg = "VIP activated successfully! Rank will be valid untill "..limitStr
+		end
+		outputChatBox(msg, player, 0, 255, 0)
+	end
+end
+
 ----------------------
 -- Global functions --
 ----------------------
 
-function giveVip(player, days)
-	local days = tonumber(days) or 30
-	local account = player and getPlayerAccount(player)
+function formatDateTime(timestamp)
+	local tm = getRealTime(timestamp)
+	return ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+end
+
+function isPlayer(val)
+	return isElement(val) and getElementType(val) == 'player'
+end
+
+function urlEncode(str)
+	return str:gsub('[^%w%.%-_ ]', function(ch)
+		return ('%%%02X'):format(ch:byte())
+	end):gsub(' ', '+')
+end
+
+function VipCheck(playerOrAccount)
+	local account = isPlayer(playerOrAccount) and getPlayerAccount(playerOrAccount) or playerOrAccount
+	assert(account)
 	
-	if(not account or isGuestAccount(account) or not g_VipGroup) then
+	local status, limit = false, false
+	local now = getRealTime().timestamp
+	
+	local promoEnd = tonumber(get("promo_end"))
+	if(promoEnd > now) then
+		status = true
+		limit = promoEnd
+	end
+	
+	local accountName = getAccountName(account)
+	if(hasObjectPermissionTo('user.'..accountName, g_VipRight, false)) then
+		local accLimit = getAccountData(account, "rafalh_vip_time")
+		if(accLimit and accLimit < now) then
+			-- Expired
+			VipRemove(account)
+		elseif(not status or not accLimit or accLimit > limit) then
+			-- Account limit is better
+			status = true
+			limit = accLimit
+		end
+	end
+	
+	return status, limit
+end
+
+function VipAdd(playerOrAccount, seconds)
+	local player = isPlayer(playerOrAccount) and playerOrAccount or VipGetPlayerFromAccount(playerOrAccount)
+	local account = isPlayer(playerOrAccount) and getPlayerAccount(playerOrAccount) or playerOrAccount
+	local seconds = tonumber(seconds)
+	assert(account and seconds)
+	
+	if(isGuestAccount(account) or not g_VipGroup) then
 		return false
 	end
 	
-	aclGroupAddObject(g_VipGroup, "user."..getAccountName(account))
+	local access, limit = VipCheck(account)
+	if(access and not limit) then
+		return true, false -- infinite VIP
+	end
 	
 	local now = getRealTime().timestamp
-	local timestamp = math.max(getAccountData(account, "rafalh_vip_time") or 0, now) + days*24*60*60
+	local newLimit = math.max(limit or now, now) + seconds
 	
-	setAccountData(account, "rafalh_vip_time", timestamp)
+	local accountName = getAccountName(account)
+	if(newLimit > now) then
+		aclGroupAddObject(g_VipGroup, "user."..accountName)
+		outputServerLog("VIP rank activated for "..accountName..". It will be active untill "..formatDateTime(newLimit))
+	elseif(access) then
+		-- Not VIP anymore
+		VipRemove(account)
+		setAccountData(account, "rafalh_vip_time", now)
+	end
 	
-	local tm = getRealTime(timestamp)
+	if(player) then
+		-- Send VIP limit to player (even if he was a VIP)
+		triggerClientEvent(player, "vip.onVerified", g_Root, newLimit)
+	end
 	
-	outputServerLog("VIP rank activated for "..getAccountName(account)..". It will be active untill "..("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute))
+	return true, newLimit
+end
+
+function VipRemove(playerOrAccount)
+	local player = isPlayer(playerOrAccount) and playerOrAccount or VipGetPlayerFromAccount(playerOrAccount)
+	local account = isPlayer(playerOrAccount) and getPlayerAccount(playerOrAccount) or playerOrAccount
+	assert(account)
 	
-	if(timestamp > now) then
-		triggerClientEvent(player, "vip.onVerified", g_Root, timestamp)
+	local accName = getAccountName(account)
+	if(not aclGroupRemoveObject(g_VipGroup, "user."..accName)) then return false end
+	
+	outputServerLog("VIP rank disactivated for "..accName..".")
+	if(player) then
+		outputChatBox("Your VIP rank has been disactivated!", player, 255, 0, 0)
+	end
+end
+
+function VipActivatePlayerCode(player, code)
+	if(code == "PROMO") then
+		return VipActivatePlayerPromoCode(player)
+	end
+	
+	local account = getPlayerAccount(player)
+	local url = ('$ACTIVATION_URL'):format(urlEncode(code))
+	if(not fetchRemote(url, VipActivationCallback, '', false, account)) then
+		VipActivationError('fetchRemote failed', player)
+		return false
 	end
 	
 	return true
 end
 
+function VipGetAll()
+	local ret = {}
+	local vips = aclGroupListObjects(g_VipGroup)
+	for i, objName in ipairs(vips) do
+		if(objName:sub(1, 5) == 'user.') then
+			local accountName = objName:sub(6)
+			local account = getAccount(accountName)
+			if(not account) then
+				table.insert(ret, {accountName, false})
+			else
+				local access, limit = VipCheck(account)
+				if(access) then
+					table.insert(ret, {account, limit})
+				end
+			end
+		end
+	end
+	return ret
+end
+
+function giveVip(playerOrAccount, days)
+	local days = tonumber(days) or 30
+	return VipAdd(playerOrAccount, days*24*3600)
+end
+
 function isVip(player, account)
-	local is_vip, timestamp = false, false
-	local now = getRealTime().timestamp
-	
-	if(not account) then
-		account = getPlayerAccount(player)
-	end
-	
-	local promo_end = tonumber(get("promo_end"))
-	if(promo_end > now) then
-		timestamp = promo_end
-		is_vip = true
-	end
-	
-	if(hasObjectPermissionTo(player, "resource.rafalh_vip", false)) then
-		local acc_timestamp = getAccountData(account, "rafalh_vip_time")
-		timestamp = acc_timestamp and math.max(timestamp or 0, acc_timestamp)
-		if(not acc_timestamp or timestamp > now) then
-			is_vip = true
-		end
-		
-		if(timestamp and timestamp < now) then
-			local accName = getAccountName(account)
-			aclGroupRemoveObject(g_VipGroup, "user."..accName)
-			outputServerLog("VIP rank disactivated for "..accName..".")
-			outputChatBox("Your VIP rank has been disactivated!", player, 255, 0, 0)
-		end
-	end
-	
-	return is_vip, timestamp
+	return VipCheck(account or player)
 end
 
 ------------
