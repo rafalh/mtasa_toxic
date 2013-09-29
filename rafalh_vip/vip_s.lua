@@ -476,7 +476,7 @@ function VipAdd(playerOrAccount, seconds)
 		end
 	end
 	
-	outputDebugString('VipAdd '..getAccountName(account)..' '..seconds..' - old '..tostring(limit)..', new '..tostring(newLimit), 3)
+	--outputDebugString('VipAdd '..getAccountName(account)..' '..seconds..' - old '..tostring(limit)..', new '..tostring(newLimit), 3)
 	
 	-- Update limit
 	setAccountData(account, 'rafalh_vip_time', newLimit)
@@ -552,7 +552,7 @@ function giveVip(playerOrAccount, days)
 	local days = tonumber(days or 30)
 	assert(playerOrAccount and days)
 	local success = VipAdd(playerOrAccount, days*24*3600)
-	outputDebugString('giveVip '..getPlayerName(playerOrAccount)..' '..days..': '..tostring(success), 3)
+	--outputDebugString('giveVip '..getPlayerName(playerOrAccount)..' '..days..': '..tostring(success), 3)
 	return success
 end
 
@@ -564,4 +564,4 @@ end
 -- Events --
 ------------
 
-addEventHandler("onResourceStart", g_ResRoot, VipInit)
+addEventHandler('onResourceStart', g_ResRoot, VipInit)
