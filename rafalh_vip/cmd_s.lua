@@ -47,10 +47,14 @@ addCommandHandler('givevip', function(source, cmd, name, days)
 	
 	local success, limit = VipAdd(player, days*24*3600)
 	if(success) then
-		local name = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
+		local name = getPlayerName(player):gsub('#%x%x%x%x%x%x', '')
 		local limitStr = limit and formatDateTime(limit) or 'N/A'
 		outputChatBox("PM: VIP rank successfully given to "..name.."! It will be valid untill "..limitStr, source, 255, 96, 96, true)
-		outputChatBox("VIP activated successfully! It will be valid untill "..limitStr, player, 0, 255, 0)
+		
+		local now = getRealTime().timestamp
+		if(limit and limit > now) then
+			outputChatBox("VIP activated successfully! It will be valid untill "..limitStr, player, 0, 255, 0)
+		end
 	else
 		outputChatBox("PM: Failed to give VIP rank", source, 255, 96, 96)
 	end

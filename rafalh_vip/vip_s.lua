@@ -455,27 +455,45 @@ function VipAdd(playerOrAccount, seconds)
 		return false
 	end
 	
+	local now = getRealTime().timestamp
+	local newLimit
 	local access, limit = VipCheck(account)
-	if(access and not limit) then
-		return true, false -- infinite VIP
+	if(access) then
+		if(limit) then
+			-- extend access
+			newLimit = math.max(math.max(limit, now) + seconds, now)
+		else
+			-- endless access
+			return true, false 
+		end
+	else
+		if(seconds <= 0) then
+			-- Trying to give negative number for not VIP
+			return false, false
+		else
+			-- new VIP
+			newLimit = now + seconds
+		end
 	end
 	
-	local now = getRealTime().timestamp
-	local newLimit = math.max(limit or now, now) + seconds
+	outputDebugString('VipAdd '..getAccountName(account)..' '..seconds..' - old '..tostring(limit)..', new '..tostring(newLimit), 3)
 	
-	local accountName = getAccountName(account)
+	-- Update limit
+	setAccountData(account, 'rafalh_vip_time', newLimit)
+	
 	if(newLimit > now) then
-		aclGroupAddObject(g_VipGroup, "user."..accountName)
+		-- Add to group if needed
+		local accountName = getAccountName(account)
+		aclGroupAddObject(g_VipGroup, 'user.'..accountName)
 		outputServerLog("VIP rank activated for "..accountName..". It will be active untill "..formatDateTime(newLimit))
 	elseif(access) then
 		-- Not VIP anymore
 		VipRemove(account)
-		setAccountData(account, "rafalh_vip_time", now)
 	end
 	
 	if(player) then
 		-- Send VIP limit to player (even if he was a VIP)
-		triggerClientEvent(player, "vip.onVerified", g_Root, newLimit)
+		triggerClientEvent(player, 'vip.onVerified', g_Root, newLimit)
 	end
 	
 	return true, newLimit
@@ -487,7 +505,7 @@ function VipRemove(playerOrAccount)
 	assert(account)
 	
 	local accName = getAccountName(account)
-	if(not aclGroupRemoveObject(g_VipGroup, "user."..accName)) then return false end
+	if(not aclGroupRemoveObject(g_VipGroup, 'user.'..accName)) then return false end
 	
 	outputServerLog("VIP rank disactivated for "..accName..".")
 	if(player) then
@@ -496,7 +514,7 @@ function VipRemove(playerOrAccount)
 end
 
 function VipActivatePlayerCode(player, code)
-	if(code == "PROMO") then
+	if(code == 'PROMO') then
 		return VipActivatePlayerPromoCode(player)
 	end
 	
@@ -531,8 +549,11 @@ function VipGetAll()
 end
 
 function giveVip(playerOrAccount, days)
-	local days = tonumber(days) or 30
-	return VipAdd(playerOrAccount, days*24*3600)
+	local days = tonumber(days or 30)
+	assert(playerOrAccount and days)
+	local success = VipAdd(playerOrAccount, days*24*3600)
+	outputDebugString('giveVip '..getPlayerName(playerOrAccount)..' '..days..': '..tostring(success), 3)
+	return success
 end
 
 function isVip(player, account)
