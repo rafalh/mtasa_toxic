@@ -28,6 +28,7 @@ local function setWinner(playerEl, rank)
 	if(player) then
 		if(g_RaceRes:isReady()) then
 			veh = g_RaceRes:call('getPlayerVehicle', player.el)
+			if(not isElement(veh)) then veh = false end -- try to fix warning
 		end
 		if(not veh) then
 			veh = getPedOccupiedVehicle(player.el)

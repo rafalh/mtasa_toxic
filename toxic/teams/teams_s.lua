@@ -125,6 +125,7 @@ end
 
 local function Teams_updatePlayerTeam(player, name)
 	local pdata = Player.fromEl(player)
+	if(not pdata) then return end -- happens when setPlayerNick is called in onPlayerJoin handler
 	local teamInfo = Teams_findTeamForPlayer(player, name)
 	
 	local oldTeamInfo = pdata.teamInfo or false
@@ -158,7 +159,8 @@ local function Teams_updatePlayerTeam(player, name)
 		if(created) then
 			-- Find all players for this team
 			for player, pdata in pairs(g_Players) do
-				if(pdata.teamInfo == teamInfo) then
+				if(not pdata.is_console and pdata.teamInfo == teamInfo) then
+					assert(isElement(player))
 					setPlayerTeam(player, teamInfo.el)
 				end
 			end
@@ -236,7 +238,9 @@ end
 
 function Teams.updateAllPlayers()
 	for player, pdata in pairs(g_Players) do
-		Teams_updatePlayerTeam(player)
+		if(not pdata.is_console) then
+			Teams_updatePlayerTeam(player)
+		end
 	end
 	--Teams_destroyEmpty()
 end

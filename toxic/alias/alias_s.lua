@@ -28,8 +28,6 @@ function AlGetPlayerAliases(player)
 end
 
 local function AlOnPlayerChangeNick(oldNick, newNick)
-	if(wasEventCancelled()) then return end
-	
 	local player = Player.fromEl(source)
 	if(player) then
 		AlAddPlayerAlias(player, newNick)

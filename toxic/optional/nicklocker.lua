@@ -25,14 +25,11 @@ end
 end
 
 local function NlOnPlayerJoin ()
-	if ( wasEventCancelled () ) then return end
-	outputChatBox ( 'NlOnPlayerJoin' )
+	--outputChatBox ( 'NlOnPlayerJoin' )
 	NlCheckPlayer ( source, getPlayerName ( source ), true )
 end
 
 local function NlOnPlayerChangeNick ( oldNick, newNick )
-	if ( wasEventCancelled () ) then return end
-	
 	if ( NlCheckPlayer ( source, newNick ) ) then
 		cancelEvent ()
 	end

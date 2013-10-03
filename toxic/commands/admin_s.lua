@@ -79,6 +79,21 @@ end
 
 CmdRegister('ban24h', CmdBan24h, 'resource.'..g_ResName..'.ban24h', "Bans player for 24 hours")
 
+local function CmdBan7d(message, arg)
+	local player = (#arg >= 2 and Player.find(arg[2]))
+	local reason = arg[3]
+	
+	if(player) then
+		local accountName = getAccountName(getPlayerAccount(source))
+		local admin = Player.fromEl(source)
+		
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (7 days)!", player:getName(true), admin:getName(true))
+		addBan(nil, nil, player:getSerial(), source, '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or ''), 7*24*3600)
+	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
+end
+
+CmdRegister('ban7d', CmdBan7d, 'resource.'..g_ResName..'.ban7d', "Bans player for 7 days")
+
 local function CmdMute(message, arg)
 	local player = (#arg >= 2 and Player.find(arg[2]))
 	local sec = touint(arg[3]) or Settings.mute_time
