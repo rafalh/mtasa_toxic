@@ -241,7 +241,6 @@ local function CmdMergeAccounts(message, arg)
 		local newData = {}
 		newData.cash = player.accountData.cash + src_data.cash
 		newData.points = player.accountData.points + src_data.points
-		newData.warnings = player.accountData.warnings + src_data.warnings
 		newData.bidlvl = math.max(src_data.bidlvl, player.accountData.bidlvl)
 		newData.time_here = player.accountData.time_here + src_data.time_here
 		newData.first_visit = src_data.first_visit

@@ -105,7 +105,6 @@
     <msg id="%s&apos;s trace: %s.">Wyśledzono gracza %s: %s.</msg>
     <msg id="%s&apos;s time here: %s.">Czas gry gracza %s: %s.</msg>
     <msg id="%s seen since %d:%02u:%02u.">%s widziany od %d:%02u:%02u.</msg>
-    <msg id="%s has been warned %u times.">%s został ostrzeżony %u razy.</msg>
     <msg id="%s&apos;s MTA version: %s (revision %s).">Wersja MTA gracza %s: %s (rewizja %s).</msg>
     <msg id="Local time: %d-%02d-%02d %d:%02d:%02d.">Lokalny czas: %d-%02d-%02d %d:%02d:%02d.</msg>
     <msg id="Total maps count: %u.">Liczba wszystkich map: %u.</msg>
@@ -137,11 +136,11 @@
     <msg id="Aliases for %s:">Aliasy gracza %s:</msg>
 	<msg id="You cannot use sound commands so often!">Nie możesz tak często używać komend dźwiękowych!</msg>
 	
+	
 	<msg id="%s has %u/%u warnings.">%s ma %u/%u ostrzeżeń.</msg>
-	<msg id="%s has been warned by %s and has now %u/%u warnings.">%s został ostrzeżony przez %s i ma teraz %u/%u ostrzeżeń.</msg>
+	<msg id="You have been warned by %s and have now %u/%u warnings. Reason of new warning: %s">Zostałeś ostrzeżony przez %s i masz teraz %u/%u ostrzeżeń. Powód nowego ostrzeżenia: %s</msg>
 	<msg id="%s has been banned by %s after %u warnings!">%s został zbanowany przez %s po %u ostrzeżeniach.</msg>
-	<msg id="%s's warning has been removed by %s!">Ostrzeżenie gracza %s zostało usunięte przez %s!</msg>
-	<msg id="%s has no warnings!">%s nie ma żadnych ostrzeżeń!</msg>
+	<msg id="Your warning has been removed by %s!">Twoje ostrzeżenie zostało usunięte przez %s!</msg>
 	
 	<msg id="You have been killed by %s (%u. level)!">Zostałeś zabity przez %s (%u. level)!</msg>
 	<msg id="You have killed %s (%u. level) and receive %s!">Zabiłes %s (%u. level) i otrzymałeś %s!</msg>

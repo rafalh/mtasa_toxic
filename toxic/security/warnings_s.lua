@@ -2,29 +2,63 @@ PlayersTable:addColumns{
 	{'warnings', 'TINYINT UNSIGNED', default = 0},
 }
 
-function warnPlayer(player, source)
+WarningsTable = Database.Table{
+	name = 'warnings',
+	{'id', 'INT UNSIGNED', pk = true},
+	{'serial', 'VARCHAR(32)'},
+	{'admin', 'INT UNSIGNED', fk = {'players', 'player'}},
+	{'reason', 'TEXT'},
+	{'timestamp', 'INT UNSIGNED'},
+	{'duration', 'INT UNSIGNED'},
+}
+
+local ListWarningsRight = AccessRight('warnings')
+local DelWarningRight = AccessRight('unwarn')
+
+function warnPlayer(player, admin, reason, duration)
+	assert(player and admin and reason)
+	local now = getRealTime().timestamp
+	
+	-- Add warning to database
+	DbQuery('INSERT INTO '..WarningsTable..' (serial, admin, reason, timestamp, duration) VALUES(?, ?, ?, ?, ?)', player:getSerial(), admin.id, reason, now, duration or 0)
+	
+	-- Check how many warnings player has
+	local warnsCount = DbCount(WarningsTable, 'serial=?', player:getSerial())
 	local maxWarns = Settings.max_warns
-	if(maxWarns > 0 and player.accountData.warnings >= maxWarns) then
-		player.accountData.warnings = 0
-		return true
-	else
-		player.accountData:add('warnings', 1)
+	if(maxWarns == 0 or warnsCount < maxWarns) then
 		return false
 	end
+	
+	-- Warnings limit reached
+	DbQuery('DELETE FROM '..WarningsTable..' WHERE serial=?', player:getSerial())
+	
+	-- Output message first
+	local playerName = player:getName(true)
+	local adminName = admin:getName(true)
+	outputMsg(root, Styles.red, "%s has been banned by %s after %u warnings!",
+		playerName, adminName, Settings.max_warns)
+	
+	-- Ban player
+	addBan(nil, nil, player:getSerial(), admin.el,
+		'Warnings limit reached - '..Settings.max_warns, Settings.warn_ban*24*3600)
+	return true
 end
 
-function unwarnPlayer(player)
-	if(player.accountData.warnings > 0) then
-		player.accountData:add('warnings', -1)
-		return true
-	end
-	return false
+function getPlayerWarningsCount(player)
+	return DbCount(WarningsTable, 'serial=?', player:getSerial())
 end
 
 local function CmdWarnings(message, arg)
 	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
-	local warns = player.accountData.warnings
-	scriptMsg("%s has %u/%u warnings.", player:getName(), warns, Settings.max_warns)
+	local sourcePlayer = Player.fromEl(source)
+	
+	if(player == sourcePlayer or ListWarningsRight:check(source)) then
+		local warns = DbQuery('SELECT w.id, w.reason, w.timestamp, p.name AS admin FROM '..WarningsTable..' w, '..PlayersTable..' p WHERE w.serial=? AND p.player=w.admin', player:getSerial())
+		RPC('openWarningsWnd', player.el, warns):setClient(source):exec()
+	else
+		local warnsCount = getPlayerWarningsCount(player)
+		scriptMsg("%s has %u/%u warnings.", player:getName(), warnsCount, Settings.max_warns)
+	end
 end
 
 CmdRegister('warnings', CmdWarnings, false, "Shows player warnings count")
@@ -35,35 +69,50 @@ local function CmdWarn(message, arg)
 	local admin = Player.fromEl(source)
 	
 	if(player) then
-		local playerName = player:getName(true)
-		local adminName = admin:getName(true)
-		
-		if(not warnPlayer(player, admin)) then
-			outputMsg(root, Styles.red, "%s has been warned by %s and has now %u/%u warnings.",
-				playerName, adminName, player.accountData.warnings, Settings.max_warns)
-		else
-			outputMsg(root, Styles.red, "%s has been banned by %s after %u warnings!",
-				playerName, adminName, Settings.max_warns)
-			addBan(nil, nil, player:getSerial(), admin.el,
-				'Warnings limit reached ('..Settings.max_warns..')', Settings.warn_ban*24*3600)
-		end
+		RPC('openWarnPlayerWnd', player.el):setClient(source):exec()
 	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
 end
 
 CmdRegister('warn', CmdWarn, 'resource.'..g_ResName..'.warn', "Adds player warning and bans if he has too many")
 
-local function CmdUnwarn (message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
+function warnPlayerRPC(playerEl, reason)
+	local player = Player.fromEl(playerEl)
 	local admin = Player.fromEl(source)
 	
-	if(player) then
-		if(unwarnPlayer(player)) then
-			outputMsg(root, Styles.green, "%s's warning has been removed by %s!",
-				player:getName(true), admin:getName(true))
-		else
-			privMsg(source, "%s has no warnings!", player:getName())
-		end
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
+	if(not player or not reason) then
+		privMsg(admin, "Failed to warn player!")
+		return false
+	end
+	
+	if(not warnPlayer(player, admin, reason)) then
+		local playerName = player:getName(true)
+		local adminName = admin:getName(true)
+		local warnsCount = getPlayerWarningsCount(player)
+		--[[outputMsg(root, Styles.red, "%s has been warned by %s and has now %u/%u warnings.",
+			playerName, adminName, warnsCount, Settings.max_warns)]]
+		outputMsg(player, Styles.red, "You have been warned by %s and have now %u/%u warnings. Reason of new warning: %s",
+			adminName, warnsCount, Settings.max_warns, reason)
+	end
+	return true
 end
+RPC.allow('warnPlayerRPC')
 
-CmdRegister('unwarn', CmdUnwarn, 'resource.'..g_ResName..'.unwarn', "Removes player warning")
+function deleteWarningRPC(id)
+	local admin = Player.fromEl(source)
+	if(not DelWarningRight:check(admin)) then return false end
+	
+	local rows = DbQuery('SELECT serial FROM '..WarningsTable..' WHERE id=?', id)
+	local data = rows and rows[1]
+	if(not data) then return false end
+	
+	DbQuery('DELETE FROM '..WarningsTable..' WHERE id=?', id)
+	
+	local player = Player.fromSerial(data.serial)
+	if(player) then
+		outputMsg(player, Styles.green, "Your warning has been removed by %s!",
+			admin:getName(true))
+	end
+	
+	return true
+end
+RPC.allow('deleteWarningRPC')

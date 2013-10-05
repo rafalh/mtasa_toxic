@@ -232,4 +232,12 @@
 	
 	<msg id="Car Hide has been enabled">Car Hide został włączony</msg>
 	<msg id="Car Hide has been disabled">Car Hide został wyłączony</msg>
+	
+	<msg id="Warn player">Ostrzeż gracza</msg>
+	<msg id="Reason:">Powód:</msg>
+	<msg id="Warnings list">Lista ostrzeżeń</msg>
+	<msg id="Active warnings:">Aktywne ostrzeżenia:</msg>
+	<msg id="From">Od</msg>
+	<msg id="Date">Data</msg>
+	<msg id="Reason">Powód</msg>
 </strings>

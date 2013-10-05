@@ -169,4 +169,32 @@
 		<button id="ok" rx="50" x="-85" ry="100" y="-35" w="80" h="25" text="OK" />
 		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
+	
+	<window id="warnPlayer" title="Warn player" rx="50" x="-150" ry="50" y="-100" w="300" h="200">
+		<label x="10" y="25" w="60" h="20" text="Player:" />
+		<label id="name" x="70" y="25" rw="100" w="-80" h="20" text="" />
+		
+		<label x="10" y="50" w="60" h="20" text="Reason:" />
+		<memo id="reason" x="10" y="70" rw="100" w="-20" rh="100" h="-115" />
+		
+		<button id="ok" rx="50" x="-85" ry="100" y="-35" w="80" h="25" text="OK" />
+		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />
+	</window>
+	
+	<window id="warningsList" title="Warnings list" rx="50" x="-200" ry="50" y="-100" w="500" h="250">
+		<label x="10" y="25" w="130" h="20" text="Player:" />
+		<label id="name" x="140" y="25" rw="100" w="-220" h="20" text="" />
+		<label x="10" y="45" w="130" h="20" text="Active warnings:" />
+		<label id="count" x="140" y="45" rw="100" w="-220" h="20" text="" />
+		
+		<button id="delete" rx="100" x="-70" y="40" w="60" h="25" text="Delete" visible="false" />
+		
+		<list id="list" x="10" y="70" rw="100" w="-20" rh="100" h="-110" sorting="false">
+			<column id="fromCol" text="From" w="0.2" />
+			<column id="dateCol" text="Date" w="0.25" />
+			<column id="reasonCol" text="Reason" w="0.45" />
+		</list>
+		
+		<button id="close" rx="50" x="-40" ry="100" y="-35" w="80" h="25" text="Close" />
+	</window>
 </gui>

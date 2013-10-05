@@ -79,6 +79,11 @@ function DbQuerySync(query, ...)
 	return result
 end
 
+function DbCount(tbl, whereCond, ...)
+	local rows = DbQuery('SELECT COUNT(*) AS c FROM '..tbl..' WHERE '..whereCond, ...)
+	return rows and rows[1] and rows[1].c
+end
+
 function Database.createTable(tbl)
 	return g_Driver and g_Driver:createTable(tbl)
 end

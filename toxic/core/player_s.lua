@@ -2,6 +2,7 @@ Player = {}
 Player.__mt = {__index = {cls = Player}}
 Player.idMap = {}
 Player.elMap = {}
+Player.serialMap = {}
 g_Players = Player.elMap -- FIXME
 
 local g_AdminRes = Resource('admin')
@@ -165,6 +166,7 @@ function Player.__mt.__index:destroy()
 	self:disconnectFromAccount()
 	
 	Player.elMap[self.el] = nil
+	Player.serialMap[self:getSerial()] = nil
 	
 	if(not self.is_console) then
 		g_PlayersCount = g_PlayersCount - 1
@@ -206,6 +208,7 @@ function Player.create(el)
 	self:setAccount(account)
 	
 	Player.elMap[self.el] = self
+	Player.serialMap[self:getSerial()] = self
 	
 	self.lang = 'en'
 	setElementData(self.el, 'lang', self.lang)
@@ -236,6 +239,12 @@ end
 
 function Player.fromEl(el)
 	local pl = Player.elMap[el]
+	--if(not pl) then outputDebugString('Failed to find player by element: '..tostring(el), 2) DbgTraceBack() end
+	return pl
+end
+
+function Player.fromSerial(serial)
+	local pl = Player.serialMap[serial]
 	--if(not pl) then outputDebugString('Failed to find player by element: '..tostring(el), 2) DbgTraceBack() end
 	return pl
 end
