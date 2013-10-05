@@ -1,10 +1,6 @@
 local g_ForbWords = {}
 
-function CsProcessMsg(msg, player)
-	if(not Settings.censor) then
-		return 0, msg
-	end
-	
+function CsProcessMsg(msg)
 	local offsets = {}
 	local offset = 0
 	
@@ -22,59 +18,96 @@ function CsProcessMsg(msg, player)
 		offset = offsets[i]
 	end
 	
-	local fine, hide, mute = 0, false, false
+	local punish = {fine = 0, mute = 0, warn = false, hide = false}
+	local maskWords = Settings.censor_mask
+	local found = false
 	
 	for word, item in pairs(g_ForbWords) do
 		local pattern = word:lower()
 		pattern = pattern:gsub('.', '%1+')
 		for i, j in buf:gmatch('()'..pattern..'()') do
-			local before = msg:sub(1, offsets[i] - 1)
-			local after = msg:sub(offsets[j])
-			local masked = ('*'):rep(word:len())
+			-- Bad word has been found
+			found = true
 			
-			msg = before..masked..after -- change word to *****
+			if(maskWords) then
+				-- Change word to *****
+				local before = msg:sub(1, offsets[i] - 1)
+				local after = msg:sub(offsets[j])
+				local masked = ('*'):rep(word:len())
+				msg = before..masked..after
+			end
 			
-			fine = math.max(fine, item.price)
-			hide = hide or item.hide
-			mute = mute or item.mute
+			-- Update punishment data
+			punish.fine = math.max(punish.fine, item.fine)
+			punish.mute = math.max(punish.mute, item.mute)
+			punish.warn = punish.warn or item.warn
+			punish.hide = punish.hide or item.hide
 		end
 	end
 	
-	if(hide) then
+	if(not found) then
+		return msg, false
+	end
+	
+	-- Censored words have been found
+	punish.fine = math.max(punish.fine, Settings.censor_fine)
+	punish.mute = math.max(punish.mute, Settings.censor_mute)
+	punish.warn = punish.warn or Settings.censor_warn
+	punish.hide = punish.hide or Settings.censor_hide
+	
+	if(punish.hide) then
 		msg = false
+	end
+	
+	return msg, punish
+end
+
+function CsPunish(player, punishment)
+	if(punishment.fine > 0) then
+		player.accountData:add('cash', -punishment.fine)
+		outputMsg(player, Styles.red, "Do not swear %s! %s has been taken from your cash.", player:getName(true), formatMoney(punishment.fine))
+	end
+	
+	if(punishment.mute > 0) then
+		if(player:mute(punishment.mute, 'Censor')) then
+			outputMsg(g_Root, Styles.red, "%s has been muted by Censor (%u seconds)!", player:getName(true), punishment.mute)
+		end
+	end
+	
+	if(punishment.warn) then
+		if(not warnPlayer(player, Player.getConsole(), 'Censor')) then
+			outputMsg(player, Styles.red, "You have been warned by Censor!")
+		end
+	end
+	
+	if(punishment.hide) then
 		privMsg(player, "Your message contains disallowed content!")
 	end
+end
+
+local function CsLoadWords()
+	local node = xmlLoadFile('conf/censor.xml')
+	if(not node) then return false end
 	
-	if(mute) then
-		local pdata = Player.fromEl(player)
-		local sec = 60
-		if(pdata:mute(sec, 'Censor')) then
-			outputMsg(g_Root, Styles.red, "%s has been muted by Censor (%u seconds)!", pdata:getName(true), sec)
-		end
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local attr = xmlNodeGetAttributes(subnode)
+		local word = xmlNodeGetValue(subnode)
+		assert(word:len() > 0)
+		
+		local item = {}
+		item.fine = touint(attr.price, 0)
+		item.mute = touint(attr.mute, 0)
+		item.hide = tobool(attr.hide)
+		item.warn = tobool(attr.warn)
+		g_ForbWords[word] = item
 	end
 	
-	return fine, msg
+	xmlUnloadFile(node)
+	return true
 end
 
 local function CsInit ()
-	local node, i = xmlLoadFile('conf/censor.xml'), 0
-	if(not node) then return end
-	
-	while(true) do
-		local subnode = xmlFindChild(node, 'word', i)
-		if(not subnode) then break end
-		i = i + 1
-		
-		local attr = xmlNodeGetAttributes(subnode)
-		local word = xmlNodeGetValue(subnode)
-		
-		local item = {}
-		item.price = touint(attr.price, 0)
-		item.mute = tobool(attr.mute)
-		item.hide = tobool(attr.hide)
-		g_ForbWords[word] = item
-	end
-	xmlUnloadFile(node)
+	CsLoadWords()
 end
 
 addInitFunc(CsInit)

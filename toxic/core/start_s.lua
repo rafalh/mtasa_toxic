@@ -79,24 +79,24 @@ local function setupACL()
 end
 
 local function LoadCountries()
-	local node, i = xmlLoadFile('conf/countries.xml'), 0
-	if(node) then
-		while(true) do
-			local subnode = xmlFindChild(node, 'country', i)
-			if(not subnode) then break end
-			i = i + 1
-			
-			local code = xmlNodeGetAttribute(subnode, 'code')
-			local name = xmlNodeGetAttribute(subnode, 'name')
-			assert(code and name)
-			g_Countries[code:upper()] = name
-		end
-		xmlUnloadFile(node)
+	local node = xmlLoadFile('conf/countries.xml')
+	if(not node) then return false end
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local code = xmlNodeGetAttribute(subnode, 'code')
+		local name = xmlNodeGetAttribute(subnode, 'name')
+		assert(code and name)
+		code = code:upper()
+		name = upperCaseWords(name:lower())
+		g_Countries[code] = name
 	end
+	
+	xmlUnloadFile(node)
+	return true
 end
 
 local function LoadLanguages()
-	local node, i = xmlLoadFile('conf/iso_langs.xml'), 0
+	local node = xmlLoadFile('conf/iso_langs.xml')
 	if(not node) then return false end
 	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
@@ -111,7 +111,7 @@ local function LoadLanguages()
 end
 
 local function LoadMapTypes()
-	local node, i = xmlLoadFile('conf/map_types.xml'), 0
+	local node = xmlLoadFile('conf/map_types.xml')
 	if(not node) then return false end
 	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do

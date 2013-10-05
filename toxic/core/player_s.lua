@@ -209,6 +209,9 @@ function Player.create(el)
 	
 	Player.elMap[self.el] = self
 	Player.serialMap[self:getSerial()] = self
+	if(self.is_console) then
+		Player.console = self
+	end
 	
 	self.lang = 'en'
 	setElementData(self.el, 'lang', self.lang)
@@ -247,6 +250,10 @@ function Player.fromSerial(serial)
 	local pl = Player.serialMap[serial]
 	--if(not pl) then outputDebugString('Failed to find player by element: '..tostring(el), 2) DbgTraceBack() end
 	return pl
+end
+
+function Player.getConsole()
+	return Player.console
 end
 
 function Player.find(name)

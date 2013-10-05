@@ -123,94 +123,100 @@ local function onPlayerChangeNick(oldNick, newNick)
 	end
 end
 
-local function onPlayerChat(message, messageType)
-	local message2 = message:gsub('#%x%x%x%x%x%x', '')
-	if(message2:gsub(' ', '') == '') then
+local function onPlayerChat(msg, msgType)
+	local player = Player.fromEl(source)
+	if(not player) then return end
+	
+	local msgPlain = msg:gsub('#%x%x%x%x%x%x', '')
+	if(msgPlain:gsub(' ', '') == '') then
 		cancelEvent()
 		return
 	end
 	
-	local arg = split(message, (' '):byte()) -- defined in other place
+	local arg = split(msg, (' '):byte()) -- defined in other place
 	local cmd = arg[1]:lower() -- defined in other place
 	
 	local str = cmd:match('[^%w]?(%w)')
 	if((str == 'login' or str == 'register') and arg[2]) then -- never display someone's password
-		privMsg(source, "DON'T USE \"%s\" any more!!! It could show your password to everybody. Type %s <password> instead.", arg[1], '/'..str)
+		privMsg(player, "DON'T USE \"%s\" any more!!! It could show your password to everybody. Type %s <password> instead.", arg[1], '/'..str)
 		cancelEvent()
 		return
 	end
 	
-	local fine = 0
+	local punishment = false
 	if(CsProcessMsg) then
-		fine, message = CsProcessMsg(message, source)
-		if(not message) then
+		msg, punishment = CsProcessMsg(msg)
+		if(not msg) then
+			-- Message has been blocked
+			CsPunish(player, punishment)
 			cancelEvent()
 			return
 		end
 	end
 	
-	local recipients, type_str, prefix
-	local source_name = getPlayerName(source)
-	local source_name2 = source_name:gsub('#%x%x%x%x%x%x', '')
-	local r, g, b = getPlayerNametagColor(source)
+	local recipients, typeStr, prefix
+	local playerName = player:getName(true)
+	local playerNamePlain = player:getName(false)
+	local r, g, b = getPlayerNametagColor(player.el)
 	
-	if(messageType == 0) then -- normal message
+	-- Prepare recipients list and messsage prefix
+	if(msgType == 0) then -- normal message
 		recipients = getElementsByType('player')
-		type_str = ''
+		typeStr = ''
 		prefix = ''
-	elseif(messageType == 1) then -- /me message
+	elseif(msgType == 1) then -- /me message
 		recipients = getElementsByType('player')
-		type_str = 'ME'
+		typeStr = 'ME'
 		--prefix = ''
-		message = source_name2..' '..message
-		message2 = source_name2..' '..message2
+		msg = playerNamePlain..' '..msg
+		msgPlain = playerNamePlain..' '..msgPlain
 	else -- team message
-		recipients = getPlayersInTeam(getPlayerTeam(source))
-		type_str = 'TEAM'
+		recipients = getPlayersInTeam(getPlayerTeam(player.el))
+		typeStr = 'TEAM'
 		prefix = '(TEAM) '
 	end
 	
-	-- remove recipients which ignore sender
+	-- Remove recipients which ignore sender
 	for i, player in ipairs(recipients) do
 		local ignored = getElementData(player, 'ignored_players')
-		if(type(ignored) == 'table' and ignored[source_name2]) then
+		if(type(ignored) == 'table' and ignored[playerNamePlain]) then
 			table.remove(recipients, i)
 		end
 	end
 	
-	-- send message and show it above sender for recipients
-	local x, y, z = getElementPosition(source)
-	for i, player in ipairs(recipients) do
-		if (messageType ~= 1) then
-			outputChatBox(prefix..source_name..': #EBDDB2'..message, player, r, g, b, true)
+	-- Send message and show it above sender for recipients
+	local x, y, z = getElementPosition(player.el)
+	for i, recipient in ipairs(recipients) do
+		if(msgType ~= 1) then
+			outputChatBox(prefix..playerName..': #EBDDB2'..msg, recipient, r, g, b, true)
 		else
-			outputChatBox(message, player, 255, 0, 255, false)
+			outputChatBox(msg, recipient, 255, 0, 255, false)
 		end
 		if(Settings.msgs_above_players) then
-			local x2, y2, z2 = getElementPosition(player)
-			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and Player.fromEl(player)) then
-				triggerClientInternalEvent(player, $(EV_CLIENT_PLAYER_CHAT), source, message2)
+			local x2, y2, z2 = getElementPosition(recipient)
+			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and Player.fromEl(recipient)) then
+				triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_CHAT), player.el, msgPlain)
 			end
 		end
 	end
 	
-	outputServerLog(type_str..'CHAT: '..source_name2..': '..message2)
+	-- Output message to server log
+	outputServerLog(typeStr..'CHAT: '..playerNamePlain..': '..msgPlain)
 	
-	cancelEvent() -- cancel event to disallow printing message twice
+	-- Cancel event to disallow printing message twice
+	cancelEvent()
 	
-	if(fine > 0) then
-		local pdata = Player.fromEl(source)
-		pdata.accountData:add('cash', -fine)
-		privMsg(source, "Do not swear %s! %s has been taken from your cash.", getPlayerName(source), formatMoney(fine))
+	if(punishment) then
+		CsPunish(player, punishment)
 	end
 	
-	if(AsProcessMsg and AsProcessMsg(source)) then
+	if(AsProcessMsg and AsProcessMsg(player.el)) then
 		return -- if it is spam don't run commands
 	end
 	
 	-- fixme: CmdDoesIgnoreChat
-	--if(messageType ~= 1 and message:sub ( 1, 1 ) == '!' and not CmdDoesIgnoreChat(cmd:sub(2))) then
-	--	parseCommand(message, source, recipients, type_str_br)
+	--if(messageType ~= 1 and msg:sub ( 1, 1 ) == '!' and not CmdDoesIgnoreChat(cmd:sub(2))) then
+	--	parseCommand(msg, player.el, recipients, type_str_br)
 	--end
 end
 

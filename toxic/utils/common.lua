@@ -115,6 +115,14 @@ function trimStr(str)
 	return str
 end
 
+function upperCaseWords(str)
+	return str:gsub('^(%w)', function(letter)
+		return letter:upper()
+	end):gsub('(%s)(%w)', function(space, letter)
+		return space..letter:upper()
+	end)
+end
+
 function urlEncode(str)
 	return str:gsub('[^%w%.%-_ ]', function(ch)
 		return ('%%%02X'):format(ch:byte())

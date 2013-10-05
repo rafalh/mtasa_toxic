@@ -21,6 +21,7 @@ function warnPlayer(player, admin, reason, duration)
 	
 	-- Add warning to database
 	DbQuery('INSERT INTO '..WarningsTable..' (serial, admin, reason, timestamp, duration) VALUES(?, ?, ?, ?, ?)', player:getSerial(), admin.id, reason, now, duration or 0)
+	outputServerLog('WARNINGS: '..admin:getName()..' added warning for '..player:getSerial())
 	
 	-- Check how many warnings player has
 	local warnsCount = DbCount(WarningsTable, 'serial=?', player:getSerial())
@@ -104,6 +105,8 @@ function deleteWarningRPC(id)
 	local rows = DbQuery('SELECT serial FROM '..WarningsTable..' WHERE id=?', id)
 	local data = rows and rows[1]
 	if(not data) then return false end
+	
+	outputServerLog('WARNINGS: '..admin:getName()..' deleted warning for '..data.serial)
 	
 	DbQuery('DELETE FROM '..WarningsTable..' WHERE id=?', id)
 	
