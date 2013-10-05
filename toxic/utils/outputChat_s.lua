@@ -1,4 +1,5 @@
 g_ScriptMsgState = { recipients = { g_Root }, prefix = '', color = false }
+local g_WebChatRes
 
 function divChatStr ( str )
 	local tbl = {}
@@ -138,10 +139,12 @@ function outputMsg(visibleTo, style, fmt, ...)
 		local msg = fmt:format(...):gsub('#%x%x%x%x%x%x', '')
 		outputServerLog(msg)
 		
-		local webChatRes = Resource('rafalh_webchat')
-		if(webChatRes:isReady()) then
+		if(not g_WebChatRes) then
+			g_WebChatRes = Resource('rafalh_webchat')
+		end
+		if(g_WebChatRes:isReady()) then
 			local msg = formatMsg(style, true, fmt, ...)
-			webChatRes:call('addChatStr', msg)
+			g_WebChatRes:call('addChatStr', msg)
 		end
 	end
 	

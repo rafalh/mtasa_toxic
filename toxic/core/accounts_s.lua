@@ -13,10 +13,13 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 		return
 	end
 	
+	local ticks = getTickCount()
 	local joinMsg = self.accountData.joinmsg
-	if(joinMsg and joinMsg ~= '') then
+	local joinMsgAllowed = not self.joinMsgTicks or (ticks - self.joinMsgTicks) > 5*1000
+	if(joinMsg and joinMsg ~= '' and joinMsgAllowed) then
 		local r, g, b = getPlayerNametagColor(self.el)
 		outputChatBox('(JOINMSG) '..getPlayerName(self.el)..': #EBDDB2'..joinMsg, g_Root, r, g, b, true)
+		self.joinMsgTicks = ticks
 	end
 	
 	local accountName = not isGuestAccount(account) and getAccountName(account)
