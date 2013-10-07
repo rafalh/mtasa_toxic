@@ -63,14 +63,17 @@ function CsProcessMsg(msg)
 end
 
 function CsPunish(player, punishment)
+	local msg = false
 	if(punishment.fine > 0) then
 		player.accountData:add('cash', -punishment.fine)
 		outputMsg(player, Styles.red, "Do not swear %s! %s has been taken from your cash.", player:getName(true), formatMoney(punishment.fine))
+		msg = true
 	end
 	
 	if(punishment.mute > 0) then
 		if(player:mute(punishment.mute, 'Censor')) then
 			outputMsg(g_Root, Styles.red, "%s has been muted by Censor (%u seconds)!", player:getName(true), punishment.mute)
+			msg = true
 		end
 	end
 	
@@ -78,10 +81,11 @@ function CsPunish(player, punishment)
 		if(not warnPlayer(player, Player.getConsole(), 'Censor')) then
 			outputMsg(player, Styles.red, "You have been warned by Censor!")
 		end
+		msg = true
 	end
 	
-	if(punishment.hide) then
-		privMsg(player, "Your message contains disallowed content!")
+	if(punishment.hide and not msg) then
+		outputMsg(player, Styles.red, "Your message contains disallowed content!")
 	end
 end
 
