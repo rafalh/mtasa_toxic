@@ -1,6 +1,7 @@
 local g_BannedNames = {}
 
-local function NbCheckName(name)
+function NbCheckName(name)
+	--outputDebugString('NbCheckName '..name, 3)
 	local plainName = name:lower():gsub('#%x%x%x%x%x%x', '')
 	if(plainName == '') then return true end -- empty is banned
 	
@@ -8,6 +9,10 @@ local function NbCheckName(name)
 		if(plainName:match(pattern)) then
 			return true
 		end
+	end
+	
+	if(CsCheckNickname and CsCheckNickname(plainName)) then
+		return true
 	end
 	
 	return false
@@ -24,6 +29,7 @@ function NbGenerateUniqueName()
 end
 
 function NbCheckPlayerAndFix(player)
+	-- Note: This is called before NbInit
 	local name = getPlayerName(player)
 	if(not NbCheckName(name)) then return end
 	
@@ -32,13 +38,9 @@ function NbCheckPlayerAndFix(player)
 end
 
 local function NbInit()
-	local node, i = xmlLoadFile('conf/banned_names.xml'), 0
+	local node = xmlLoadFile('conf/banned_names.xml')
 	if(node) then
-		while(true) do
-			local subnode = xmlFindChild(node, 'name', i)
-			if(not subnode) then break end
-			i = i + 1
-			
+		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 			local pattern = xmlNodeGetValue(subnode)
 			assert(pattern)
 			table.insert(g_BannedNames, pattern)

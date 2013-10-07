@@ -23,6 +23,7 @@
 		<setting group="Censor" name="*censor_mute" accept="0-3600" value="0" desc="Duration in seconds of mute when censored word is used. Set to 0 to disable." friendlyname="Censor mute duration" />
 		<setting group="Censor" name="*censor_warn" accept="false,true" value="false" desc="Warn when censored word is used." friendlyname="Censor warnings" />
 		<setting group="Censor" name="*censor_hide" accept="false,true" value="false" desc="Hide censored messages." friendlyname="Censor hide" />
+		<setting group="Censor" name="*censor_nicknames" accept="false,true" value="false" desc="If enabled nicknames with banned words will be disallowed." friendlyname="Censor nicknames" />
 		
 		<setting group="Antispam" name="*spam_interval" accept="0-2000" value="500" desc="The minimal number of miliseconds between messages, which are not a spam." friendlyname="Spam interval" />
 		<setting group="Antispam" name="*spammer_kick" accept="false,true" value="false" desc="Set to true if script should kick spammers. If it is false, script mutes them for 60 seconds." friendlyname="Kicking for spam" />

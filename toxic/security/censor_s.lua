@@ -62,6 +62,25 @@ function CsProcessMsg(msg)
 	return msg, punish
 end
 
+function CsCheckNickname(name)
+	-- Note: This can called before CsInit
+	
+	if(not Settings.censor_nicknames) then return false end
+	--outputDebugString('CsCheckNickname '..name, 3)
+	
+	local plainName = name:lower():gsub('#%x%x%x%x%x%x', '')
+	for word, item in pairs(g_ForbWords) do
+		local pattern = word:lower()
+		pattern = pattern:gsub('.', '%1+')
+		if(plainName:find(pattern)) then
+			--outputDebugString('Detected banned nickname: '..plainName, 3)
+			return true
+		end
+	end
+	
+	return false
+end
+
 function CsPunish(player, punishment)
 	local msg = false
 	if(punishment.fine > 0) then
@@ -110,7 +129,7 @@ local function CsLoadWords()
 	return true
 end
 
-local function CsInit ()
+local function CsInit()
 	CsLoadWords()
 end
 
