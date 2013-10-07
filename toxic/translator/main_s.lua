@@ -48,20 +48,38 @@ function translate(text, from, to, callback, ...)
 	return true
 end
 
-function sayAsPlayer(text, player)
-	if(isPlayerMuted(player)) then
+function sayAsPlayer(text, playerEl)
+	local player = Player.fromEl(playerEl)
+	
+	if(isPlayerMuted(player.el)) then
 		outputMsg(player, Styles.red, "translate: You are muted!")
 		return
 	end
 	
+	local punishment = false
+	if(CsProcessMsg) then
+		text, punishment = CsProcessMsg(text)
+		if(not text) then
+			-- Message has been blocked
+			CsPunish(player, punishment)
+			cancelEvent()
+			return
+		end
+	end
+	
 	local r, g, b
-	if(getElementType(player) == 'player') then
-		r, g, b = getPlayerNametagColor (player)
+	if(not player.is_console) then
+		r, g, b = getPlayerNametagColor(player.el)
 	else
 		r, g, b = 255, 128, 255 -- console
 	end
-	local msg = getPlayerName(player)..': #FFFF00'..text
+	local msg = getPlayerName(player.el)..': #FFFF00'..text
 	outputChatBox(msg, g_Root, r, g, b, true)
+	outputServerLog('TSAY: '..msg:gsub('#%x%x%x%x%x%x', ''))
+	
+	if(punishment) then
+		CsPunish(player, punishment)
+	end
 end
 
 local function onTranslateReq(text, from, to, say)
