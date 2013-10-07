@@ -56,11 +56,13 @@
 		<button id="backBtn" rx="50" x="5" ry="100" y="-35" w="140" h="25" text="Back" />
 	</window>
 	
-	<window id="passwordRecovery" title="Lost Password Recovery" rx="50" x="-100" ry="50" y="-110" w="280" h="220" sizeable="false" defbtn="ok">
-		<label id="info" x="10" y="90" rw="100" w="-20" h="50" text="Enter the same e-mai address you used on registration. Link for reseting password will be send." align="center" />
+	<window id="passwordRecovery" title="Password Recovery" rx="50" x="-100" ry="50" y="-110" w="280" h="220" sizeable="false" defbtn="ok">
+		<image rx="50" x="-32" y="25" w="64" h="64" src="login/img/lostPw.png" />
 		
-		<label x="10" y="155" w="80" h="20" text="E-mail:" />
-		<edit id="email" x="100" y="150" w="180" h="25" maxlen="128" />
+		<label id="info" x="10" y="90" rw="100" w="-20" h="100" text="Enter the same E-Mail address, you have used on account registration. Code for reseting the password will be send." align="center" wordwrap="true" />
+		
+		<label x="30" y="155" w="40" h="20" text="E-Mail:" />
+		<edit id="email" x="80" y="150" w="150" h="25" maxlen="128" />
 		
 		<button id="ok" rx="100" x="-180" ry="100" y="-35" w="80" h="25" text="OK" />
 		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />

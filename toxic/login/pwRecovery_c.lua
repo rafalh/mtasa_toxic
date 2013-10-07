@@ -16,6 +16,7 @@ local function onPwRecoveryResult(success)
 	else
 		guiSetText(g_GUI.info, "This e-mail address has not been found!")
 		guiLabelSetColor(g_GUI.info, 255, 0, 0)
+		guiSetEnabled(g_GUI.ok, true)
 	end
 end
 
@@ -31,6 +32,7 @@ local function onOkClick()
 		guiSetText(g_GUI.info, err)
 		guiLabelSetColor(g_GUI.info, 255, 0, 0)
 	else
+		guiSetEnabled(g_GUI.ok, false)
 		RPC('passwordRecoveryReq', email):onResult(onPwRecoveryResult):exec()
 	end
 end

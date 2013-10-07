@@ -1,4 +1,5 @@
 local g_RegTimeStamp = 0
+local g_LastMailTicks = 0
 
 PlayersTable:addColumns{
 	{'passwordRecoveryKey', 'VARCHAR(32)', null = true, default = false},
@@ -90,6 +91,13 @@ function passwordRecoveryReq(email)
 	local rows = DbQuery('SELECT player FROM '..PlayersTable..' WHERE email=?', email)
 	local data = rows and rows[1]
 	if(not data) then return false end -- account not found
+	
+	local ticks = getTickCount()
+	if(ticks - g_LastMailTicks < 10*1000) then
+		privMsg(client, "SPAM protection! Please try again later.")
+		return false
+	end
+	g_LastMailTicks = ticks
 	
 	local key = md5(generateRandomStr(10)):sub(1, 16)
 	local accountData = AccountData.create(data.player)

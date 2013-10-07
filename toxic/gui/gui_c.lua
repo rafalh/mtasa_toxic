@@ -96,7 +96,7 @@ function GUI.__mt.__index:createControl(tpl, parent)
 	elseif(tpl.type == 'label') then
 		ctrl = guiCreateLabel(x, y, w, h, tpl.text or '', false, parent)
 		if(tpl.align) then
-			guiLabelSetHorizontalAlign(ctrl, tpl.align)
+			guiLabelSetHorizontalAlign(ctrl, tpl.align, tpl.wordwrap == 'true')
 		end
 		if(tpl.color) then
 			local r, g, b = getColorFromString(tpl.color)

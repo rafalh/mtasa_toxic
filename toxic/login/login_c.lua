@@ -157,3 +157,5 @@ end
 
 addEventHandler('main.onLoginReq', g_ResRoot, openLoginWnd)
 addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)
+
+setTimer(openLoginWnd, 1000, 1)
