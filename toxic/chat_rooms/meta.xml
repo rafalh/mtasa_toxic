@@ -1,0 +1,7 @@
+<meta>
+	<info name="Chat extensions" description="Contains support for chat rooms (Moderators/Admins chat and language chat)" />
+
+	<script src="chatRoom_s.lua" type="server" />
+	<script src="chatRoom_c.lua" type="client" />
+	<script src="rooms.lua" type="shared" />
+</meta>
