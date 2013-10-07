@@ -63,8 +63,6 @@ function CsProcessMsg(msg)
 end
 
 function CsCheckNickname(name)
-	-- Note: This can called before CsInit
-	
 	if(not Settings.censor_nicknames) then return false end
 	--outputDebugString('CsCheckNickname '..name, 3)
 	
@@ -130,7 +128,8 @@ local function CsLoadWords()
 end
 
 local function CsInit()
+	-- Note: called before players are created
 	CsLoadWords()
 end
 
-addInitFunc(CsInit)
+addPreInitFunc(CsInit)

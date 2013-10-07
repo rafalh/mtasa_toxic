@@ -1,4 +1,5 @@
 local g_InitFuncs = {}
+local g_PreInitFuncs = {}
 local _addEventHandler
 local g_Co, g_CoTicks
 local g_ScoreBoardRes = Resource('scoreboard')
@@ -189,6 +190,10 @@ local function initRountine()
 	
 	setupScoreboard()
 	
+	for i, func in ipairs(g_PreInitFuncs) do
+		func()
+	end
+	
 	for i, playerEl in ipairs (getElementsByType('player')) do
 		if(NbCheckPlayerAndFix) then
 			NbCheckPlayerAndFix(playerEl)
@@ -268,6 +273,11 @@ function addInitFunc(func)
 	table.insert(g_InitFuncs, func)
 #end
 	
+end
+
+function addPreInitFunc(func)
+	assert(func)
+	table.insert(g_PreInitFuncs, func)
 end
 
 addEventHandler('onResourceStart', g_ResRoot, init)

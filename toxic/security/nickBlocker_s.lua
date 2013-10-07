@@ -29,7 +29,6 @@ function NbGenerateUniqueName()
 end
 
 function NbCheckPlayerAndFix(player)
-	-- Note: This is called before NbInit
 	local name = getPlayerName(player)
 	if(not NbCheckName(name)) then return end
 	
@@ -38,6 +37,7 @@ function NbCheckPlayerAndFix(player)
 end
 
 local function NbInit()
+	-- Note: called before players are created
 	local node = xmlLoadFile('conf/banned_names.xml')
 	if(node) then
 		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
@@ -49,4 +49,4 @@ local function NbInit()
 	end
 end
 
-addInitFunc(NbInit)
+addPreInitFunc(NbInit)
