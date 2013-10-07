@@ -1,0 +1,6 @@
+<smtp>
+	<host>smtp.gmail.com</host>
+	<username></username>
+	<password></password>
+	<email></email> <!-- used in 'From' e-mail header -->
+</smtp>

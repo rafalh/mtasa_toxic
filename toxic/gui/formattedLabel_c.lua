@@ -16,7 +16,7 @@ function FormattedLabel.__mt.__index:init(x, y, width, height, parent, fmt, ...)
 	local text = MuiGetMsg(fmt):format(...)
 	self.el = guiCreateLabel(x, y, width, height, text, false, parent)
 	if(not self.el) then return false end
-	addEventHandler('onClientElementDestroy', self.el, onDestroy)
+	addEventHandler('onClientElementDestroy', self.el, onDestroy, false)
 	self.fmt = fmt
 	self.args = {...}
 	g_Map[self.el] = self

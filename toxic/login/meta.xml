@@ -6,7 +6,12 @@
 	<script src="register_c.lua" type="client" />
 	<script src="changePw_c.lua" type="client" />
 	<script src="changeEmail_c.lua" type="client" />
+	<script src="pwRecovery_c.lua" type="client" />
 	<script src="accounts_s.lua" type="server" />
+	<script src="mail_s.lua" type="server" />
+	
+	<config src="../conf/smtp.xml" />
+	
 	<file src="img/login.png" />
 	<file src="img/register.png" />
 	<file src="img/chgPw.png" />

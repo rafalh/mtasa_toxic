@@ -52,7 +52,7 @@ local function loadAutoLogin()
 	return true
 end
 
-local function onLoginClick(btn,state)
+local function onLoginClick(btn, state)
 	if btn ~= 'left' or state ~= 'up' then return end
 	local name = guiGetText(g_GUI.name)
 	local pw = guiGetText(g_GUI.pw)
@@ -63,13 +63,19 @@ local function onLoginClick(btn,state)
 	triggerServerEvent('main.onLogin', g_ResRoot, name, pw)
 end
 
-local function onRegisterClick(btn,state)
+local function onRegisterClick(btn, state)
 	if btn ~= 'left' or state ~= 'up' then return end
 	closeLoginWnd()
 	openRegisterWnd()
 end
 
-local function onPlayAsGuestClick(btn,state)
+local function onLostPwClick(btn, state)
+	if btn ~= 'left' or state ~= 'up' then return end
+	closeLoginWnd()
+	openLostPasswordWnd()
+end
+
+local function onPlayAsGuestClick(btn, state)
 	if btn ~= 'left' or state ~= 'up' then return end
 	triggerServerEvent('main.onLogin', g_ResRoot, false, false)
 	closeLoginWnd()
@@ -117,7 +123,7 @@ function closeLoginWnd()
 	g_GUI = false
 end
 
-function openLoginWnd(loginFailed)
+function openLoginWnd()
 	closeLoginWnd()
 	
 	g_GUI = GUI.create('loginWnd')
@@ -144,6 +150,7 @@ function openLoginWnd(loginFailed)
 	addEventHandler('onClientGUIClick', g_GUI.logBtn, onLoginClick, false)
 	addEventHandler('onClientGUIClick', g_GUI.regBtn, onRegisterClick, false)
 	addEventHandler('onClientGUIClick', g_GUI.guestBtn, onPlayAsGuestClick, false)
+	addEventHandler('onClientGUIClick', g_GUI.lostPw, onLostPwClick, false)
 	
 	loadAutoLogin()
 end

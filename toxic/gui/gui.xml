@@ -10,7 +10,7 @@
 		<label id="playerLeftLabel" x="10" ry="100" y="-35" rw="100" w="-170" h="15" text="Player has left the game." visible="false" color="#FF0000" />
 	</window>
 	
-	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-145" w="300" h="290" sizeable="false" defbtn="logBtn">
+	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-150" w="300" h="300" sizeable="false" defbtn="logBtn">
 		<image rx="50" x="-32" y="30" w="64" h="64" src="login/img/login.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Please login to save your statistics" align="center" />
@@ -28,6 +28,8 @@
 		<button id="logBtn" rx="50" x="-140" y="235" w="80" h="30" text="Login" />
 		<button id="regBtn" rx="50" x="-50" y="235" w="80" h="30" text="Register" />
 		<button id="guestBtn" rx="50" x="40" y="235" w="100" h="30" text="Play as guest" />
+		
+		<Link id="lostPw" rx="50" x="-80" y="270" w="160" h="20" text="Forgot password" align="center" />
 	</window>
 	
 	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false" defbtn="regBtn">
@@ -52,6 +54,16 @@
 		
 		<button id="regBtn" rx="50" x="-145" ry="100" y="-35" w="140" h="25" text="Register" />
 		<button id="backBtn" rx="50" x="5" ry="100" y="-35" w="140" h="25" text="Back" />
+	</window>
+	
+	<window id="passwordRecovery" title="Lost Password Recovery" rx="50" x="-100" ry="50" y="-110" w="280" h="220" sizeable="false" defbtn="ok">
+		<label id="info" x="10" y="90" rw="100" w="-20" h="50" text="Enter the same e-mai address you used on registration. Link for reseting password will be send." align="center" />
+		
+		<label x="10" y="155" w="80" h="20" text="E-mail:" />
+		<edit id="email" x="100" y="150" w="180" h="25" maxlen="128" />
+		
+		<button id="ok" rx="100" x="-180" ry="100" y="-35" w="80" h="25" text="OK" />
+		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
 	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false" defbtn="ok">

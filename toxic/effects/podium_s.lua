@@ -28,11 +28,19 @@ local function setWinner(playerEl, rank)
 	if(player) then
 		if(g_RaceRes:isReady()) then
 			veh = g_RaceRes:call('getPlayerVehicle', player.el)
-			if(not isElement(veh)) then veh = false end -- try to fix warning
 		end
 		if(not veh) then
 			veh = getPedOccupiedVehicle(player.el)
 		end
+	end
+	
+	-- Fix warning (getPedOccupiedVehicle returns invalid element sometimes)
+	if(not isElement(veh)) then veh = false end
+	
+	-- Try to debug: Bad argument @ 'getElementModel' [Expected element at argument 1]
+	if(veh and not getElementModel(veh)) then
+		outputDebugString('Invalid vehicle: isElement '..tostring(isElement(veh))..', getElementType '..tostring(isElement(veh) and getElementType(veh)), 2)
+		veh = false
 	end
 	
 	local name = player and player:getName(true) or "Unknown"

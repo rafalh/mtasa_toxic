@@ -119,6 +119,21 @@ function isPlayerAdmin(player)
 	return (adminGroup and account and isObjectInACLGroup('user.'..accountName, adminGroup))
 end
 
+function urlEncode(str)
+	assert(str)
+	return tostring(str):gsub('[^%w%.%-_ ]', function(ch)
+		return ('%%%02X'):format(ch:byte())
+	end):gsub(' ', '+')
+end
+
+function urlEncodeTbl(tbl)
+	local tmp = {}
+	for key, val in pairs(tbl) do
+		table.insert(tmp, key..'='..urlEncode(val))
+	end
+	return table.concat(tmp, '&')
+end
+
 function addInternalEventHandler(eventtype, handler)
 	assert(eventtype and handler)
 	if(not g_InternalEventHandlers[eventtype]) then

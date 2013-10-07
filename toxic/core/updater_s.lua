@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 161,
+	currentVer = 162,
 	list = {
 		{
 			ver = 149,
@@ -241,6 +241,14 @@ Updater = {
 				end
 #end
 				return false
+			end
+		},
+		{
+			ver = 162,
+			func = function()
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN passwordRecoveryKey VARCHAR(32)')) then
+					return 'Failed to add passwordRecoveryKey column'
+				end
 			end
 		},
 	}

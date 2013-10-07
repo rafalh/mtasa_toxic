@@ -123,6 +123,9 @@ function GUI.__mt.__index:createControl(tpl, parent)
 			guiSetSelectedTab(parent, ctrl)
 		end
 		setupPos = false
+	elseif(type(_G[tpl.type]) == 'table' and _G[tpl.type].fromTpl) then
+		local cls = _G[tpl.type]
+		ctrl = cls.fromTpl(tpl, parent)
 	else
 		assert(false)
 	end

@@ -62,6 +62,7 @@
 	<script src="gui/panelPath_c.lua" type="client" />
 	<script src="gui/adminPanel_c.lua" type="client" />
 	<script src="gui/advert_c.lua" type="client" />
+	<script src="gui/link_c.lua" type="client" />
 	<script src="gui/listView_c.lua" type="client" />
 	<script src="gui/tooltip_c.lua" type="client" />
 	<script src="gui/onOffBtn_c.lua" type="client" />

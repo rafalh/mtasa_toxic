@@ -123,13 +123,15 @@ function upperCaseWords(str)
 	end)
 end
 
-function urlEncode(str)
-	return str:gsub('[^%w%.%-_ ]', function(ch)
-		return ('%%%02X'):format(ch:byte())
-	end):gsub(' ', '+')
-end
-
 function isNativeFunction(func)
 	local info = debug.getinfo(func, 'S')
 	return info.what == 'C'
+end
+
+function generateRandomStr(len)
+	local chars = {}
+	for i = 1, len do
+		table.insert(chars, string.char(math.random(0, 255)))
+	end
+	return table.concat(chars)
 end
