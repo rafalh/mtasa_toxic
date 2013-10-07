@@ -8,11 +8,22 @@ end
 function AccessRight.__mt.__index:init(name)
 	assert(name)
 	self.name = name
+	self.handlers = {}
 	table.insert(AccessRight.list, self)
 end
 
 function AccessRight.__mt.__index:check()
 	return LocalACL:checkAccess(self)
+end
+
+function AccessRight.__mt.__index:addChangeHandler(func)
+	table.insert(self.handlers, func)
+end
+
+function AccessRight.__mt.__index:onChange()
+	for i, func in ipairs(self.handlers) do
+		func()
+	end
 end
 
 AccessList = Class('AccessList')
@@ -25,7 +36,14 @@ function AccessList.__mt.__index:init(tbl)
 end
 
 function AccessList.updateLocal(tbl)
+	local oldTbl = LocalACL.tbl
 	LocalACL = AccessList(tbl)
+	
+	for i, right in ipairs(AccessRight.list) do
+		if((oldTbl[right.name] or false) ~= (tbl[right.name] or false)) then
+			right:onChange()
+		end
+	end
 end
 
-LocalACL = AccessList()
+LocalACL = AccessList{}

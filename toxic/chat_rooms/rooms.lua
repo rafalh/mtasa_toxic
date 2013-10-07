@@ -1,20 +1,16 @@
-local g_ReadyPlayers = {}
-
-local g_ModRoom = ChatRoom.create{
+local g_ModChatRight = AccessRight('modchat')
+ChatRoom.create{
 	id = "mod",
 	key = "u",
 	inputPrefix = "Modsay:",
 	chatPrefix = "(MOD) ",
 	logPrefix = "MODSAY: ",
 	cmd = "modsay",
-	checkAccess = function(sender)
-		return hasObjectPermissionTo(sender, "resource.rafalh_modchat", false)
-	end,
-	disabled = true,
-	getPlayers = function(sender)
+	right = g_ModChatRight,
+	getPlayers = function(self, sender)
 		local recipients = {}
 		for i, player in ipairs(getElementsByType("player")) do
-			if(hasObjectPermissionTo(player, "resource.rafalh_modchat", false)) then
+			if(g_ModChatRight:check(player)) then
 				table.insert(recipients, player)
 			end
 		end
@@ -22,7 +18,7 @@ local g_ModRoom = ChatRoom.create{
 	end
 }
 
-local g_LangRoom = ChatRoom.create{
+ChatRoom.create{
 	id = "lang",
 	key = "l",
 	inputPrefix = function(player)
@@ -52,38 +48,3 @@ local g_LangRoom = ChatRoom.create{
 		return recipients
 	end
 }
-
-addEvent("chatext.onModVerified", true)
-addEvent("chatext.onReady", true)
-
-if(triggerClientEvent) then
-	local function onPlayerReady()
-		g_ReadyPlayers[client] = true
-		if(hasObjectPermissionTo(client, "resource.rafalh_modchat", false)) then
-			triggerClientEvent(client, "chatext.onModVerified", resourceRoot)
-		end
-	end
-	
-	local function onPlayerLogin()
-		if(g_ReadyPlayers[source] and hasObjectPermissionTo(source, "resource.rafalh_modchat", false)) then
-			triggerClientEvent(source, "chatext.onModVerified", resourceRoot)
-		end
-	end
-	
-	local function onPlayerQuit()
-		g_ReadyPlayers[source] = nil
-	end
-	
-	addInitFunc(function()
-		addEventHandler("chatext.onReady", resourceRoot, onPlayerReady)
-		addEventHandler("onPlayerLogin", root, onPlayerLogin)
-		addEventHandler("onPlayerQuit", root, onPlayerQuit)
-	end)
-else
-	local function onModVerified()
-		g_ModRoom:enable()
-	end
-	
-	addEventHandler("chatext.onModVerified", resourceRoot, onModVerified)
-end
-

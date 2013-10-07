@@ -20,7 +20,7 @@ function ChatRoom:onPlayerMsg(player, msg)
 	
 	msg = tostring(msg)
 	if(msg == "") then return end
-	if(self.info.checkAccess and not self.info.checkAccess(player)) then return end
+	if(self.info.right and not self.info.right:check(player)) then return end
 	
 	if(getElementType(player) == 'player' and isPlayerMuted(player)) then
 		outputChatBox(self.info.cmd..": You are muted!", player, 255, 128, 0)
@@ -100,31 +100,6 @@ local function onConsole(msg)
 		end
 	end
 end
-
-addEvent("chatext.onModVerified", true)
-addEvent("chatext.onReady", true)
-
-local function onPlayerReady()
-	g_ReadyPlayers[client] = true
-	if(hasObjectPermissionTo(client, "resource.rafalh_modchat", false)) then
-		triggerClientEvent(client, "chatext.onModVerified", resourceRoot)
-	end
-end
-
-local function onModVerified()
-	g_ModRoom:enable()
-end
-
-local function onPlayerLogin()
-	if(g_ReadyPlayers[source] and hasObjectPermissionTo(source, "resource.rafalh_modchat", false)) then
-		triggerClientEvent(source, "chatext.onModVerified", resourceRoot)
-	end
-end
-
-local function onPlayerQuit()
-	g_ReadyPlayers[source] = nil
-end
-
 
 ------------
 -- Events --

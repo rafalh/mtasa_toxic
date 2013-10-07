@@ -131,17 +131,32 @@ function ChatRoom:bindKey()
 	self.boundKey = true
 end
 
-function ChatRoom:enable()
-	self:bindKey()
-	--outputDebugString("[chatext] Enabled chat: "..self.id, 3)
+function ChatRoom:unbindKey()
+	if(not self.boundKey or not self.info.key) then return end
+	
+	unbindKey(self.info.key, "down", ChatRoom.onKeyDown)
+	unbindKey(self.info.key, "up", ChatRoom.onKeyUp)
+	ChatRoom.keyToRoom[self.info.key] = nil
+	self.boundKey = false
+end
+
+function ChatRoom:updateAccess()
+	if(not self.info.right or self.info.right:check()) then
+		self:bindKey()
+	else
+		self:unbindKey()
+	end
 end
 
 function ChatRoom.create(info)
 	local self = setmetatable({}, ChatRoom.__mt)
 	self.info = info
 	self.id = info.id
-	if(not info.disabled) then
-		self:bindKey()
+	self:updateAccess()
+	if(info.right) then
+		info.right:addChangeHandler(function()
+			self:updateAccess()
+		end)
 	end
 	--outputDebugString("[chatext] Created chat: "..self.id, 3)
 	return self
@@ -150,7 +165,7 @@ end
 ------------
 -- Events --
 ------------
+
 addEventHandler('onClientResourceStart', resourceRoot, function()
-	triggerServerEvent("chatext.onReady", resourceRoot)
 	guiSetInputMode("no_binds_when_editing")
 end)
