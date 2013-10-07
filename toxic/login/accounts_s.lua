@@ -104,21 +104,31 @@ function passwordRecoveryReq(email)
 	local player = Player.fromEl(client)
 	accountData.passwordRecoveryKey = key
 	
+	local serverNameFiltered = trimStr(getServerName():gsub('[^%w%s%p]', ''))
+	
+	local playerName = accountData.name:gsub('#%x%x%x%x%x%x', '')
 	local mail = Mail()
 	mail.to = email
-	mail.subject = 'Password recovery'
-	mail.body = 'Your key for reseting password: '..key..'\nUse /resetpw <key> to reset your password'
+	mail.toTitle = playerName
+	mail.subject = 'Password recovery - '..serverNameFiltered
+	mail.body =
+		'Hello '..playerName..',\n\n'..
+		'You are receiving this notification because you have (or someone pretending to be you has) requested a new password '..
+		'to be sent for your account on MTA Server "'..serverNameFiltered..'". If you did not request this notification then please ignore it. If you keep receiving it please contact the server administrator.\n\n'..
+		'To use the new password you need to activate it. To do this execute command provided below in server chat:\n'..
+		'/resetpw '..key..'\n\n'..
+		'If successful new password will be shown in chatbox. You can of course change this password yourself via the profile page in User Panel.\n\n'..
+		'*** This is an automatically generated email - please do not reply to it. ***'
 	mail.callback = function(status)
 		if(status) then
-			privMsg(player.el, "E-Mail has been sent!")
+			outputMsg(player, Styles.green, "E-Mail has been sent to %s! Check your mail box and follow instructions given to you in message.", email)
 		else
-			privMsg(player.el, "Failed to send E-Mail!")
+			outputMsg(player, Styles.red, "Failed to send E-Mail!")
 		end
 	end
 	
-	privMsg(player.el, "Sending email to %s...", email)
 	if(not mail:send()) then
-		privMsg(player.el, "Failed to send E-Mail!")
+		outputMsg(player, Styles.red, "Failed to send E-Mail!")
 		return false
 	end
 	
@@ -139,17 +149,17 @@ local function CmdResetPw(message, arg)
 			if(success) then
 				local accountData = AccountData.create(data.player)
 				accountData.passwordRecoveryKey = false
-				privMsg(source, "Your account has been found: %s. Password has been changed to: %s", data.account, newPw)
+				outputMsg(source, Styles.green, "Password has been successfully changed. Your login credentials: username \"%s\", password \"%s\".", data.account, newPw)
 			else
-				privMsg(source, "Failed to reset password!")
+				outputMsg(source, Styles.red, "Failed to reset password. Please contact administrator.")
 			end
 		else
-			privMsg(source, "This key is invalid! Please generate new and try again.")
+			outputMsg(source, Styles.red, "Failed to reset password. Please generate a new key and try again.")
 		end
 	else privMsg(source, "Usage: %s", arg[1]..' <key_from_email>') end
 end
 
-CmdRegister('resetpw', CmdResetPw, false, "Allows to reset your password")
+CmdRegister('resetpw', CmdResetPw, false, "Allows you to reset your password in case you forgot it")
 
 addInitFunc(function()
 	addEventHandler('main.onLogin', g_ResRoot, onLoginReq)

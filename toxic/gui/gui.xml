@@ -64,8 +64,8 @@
 		<label x="30" y="155" w="40" h="20" text="E-Mail:" />
 		<edit id="email" x="80" y="150" w="150" h="25" maxlen="128" />
 		
-		<button id="ok" rx="100" x="-180" ry="100" y="-35" w="80" h="25" text="OK" />
-		<button id="cancel" rx="100" x="-90" ry="100" y="-35" w="80" h="25" text="Cancel" />
+		<button id="ok" rx="50" x="-85" ry="100" y="-35" w="80" h="25" text="OK" />
+		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />
 	</window>
 	
 	<window id="changePw" title="Change password" rx="50" x="-140" ry="50" y="-140" w="280" h="280" sizeable="false" defbtn="ok">

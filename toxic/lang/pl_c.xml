@@ -36,6 +36,9 @@
 	<msg id="Password is too short!">Hasło jest za krótkie!</msg>
 	<msg id="Passwords do not match!">Hasła nie pasują!</msg>
 	
+	<msg id="Password Recovery">Odzyskiwanie hasła</msg>
+	<msg id="Enter the same E-Mail address, you have used on account registration. Code for reseting the password will be send.">Wpisz ten sam adres E-Mail, którego użyłeś podczas rejestracji. Kod resetujący hasło zostanie wysłany na Twoje konto.</msg>
+	
 	<msg id="Statistics">Statystyki</msg>
     <msg id="Player:">Gracz:</msg>
     <msg id="Cash:">Kasa:</msg>

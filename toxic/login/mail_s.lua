@@ -43,10 +43,11 @@ function Mail.__mt.__index:send()
 	if(not self.subject) then outputDebugString('Field "subject" is not set', 2) return false end
 	if(not self.body) then outputDebugString('Field "body" is not set', 2) return false end
 	
+	local serverNameFiltered = trimStr(getServerName():gsub('[^%w%s%p]', ''))
 	local params = {
 		host = self.config.host, port = self.config.port,
 		username = self.config.username, password = self.config.password,
-		from = self.config.email, fromTitle = getServerName(),
+		from = self.from or self.config.email, fromTitle = self.fromTitle or serverNameFiltered,
 		to = self.to, toTitle = self.toTitle,
 		subject = self.subject}
 	
