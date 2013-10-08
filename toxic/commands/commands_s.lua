@@ -80,59 +80,113 @@ function CmdDoesIgnoreChat(cmd)
 	return cmd_data and cmd_data.ignore_chat
 end
 
--- exported
-function parseCommand(message, sender, recipients, chatPrefix, chatColor)
-	source = sender
-	local source_name = getPlayerName (source):gsub ('#%x%x%x%x%x%x', '')
+local function CmdParseLine(str)
+	local args = {}
+	local curArg = {}
+	local escape, quote = false, false
 	
-	if (not recipients or recipients == g_Root) then
-		recipients = getElementsByType ('player')
+	for i = 1, #str do
+		local ch = str:sub(i, i)
+		if(escape) then
+			-- Character is escaped
+			table.insert(curArg, ch)
+			escape = false
+		elseif(ch == '\\') then
+			-- Escape next character
+			escape = true
+		elseif(ch == quote) then
+			-- End quote
+			quote = false
+		elseif((ch == '"' or ch == '\'') and not quote) then
+			-- Start quote
+			quote = ch
+		elseif(ch == ' ' and not quote) then
+			-- Start next argument
+			table.insert(args, table.concat(curArg))
+			curArg = {}
+		else
+			-- Normal character
+			table.insert(curArg, ch)
+		end
+	end
+	
+	table.insert(args, table.concat(curArg))
+	return args
+end
+
+-- exported
+function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
+	source = sender
+	local source_name = getPlayerName(source):gsub('#%x%x%x%x%x%x', '')
+	
+	if(not recipients or recipients == g_Root) then
+		recipients = getElementsByType('player')
 	end
 	
 	g_ScriptMsgState.prefix = chatPrefix or ''
 	g_ScriptMsgState.color = chatColor or false
 	
 	g_ScriptMsgState.recipients = {}
-	for i, player in ipairs (recipients) do
-		local ignored = getElementData (player, 'ignored_players')
-		if (type (ignored) ~= 'table' or not ignored[source_name]) then
-			table.insert (g_ScriptMsgState.recipients, player)
+	for i, player in ipairs(recipients) do
+		local ignored = getElementData(player, 'ignored_players')
+		if(type(ignored) ~= 'table' or not ignored[source_name]) then
+			table.insert(g_ScriptMsgState.recipients, player)
 		end
 	end
 	
-	local arg = split (message, (' '):byte ())
-	arg[1] = (arg[1] and arg[1]:lower ()) or ''
-	local ch1 = arg[1]:sub (1, 1)
-	local cmd = arg[1]:sub (2)
+	local args = CmdParseLine(msg)
+	args[1] = (args[1] and args[1]:lower()) or ''
+	local ch1 = args[1]:sub(1, 1)
+	local cmd = args[1]:sub(2)
 	
-	if ((ch1 == '/' or ch1 == '!') and g_Commands[cmd]) then
+	if((ch1 == '/' or ch1 == '!') and g_Commands[cmd]) then
 		if (CmdHasPlayerAccess (cmd, source)) then
-			g_Commands[cmd].f (message, arg)
+			g_Commands[cmd].f(msg, args)
 		else
-			privMsg (source, "Access denied for \"%s\"!", arg[1])
+			privMsg (source, "Access denied for \"%s\"!", args[1])
 		end
 	end
 	
-	g_ScriptMsgState.recipients = { g_Root }
+	g_ScriptMsgState.recipients = {g_Root}
 	g_ScriptMsgState.prefix = ''
 	g_ScriptMsgState.color = false
 end
 
-local function onCommandsListReq ()
+local function onCommandsListReq()
 	local commmands = {}
 	
-	for cmd, data in pairs (g_Commands) do
+	for cmd, data in pairs(g_Commands) do
 		if (not data.alias and CmdHasPlayerAccess (cmd, client)) then
-			table.insert (commmands, { cmd, data.descr })
+			table.insert(commmands, {cmd, data.descr})
 		end
 	end
 	
-	table.sort (commmands, function (cmd1, cmd2) return cmd1[1] < cmd2[1] end)
+	table.sort(commmands, function(cmd1, cmd2) return cmd1[1] < cmd2[1] end)
 	
-	triggerClientEvent (client, 'onClientCommandsList', g_Root, commmands)
+	triggerClientEvent(client, 'onClientCommandsList', g_Root, commmands)
 end
 
 addInitFunc(function()
-	addEventHandler ('onCommandsListReq', g_Root, onCommandsListReq)
-	addEventHandler ('onConsole', g_Root, onConsole)
+	addEventHandler('onCommandsListReq', g_Root, onCommandsListReq)
+	addEventHandler('onConsole', g_Root, onConsole)
 end)
+
+#local TEST = false
+#if(TEST) then
+	local args
+	
+	args = CmdParseLine('abc def ghi')
+	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def' and args[3] == 'ghi')
+	
+	args = CmdParseLine('abc "def ghi" jkl')
+	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def ghi' and args[3] == 'jkl')
+	
+	args = CmdParseLine('abc \'def ghi\' jkl')
+	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def ghi' and args[3] == 'jkl')
+	
+	args = CmdParseLine('abc "def\' \'ghi" jkl')
+	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def\' \'ghi' and args[3] == 'jkl')
+	
+	args = CmdParseLine('abc "def ghi\\" jkl"')
+	assert(#args == 2 and args[1] == 'abc' and args[2] == 'def ghi" jkl')
+#end -- TEST
