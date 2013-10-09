@@ -4,14 +4,14 @@ local g_CmdAliases = {}
 addEvent ('onCommandsListReq', true)
 addEvent ('onClientCommandsList', true)
 
-function CmdRegister (name, func, access, description, ignore_console, ignore_chat)
+function CmdRegister(name, func, access, description, ignore_console, ignore_chat)
 	assert(name and func and access ~= nil, 'Wrong args for CmdRegister: '..tostring(name))
 	assert(not g_Commands[name], 'Command already exists: '..tostring(name))
 	
-	g_Commands[name] = { f = func, access = access, descr = description, ignore_con = ignore_console, ignore_chat = ignore_chat }
+	g_Commands[name] = {f = func, access = access, descr = description, ignore_con = ignore_console, ignore_chat = ignore_chat}
 end
 
-function CmdRegisterAlias (alias_name, cmd_name, ignore_console, ignore_chat)
+function CmdRegisterAlias(alias_name, cmd_name, ignore_console, ignore_chat)
 	assert(alias_name and cmd_name and not g_Commands[alias_name] and g_Commands[cmd_name], 'Failed to add command '..tostring(cmd_name))
 	
 	g_Commands[alias_name] = table.copy(g_Commands[cmd_name])
@@ -21,23 +21,23 @@ function CmdRegisterAlias (alias_name, cmd_name, ignore_console, ignore_chat)
 	cmd_data.ignore_chat = ignore_chat
 end
 
-function CmdUnregister (name)
+function CmdUnregister(name)
 	assert (g_Commands[name])
 	
 	g_Commands[name] = nil
 end
 
-function CmdIsRegistered (name)
+function CmdIsRegistered(name)
 	return g_Commands[name] and true
 end
 
-function CmdGetAclRights ()
+function CmdGetAclRights()
 	local ret = {}
 	local added = {}
 	
-	for cmd, data in pairs (g_Commands) do
-		if (data.access and data.access ~= true and not added[data.access]) then
-			table.insert (ret, data.access)
+	for cmd, data in pairs(g_Commands) do
+		if(data.access and data.access ~= true and not added[data.access]) then
+			table.insert(ret, data.access)
 		end
 	end
 	
@@ -45,31 +45,27 @@ function CmdGetAclRights ()
 end
 
 local function onConsole(message)
-	if (getElementType(source) ~= 'player') then
-		outputDebugString("Console support is experimental!", 3)
-	elseif (isPlayerMuted (source)) then
-		return
-	end
+	--Note: source can be console element
 	
-	local arg = split (message, (' '):byte ())
-	local cmd = (arg[1] and arg[1]:lower ()) or ''
+	-- Don't allow any commands from muted player
+	if(isPlayerMuted(source)) then return end
+	
+	local arg = split(message, (' '):byte())
+	local cmd = (arg[1] and arg[1]:lower()) or ''
 	local cmd_data = g_Commands[cmd]
 	
-	if (cmd_data and not cmd_data.ignore_con) then
-		parseCommand ('/'..message, source, { source }, 'PM: ', '#ff6060')
+	if(cmd_data and not cmd_data.ignore_con) then
+		parseCommand('/'..message, source, {source}, 'PM: ', '#ff6060')
 	end
 end
 
-local function CmdHasPlayerAccess (cmd, player)
+local function CmdHasPlayerAccess(cmd, player)
 	local cmd_data = g_Commands[cmd]
 	
-	if (not cmd_data or not cmd_data.access) then
+	if(not cmd_data or not cmd_data.access) then
 		return true
-	elseif (cmd_data.access == true) then
-		local admin_group = aclGetGroup ('Admin')
-		local account = getPlayerAccount (player)
-		local account_name = getAccountName (account)
-		return admin_group and account and isObjectInACLGroup ('user.'..account_name, admin_group)
+	elseif(cmd_data.access == true) then
+		return isPlayerAdmin(player)
 	else
 		return hasObjectPermissionTo (player, cmd_data.access, false)
 	end
@@ -140,10 +136,10 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	local cmd = args[1]:sub(2)
 	
 	if((ch1 == '/' or ch1 == '!') and g_Commands[cmd]) then
-		if (CmdHasPlayerAccess (cmd, source)) then
+		if(CmdHasPlayerAccess (cmd, source)) then
 			g_Commands[cmd].f(msg, args)
 		else
-			privMsg (source, "Access denied for \"%s\"!", args[1])
+			privMsg(source, "Access denied for \"%s\"!", args[1])
 		end
 	end
 	
@@ -156,7 +152,7 @@ local function onCommandsListReq()
 	local commmands = {}
 	
 	for cmd, data in pairs(g_Commands) do
-		if (not data.alias and CmdHasPlayerAccess (cmd, client)) then
+		if(not data.alias and CmdHasPlayerAccess(cmd, client)) then
 			table.insert(commmands, {cmd, data.descr})
 		end
 	end

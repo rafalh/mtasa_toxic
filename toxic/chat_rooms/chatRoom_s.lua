@@ -8,22 +8,22 @@ local g_Root = getRootElement()
 -- Custom events --
 -------------------
 
-addEvent("chatext.onMsg", true)
-addEvent("chatext.onPlayerChat")
+addEvent('chatext.onMsg', true)
+addEvent('chatext.onPlayerChat')
 
 ChatRoom = {}
 ChatRoom.__mt = {__index = ChatRoom}
 ChatRoom.idToRoom = {}
 
 function ChatRoom:onPlayerMsg(player, msg)
-	--outputDebugString("[chatext] Chat msg: "..self.id.." player "..getPlayerName(player), 3)
+	--outputDebugString('[chatext] Chat msg: '..self.id..' player '..getPlayerName(player), 3)
 	
 	msg = tostring(msg)
-	if(msg == "") then return end
+	if(msg == '') then return end
 	if(self.info.right and not self.info.right:check(player)) then return end
 	
 	if(getElementType(player) == 'player' and isPlayerMuted(player)) then
-		outputChatBox(self.info.cmd..": You are muted!", player, 255, 128, 0)
+		outputChatBox(self.info.cmd..': You are muted!', player, 255, 128, 0)
 		return
 	end
 	
@@ -32,11 +32,11 @@ function ChatRoom:onPlayerMsg(player, msg)
 	local recipients = self.info.getPlayers(player)
 	local playerName = getPlayerName(player)
 	local chatPrefix = self.info.chatPrefix
-	if(type(chatPrefix) == "function") then chatPrefix = chatPrefix(player) end
+	if(type(chatPrefix) == 'function') then chatPrefix = chatPrefix(player) end
 	local logPrefix = self.info.logPrefix
-	if(type(logPrefix) == "function") then logPrefix = logPrefix(player) end
+	if(type(logPrefix) == 'function') then logPrefix = logPrefix(player) end
 	
-	if(utfSub(msg, 1, 1) ~= "/") then
+	if(utfSub(msg, 1, 1) ~= '/') then
 		local pdata = Player.fromEl(player)
 		local punishment = false
 		if(CsProcessMsg) then
@@ -48,7 +48,7 @@ function ChatRoom:onPlayerMsg(player, msg)
 			end
 		end
 		
-		local str = chatPrefix..playerName..": #EBDDB2"..msg
+		local str = chatPrefix..playerName..': #EBDDB2'..msg
 		local r, g, b 
 		if(getElementType(player) == 'player') then
 			r, g, b = getPlayerNametagColor(player)
@@ -61,16 +61,16 @@ function ChatRoom:onPlayerMsg(player, msg)
 			--if(player == recipient) then foundSender = true end
 		end
 		--assert(foundSender)
-		outputServerLog(logPrefix..playerName..": "..msg)
+		outputServerLog(logPrefix..playerName..': '..msg)
 		
 		if(punishment) then
 			CsPunish(pdata, punishment)
 		end
 	end
 	
-	local rafalhRes = getResourceFromName("toxic")
-	if(rafalhRes and getResourceState(rafalhRes) == "running") then
-		call(rafalhRes, "parseCommand", msg, player, recipients, chatPrefix)
+	local rafalhRes = getResourceFromName('toxic')
+	if(rafalhRes and getResourceState(rafalhRes) == 'running') then
+		call(rafalhRes, 'parseCommand', msg, player, recipients, chatPrefix)
 	end
 end
 
@@ -95,7 +95,7 @@ end
 local function onConsole(msg)
 	for id, room in pairs(ChatRoom.idToRoom) do
 		local cmdLen = room.info.cmd:len()
-		if(msg:sub(1, cmdLen + 1) == room.info.cmd.." ") then
+		if(msg:sub(1, cmdLen + 1) == room.info.cmd..' ') then
 			room:onPlayerMsg(source, msg:sub(1 + cmdLen + 1))
 		end
 	end
@@ -106,6 +106,6 @@ end
 ------------
 
 addInitFunc(function()
-	addEventHandler("chatext.onMsg", resourceRoot, onMsg)
-	addEventHandler("onConsole", root, onConsole)
+	addEventHandler('chatext.onMsg', resourceRoot, onMsg)
+	addEventHandler('onConsole', root, onConsole)
 end)

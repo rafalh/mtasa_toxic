@@ -5,7 +5,7 @@
 local g_Root = getRootElement()
 local g_Me = getLocalPlayer()
 local g_ScrW, g_ScrH = guiGetScreenSize()
-local g_ChatFonts = { [0] = "default", [1] = "clear", [2] = "default-bold", [3] = "arial" }
+local g_ChatFonts = { [0] = 'default', [1] = 'clear', [2] = 'default-bold', [3] = 'arial' }
 
 local BLACK = tocolor(0, 0, 0)
 
@@ -13,8 +13,8 @@ local BLACK = tocolor(0, 0, 0)
 -- Custom events --
 -------------------
 
-addEvent("chatext.onReady", true)
-addEvent("chatext.onMsg", true)
+addEvent('chatext.onReady', true)
+addEvent('chatext.onMsg', true)
 
 ---------------------------------
 -- Local function declarations --
@@ -34,28 +34,28 @@ function ChatRoom:openInput()
 		ChatRoom.visibleRoom:closeInput()
 	end
 	
-	self.inputBox = guiCreateEdit(0, 0, 0, 0, "", false)
+	self.inputBox = guiCreateEdit(0, 0, 0, 0, '', false)
 	guiSetAlpha(self.inputBox, 0)
-	guiSetProperty(self.inputBox, "MaxTextLength", "128")
+	guiSetProperty(self.inputBox, 'MaxTextLength', '128')
 	guiEditSetReadOnly(self.inputBox, true)
-	addEventHandler("onClientGUIAccepted", self.inputBox, ChatRoom.onAccept)
+	addEventHandler('onClientGUIAccepted', self.inputBox, ChatRoom.onAccept)
 	guiBringToFront(self.inputBox)
-	addEventHandler("onClientRender", g_Root, ChatRoom.render)
+	addEventHandler('onClientRender', g_Root, ChatRoom.render)
 	ChatRoom.visibleRoom = self
 	
-	triggerServerEvent("onPlayerChatting", g_Me, true)
+	triggerServerEvent('onPlayerChatting', g_Me, true)
 end
 
 function ChatRoom:closeInput()
 	if(not self.inputBox) then return end
 	assert(ChatRoom.visibleRoom == self)
 	
-	removeEventHandler("onClientRender", g_Root, ChatRoom.render)
+	removeEventHandler('onClientRender', g_Root, ChatRoom.render)
 	destroyElement(self.inputBox)
 	self.inputBox = false
 	ChatRoom.visibleRoom = false
 	
-	triggerServerEvent("onPlayerChatting", g_Me, false)
+	triggerServerEvent('onPlayerChatting', g_Me, false)
 end
 
 function ChatRoom.onAccept()
@@ -63,8 +63,8 @@ function ChatRoom.onAccept()
 	assert(self)
 	
 	local msg = tostring(guiGetText(self.inputBox))
-	if(msg ~= "") then
-		triggerServerEvent("chatext.onMsg", resourceRoot, self.id, msg)
+	if(msg ~= '') then
+		triggerServerEvent('chatext.onMsg', resourceRoot, self.id, msg)
 	end
 	self:closeInput()
 end
@@ -80,13 +80,13 @@ function ChatRoom.render()
 	guiBringToFront(self.inputBox)
 	
 	local chatbox_layout = getChatboxLayout()
-	local font = g_ChatFonts[chatbox_layout.chat_font] or "default"
+	local font = g_ChatFonts[chatbox_layout.chat_font] or 'default'
 	local w = chatbox_layout.chat_width * 320 * chatbox_layout.chat_scale[1]
 	local h = dxGetFontHeight(chatbox_layout.text_scale, font)
 	local x = g_ScrW*0.013
 	local y = g_ScrH*0.015 + (h * chatbox_layout.chat_lines + 8) * chatbox_layout.chat_scale[2]
 	local prefix = self.info.inputPrefix
-	if(type(prefix) == "function") then prefix = prefix(localPlayer) end
+	if(type(prefix) == 'function') then prefix = prefix(localPlayer) end
 	
 	chatbox_layout.chat_input_prefix_color = {255, 255, 255, 255} -- MTA does not use it
 	
@@ -102,10 +102,10 @@ function ChatRoom.render()
 	local p_w = dxGetTextWidth(prefix, chatbox_layout.text_scale, font)
 	local text = guiGetText(self.inputBox)
 	if(transparentBg) then -- input field does not have background
-		dxDrawText(text, x + 10 + p_w, y + 3, w + 18, y + h + 4, BLACK, chatbox_layout.text_scale, font, "left", "top", true)
+		dxDrawText(text, x + 10 + p_w, y + 3, w + 18, y + h + 4, BLACK, chatbox_layout.text_scale, font, 'left', 'top', true)
 	end
 	local inputTextClr = tocolor(unpack(chatbox_layout.chat_input_text_color))
-	dxDrawText(text, x + 9 + p_w, y + 2, w + 18, y + h + 4, inputTextClr, chatbox_layout.text_scale, font, "left", "top", true)
+	dxDrawText(text, x + 9 + p_w, y + 2, w + 18, y + h + 4, inputTextClr, chatbox_layout.text_scale, font, 'left', 'top', true)
 end
 
 function ChatRoom.onKeyDown(key)
@@ -125,8 +125,8 @@ end
 function ChatRoom:bindKey()
 	if(self.boundKey or not self.info.key) then return end
 	
-	bindKey(self.info.key, "down", ChatRoom.onKeyDown)
-	bindKey(self.info.key, "up", ChatRoom.onKeyUp)
+	bindKey(self.info.key, 'down', ChatRoom.onKeyDown)
+	bindKey(self.info.key, 'up', ChatRoom.onKeyUp)
 	ChatRoom.keyToRoom[self.info.key] = self
 	self.boundKey = true
 end
@@ -134,8 +134,8 @@ end
 function ChatRoom:unbindKey()
 	if(not self.boundKey or not self.info.key) then return end
 	
-	unbindKey(self.info.key, "down", ChatRoom.onKeyDown)
-	unbindKey(self.info.key, "up", ChatRoom.onKeyUp)
+	unbindKey(self.info.key, 'down', ChatRoom.onKeyDown)
+	unbindKey(self.info.key, 'up', ChatRoom.onKeyUp)
 	ChatRoom.keyToRoom[self.info.key] = nil
 	self.boundKey = false
 end
@@ -158,7 +158,7 @@ function ChatRoom.create(info)
 			self:updateAccess()
 		end)
 	end
-	--outputDebugString("[chatext] Created chat: "..self.id, 3)
+	--outputDebugString('[chatext] Created chat: '..self.id, 3)
 	return self
 end
 
@@ -167,5 +167,5 @@ end
 ------------
 
 addEventHandler('onClientResourceStart', resourceRoot, function()
-	guiSetInputMode("no_binds_when_editing")
+	guiSetInputMode('no_binds_when_editing')
 end)
