@@ -281,13 +281,13 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	local args = CmdMgr.parseLine(msg)
 	
 	-- Find command in map
-	local cmdName = table.remove(args, 1):sub(2)
-	local cmd = CmdMgr.map[cmdName]
+	ctx.cmdName = table.remove(args, 1):sub(2)
+	local cmd = CmdMgr.map[ctx.cmdName]
 	if(not cmd) then return end
 	
 	-- Check if player has access to this command
 	if(cmd.accessRight and not cmd.accessRight:check(ctx.player)) then
-		privMsg(ctx.player.el, "Access denied for \"%s\"!", cmdName)
+		privMsg(ctx.player.el, "Access denied for \"%s\"!", ctx.cmdName)
 		return
 	end
 	

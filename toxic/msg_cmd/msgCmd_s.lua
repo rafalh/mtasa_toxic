@@ -11,31 +11,31 @@ local g_VipRes = Resource('rafalh_vip')
 -- Function definitions --
 --------------------------
 
-local function McHandleCommand(message, arg)
-	local msg = g_MsgCommands[arg[1]:sub(2)]
+local function McHandleCommand(ctx, ...)
+	local msg = g_MsgCommands[ctx.cmdName]
 	assert(msg)
 	local text = msg.text
-	local name = getPlayerName(source)
-	local namePlain = name:gsub('#%x%x%x%x%x%x', '')
-	local pdata = Player.fromEl(source)
+	local name = ctx.player:getName(true)
+	local namePlain = ctx.player:getName()
 	
 	-- Handle '%m'
 	local text = text:gsub('%%m', namePlain):gsub('%%%%', '%%')
 	
 	-- Handle '%p'
-	local i = 1
+	local i = 0
+	local args = {...}
 	text = text:gsub('%%%a', function(s)
 		i = i + 1
 		if(s == '%p') then
-			if(not arg[i] or arg[i]:lower() == 'all') then
+			if(not args[i] or args[i]:lower() == 'all') then
 				return ''
 			end
 			
-			local player = findPlayer(arg[i])
+			local player = findPlayer(args[i])
 			if(player) then
 				return getPlayerName(player):gsub('#%x%x%x%x%x%x', '')
 			else
-				privMsg(source, "Cannot find player %s", arg[i])
+				privMsg(ctx.player, "Cannot find player %s", args[i])
 				return ''
 			end
 		end
@@ -44,8 +44,8 @@ local function McHandleCommand(message, arg)
 	
 	-- Output message
 	local r, g, b
-	if(getElementType(source) == 'player') then
-		r, g, b = getPlayerNametagColor(source)
+	if(not ctx.player.is_console) then
+		r, g, b = getPlayerNametagColor(ctx.player.el)
 	else -- console
 		r, g, b = 255, 128, 255
 	end
@@ -53,7 +53,7 @@ local function McHandleCommand(message, arg)
 	outputServerLog('MSGCMD: '..namePlain..': '..text)
 	
 	if(msg.sound) then
-		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', source)
+		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', ctx.player.el)
 		if(isVip) then
 			local servAddr = get('mapmusic.server_address')
 			local url =  'http://'..servAddr..'/'..getResourceName(resource)..'/msg_cmd/sounds/'..msg.sound
@@ -61,17 +61,17 @@ local function McHandleCommand(message, arg)
 			
 			local now = getRealTime().timestamp
 			local limit = Settings.soundCmdLimit
-			if(not pdata.lastSoundCmd or now - pdata.lastSoundCmd >= limit) then
-				pdata.lastSoundCmd = now
-				RPC('McPlaySound', url, source):exec()
+			if(not ctx.player.lastSoundCmd or now - ctx.player.lastSoundCmd >= limit) then
+				ctx.player.lastSoundCmd = now
+				RPC('McPlaySound', url, ctx.player.el):exec()
 			else
-				outputMsg(pdata, Styles.red, "You cannot use sound commands so often!")
+				outputMsg(ctx.player, Styles.red, "You cannot use sound commands so often!")
 			end
 		end
 	end
 	
 	-- Check for spam
-	if(AsProcessMsg(source)) then
+	if(AsProcessMsg(ctx.player.el)) then
 		-- If this is spam, don't run any commands
 		return
 	end
@@ -79,104 +79,152 @@ end
 
 local function McInit()
 	local node = xmlLoadFile('conf/msg_cmd.xml')
-	if(node) then
-		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
-			local attr = xmlNodeGetAttributes(subnode)
-			
-			assert(attr.cmd and attr.msg, tostring(attr.cmd))
-			g_MsgCommands[attr.cmd] = {text = attr.msg, sound = attr.sound}
-			CmdRegister(attr.cmd, McHandleCommand, false, 'Says: '..attr.msg..(attr.sound and ' If invoked by a VIP player, plays a short sound in background.' or ''))
-		end
-		xmlUnloadFile(node)
-	else
+	if(not node) then
 		outputDebugString('Failed to load msg_cmd.xml', 2)
+		return
 	end
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local attr = xmlNodeGetAttributes(subnode)
+		
+		assert(attr.cmd and attr.msg, tostring(attr.cmd))
+		
+		if(attr.sound and not fileExists('msg_cmd/sounds/'..attr.sound)) then
+			outputDebugString('Sound '..attr.sound..' has not been found!', 2)
+			attr.sound = nil
+		end
+		
+		g_MsgCommands[attr.cmd] = {text = attr.msg, sound = attr.sound}
+		
+		CmdMgr.register{
+			name = attr.cmd,
+			desc = 'Says: '..attr.msg..(attr.sound and ' If invoked by a VIP player, plays a short sound in background.' or ''),
+			varargs = true,
+			func = McHandleCommand
+		}
+	end
+	
+	xmlUnloadFile(node)
 end
 
 #if(MODIFY_MSG_CMD) then
 
-local function CmdAddCom(message, arg)
-	if(#arg >= 3) then
-		arg[2] = arg[2]:lower()
-		if(not g_MsgCommands[arg[2]]) then
-			local node = xmlLoadFile('conf\\msg_cmd.xml')
-			if(node) then
-				local subnode = xmlCreateChild (node, 'command')
-				if(subnode) then
-					xmlNodeSetAttribute(subnode, 'cmd', arg[2])
-					xmlNodeSetAttribute(subnode, 'msg', message:sub ((arg[1]..arg[2]):len () + 3))
-					xmlSaveFile(node)
-					local msg = message:sub((arg[1]..arg[2]):len() + 3)
-					g_MsgCommands[arg[2]] = {text = msg}
-					CmdRegister(arg[2], McHandleCommand, false, 'Says: '..msg)
-					scriptMsg("Added command: %s", arg[2])
-				end
-				xmlUnloadFile(node)
-			end
-		else privMsg(source, "Command already exists!") end
-	else privMsg(source, "Usage: %s", arg[1]..' <command> <message>') end
-end
-
-CmdRegister('addcom', CmdAddCom, 'resource.'..g_ResName..'.addcom', "Adds a custom command")
-
-local function CmdRemCom(message, arg)
-	if(#arg >= 2) then
-		arg[2] = arg[2]:lower()
-		local node = xmlLoadFile('conf\\msg_cmd.xml')
-		if(node) then
-			local i = 0
-			while(xmlFindChild(node, 'command', i) ~= false) do
-				local subnode = xmlFindChild (node, 'command', i)
-				local cmd = xmlNodeGetAttribute (subnode, 'cmd')
-				if (cmd == arg[2]) then
-					xmlDestroyNode (subnode)
-				end
-				i = i + 1
-			end
-			if(g_MsgCommands[arg[2]]) then
-				xmlSaveFile(node)
-				g_MsgCommands[arg[2]] = nil
-				CmdUnregister(arg[2])
-				scriptMsg("Removed command: %s", arg[2])
-			end
-			xmlUnloadFile(node)
+CmdMgr.register{
+	name = 'addcom',
+	desc = "Adds a custom command",
+	accessRight = AccessRight('addcom'),
+	args = {
+		{'command', type = 'string'},
+		{'message', type = 'string'},
+	},
+	func = function(ctx, cmdName, msg)
+		cmdName = cmdName:lower()
+		
+		if(g_MsgCommands[cmdName]) then
+			privMsg(ctx.player, "Command already exists!")
+			return
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <command>') end
-end
+		
+		local node = xmlLoadFile('conf/msg_cmd.xml')
+		if(not node) then
+			privMsg(ctx.player, "Failed to save new command!")
+			return
+		end
+		
+		local subnode = xmlCreateChild(node, 'command')
+		if(subnode) then
+			xmlNodeSetAttribute(subnode, 'cmd', cmdName)
+			xmlNodeSetAttribute(subnode, 'msg', msg)
+			xmlSaveFile(node)
+			
+			g_MsgCommands[cmdName] = {text = msg}
+			CmdMgr.register{
+				name = cmdName,
+				desc = 'Says: '..msg,
+				varargs = true,
+				func = McHandleCommand
+			}
+			
+			scriptMsg("Added command: %s", cmdName)
+		else
+			privMsg(ctx.player, "Failed to save new command!")
+		end
+		
+		xmlUnloadFile(node)
+	end
+}
 
-CmdRegister('remcom', CmdRemCom, 'resource.'..g_ResName..'.remcom', "Removes a custom command")
-
-local function CmdEditCom(message, arg)
-	if(#arg >= 3) then
-		arg[2] = arg[2]:lower()
-		local msg = message:sub((arg[1]..arg[2]):len () + 3)
-		if(g_MsgCommands[arg[2]]) then
-			local node = xmlLoadFile('conf\\msg_cmd.xml')
-			if(node) then
-				local i = 0
-				while(xmlFindChild(node, 'command', i) ~= false) do
-					local subnode = xmlFindChild(node, 'command', i)
-					local cmd = xmlNodeGetAttribute(subnode, 'cmd')
-					if(cmd == arg[2]) then
-						xmlDestroyNode(subnode)
-					end
-					i = i + 1
-				end
-				local subnode = xmlCreateChild(node, 'command')
-				if(subnode) then
-					xmlNodeSetAttribute(subnode, 'cmd', arg[2])
-					xmlNodeSetAttribute(subnode, 'msg', msg)
-					xmlSaveFile(node)
-					g_MsgCommands[arg[2]] = {text = msg}
-					scriptMsg("Changed command: %s", arg[2])
-				end
-				xmlUnloadFile(node)
+CmdMgr.register{
+	name = 'remcom',
+	desc = "Removes a custom command",
+	accessRight = AccessRight('remcom'),
+	args = {
+		{'command', type = 'string'},
+	},
+	func = function(ctx, cmdName)
+		if(not g_MsgCommands[cmdName]) then
+			privMsg(ctx.player, "Command '%s' has not been found!", cmdName)
+			return
+		end
+		
+		local node = xmlLoadFile('conf/msg_cmd.xml')
+		if(not node) then
+			privMsg(ctx.player, "Failed to remove a command!")
+			return
+		end
+		
+		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+			local curCmd = xmlNodeGetAttribute(subnode, 'cmd')
+			if(curCmd == cmdName) then
+				xmlDestroyNode(subnode)
+				xmlSaveFile(node)
+				
+				g_MsgCommands[cmdName] = nil
+				CmdMgr.unregister(cmdName)
+				scriptMsg("Removed command: %s", cmdName)
 			end
-		else privMsg(source, "Command doesn't exists!") end
-	else privMsg(source, "Usage: %s", arg[1]..' <command> <message>') end
+		end
+		
+		xmlUnloadFile(node)
+	end
 end
 
-CmdRegister('editcom', CmdEditCom, 'resource.'..g_ResName..'.addcom', "Changes custom command message")
+CmdMgr.register{
+	name = 'editcom',
+	desc = "Changes custom command message",
+	accessRight = AccessRight('addcom'),
+	args = {
+		{'command', type = 'string'},
+		{'message', type = 'string'},
+	},
+	func = function(ctx, cmdName, msg)
+		cmdName = cmdName:lower()
+		
+		if(not g_MsgCommands[cmdName]) then
+			privMsg(ctx.player, "Command '%s' has not been found!", cmdName)
+			return
+		end
+		
+		local node = xmlLoadFile('conf/msg_cmd.xml')
+		if(not node) then
+			privMsg(ctx.player, "Failed to change a command!")
+			return
+		end
+		
+		for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+			local curCmd = xmlNodeGetAttribute(subnode, 'cmd')
+			if(curCmd == cmdName) then
+				xmlNodeSetAttribute(subnode, 'msg', msg)
+				xmlSaveFile(node)
+				
+				g_MsgCommands[cmdName].text = msg
+				scriptMsg("Changed command: %s", cmdName)
+			end
+		end
+		
+		xmlUnloadFile(node)
+	end
+end
 
 #end -- MODIFY_MSG_CMD
 
