@@ -1,12 +1,3 @@
-stare:
-dd/dm zagrane
-dd/dm wygrane
-1. race
-2. race
-3. race
-
-nowe
-----
 skutecznosc
 Srednia znormalizowana do 100% zalezaca od miejsca zajmowanego przez gracza w kolejnych rozgrywkach. Waga rozgrywki jest proporcjonalna do liczby graczy. Waga sredniej spada by wykladniczo by po 100 zagranych mapach wyniesc 50% nowej sredniej w przypadku gdy liczby graczy rowna jest 32.
 
@@ -22,4 +13,3 @@ skutecznosc dd
 skutecznosc dm
 skutecznosc race
 skutecznosc ogólna
-zagrane mapy
