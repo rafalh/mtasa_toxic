@@ -96,7 +96,7 @@ local function CmdCheckMods(msg, arg)
 		privMsg(source, "Everything is all right!")
 	end
 end
-CmdRegister('checkmods', CmdCheckMods, true)
+CmdRegister('checkmods', CmdCheckMods, 'resource.'..g_ResName..'.modinfo')
 
 local function onPlayerLogin(prevAccount, account)
 	local player = Player.fromEl(source)

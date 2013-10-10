@@ -147,7 +147,7 @@ local function CmdKill(message, arg)
 	end
 end
 
-CmdRegister('kill', CmdKill, false, "Kills player", true)
+CmdRegister('killplayer', CmdKill, false, "Kills player")
 
 local function CmdIp(message, arg)
 	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
@@ -393,4 +393,4 @@ local function CmdSqlQuery(message, arg)
 	else privMsg(source, "Usage: %s", arg[1]..' <query>') end
 end
 
-CmdRegister('sqlquery', CmdSqlQuery, true)
+CmdRegister('sqlquery', CmdSqlQuery, 'resource.'..g_ResName..'.sqlquery')

@@ -1,3 +1,6 @@
+-- TODO: move it to GUI
+#if(false) then
+
 local function CmdChangeLogin(message, arg)
 	local oldAccount = getPlayerAccount(source)
 	if(isGuestAccount(oldAccount)) then
@@ -30,5 +33,7 @@ local function CmdChangeLogin(message, arg)
 	else privMsg(source, "Usage: %s", arg[1]..' <new login> <password>') end
 end
 
-CmdRegister('changelogin', CmdChangeLogin, true)
+CmdRegister('changelogin', CmdChangeLogin, false)
 CmdRegisterAlias('chglogin', 'changelogin')
+
+#end

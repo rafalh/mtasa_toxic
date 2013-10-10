@@ -375,7 +375,7 @@ local function CmdFixMapResName(msg, arg)
 	end
 end
 
-CmdRegister('fixmapresname', CmdFixMapResName, true)
+CmdRegister('fixmapresname', CmdFixMapResName, 'resource.'..g_ResName..'.fixmapresname')
 
 local function DetectMapType(map)
 	local map_res_name = getResourceName(map.res)
@@ -452,7 +452,7 @@ local function CmdFixMapTags(msg, arg)
 	privMsg(source, '%d/%d maps %s.', count, maps:getCount(), fix and 'fixed' or 'detected')
 end
 
-CmdRegister('fixmaptags', CmdFixMapTags, true)
+CmdRegister('fixmaptags', CmdFixMapTags, 'resource.'..g_ResName..'.fixmaptags')
 
 local function MocCleanup()
 	if(g_OldVehicleWeapons) then

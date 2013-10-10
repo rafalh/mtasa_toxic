@@ -194,4 +194,4 @@ local function CmdMapId(message, arg)
 	scriptMsg("Map ID: %u", map:getId())
 end
 
-CmdRegister('mapid', CmdMapId, true)
+CmdRegister('mapid', CmdMapId, false)

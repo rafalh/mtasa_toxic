@@ -1,16 +1,8 @@
----------------------
--- Local variables --
----------------------
-
-local g_Root = getRootElement()
-
--------------------
--- Custom events --
--------------------
-
+-- Custom events
 addEvent('chatext.onMsg', true)
 addEvent('chatext.onPlayerChat')
 
+-- ChatRoom class
 ChatRoom = {}
 ChatRoom.__mt = {__index = ChatRoom}
 ChatRoom.idToRoom = {}
@@ -82,9 +74,7 @@ function ChatRoom.create(info)
 	return self
 end
 
---------------------------------
--- Local function definitions --
---------------------------------
+-- Local function definitions
 
 local function onMsg(roomId, msg)
 	local self = ChatRoom.idToRoom[roomId]
@@ -101,10 +91,7 @@ local function onConsole(msg)
 	end
 end
 
-------------
--- Events --
-------------
-
+-- Events
 addInitFunc(function()
 	addEventHandler('chatext.onMsg', resourceRoot, onMsg)
 	addEventHandler('onConsole', root, onConsole)

@@ -115,7 +115,6 @@ local function CmdNextMap (message, arg)
 end
 
 CmdRegister('nextmap', CmdNextMap, 'resource.'..g_ResName..'.nextmap', "Adds next map to queue")
-CmdRegisterAlias ('next', 'nextmap', true)
 
 -- For Admin Panel
 local function onSetNextMap (mapName)

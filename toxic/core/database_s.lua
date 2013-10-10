@@ -248,7 +248,7 @@ function Database.Drivers.SQLite:init()
 	CmdRegister('dbbackup', function()
 		Database.Drivers.SQLite.makeBackup()
 		privMsg(source, 'Backup saved!')
-	end, true)
+	end, 'resource.'..g_ResName..'.dbbackup')
 	
 	return true
 end

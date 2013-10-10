@@ -47,7 +47,6 @@
 	
 	<script src="commands/accounts_s.lua" type="server" />
 	<script src="commands/admin_s.lua" type="server" />
-	<script src="commands/admin2_s.lua" type="server" />
 	<script src="commands/cleanDb_s.lua" type="server" />
 	<script src="commands/general_s.lua" type="server" />
 	<script src="commands/trace_s.lua" type="server" />
@@ -102,9 +101,8 @@
 	
 	<script src="core/stop_s.lua" type="server" />
 	
-	<config src="conf/commands.xml" />
-	<config src="conf/countries.xml" />
-	<config src="conf/iso_langs.xml" />
+	<config src="conf/countries.xml" type="server" />
+	<config src="conf/iso_langs.xml" type="server" />
 	<config src="conf/adverts.xml" type="client" />
 	<config src="conf/iso_langs.xml" type="client" />
 	<config src="gui/gui.xml" type="client" />

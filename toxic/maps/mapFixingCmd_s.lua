@@ -37,7 +37,7 @@ local function CmdFixMapScripts (message, arg)
 	end
 end
 
-CmdRegister('fixmapscripts', CmdFixMapScripts, true)
+CmdRegister('fixmapscripts', CmdFixMapScripts, 'resource.'..g_ResName..'.fixmapscripts')
 
 local function CountSpInMapFile(path)
 	local node = xmlLoadFile(path)
@@ -152,4 +152,4 @@ local function CmdCheckSp(message, arg)
 	end
 end
 
-CmdRegister('checksp', CmdCheckSp, true)
+CmdRegister('checksp', CmdCheckSp, 'resource.'..g_ResName..'.checksp')

@@ -2,8 +2,6 @@
 -- Local variables --
 ---------------------
 
-local g_Root = getRootElement()
-local g_Me = getLocalPlayer()
 local g_ScrW, g_ScrH = guiGetScreenSize()
 local g_ChatFonts = { [0] = 'default', [1] = 'clear', [2] = 'default-bold', [3] = 'arial' }
 
