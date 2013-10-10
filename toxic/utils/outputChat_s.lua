@@ -14,17 +14,18 @@ function divChatStr ( str )
 	return tbl
 end
 
-function privMsg ( player, fmt, ... )
-	local msg = 'PM: '..MuiGetMsg ( fmt, player ):format ( ... ):gsub ( '#%x%x%x%x%x%x', '' )
-	local is_console = getElementType ( player ) == 'console'
+function privMsg(player, fmt, ...)
+	if(type(player) == 'table') then player = player.el end
+	local msg = 'PM: '..MuiGetMsg(fmt, player):format(...):gsub('#%x%x%x%x%x%x', '')
+	local is_console = getElementType(player) == 'console'
 	
-	if ( is_console ) then
-		outputServerLog ( msg )
+	if(is_console) then
+		outputServerLog(msg)
 	else
-		local parts = divChatStr ( msg )
+		local parts = divChatStr(msg)
 		
-		for i, part in ipairs ( parts ) do
-			outputChatBox ( part, player, 255, 96, 96, false )
+		for i, part in ipairs(parts) do
+			outputChatBox(part, player, 255, 96, 96, false)
 		end
 	end
 end
