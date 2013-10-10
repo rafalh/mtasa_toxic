@@ -23,14 +23,14 @@ function CmdMgr.register(info)
 		aliases = 'table', -- optional
 		cat = 'string', -- optional
 		desc = 'string', -- optional
-		accessRight = 'string', -- optional
+		accessRight = 'table', -- optional
 		args = 'table', -- optional
 		varargs = 'boolean', -- optional
 		func = 'function'})
 	assert(not invalidArg, 'Invalid arg for CmdMgr.register - '..tostring(invalidArg))
 	assert(info.name and info.func)
 	
-	assert(not CmdMgr.map[info.name], info.name)
+	assert(not CmdMgr.map[info.name], 'Command '..info.name..' already exists')
 	CmdMgr.map[info.name] = info
 	
 	if(info.aliases) then
@@ -85,11 +85,23 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 				if(not newArg) then
 					privMsg(ctx.player, "Expected number at argument #%u (%s).", i, argDesc[1])
 					return false
+				elseif(argDesc.min and newArg < argDesc.min) then
+					privMsg(ctx.player, "Argument #%u (%s) must be greater than or equal to %d.", i, argDesc[1], argDesc.min)
+					return false
+				elseif(argDesc.max and newArg > argDesc.max) then
+					privMsg(ctx.player, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
+					return false
 				end
 			elseif(argDesc.type == 'integer') then
 				newArg = toint(arg)
 				if(not newArg) then
 					privMsg(ctx.player, "Expected integer at argument #%u (%s).", i, argDesc[1])
+					return false
+				elseif(argDesc.min and newArg < argDesc.min) then
+					privMsg(ctx.player, "Argument #%u (%s) must be greater than or equal to %d.", i, argDesc[1], argDesc.min)
+					return false
+				elseif(argDesc.max and newArg > argDesc.max) then
+					privMsg(ctx.player, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
 					return false
 				end
 			elseif(argDesc.type == 'string') then
@@ -120,7 +132,7 @@ function CmdMgr.getAllowedCommands(player)
 	local ret = {}
 	
 	for i, cmd in ipairs(CmdMgr.list) do
-		if(not cmd.accessRight or AccessRight(cmd.accessRight):check(player)) then
+		if(not cmd.accessRight or cmd.accessRight:check(player)) then
 			table.insert(ret, {cmd.name, cmd.desc})
 		end
 	end
@@ -129,7 +141,8 @@ function CmdMgr.getAllowedCommands(player)
 end
 
 function CmdMgr.getAccessRights()
-	local ret = {}
+	return {}
+	--[[local ret = {}
 	local added = {}
 	
 	for i, cmd in ipairs(CmdMgr.list) do
@@ -138,14 +151,14 @@ function CmdMgr.getAccessRights()
 		end
 	end
 	
-	return ret
+	return ret]]
 end
 
 function CmdMgr.invoke(ctx, cmd, ...)
 	local cmd = CmdMgr.map[cmdName]
 	if(not cmd) then return false end
 	
-	if(cmd.accessRight and not AccessRight(cmd.accessRight):check(ctx.player)) then
+	if(cmd.accessRight and not cmd.accessRight:check(ctx.player)) then
 		privMsg(ctx.player, "Access denied! You cannot use command '%s'.", cmd.name)
 		return false
 	end
@@ -208,7 +221,7 @@ function CmdRegister(name, func, access, description, ignore_console, ignore_cha
 	
 	CmdMgr.register{
 		name = name,
-		accessRight = access,
+		accessRight = access and AccessRight(access, true),
 		desc = description,
 		--args = {{type = '...'}},
 		varargs = true,

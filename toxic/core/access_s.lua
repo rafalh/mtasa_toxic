@@ -5,9 +5,10 @@ function AccessRight.__mt:__tostring()
 	return 'AccessRight('..self.name..')'
 end
 
-function AccessRight.__mt.__index:init(name)
+function AccessRight.__mt.__index:init(name, absolute)
 	assert(name)
 	self.name = name
+	self.abs = absolute
 	table.insert(AccessRight.list, self)
 end
 
@@ -18,12 +19,21 @@ function AccessRight.__mt.__index:check(player)
 	return player.acl:check(self)
 end
 
+function AccessRight.__mt.__index:getFullName()
+	if(self.abs) then
+		return self.name
+	else
+		return 'resource.'..g_ResName..'.'..self.name
+	end
+end
+
 AccessList = Class('AccessList')
 
 function AccessList.__mt.__index:update(accountName)
 	local obj = 'user.'..(accountName or 'guest')
 	for i, right in ipairs(AccessRight.list) do
-		local fullName = 'resource.'..g_ResName..'.'..right.name
+		local fullName = right:getFullName()
+		--outputDebugString('Checking access '..fullName, 3)
 		self[right] = hasObjectPermissionTo(obj, fullName, false)
 	end
 end

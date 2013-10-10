@@ -1,193 +1,221 @@
 -- Includes
 #include 'include/config.lua'
 
-local function CmdPBan(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local reason = arg[3]
-	
-	if(player) then
-		local accountName = getAccountName(getPlayerAccount(source))
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'pban',
+	accessRight = AccessRight('command.banserial', true),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason)
+		local accountName = ctx.player:getAccountName()
 		
-		outputMsg(g_Root, Styles.red, "%s serial has been banned by %s!", player:getName(true), admin:getName(true))
-		local banInfo = '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or '')
-		addBan(nil, nil, player:getSerial(), source, banInfo)
-	else
-		privMsg(source, "Usage: %s", arg[1]..' <player>')
+		outputMsg(g_Root, Styles.red, "%s serial has been banned by %s!", player:getName(true), ctx.player:getName(true))
+		local banInfo = '(nick: '..player:getName()..') (by: '..accountName..')'..reason
+		addBan(nil, nil, player:getSerial(), ctx.player.el, banInfo)
 	end
-end
+}
 
-CmdRegister('pban', CmdPBan, 'command.banserial')
-
-local function CmdBan1m(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local reason = arg[3]
-	
-	if(player) then
-		local accountName = getAccountName(getPlayerAccount(source))
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'ban1m',
+	desc = "Bans player for 1 minute",
+	accessRight = AccessRight('ban1m'),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason)
+		local accountName = ctx.player:getAccountName()
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player:getName(true), admin:getName(true))
-		addBan(nil, nil, player:getSerial(), source, '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or ''), 60)
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 minute)!", player:getName(true), ctx.player:getName(true))
+		addBan(nil, nil, player:getSerial(), ctx.player.el, '(nick: '..player:getName()..') (by: '..accountName..')'..reason, 60)
+	end
+}
 
-CmdRegister('ban1m', CmdBan1m, 'resource.'..g_ResName..'.ban1m', "Bans player for 1 minute")
-
-local function CmdBan5m(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local reason = arg[3]
-	
-	if(player) then
-		local accountName = getAccountName(getPlayerAccount(source))
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'ban5m',
+	desc = "Bans player for 5 minutes",
+	accessRight = AccessRight('ban5m'),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason)
+		local accountName = ctx.player:getAccountName()
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (5 minutes)!", player:getName(true), admin:getName(true))
-		addBan(nil, nil, player:getSerial(), source, '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or ''), 60*5)
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (5 minutes)!", player:getName(true), ctx.player:getName(true))
+		addBan(nil, nil, player:getSerial(), ctx.player.el, '(nick: '..player:getName()..') (by: '..accountName..')'..reason, 60*5)
+	end
+}
 
-CmdRegister('ban5m', CmdBan5m, 'resource.'..g_ResName..'.ban5m', "Bans player for 5 minutes")
-
-local function CmdBan1h(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local reason = arg[3]
-	
-	if(player) then
-		local accountName = getAccountName(getPlayerAccount(source))
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'ban1h',
+	desc = "Bans player for 1 hour",
+	accessRight = AccessRight('ban1h'),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason)
+		local accountName = ctx.player:getAccountName()
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 hour)!", player:getName(true), admin:getName(true))
-		addBan(nil, nil, player:getSerial(), source, '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or ''), 3600)
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (1 hour)!", player:getName(true), ctx.player:getName(true))
+		addBan(nil, nil, player:getSerial(), ctx.player.el, '(nick: '..player:getName()..') (by: '..accountName..')'..reason, 3600)
+	end
+}
 
-CmdRegister('ban1h', CmdBan1h, 'resource.'..g_ResName..'.ban1h', "Bans player for 1 hour")
-
-local function CmdBan24h(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local reason = arg[3]
-	
-	if(player) then
-		local accountName = getAccountName(getPlayerAccount(source))
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'ban24h',
+	desc = "Bans player for 24 hours",
+	accessRight = AccessRight('ban24h'),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason)
+		local accountName = ctx.player:getAccountName()
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (24 hours)!", player:getName(true), admin:getName(true))
-		addBan(nil, nil, player:getSerial(), source, '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or ''), 24*3600)
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (24 hours)!", player:getName(true), ctx.player:getName(true))
+		addBan(nil, nil, player:getSerial(), ctx.player.el, '(nick: '..player:getName()..') (by: '..accountName..')'..reason, 3600*24)
+	end
+}
 
-CmdRegister('ban24h', CmdBan24h, 'resource.'..g_ResName..'.ban24h', "Bans player for 24 hours")
-
-local function CmdBan7d(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local reason = arg[3]
-	
-	if(player) then
-		local accountName = getAccountName(getPlayerAccount(source))
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'ban7d',
+	desc = "Bans player for 7 days",
+	accessRight = AccessRight('ban7d'),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason)
+		local accountName = ctx.player:getAccountName()
 		
-		outputMsg(g_Root, Styles.red, "%s has been banned by %s (7 days)!", player:getName(true), admin:getName(true))
-		addBan(nil, nil, player:getSerial(), source, '(nick: '..player:getName()..') (by: '..accountName..')'..(reason and ' '..reason or ''), 7*24*3600)
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+		outputMsg(g_Root, Styles.red, "%s has been banned by %s (7 days)!", player:getName(true), ctx.player:getName(true))
+		addBan(nil, nil, player:getSerial(), ctx.player.el, '(nick: '..player:getName()..') (by: '..accountName..')'..reason, 3600*24*7)
+	end
+}
 
-CmdRegister('ban7d', CmdBan7d, 'resource.'..g_ResName..'.ban7d', "Bans player for 7 days")
-
-local function CmdMute(message, arg)
-	local player = (#arg >= 2 and Player.find(arg[2]))
-	local sec = touint(arg[3]) or Settings.mute_time
-	local admin = Player.fromEl(source)
-	if(player) then
-		local reason = 'Muted by '..admin:getAccountName()
+CmdMgr.register{
+	name = 'mute',
+	desc = "Mutes player on chat and voice-chat for 1 minute",
+	accessRight = AccessRight('command.mute', true),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+		{'seconds', type = 'integer', def = 60, min = 5},
+	},
+	func = function(ctx, player, reason, sec)
+		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
 		if(player:mute(sec, reason)) then
-			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", player:getName(true), admin:getName(true))
+			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", player:getName(true), ctx.player:getName(true))
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <player> [<time>]') end
-end
+	end
+}
 
-CmdRegister('mute', CmdMute, 'command.mute', "Mutes player on chat and voice-chat for 1 minute")
-
-local function CmdPMute(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
-	local admin = Player.fromEl(source)
-	
-	if(player) then
-		local reason = 'Muted by '..admin:getAccountName()
+CmdMgr.register{
+	name = 'pmute',
+	desc = "Mutes player for ever",
+	accessRight = AccessRight('pmute'),
+	args = {
+		{'player', type = 'player'},
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, player, reason, sec)
+		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
 		if(player:mute(0, reason)) then
-			outputMsg(g_Root, Styles.red, "%s has been permanently muted by %s!", player:getName(true), admin:getName(true))
+			outputMsg(g_Root, Styles.red, "%s has been permanently muted by %s!", player:getName(true), ctx.player:getName(true))
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+	end
+}
 
-CmdRegister('pmute', CmdPMute, 'resource.'..g_ResName..'.pmute', "Mutes player for ever")
-
-local function CmdUnmute(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
-	local admin = Player.fromEl(source)
-	
-	if(player) then
+CmdMgr.register{
+	name = 'unmute',
+	desc = "Unmutes player on chat and voice-chat",
+	accessRight = AccessRight('command.unmute', true),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
 		if(isPlayerMuted(player.el)) then
-			outputMsg(g_Root, Styles.green, "%s has been unmuted by %s!", player:getName(true), admin:getName(true))
+			outputMsg(g_Root, Styles.green, "%s has been unmuted by %s!", player:getName(true), ctx.player:getName(true))
 		end
 		player:unmute()
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
+	end
+}
 
-CmdRegister('unmute', CmdUnmute, 'command.unmute', "Unmutes player on chat and voice-chat")
-
-local function CmdKill(message, arg)
-	local sourcePlayer = Player.fromEl(source)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or sourcePlayer
-	
-	if(player == sourcePlayer or hasObjectPermissionTo(source, 'command.slap', false)) then
+CmdMgr.register{
+	name = 'killplayer',
+	desc = "Kills specified player",
+	accessRight = AccessRight('command.slap', true),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
 		killPed(player.el)
-	else
-		privMsg(source, "Access denied for \"%s\"!", arg[1])
 	end
-end
+}
 
-CmdRegister('killplayer', CmdKill, false, "Kills player")
-
-local function CmdIp(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
-	local ip = player:getIP()
-	if(ip) then
-		scriptMsg("%s's IP: %s.", player:getName(), ip)
+CmdMgr.register{
+	name = 'ip',
+	desc = "Shows player IP address",
+	accessRight = AccessRight('ip'),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
+		local ip = player:getIP()
+		scriptMsg("%s's IP: %s.", player:getName(), ip or "unknown")
 	end
-end
+}
 
-CmdRegister('ip', CmdIp, 'resource.'..g_ResName..'.ip', "Shows player IP address")
+CmdMgr.register{
+	name = 'account',
+	desc = "Shows player account ID",
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
+		scriptMsg("%s's account ID: %s.", player:getName(), player.id or "none")
+	end
+}
 
-local function CmdAccount(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
-	scriptMsg("%s's account ID: %s.", player:getName(), player.id or "none")
-end
-
-CmdRegister('account', CmdAccount, false, "Shows player account ID")
-
-local function CmdFindAccountsIp(message, arg)
-	if(#arg >= 2) then
+CmdMgr.register{
+	name = 'findaccountsip',
+	aliases = {'findaccip'},
+	accessRight = AccessRight('findaccounts'),
+	args = {
+		{'IP', type = 'string'},
+	},
+	func = function(ctx, ip)
 		local buf = ''
-		local rows = DbQuery('SELECT player FROM '..PlayersTable..' WHERE ip LIKE ?', arg[2]..'%')
+		local rows = DbQuery('SELECT player FROM '..PlayersTable..' WHERE ip LIKE ?', ip..'%')
 		local found = {}
 		
-		for i, data in ipairs (rows) do
+		for i, data in ipairs(rows) do
 			table.insert(found, data.player)
 		end
 		local foundStr = #found > 0 and table.concat(found, ', ') or "none"
 		scriptMsg("Found accounts: %s", foundStr)
-	else privMsg(source, "Usage: %s", arg[1]..' <ip>') end
-end
+	end
+}
 
-CmdRegister('findaccountsip', CmdFindAccountsIp, 'resource.'..g_ResName..'.findaccounts')
-CmdRegisterAlias('findaccip', 'findaccountsip')
-
-local function CmdDescribeAccount(message, arg)
-	local id = touint(arg[2])
-	if(id) then
+CmdMgr.register{
+	name = 'describeaccount',
+	aliases = {'descra'},
+	accessRight = AccessRight('findaccounts'),
+	args = {
+		{'AccountID', type = 'integer'},
+	},
+	func = function(ctx, id)
 		local accountData = AccountData.create(id)
 		local data = accountData:getTbl()
+		if(not data) then
+			privMsg(ctx.player, "Account has not been found!")
+			return
+		end
+		
 		local tm = getRealTime(data.last_visit)
 		local tm2 = getRealTime(data.first_visit)
 		scriptMsg("Name: %s, points: %s, cash: %u, bid-level: %u, playtime: %u, last visit: %d-%02d-%02d %d:%02d:%02d, joined: %d-%02d-%02d %d:%02d:%02d, IP: %s, serial: %s.",
@@ -195,19 +223,25 @@ local function CmdDescribeAccount(message, arg)
 			tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second,
 			tm2.monthday, tm2.month + 1, tm2.year + 1900, tm2.hour, tm2.minute, tm2.second,
 			data.ip, data.serial)
-	else privMsg(source, "Usage: %s", arg[1]..' <account ID>') end
-end
+	end
+}
 
-CmdRegister('describeaccount', CmdDescribeAccount, 'resource.'..g_ResName..'.findaccounts')
-CmdRegisterAlias ('descra', 'describeaccount')
-
-local function CmdMergeAccounts(message, arg)
-	local player = Player.find(arg[2])
-	local id = touint(arg[3])
-	
-	if(player and player.id and id) then
+CmdMgr.register{
+	name = 'mergeaccounts',
+	aliases = {'mergeacc'},
+	accessRight = AccessRight('mergeaccounts'),
+	args = {
+		{'Player', type = 'player'},
+		{'OtherAccountID', type = 'integer', min = 0},
+	},
+	func = function(ctx, player, id)
+		if(not player.id) then
+			privMsg(ctx.player, "Player %s is not logged in!", player:getName())
+			return
+		end
+		
 		if(player.id == id) then
-			privMsg(source, "Cannot merge account with the same account!", id)
+			privMsg(ctx.player, "Cannot merge account with the same account!", id)
 			return
 		end
 		
@@ -215,12 +249,12 @@ local function CmdMergeAccounts(message, arg)
 		local srcAccountData = AccountData.create(id)
 		local src_data = srcAccountData:getTbl()
 		if(not src_data) then
-			privMsg(source, "Cannot find account %u!", id)
+			privMsg(ctx.player, "Cannot find account %u!", id)
 			return
 		end
 		
 		--[[if(src_data.first_visit > player.accountData.first_visit) then
-			privMsg(source, "Account for merge is newer")
+			privMsg(ctx.player, "Account for merge is newer")
 			return
 		end]]
 		
@@ -342,15 +376,18 @@ local function CmdMergeAccounts(message, arg)
 		AchvInvalidateCache(player.el)
 		
 		scriptMsg("Accounts has been merged. Old account has been removed...")
-	else privMsg(source, "Usage: %s", arg[1]..' <player> <other account ID>') end
-end
+	end
+}
 
-CmdRegister('mergeaccounts', CmdMergeAccounts, 'resource.'..g_ResName..'.mergeaccounts')
-CmdRegisterAlias ('mergeacc', 'mergeaccounts')
-
-local function CmdDelAcc(message, arg)
-	local playerId = touint(arg[2])
-	if(playerId) then
+CmdMgr.register{
+	name = 'delaccount',
+	aliases = {'delacc'},
+	desc = "Deletes player account",
+	accessRight = AccessRight('resetstats'),
+	args = {
+		{'AccountID', type = 'integer'},
+	},
+	func = function(ctx, playerId)
 		if(Player.fromId(playerId)) then -- Note: fromId returns only online
 			scriptMsg("You cannot remove online players")
 			return
@@ -365,32 +402,33 @@ local function CmdDelAcc(message, arg)
 		DbQuery('DELETE FROM '..PlayersTable..' WHERE player=?', playerId)
 		
 		scriptMsg("Account %u has been deleted!", playerId)
-	else privMsg(source, "Usage: %s", arg[1]..' <account ID>') end
-end
+	end
+}
 
-CmdRegister('delacc', CmdDelAcc, 'resource.'..g_ResName..'.resetstats', "Deletes player account")
-
-local function CmdSqlQuery(message, arg)
-	local query = #arg >= 2 and message:sub (arg[1]:len () + 2)
-	if (query) then
+CmdMgr.register{
+	name = 'sqlquery',
+	desc = "Executes SQL query in script database",
+	accessRight = AccessRight('sqlquery'),
+	args = {
+		{'query', type = 'string'},
+	},
+	func = function(ctx, query)
 		local rows = DbQuerySync(query)
 		if(type(rows) == 'table') then
-			privMsg(source, "SQL query succeeded (%u rows)", #rows)
+			privMsg(ctx.player, "SQL query succeeded (%u rows)", #rows)
 			for i, data in ipairs(rows) do
 				local tbl = {}
 				for k, v in pairs(data) do
 					table.insert(tbl, tostring(k)..'='..tostring(v))
 				end
 				local buf = i..'. '..table.concat(tbl, ', ')
-				privMsg(source, buf:sub(1, 512))
+				privMsg(ctx.player, buf:sub(1, 512))
 				if(i > 10) then break end
 			end
 		elseif(rows) then
-			privMsg(source, "SQL query succeeded: ", tostring(rows))
+			privMsg(ctx.player, "SQL query succeeded: ", tostring(rows))
 		else
-			privMsg(source, "SQL query failed")
+			privMsg(ctx.player, "SQL query failed")
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <query>') end
-end
-
-CmdRegister('sqlquery', CmdSqlQuery, 'resource.'..g_ResName..'.sqlquery')
+	end
+}
