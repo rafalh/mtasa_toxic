@@ -1,3 +1,6 @@
+-- Defines
+#local ASK_FOR_EMAIL = false
+
 local function onPlayerLogin(prevAccount, account, autoLogin)
 	local self = Player.fromEl(source)
 	if(not self) then return end
@@ -25,6 +28,16 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 	local accountName = not isGuestAccount(account) and getAccountName(account)
 	triggerClientEvent(self.el, 'main.onLoginStatus', g_ResRoot, true)
 	triggerClientEvent(self.el, 'main.onAccountChange', g_ResRoot, accountName, self.id)
+	
+#if(ASK_FOR_EMAIL) then
+	if(self.accountData.email == '') then
+		RPC('MsgBox.showInfo', MuiGetMsg("E-Mail address has not been set", self.el),
+		MuiGetMsg("E-mail address has not been set in your profile. Please enter it in order to be able to recover password if necessary.", self.el)..'\n'..
+		MuiGetMsg("Other players cannot see your e-mail address.", self.el)..'\n'..
+		MuiGetMsg("To set up your e-mail open User Panel (F2), click 'Profile' and then 'Change e-mail'.", self.el)):setClient(self.el):exec()
+	end
+#end
+
 end
 
 local function onPlayerLogout()

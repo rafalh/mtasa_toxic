@@ -117,6 +117,11 @@ function MsgBox.__mt.__index:addCloseHandler(func)
 	table.insert(self.closeHandlers, func)
 end
 
+-- used by RPC
+function MsgBox.showInfo(title, text)
+	MsgBox(title, text, 'info'):show()
+end
+
 #local TEST = false
 #if(TEST) then
 	outputDebugString('Enter /msgboxtest to test MsgBox', 2)

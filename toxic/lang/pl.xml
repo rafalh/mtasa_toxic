@@ -147,4 +147,8 @@
 	<msg id="You have killed %s (assist) and receive %s!">Zabiłes %s (asysta) i otrzymałeś %s!</msg>
 	<msg id="You have killed a total of %u players.">Zabiłeś łącznie %u graczy.</msg>
 	
+	<msg id="E-Mail address has not been set">Adres e-mail nie został podany</msg>
+	<msg id="E-mail address has not been set in your profile. Please enter it in order to be able to recover password if necessary.">Nie podałeś w swoim profilu adresu e-mail. Proszę go wpisać, aby umożliwić odzyskiwanie hasła w razie potrzeby.</msg>
+	<msg id="Other players cannot see your e-mail address.">Inni gracze nie będą widzieć twojego adresu e-mail.</msg>
+	<msg id="To set up your e-mail open User Panel (F2), click 'Profile' and then 'Change e-mail'.">Aby ustawić swój e-mail otwórz Panel Użytkownika (F2), kliknij 'Profil', a następnie 'Zmień e-mail'.</msg>
 </strings>
