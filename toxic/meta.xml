@@ -142,6 +142,10 @@
 	<file src="img/flags/ru.png" />
 	<file src="img/flags/lt.png" />
 	
+	<file src="img/msgbox/info.png" />
+	<file src="img/msgbox/warn.png" />
+	<file src="img/msgbox/err.png" />
+	
 	<export function="parseCommand" />
 	
 	<include resource="rafalh_shared" />

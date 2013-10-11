@@ -2,11 +2,12 @@ MsgBox = Class('MsgBox')
 
 local DEFAULT_FONT = 'default-normal'
 local DEFAULT_BUTTONS = {"OK"}
+local ICON_SIZE = 64
 
-function MsgBox.__mt.__index:init(title, text)
+function MsgBox.__mt.__index:init(title, text, icon)
 	self.title = title
 	self.text = text
-	--self.icon = false
+	self.icon = icon
 	self.font = DEFAULT_FONT
 	self.buttons = DEFAULT_BUTTONS
 	self.closeHandlers = {}
@@ -22,18 +23,24 @@ function MsgBox.__mt.__index:recalcSize()
 	local titleW = GUI.getTextWidth(self.title)
 	local textW, textH = 0, 0
 	local fontH = GUI.getFontHeight(self.font)
+	local textRows = 0
 	
 	for i, line in ipairs(textLines) do
 		local lineW = GUI.getTextWidth(line, self.font)
 		local rows = 1
 		
 		if(lineW > g_ScreenSize[1]*0.5) then
-			rows = lineW / (g_ScreenSize[1]*0.5)
+			rows = math.ceil(lineW / (g_ScreenSize[1]*0.5))
 			lineW = g_ScreenSize[1]*0.5
 		end
 		
-		textW = math.max(textW, lineW)
+		textW = math.max(textW, lineW + 10) -- add 10 to make sure text fits
 		textH = textH + rows*fontH
+		textRows = textRows + rows
+	end
+	
+	if(self.icon) then
+		textH = math.max(textH, ICON_SIZE)
 	end
 	
 	local buttonsW = #self.buttons * 10 -- spacing
@@ -43,7 +50,9 @@ function MsgBox.__mt.__index:recalcSize()
 	end
 	self.buttonsW = buttonsW
 	
-	self.w = math.max(textW, buttonsW) + 20
+	--outputDebugString('textW '..textW..' rows '..textRows, 3)
+	local iconW = self.icon and (ICON_SIZE + 10) or 0
+	self.w = math.max(textW + iconW, buttonsW) + 20
 	self.h = textH + 70
 end
 
@@ -65,8 +74,16 @@ function MsgBox.__mt.__index:show()
 	if(not self.wnd) then return false end
 	guiWindowSetSizable(self.wnd, false)
 	
-	self.textLabel = guiCreateLabel(10, 25, self.w - 20, self.h - 45, self.text, false, self.wnd)
+	local textX = 10
+	if(self.icon) then
+		guiCreateStaticImage(10, 25, ICON_SIZE, ICON_SIZE, 'img/msgbox/'..self.icon..'.png', false, self.wnd)
+		textX = textX + ICON_SIZE + 10
+	end
+	
+	--outputDebugString('text label width '..(self.w - textX - 10), 3)
+	self.textLabel = guiCreateLabel(textX, 25, self.w - textX - 20, self.h - 25 - 45, self.text, false, self.wnd)
 	guiLabelSetHorizontalAlign(self.textLabel, 'center', true)
+	guiLabelSetVerticalAlign(self.textLabel, 'center')
 	
 	local btnX = (self.w - self.buttonsW)/2
 	for i, btn in ipairs(self.buttons) do
@@ -113,6 +130,8 @@ end
 		elseif(n == 2) then
 			msgBox = MsgBox('Some weird title!', 'Overly long unformatted statements present fellow editors a dilemma: spend excessive time parsing out what a writer means or being mildly rude in not actually reading what is written. It is more collegial and collaborative to take an extra few moments to distill one\'s thoughts into bite size pieces.\n'..
 				'Traditionally, the phrase too long; didn\'t read (abbreviated tl;dr or simply tldr) has been used on the Internet as a reply to an excessively long statement. It indicates that the reader did not actually read the statement due to its undue length.\n[2] This essay especially considers the term as used in Wikipedia discussions, and examines methods of fixing the problem when found in article content.')
+		elseif(n == 3) then
+			msgBox = MsgBox('Some weird title!', 'Simple short text message...', 'info')
 		else
 			outputChatBox('No test number given!', 255, 0, 0)
 			return
