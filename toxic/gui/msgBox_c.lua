@@ -18,13 +18,12 @@ function MsgBox.__mt.__index:setButtons(buttons)
 end
 
 function MsgBox.__mt.__index:recalcSize()
-	local textLines = split(self.text, '\n')
-	
 	local titleW = GUI.getTextWidth(self.title)
 	local textW, textH = 0, 0
 	local fontH = GUI.getFontHeight(self.font)
 	local textRows = 0
 	
+	local textLines = split(self.text, '\n')
 	for i, line in ipairs(textLines) do
 		local lineW = GUI.getTextWidth(line, self.font)
 		local rows = 1
@@ -61,12 +60,12 @@ function MsgBox.__mt.__index:isVisible()
 end
 
 function MsgBox.__mt.__index:show()
-	if(not self.w) then
-		self:recalcSize()
-	end
-	
 	if(self.wnd) then
 		destroyElement(self.wnd)
+	end
+	
+	if(not self.w) then
+		self:recalcSize()
 	end
 	
 	local x, y = (g_ScreenSize[1] - self.w)/2, (g_ScreenSize[2] - self.h)/2
@@ -96,7 +95,9 @@ function MsgBox.__mt.__index:show()
 		end, false)
 	end
 	
+	guiBringToFront(self.wnd)
 	showCursor(true)
+	return true
 end
 
 function MsgBox.__mt.__index:close(btn)
