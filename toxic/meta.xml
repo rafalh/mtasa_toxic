@@ -153,6 +153,8 @@
 		<right name="function.kickPlayer" access="true" />
 		<right name="function.executeCommandHandler" access="true" />
 		<right name="function.addAccount" access="true" />
+		<right name="function.removeAccount" access="true" />
+		<right name="function.copyAccountData" access="true" />
 		<right name="function.setAccountPassword" access="true" />
 		<right name="function.aclSetRight" access="true" />
 		<right name="function.aclGroupAddObject" access="true" />

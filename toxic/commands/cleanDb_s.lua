@@ -196,30 +196,34 @@ local function CheckAchievements(fix)
 	privMsg(source, 'Achievements count'..(fix and ' (fixed)' or '')..': %u/%u', rowsCount, totalPlayersCount)
 end
 
-local function CmdCleanDb (message, arg)
-	local fix = arg[2]
-	
-	RemoveUnknownPlayers(fix == 'players')
-	RemoveUnknownTables(fix == 'tables')
-	RemoveTempPlayers(fix == 'tempplayers')
-	RemoveUnknownMaps(fix == 'maps')
-	if(fix == 'int') then
-		FixIntegerFields()
+CmdMgr.register{
+	name = 'cleandb',
+	desc = "Cleans script database from garbage",
+	accessRight = AccessRight('cleandb'),
+	args = {
+		{'mode', type = 'string', def = false},
+	},
+	func = function(ctx, mode)
+		RemoveUnknownPlayers(mode == 'players')
+		RemoveUnknownTables(mode == 'tables')
+		RemoveTempPlayers(mode == 'tempplayers')
+		RemoveUnknownMaps(mode == 'maps')
+		if(mode == 'int') then
+			FixIntegerFields()
+		end
+		if(mode == 'vacuum') then
+			DbQuery('VACUUM')
+			scriptMsg("Optimized database!")
+		end
+	#if(TOP_TIMES) then
+		if(mode == 'toptimes') then
+			RecalcTopTimesCount()
+		end
+	#end
+		CheckAchievements(mode == 'achievements')
+		
+		if(not mode) then
+			scriptMsg("This is a report. Execute /%s <players/tables/tempplayers/maps/int/vacuum/toptimes/achievements> to actually clean the database.", ctx.cmdName)
+		end
 	end
-	if(fix == 'vacuum') then
-		DbQuery('VACUUM')
-		scriptMsg("Optimized database!")
-	end
-#if(TOP_TIMES) then
-	if(fix == 'toptimes') then
-		RecalcTopTimesCount()
-	end
-#end
-	CheckAchievements(fix == 'achievements')
-	
-	if(not fix) then
-		scriptMsg("This is a report. Execute %s <players/tables/tempplayers/maps/int/vacuum/toptimes/achievements> to actually clean the database.", arg[1])
-	end
-end
-
-CmdRegister('cleandb', CmdCleanDb, 'resource.'..g_ResName..'.cleandb')
+}

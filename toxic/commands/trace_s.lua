@@ -1,5 +1,5 @@
 local g_TracedPlayers = {}
-local TRACE_URL = 'http://ravin.tk/api/mta/trace.php'
+local TRACE_URL = 'http://ravin.tk/api/mta/trace.php?ip=%s'
 
 local function onTraceResult(data, errno, player_name, player_id)
 	if(not g_TracedPlayers[player_id]) then return end
@@ -27,27 +27,31 @@ local function onTraceResult(data, errno, player_name, player_id)
 	g_TracedPlayers[player_id] = nil
 end
 
-local function CmdTrace(message, arg)
-	local player = (#arg >= 2 and findPlayer(message:sub (arg[1]:len() + 2))) or source
-	local pdata = Player.fromEl(player)
+CmdMgr.register{
+	name = 'trace',
+	desc = "Checks where the player lives",
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
 	
-	if(not pdata.id) then
-		privMsg(source, "Guests cannot use this command")
-		return
-	end
+		if(not player.id) then
+			privMsg(ctx.player, "Guests cannot use this command")
+			return
+		end
+		
+		if(not g_TracedPlayers[player.id]) then
+			g_TracedPlayers[player.id] = {}
+		end
+		table.insert(g_TracedPlayers[player.id], table.copy(g_ScriptMsgState, true))
 	
-	if(not g_TracedPlayers[pdata.id]) then
-		g_TracedPlayers[pdata.id] = {}
+		local url = TRACE_URL:format(urlEncode(player:getIP()))
+		if(not fetchRemote(url, onTraceResult, '', false, player:getName(true), player.id)) then
+			privMsg(ctx.player, "Failed to get player trace")
+		end
 	end
-	table.insert(g_TracedPlayers[pdata.id], table.copy(g_ScriptMsgState, true))
-	
-	local url = TRACE_URL..'?ip='..urlEncode(getPlayerIP(player))
-	if(not fetchRemote(url, onTraceResult, '', false, getPlayerName(player), pdata.id)) then
-		privMsg(source, "Failed to get player trace")
-	end
-end
-
-CmdRegister('trace', CmdTrace, false, "Checks where the player lives")
+}
 
 local function TrcOnPlayerQuit()
 	local pdata = Player.fromEl(source)
