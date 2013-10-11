@@ -157,10 +157,10 @@ local function setupScoreboard()
 	if(g_ScoreBoardRes:isReady()) then
 		g_ScoreBoardRes:call('scoreboardAddColumn', 'country', g_Root, 50, 'Country', false, 'country_img')
 		if(AvtSetupScoreboard) then
-			AvtSetupScoreboard(g_ScoreBoardRes.el)
+			AvtSetupScoreboard(g_ScoreBoardRes.res)
 		end
 		if(StSetupScoreboard) then
-			StSetupScoreboard(g_ScoreBoardRes.el)
+			StSetupScoreboard(g_ScoreBoardRes.res)
 		end
 	end
 end

@@ -3,40 +3,10 @@
 	<info name="Radio" author="rafalh" />
 	
 	<script src="gui_c.lua" type="client" />
+	
 	<file src="img/icon.png" />
 	<file src="img/volume.png" />
 	<file src="img/muted.png" />
-	<file src="img/channels/rmffm.png" />
-	<file src="img/channels/rmf_maxxx.jpg" />
-	<file src="img/channels/eskarock.jpg" />
-	<file src="img/channels/wawa.jpg" />
-	<file src="img/channels/zloteprzeboje.jpg" />
-	<file src="img/channels/radiozet.jpg" />
-	<file src="img/channels/jedynka.jpg" />
-	<file src="img/channels/dwojka.jpg" />
-	<file src="img/channels/trojka.jpg" />
-	<file src="img/channels/czworka.jpg" />
-	<file src="img/channels/tokfm.jpg" />
-	<file src="img/channels/chilliz.png" />
-	<file src="img/channels/radioparty.png" />
-	<file src="img/channels/eska.jpg" />
-	<file src="img/channels/DiscoParty.png" />
-	<file src="img/channels/polskastacja.jpg" />
-	<file src="img/channels/przeboje80and90.png" />
-	<file src="img/channels/bassdrive.png" />
-	<file src="img/channels/dubstepfm.jpg" />
-	<file src="img/channels/DiscoPoloClassicOpenFM.png" />
-	<file src="img/channels/DupstepOpenFM.png" />
-	<file src="img/channels/ClubMusic24.png" />
-	<file src="img/channels/All4Music.png" />
-	<file src="img/channels/equestriafm.png" />
-	<file src="img/channels/HipHopPLOpenFM.png" />
-	<file src="img/channels/RadioPiekary.jpg" />
-	<file src="img/channels/CiezkieBrzmienia.png" />
-	<file src="img/channels/00sHitsOpenFM.png" />
-	<file src="img/channels/KidsOpenFM.png" />
-	<file src="img/channels/SkaRootsReggaeOpenFM.png" />
-	<file src="img/channels/ClubParty.jpg" />
-	<file src="img/channels/TechnoBaseFM.png" />
+	
 	<config src="../conf/radio.xml" type="client" />
 </meta>

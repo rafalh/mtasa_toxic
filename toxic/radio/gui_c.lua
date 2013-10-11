@@ -1,3 +1,5 @@
+local MEDIA_RES_NAME = 'txmedia'
+
 local g_Panel = false
 local g_RadioImg, g_RadioName
 local g_VolumeImg, g_VolumeBar
@@ -73,7 +75,7 @@ local function onChannelClick(i)
 	
 	guiSetText(g_RadioName, ch.name)
 	if(ch.img) then
-		guiStaticImageLoadImage(g_RadioImg, 'radio/img/channels/'..ch.img)
+		guiStaticImageLoadImage(g_RadioImg, ':'..MEDIA_RES_NAME..'/img/'..ch.img)
 	else
 		guiStaticImageLoadImage(g_RadioImg, 'img/no_img.png')
 	end
@@ -171,7 +173,7 @@ local function createGui(panel)
 	g_List.onClickHandler = onChannelClick
 	
 	for i, ch in ipairs(g_Channels) do
-		local imgPath = ch.img and 'radio/img/channels/'..ch.img or 'img/no_img.png'
+		local imgPath = ch.img and ':'..MEDIA_RES_NAME..'/img/'..ch.img or 'img/no_img.png'
 		g_List:addItem(ch.name, imgPath, i)
 		
 		if(ch.url == g_Url) then

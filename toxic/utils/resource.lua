@@ -20,19 +20,24 @@ function Resource.__mt.__index:init(name)
 	end]]
 	
 	self.name = name
-	self.el = ready and res
+	self.res = res
+	self.ready = ready
 	
 	self.readyHandlers = {}
 	g_Map[name] = self
 end
 
 function Resource.__mt.__index:call(fnName, ...)
-	assert(self.el)
-	return call(self.el, fnName, ...)
+	assert(self.ready)
+	return call(self.res, fnName, ...)
 end
 
 function Resource.__mt.__index:isReady()
-	return self.el and true
+	return self.ready
+end
+
+function Resource.__mt.__index:exists()
+	return self.res and true
 end
 
 function Resource.__mt.__index:addReadyHandler(fn)
@@ -40,24 +45,21 @@ function Resource.__mt.__index:addReadyHandler(fn)
 end
 
 local function onResStart(res)
-	-- Ignore resource start if not ready
-	if(getElementData(source, 'toxic.notReady')) then
-		--outputDebugString('Resource '..getResourceName(res)..' is not ready yet!', 3)
-		return
-	else
-		--outputDebugString('Resource '..getResourceName(res)..' is ready when starting!', 3)
-	end
-	
+	-- Find resource object
 	local resName = getResourceName(res)
 	local self = g_Map[resName]
 	if(not self) then return end
 	
-	self.el = res
-	for i, fn in ipairs(self.readyHandlers) do
-		fn(self)
-	end
+	self.res = res
+	self.ready = not getElementData(source, 'toxic.notReady')
 	
-	--outputDebugString(#self.readyHandlers..' handlers called.', 3)
+	if(self.ready) then
+		for i, fn in ipairs(self.readyHandlers) do
+			fn(self)
+		end
+		
+		--outputDebugString(#self.readyHandlers..' handlers called.', 3)
+	end
 end
 
 local function onResStop(res)
@@ -65,7 +67,7 @@ local function onResStop(res)
 	local self = g_Map[resName]
 	if(not self) then return end
 	
-	self.el = false
+	self.ready = false
 end
 
 local function onResReady(res)
@@ -75,7 +77,9 @@ local function onResReady(res)
 	
 	--outputDebugString('Resource '..getResourceName(res)..' is now ready!', 3)
 	
-	self.el = res
+	self.res = res
+	self.ready = true
+	
 	for i, fn in ipairs(self.readyHandlers) do
 		fn(self)
 	end

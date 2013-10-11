@@ -4,6 +4,7 @@
 
 local g_MsgCommands = {}
 local g_VipRes = Resource('rafalh_vip')
+local g_MediaRes = Resource('txmedia')
 
 #local MODIFY_MSG_CMD = false
 
@@ -56,7 +57,7 @@ local function McHandleCommand(ctx, ...)
 		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', ctx.player.el)
 		if(isVip) then
 			local servAddr = get('mapmusic.server_address')
-			local url =  'http://'..servAddr..'/'..getResourceName(resource)..'/msg_cmd/sounds/'..msg.sound
+			local url =  'http://'..servAddr..'/'..g_MediaRes.name..'/sounds/'..msg.sound
 			--outputChatBox(url)
 			
 			local now = getRealTime().timestamp
@@ -77,6 +78,14 @@ local function McHandleCommand(ctx, ...)
 	end
 end
 
+local function McCheckSoundsExist()
+	for cmd, msg in pairs(g_MsgCommands) do
+		if(msg.sound and not fileExists(':'..g_MediaRes.name..'/sounds/'..msg.sound)) then
+			outputDebugString(msg.sound..' has not been found in txmedia resource!', 2)
+		end
+	end
+end
+
 local function McInit()
 	local node = xmlLoadFile('conf/msg_cmd.xml')
 	if(not node) then
@@ -84,14 +93,15 @@ local function McInit()
 		return
 	end
 	
+	local hasSound = false
+	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local attr = xmlNodeGetAttributes(subnode)
 		
 		assert(attr.cmd and attr.msg, tostring(attr.cmd))
 		
-		if(attr.sound and not fileExists('msg_cmd/sounds/'..attr.sound)) then
-			outputDebugString('Sound '..attr.sound..' has not been found!', 2)
-			attr.sound = nil
+		if(attr.sound) then
+			hasSound = true
 		end
 		
 		g_MsgCommands[attr.cmd] = {text = attr.msg, sound = attr.sound}
@@ -105,6 +115,15 @@ local function McInit()
 	end
 	
 	xmlUnloadFile(node)
+	
+	if(hasSound) then
+		if(g_MediaRes:isReady()) then
+			McCheckSoundsExist()
+		elseif(g_MediaRes:exists()) then
+			g_MediaRes:addReadyHandler(McCheckSoundsExist)
+			--startResource(g_MediaRes.res)
+		end
+	end
 end
 
 #if(MODIFY_MSG_CMD) then

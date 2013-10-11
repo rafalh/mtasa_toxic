@@ -144,6 +144,7 @@
 	<export function="parseCommand" />
 	
 	<include resource="rafalh_shared" />
+	<include resource="txmedia" />
 	
 	<aclrequest>
 		<right name="general.ModifyOtherObjects" access="true" />

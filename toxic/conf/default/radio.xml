@@ -1,0 +1,9 @@
+<channels>
+	<!-- Format:
+		<channel
+				name="Radio channel name"
+				img="Path to image for this radio">
+			URL of radio chanel (for example .pls/.m3u/.mp3 file)
+		</channel>
+	-->
+</channels>
