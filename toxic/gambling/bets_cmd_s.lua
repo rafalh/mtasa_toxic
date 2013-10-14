@@ -1,48 +1,43 @@
-local function CmdBet(message, arg)
-	local sourcePlayer = Player.fromEl(source)
-	local cash, targetPlayer
-	if (#arg >= 3) then
-		cash = touint(arg[3])
-		local el = findPlayer(arg[2])
-		targetPlayer = el and Player.fromEl(el)
-	else
-		cash = touint(arg[2])
-		targetPlayer = sourcePlayer
-	end
-	if(cash and targetPlayer) then
+CmdMgr.register{
+	name = 'bet',
+	desc = "Bets on a player",
+	args = {
+		{'cash', type = 'integer', min = 1},
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, cash, targetPlayer)
+		if(not targetPlayer) then targetPlayer = ctx.player end
+		
 		local bet_min_players = Settings.bet_min_players
+		local max_bet = Settings.max_bet * ctx.player.accountData:get('bidlvl')
+		
 		if(g_PlayersCount < bet_min_players) then
-			privMsg (sourcePlayer.el, "Not enough players to bet - %u are needed.", bet_min_players)
-		elseif(GbAreBetsPlaced ()) then
-			privMsg(sourcePlayer.el, "Bets are placed!")
-		elseif (cash) then
-			local max_bet = Settings.max_bet * sourcePlayer.accountData:get('bidlvl')
-			if(sourcePlayer.accountData:get('cash') < cash) then
-				privMsg(sourcePlayer.el, "You do not have enough cash!")
-			elseif (cash > max_bet) then
-				privMsg(sourcePlayer.el, "Your maximal bet is %s!", formatNumber(max_bet))
-			elseif(sourcePlayer.bet) then
-				privMsg(sourcePlayer.el, "You already bet %s on %s!", formatMoney(sourcePlayer.betcash), getPlayerName(sourcePlayer.bet))
-			else
-				GbBet(sourcePlayer.el, targetPlayer.el, cash)
-				privMsg(sourcePlayer.el, "You bet %s on %s!", formatMoney(cash), getPlayerName(targetPlayer.el))
-			end
-		end
-	else privMsg(sourcePlayer.el, "Usage: %s", arg[1]..' [<player>] <cash>') end
-end
-
-CmdRegister('bet', CmdBet, false, "Bets on a player")
-
-local function CmdUnbet(message, arg)
-	if (GbAreBetsPlaced ()) then
-		privMsg (source, "Bets are placed!")
-	else
-		if (GbUnbet (source)) then
-			privMsg (source, "You have unbetted!")
+			privMsg(ctx.player, "Not enough players to bet - %u are needed.", bet_min_players)
+		elseif(GbAreBetsPlaced()) then
+			privMsg(ctx.player, "Bets are placed!")
+		elseif(ctx.player.accountData:get('cash') < cash) then
+			privMsg(ctx.player, "You do not have enough cash!")
+		elseif(cash > max_bet) then
+			privMsg(ctx.player, "Your maximal bet is %s!", formatNumber(max_bet))
+		elseif(ctx.player.bet) then
+			privMsg(ctx.player, "You already bet %s on %s!", formatMoney(ctx.player.betcash), getPlayerName(ctx.player.bet))
 		else
-			privMsg (source, "You have not betted!")
+			GbBet(ctx.player.el, targetPlayer.el, cash)
+			privMsg(ctx.player, "You bet %s on %s!", formatMoney(cash), targetPlayer:getName())
 		end
 	end
-end
+}
 
-CmdRegister('unbet', CmdUnbet, false, "Cancels your last bet")
+CmdMgr.register{
+	name = 'unbet',
+	desc = "Cancels your last bet",
+	func = function(ctx)
+		if(GbAreBetsPlaced()) then
+			privMsg(ctx.player, "Bets are placed!")
+		elseif(GbUnbet(ctx.player.el)) then
+			privMsg(ctx.player, "You have unbetted!")
+		else
+			privMsg(ctx.player, "You have not betted!")
+		end
+	end
+}

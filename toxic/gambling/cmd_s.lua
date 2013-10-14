@@ -1,31 +1,32 @@
-local function CmdFund(message, arg)
-	local lotto_limit = Settings.lotto_limit
-	scriptMsg("Lottery fund: %s. Max fund: %s.", formatMoney (GbGetLotteryFund()), formatMoney (lotto_limit))
-end
-
-CmdRegister('fund', CmdFund, false, "Shows current lottery fund")
-
-local function CmdRoll(message, arg)
-	if(GbRoll(source)) then
-		privMsg(source, "Rolling the dice...")
-	else
-		privMsg(source, "Please Wait... You can roll the dice once every %u seconds.", 30)
+CmdMgr.register{
+	name = 'fund',
+	desc = "Shows current lottery fund",
+	func = function(ctx)
+		local lotto_limit = Settings.lotto_limit
+		scriptMsg("Lottery fund: %s. Max fund: %s.", formatMoney(GbGetLotteryFund()), formatMoney(lotto_limit))
 	end
-end
+}
 
-CmdRegister('roll', CmdRoll, false)
-
-local function CmdSpin(message, arg)
-	local num = touint(arg[2])
-	local cash = touint(arg[3])
-	
-	if(num and cash) then
-		if(GbSpin(source, num, cash)) then
-			privMsg(source, "The wheel is spinning!")
+CmdMgr.register{
+	name = 'roll',
+	func = function(ctx)
+		if(GbRoll(ctx.player.el)) then
+			privMsg(ctx.player, "Rolling the dice...")
+		else
+			privMsg(ctx.player, "Please Wait... You can roll the dice once every %u seconds.", 30)
 		end
-	else
-		privMsg(source, "Usage: %s", arg[1]..' <1-65> <cash>')
 	end
-end
+}
 
-CmdRegister('spin', CmdSpin, false)
+CmdMgr.register{
+	name = 'spin',
+	args = {
+		{'number', type = 'integer', min = 1, max = 65},
+		{'cash', type = 'integer', min = 1},
+	},
+	func = function(ctx, num, cash)
+		if(GbSpin(ctx.player.el, num, cash)) then
+			privMsg(ctx.player, "The wheel is spinning!")
+		end
+	end
+}

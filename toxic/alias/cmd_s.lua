@@ -1,23 +1,26 @@
-local function CmdAlias(message, arg)
-	local player = (#arg >= 2 and findPlayer(message:sub (arg[1]:len () + 2)))
-	if (player) then
-		local alias = (arg[1] == 'alias' or arg[1] == '/alias' or arg[1] == 'alias')
+CmdMgr.register{
+	name = 'alias',
+	aliases = {'pma'},
+	cat = 'Admin',
+	desc = "Displays all player nicknames",
+	accessRight = AccessRight('alias'),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
+		local alias = (ctx.cmdName == 'alias')
 		if(alias) then
-			scriptMsg("Aliases for %s:", getPlayerName (player))
+			scriptMsg("Aliases for %s:", player:getName())
 		else
-			privMsg(source,  "Aliases for %s:", getPlayerName (player))
+			privMsg(ctx.player, "Aliases for %s:", player:getName())
 		end
 		
-		local pdata = Player.fromEl(player)
-		local aliasList = AlGetPlayerAliases(pdata)
+		local aliasList = AlGetPlayerAliases(player)
 		local aliasListStr = table.concat(aliasList, ', ')
 		if(alias) then
 			scriptMsg('%s', aliasListStr..'.')
 		else
-			privMsg(source, '%s', aliasListStr..'.')
+			privMsg(ctx.player, '%s', aliasListStr..'.')
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
-
-CmdRegister('alias', CmdAlias, 'resource.'..g_ResName..'.alias', "Displays all player nicknames")
-CmdRegisterAlias('pma', 'alias')
+	end
+}
