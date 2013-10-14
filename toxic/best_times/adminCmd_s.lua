@@ -12,7 +12,7 @@ local function CmdRemTopTime(message, arg)
 				'ORDER BY time '..
 				'LIMIT '..math.max(n, 4), map_id)
 			if(rows and rows[n]) then
-				DbQuery('DELETE FROM '..BestTimesTable..' WHERE player=? AND map=?', rows[n].player, map_id)
+				BtDeleteTimes('WHERE player=? AND map=?', rows[n].player, map_id)
 				local accountData = AccountData.create(rows[n].player)
 				if(n <= 3) then
 					accountData:add('toptimes_count', -1)

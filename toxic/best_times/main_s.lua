@@ -6,8 +6,8 @@ BestTimesTable = Database.Table{
 	{'player', 'INT UNSIGNED', fk = {'players', 'player'}},
 	{'map', 'INT UNSIGNED', fk = {'maps', 'map'}},
 	{'time', 'INT UNSIGNED'},
-	{'rec', 'INT UNSIGNED', default = 0, fk = {'blobs', 'id'}},
-	{'cp_times', 'INT UNSIGNED', default = 0, fk = {'blobs', 'id'}},
+	{'rec', 'INT UNSIGNED', null = true, fk = {'blobs', 'id'}},
+	{'cp_times', 'INT UNSIGNED', null = true, fk = {'blobs', 'id'}},
 	{'timestamp', 'INT UNSIGNED'},
 	{'besttimes_idx', unique = {'map', 'time', 'player'}},
 	{'besttimes_idx2', unique = {'map', 'player'}},
@@ -48,8 +48,13 @@ function addPlayerTime(player_id, map_id, time)
 			local data = rows and rows[1]
 			if(data) then -- someone left the top
 				AccountData.create(data.player):add('toptimes_count', -1)
-				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=? OR id=?', data.rec, data.cp_times)
-				DbQuery('UPDATE '..BestTimesTable..' SET rec=0, cp_times=0 WHERE player=? AND map=?', data.player, map_id)
+				DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL, cp_times=NULL WHERE player=? AND map=?', data.player, map_id)
+				if(date.rec) then
+					DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', data.rec)
+				end
+				if(data.cp_times) then
+					DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', data.cp_times)
+				end
 			end
 		end
 		
@@ -64,10 +69,10 @@ function BtDeleteTimes(cond, ...)
 	local rows = DbQuery('SELECT rec, cp_times FROM '..BestTimesTable..' WHERE '..cond, ...)
 	local blobs = {}
 	for i, row in ipairs(rows) do
-		if(row.rec ~= 0) then
+		if(row.rec) then
 			table.insert(blobs, row.rec)
 		end
-		if(row.cp_times ~= 0) then
+		if(row.cp_times) then
 			table.insert(blobs, row.cp_times)
 		end
 	end

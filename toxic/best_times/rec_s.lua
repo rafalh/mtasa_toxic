@@ -34,7 +34,7 @@ local function RcOnRecording(map_id, recording)
 	--outputDebugString('RcOnRecording', 3)
 	
 	if(Settings.recorder) then
-		local rows = DbQuery('SELECT player, rec FROM '..BestTimesTable..' WHERE map=? AND (rec<>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)', map_id, pdata.id)
+		local rows = DbQuery('SELECT player, rec FROM '..BestTimesTable..' WHERE map=? AND (rec IS NOT NULL OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)', map_id, pdata.id)
 		
 		-- check if player has a toptime
 		local foundRow = false
@@ -53,7 +53,7 @@ local function RcOnRecording(map_id, recording)
 				encoded = zlibCompress(encoded)
 			end
 			local blob = DbBlob(encoded)
-			if(foundRow and foundRow.rec ~= 0) then
+			if(foundRow and foundRow.rec) then
 				DbQuery('UPDATE '..BlobsTable..' SET data='..blob..' WHERE id=?', foundRow.rec)
 			else
 				DbQuery('INSERT INTO '..BlobsTable..' (data) VALUES('..blob..')')
@@ -64,8 +64,8 @@ local function RcOnRecording(map_id, recording)
 			
 			local rowAfterTop = rows[$(MAX_RECORDINGS+1)]
 			if(rowAfterTop) then
+				DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL WHERE player=? AND map=?', rowAfterTop.player, map_id)
 				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', rowAfterTop.rec)
-				DbQuery('UPDATE '..BestTimesTable..' SET rec=0 WHERE player=? AND map=?', rowAfterTop.player, map_id)
 			end
 		else
 			outputDebugString('Invalid player: '..pdata:getName(), 2)
@@ -145,7 +145,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	
 	if(pdata.recording) then
 		assert(pdata.id)
-		local rows = DbQuery('SELECT player, time FROM '..BestTimesTable..' WHERE map=? AND (rec<>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)', map_id, pdata.id)
+		local rows = DbQuery('SELECT player, time FROM '..BestTimesTable..' WHERE map=? AND (rec IS NOT NULL OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS)', map_id, pdata.id)
 		
 		local found = false
 		for i, data in ipairs(rows) do
@@ -166,7 +166,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	
 	if(pdata.cp_times) then
 		assert(pdata.id)
-		local rows = DbQuery('SELECT player, time, cp_times FROM '..BestTimesTable..' WHERE map=? AND (cp_times<>0 OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)', map_id, pdata.id)
+		local rows = DbQuery('SELECT player, time, cp_times FROM '..BestTimesTable..' WHERE map=? AND (cp_times IS NOT NULL OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)', map_id, pdata.id)
 		
 		local foundRow = false
 		for i, data in ipairs(rows) do
@@ -190,7 +190,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			end
 			local blob = DbBlob(buf)
 			
-			if(foundRow.cp_times ~= 0) then
+			if(foundRow.cp_times) then
 				DbQuery('UPDATE '..BlobsTable..' SET data='..blob..' WHERE id=?', foundRow.cp_times)
 			else
 				DbQuery('INSERT INTO '..BlobsTable..' (data) VALUES('..blob..')')
@@ -201,8 +201,8 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			
 			local rowAfterTop = rows[$(MAX_RECORDINGS+1)]
 			if(rowAfterTop) then
+				DbQuery('UPDATE '..BestTimesTable..' SET cp_times=NULL WHERE map=? AND player=?', map_id, rowAfterTop.player)
 				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', rowAfterTop.cp_times)
-				DbQuery('UPDATE '..BestTimesTable..' SET cp_times=0 WHERE map=? AND player=?', map_id, rowAfterTop.player)
 			end
 		end
 		

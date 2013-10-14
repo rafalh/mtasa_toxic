@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 162,
+	currentVer = 163,
 	list = {
 		{
 			ver = 149,
@@ -248,6 +248,19 @@ Updater = {
 			func = function()
 				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN passwordRecoveryKey VARCHAR(32)')) then
 					return 'Failed to add passwordRecoveryKey column'
+				end
+			end
+		},
+		{
+			ver = 163,
+			func = function()
+				if(not DbRecreateTable(BestTimesTable)) then
+					return 'Failed to recreate besttimes table'
+				end
+				
+				if(not DbQuerySync('UPDATE '..BestTimesTable..' SET rec=NULL WHERE rec=0') or
+					not DbQuerySync('UPDATE '..BestTimesTable..' SET cp_times=NULL WHERE cp_times=0')) then
+					return 'Failed to update rec or cp_times columns'
 				end
 			end
 		},
