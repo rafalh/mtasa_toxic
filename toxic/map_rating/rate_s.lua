@@ -38,11 +38,11 @@ function RtPlayerRate(rate)
 		end
 		
 		DbQuery('UPDATE '..MapsTable..' SET rates=?, rates_count=? WHERE map=?', mapData.rates, mapData.rates_count, map_id)
-		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates / mapData.rates_count)
+		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates/2 / mapData.rates_count)
 		
 		MiUpdateInfo()
 	else
-		privMsg(source, "You rated this map before: %u!", oldRate)
+		privMsg(source, "You rated this map before: %u!", oldRate/2)
 	end
 end
 RPC.allow('RtPlayerRate')
