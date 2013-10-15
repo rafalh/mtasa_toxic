@@ -1,81 +1,85 @@
 local g_LastRedo = 0
 
-local function CmdRemMap (message, arg)
-	local admin = Player.fromEl(source)
-	local map = getCurrentMap(admin.room)
-	if(not map) then return end
-	
-	local reason = message:sub (arg[1]:len () + 2)
-	if(reason:len() < 5) then
-		privMsg(admin.el, "Usage: %s", arg[1]..' <reason>')
-		return
+CmdMgr.register{
+	name = 'removemap',
+	aliases = {'remmap'},
+	desc = "Removes map from server",
+	cat = 'Admin',
+	accessRight = AccessRight('remmap'),
+	args = {
+		{'reason', type = 'string'},
+	},
+	func = function(ctx, reason)
+		local map = getCurrentMap(ctx.player.room)
+		if(not map) then return end
+		
+		reason = reason..' (removed by '..ctx.player:getAccountName()..')'
+		
+		DbQuery('UPDATE '..MapsTable..' SET removed=? WHERE map=?', reason, map:getId())
+		outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map:getName(), ctx.player:getName(true))
+		
+		startRandomMap(ctx.player.room)
 	end
-	
-	local account = getPlayerAccount(admin.el)
-	reason = reason..' (removed by '..getAccountName(account)..')'
-	
-	local map_id = map:getId()
-	DbQuery('UPDATE '..MapsTable..' SET removed=? WHERE map=?', reason, map_id)
-	
-	local map_name = map:getName()
-	outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map_name, admin:getName(true))
-	startRandomMap(admin.room)
-end
+}
 
-CmdRegister('remmap', CmdRemMap, 'resource.'..g_ResName..'.remmap', "Removes map from server")
-CmdRegisterAlias('removemap', 'remmap')
-
-local function CmdRestoreMap (message, arg)
-	if(#arg >= 2) then
-		local str = message:sub(arg[1]:len () + 2)
-		local map = findMap(str, true)
-		local admin = Player.fromEl(source)
+CmdMgr.register{
+	name = 'restoremap',
+	desc = "Restores previously removed map",
+	cat = 'Admin',
+	accessRight = AccessRight('restoremap'),
+	args = {
+		{'mapName', type = 'string'},
+	},
+	func = function(ctx, mapName)
+		local map = findMap(mapName, true)
 		
-		if(map) then
-			local map_name = map:getName()
-			local map_id = map:getId()
-			DbQuery('UPDATE '..MapsTable..' SET removed=\'\' WHERE map=?', map_id)
-			outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map_name, admin:getName(true))
-		else privMsg(source, "Cannot find map \"%s\" or it has not been removed!", str) end
-	else privMsg(source, "Usage: %s", arg[1]..' <map>') end
-end
-
-CmdRegister('restoremap', CmdRestoreMap, 'resource.'..g_ResName..'.restoremap', "Restores previously removed map")
-
-local function CmdMap (message, arg)
-	local mapName = message:sub (arg[1]:len () + 2)
-	local room = Player.fromEl(source).room
-	
-	if (mapName:len () > 1) then
-		local map
-		
-		if (mapName:lower () == 'random') then
-			map = getRandomMap ()
-		else
-			map = findMap (mapName, false)
+		if(not map) then
+			privMsg(ctx.player, "Cannot find map \"%s\" or it has not been removed!", mapName)
+			return
 		end
 		
-		if (map) then
-			local map_name = map:getName()
-			local map_id = map:getId()
-			local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
-			
-			if (rows[1].removed ~= '') then
-				privMsg (source, "%s has been removed!", map_name)
+		DbQuery('UPDATE '..MapsTable..' SET removed=\'\' WHERE map=?', map:getId())
+		outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map:getName(), ctx.player:getName(true))
+	end
+}
+
+CmdMgr.register{
+	name = 'map',
+	desc = "Changes current map",
+	cat = 'Admin',
+	accessRight = AccessRight('command.setmap', true),
+	args = {
+		{'mapName', type = 'string', def = false},
+	},
+	func = function(ctx, mapName)
+		if(mapName) then
+			local map
+			if(mapName:lower() == 'random') then
+				map = getRandomMap()
 			else
-				GbCancelBets ()
-				map:start(room)
+				map = findMap(mapName, false)
 			end
+			
+			if(not map) then
+				privMsg(ctx.player, "Cannot find map \"%s\"!", mapName)
+				return
+			end
+			
+			local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+			if(rows[1].removed ~= '') then
+				privMsg(ctx.player, "%s has been removed!", map:getName())
+				return
+			end
+			
+			GbCancelBets()
+			local room = ctx.player.room
+			map:start(room)
 		else
-			privMsg (source, "Cannot find map \"%s\"!", mapName)
+			addEvent('onClientDisplayChangeMapGuiReq', true)
+			triggerClientEvent(ctx.player.el, 'onClientDisplayChangeMapGuiReq', g_ResRoot)
 		end
-	else
-		addEvent('onClientDisplayChangeMapGuiReq', true)
-		triggerClientEvent(source, 'onClientDisplayChangeMapGuiReq', g_ResRoot)
 	end
-end
-
-CmdRegister('map', CmdMap, 'command.setmap', "Changes current map")
+}
 
 local function AddMapToQueue(room, map)
 	local map_id = map:getId()
@@ -88,33 +92,38 @@ local function AddMapToQueue(room, map)
 	end
 end
 
-local function CmdNextMap (message, arg)
-	local mapName = message:sub (arg[1]:len () + 2)
-	if (mapName:len () > 1) then
-		local room = Player.fromEl(source).room
-		assert(type(room) == 'table')
-		
-		local map
-		if (mapName:lower () == 'random') then
-			map = getRandomMap()
-		elseif (mapName:lower () == 'redo') then
-			map = getCurrentMap(room)
+CmdMgr.register{
+	name = 'nextmap',
+	desc = "Adds next map to queue",
+	cat = 'Admin',
+	accessRight = AccessRight('nextmap'),
+	args = {
+		{'mapName', type = 'string', def = false},
+	},
+	func = function(ctx, mapName)
+		if(mapName) then
+			local map
+			if(mapName:lower () == 'random') then
+				map = getRandomMap()
+			elseif(mapName:lower () == 'redo') then
+				map = getCurrentMap(room)
+			else
+				map = findMap(mapName, false)
+			end
+			
+			if(map) then
+				local room = ctx.player.room
+				source = ctx.player.el -- FIXME
+				AddMapToQueue(room, map)
+			else
+				privMsg(ctx.player, "Cannot find map \"%s\"!", mapName)
+			end
 		else
-			map = findMap(mapName, false)
+			addEvent('onClientDisplayNextMapGuiReq', true)
+			triggerClientEvent(ctx.player.el, 'onClientDisplayNextMapGuiReq', g_ResRoot)
 		end
-		
-		if (map) then
-			AddMapToQueue(room, map)
-		else
-			privMsg (source, "Cannot find map \"%s\"!", mapName)
-		end
-	else
-		addEvent('onClientDisplayNextMapGuiReq', true)
-		triggerClientEvent(source, 'onClientDisplayNextMapGuiReq', g_ResRoot)
 	end
-end
-
-CmdRegister('nextmap', CmdNextMap, 'resource.'..g_ResName..'.nextmap', "Adds next map to queue")
+}
 
 -- For Admin Panel
 local function onSetNextMap (mapName)
@@ -127,35 +136,42 @@ local function onSetNextMap (mapName)
 	end
 end
 
-local function CmdCancelNextMap (message, arg)
-	local room = Player.fromEl(source).room
-	local map = MqRemove(room)
-	if(map) then
-		local mapName = map:getName()
-		outputMsg(room.el, Styles.maps, "%s has been removed from map queue by %s!", mapName, getPlayerName(source))
-	else
-		privMsg(source, "Map queue is empty!")
+CmdMgr.register{
+	name = 'cancelnext',
+	desc = "Removes last map from queue",
+	cat = 'Admin',
+	accessRight = AccessRight('nextmap'),
+	func = function(ctx)
+		local room = ctx.player.room
+		local map = MqRemove(room)
+		if(map) then
+			outputMsg(room.el, Styles.maps, "%s has been removed from map queue by %s!", map:getName(), ctx.player:getName(true))
+		else
+			privMsg(ctx.player, "Map queue is empty!")
+		end
 	end
-end
+}
 
-CmdRegister('cancelnext', CmdCancelNextMap, 'resource.'..g_ResName..'.nextmap', "Removes last map from queue")
-
-local function CmdRedo (message, arg)
-	local now = getRealTime().timestamp
-	local dt = now - g_LastRedo
-	local room = Player.fromEl(source).room
-	local map = getCurrentMap(room)
-	local redoLimit = 10
-	if(dt < redoLimit) then
-		privMsg(source, "You cannot redo yet! Please wait %u seconds.", redoLimit - dt)
-	elseif(map) then
-		GbCancelBets()
-		g_LastRedo = now
-		map:start(room)
+CmdMgr.register{
+	name = 'redo',
+	desc = "Restarts current map",
+	cat = 'Admin',
+	accessRight = AccessRight('command.setmap', true),
+	func = function(ctx)
+		local now = getRealTime().timestamp
+		local dt = now - g_LastRedo
+		local room = ctx.player.room
+		local map = getCurrentMap(room)
+		local redoLimit = 10
+		if(dt < redoLimit) then
+			privMsg(ctx.player, "You cannot redo yet! Please wait %u seconds.", redoLimit - dt)
+		elseif(map) then
+			GbCancelBets()
+			g_LastRedo = now
+			map:start(room)
+		end
 	end
-end
-
-CmdRegister('redo', CmdRedo, 'command.setmap', "Restarts current map")
+}
 
 addInitFunc(function()
 	addEvent('setNextMap_s', true)
