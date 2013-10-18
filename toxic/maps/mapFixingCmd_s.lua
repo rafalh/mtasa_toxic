@@ -8,36 +8,41 @@ end
 
 local g_FixMapScriptsWorker = false
 
-local function CmdFixMapScripts (message, arg)
-	if (arg[2] == 'all') then
-		if (g_FixMapScriptsWorker) then return end
-		
-		local maps = getMapsList()
-		g_FixMapScriptsWorker = Worker.create{
-			fnWork = FixAllMapsScripts,
-			player = source,
-			count = maps:getCount(),
-			fnFinish = function(worker, dt)
-				privMsg(worker.info.player, "Finished in %u ms: %u/%u maps processed.", dt, worker.ctx.count, worker.info.count)
-				g_FixMapScriptsWorker = false
-			end,
-		}
-		g_FixMapScriptsWorker.ctx.maps = maps
-		g_FixMapScriptsWorker.ctx.count = 0
-		privMsg(source, "Started fixing all maps...")
-		g_FixMapScriptsWorker:start()
-	else
-		local room = Player.fromEl(source).room
-		local map = getCurrentMap(room)
-		if (map and MapPatcher.processMap(map)) then
-			privMsg (source, "Fixed map scripts.")
+CmdMgr.register{
+	name = 'fixmapscripts',
+	accessRight = AccessRight('fixmapscripts'),
+	args = {
+		{'mapName', type = 'string', def = false},
+	},
+	func = function(ctx, mapName)
+		if(mapName == 'all') then
+			if(g_FixMapScriptsWorker) then return end
+			
+			local maps = getMapsList()
+			g_FixMapScriptsWorker = Worker.create{
+				fnWork = FixAllMapsScripts,
+				player = ctx.player.el,
+				count = maps:getCount(),
+				fnFinish = function(worker, dt)
+					privMsg(worker.info.player, "Finished in %u ms: %u/%u maps processed.", dt, worker.ctx.count, worker.info.count)
+					g_FixMapScriptsWorker = false
+				end,
+			}
+			g_FixMapScriptsWorker.ctx.maps = maps
+			g_FixMapScriptsWorker.ctx.count = 0
+			privMsg(ctx.player, "Started fixing all maps...")
+			g_FixMapScriptsWorker:start()
 		else
-			privMsg (source, "Nothing to fix...")
+			local room = ctx.player.room
+			local map = mapName and findMap(mapName) or getCurrentMap(room)
+			if(map and MapPatcher.processMap(map)) then
+				privMsg(ctx.player, "Fixed map scripts.")
+			else
+				privMsg(ctx.player, "Nothing to fix...")
+			end
 		end
 	end
-end
-
-CmdRegister('fixmapscripts', CmdFixMapScripts, 'resource.'..g_ResName..'.fixmapscripts')
+}
 
 local function CountSpInMapFile(path)
 	local node = xmlLoadFile(path)
@@ -113,43 +118,41 @@ end
 
 local g_CheckSpWorker = false
 
-local function CmdCheckSp(message, arg)
-	local pattern, opts
-	if(arg[2] == 'enablegm' or arg[2] == 'moveres') then
-		opts = arg[2]
-		pattern = message:sub(arg[1]:len() + 3 + arg[2]:len())
-	else
-		pattern = message:sub(arg[1]:len() + 2)
-	end
-	
-	if(pattern) then
-		if(g_CheckSpWorker) then return end
-		
-		local maps = getMapsList()
-		g_CheckSpWorker = Worker.create{
-			fnWork = CheckSpCountInMaps,
-			player = source,
-			count = maps:getCount(),
-			fnFinish = function(worker, dt)
-				privMsg(worker.info.player, "Finished in %u ms: %u/%u maps processed.", dt, worker.ctx.count, worker.info.count)
-				g_CheckSpWorker = false
-			end,
-		}
-		g_CheckSpWorker.ctx.maps = maps
-		g_CheckSpWorker.ctx.pattern = pattern
-		g_CheckSpWorker.ctx.opts = opts
-		g_CheckSpWorker.ctx.count = 0
-		privMsg(source, "Started counting spawn-points...")
-		g_CheckSpWorker:start()
-	else
-		local room = Player.fromEl(source).room
-		local map = getCurrentMap(room)
-		if(map and not CheckMapSpawnpointsCount(map, source, opts)) then
-			privMsg(source, "Nothing to do...")
+CmdMgr.register{
+	name = 'checksp',
+	accessRight = AccessRight('checksp'),
+	args = {
+		{'mapNamePattern', type = 'string', def = false},
+		{'action', type = 'string', def = false},
+	},
+	func = function(ctx, mapNamePattern, action)
+		if(mapNamePattern) then
+			if(g_CheckSpWorker) then return end
+			
+			local maps = getMapsList()
+			g_CheckSpWorker = Worker.create{
+				fnWork = CheckSpCountInMaps,
+				player = ctx.player.el,
+				count = maps:getCount(),
+				fnFinish = function(worker, dt)
+					privMsg(worker.info.player, "Finished in %u ms: %u/%u maps processed.", dt, worker.ctx.count, worker.info.count)
+					g_CheckSpWorker = false
+				end,
+			}
+			g_CheckSpWorker.ctx.maps = maps
+			g_CheckSpWorker.ctx.pattern = mapNamePattern
+			g_CheckSpWorker.ctx.opts = action
+			g_CheckSpWorker.ctx.count = 0
+			privMsg(ctx.player, "Started counting spawn-points...")
+			g_CheckSpWorker:start()
 		else
-			privMsg(source, "Checked current map: %s.", map:getName())
+			local room = ctx.player.room
+			local map = getCurrentMap(room)
+			if(map and not CheckMapSpawnpointsCount(map, ctx.player.el, action)) then
+				privMsg(ctx.player, "Nothing to do...")
+			else
+				privMsg(ctx.player, "Checked current map: %s.", map:getName())
+			end
 		end
 	end
-end
-
-CmdRegister('checksp', CmdCheckSp, 'resource.'..g_ResName..'.checksp')
+}

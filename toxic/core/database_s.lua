@@ -245,10 +245,15 @@ function Database.Drivers.SQLite:init()
 		setTimer(Database_Drivers_SQLite_AutoBackup, backupsInt, 0)
 	end
 	
-	CmdRegister('dbbackup', function()
-		Database.Drivers.SQLite.makeBackup()
-		privMsg(source, 'Backup saved!')
-	end, 'resource.'..g_ResName..'.dbbackup')
+	CmdMgr.register{
+		name = 'dbbackup',
+		desc = "Makes script database backup and saves in resource subdirectory",
+		accessRight = AccessRight('dbbackup'),
+		func = function(ctx)
+			Database.Drivers.SQLite.makeBackup()
+			privMsg(ctx.player, 'Backup saved!')
+		end
+	}
 	
 	return true
 end

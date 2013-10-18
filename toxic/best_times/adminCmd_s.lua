@@ -1,51 +1,62 @@
-local function CmdRemTopTime(message, arg)
-	local room = Player.fromEl(source).room
-	local n = touint(arg[2], 0)
-	if (n >= 1 and n <= 8) then
+CmdMgr.register{
+	name = 'remtoptime',
+	desc = "Removes specified Top Time on the current map",
+	accessRight = AccessRight('remtoptime'),
+	args = {
+		{'toptimeNumber', type = 'integer', min = 1, max = 8},
+	},
+	func = function(ctx, num)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
-		if (map) then
-			local map_id = map:getId()
-			local rows = DbQuery(
-				'SELECT player, time '..
-				'FROM '..DbPrefix..'besttimes '..
-				'WHERE map=? '..
-				'ORDER BY time '..
-				'LIMIT '..math.max(n, 4), map_id)
-			if(rows and rows[n]) then
-				BtDeleteTimes('WHERE player=? AND map=?', rows[n].player, map_id)
-				local accountData = AccountData.create(rows[n].player)
-				if(n <= 3) then
-					accountData:add('toptimes_count', -1)
-					if(rows[4]) then
-						AccountData.create(rows[4].player):add('toptimes_count', 1)
-					end
-				end
-				MiUpdateTops(map_id)
-				
-				local f = fileExists('logs/remtoptime.log') and fileOpen('logs/remtoptime.log') or fileCreate('logs/remtoptime.log')
-				if(f) then
-					fileSetPos(f, fileGetSize (f)) -- append to file
-					
-					local next_tops = ''
-					for i = n + 1, math.min (n+3, #rows), 1 do
-						next_tops = next_tops..', '..formatTimePeriod(rows[i].time / 1000)
-					end
-					
-					local tm = getRealTime()
-					fileWrite(f, ('[%u.%02u.%u %u-%02u-%02u] '):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second)..
-						getPlayerName(source)..' removed '..n..'. toptime ('..formatTimePeriod(rows[n].time / 1000)..' by '..accountData:get('name')..') on map '..map:getName()..'.'..
-						(next_tops ~= '' and ' Next Top Times: '..next_tops:sub(3)..'.' or '')..'\n')
-					
-					fileClose(f)
-				end
-				
-				outputMsg(room.el, Styles.red, "%u. Top Time (%s by %s) has been removed by %s!",
-					n, formatTimePeriod(rows[n].time / 1000), accountData:get('name'), getPlayerName(source))
-			elseif(rows) then
-				privMsg(source, "There are only %u Top Times saved!", #rows)
+		if(not map) then
+			privMsg(ctx.player, "No map is running now!")
+			return
+		end
+		
+		local map_id = map:getId()
+		local rows = DbQuery(
+			'SELECT player, time '..
+			'FROM '..DbPrefix..'besttimes '..
+			'WHERE map=? '..
+			'ORDER BY time '..
+			'LIMIT '..math.max(n, 4), map_id)
+		if(not rows or not rows[n]) then
+			privMsg(ctx.player, "There are only %u Top Times saved!", rows and #rows or 0)
+			return
+		end
+		
+		BtDeleteTimes('WHERE player=? AND map=?', rows[n].player, map_id)
+		local accountData = AccountData.create(rows[n].player)
+		if(n <= 3) then
+			accountData:add('toptimes_count', -1)
+			if(rows[4]) then
+				AccountData.create(rows[4].player):add('toptimes_count', 1)
 			end
-		else privMsg(source, "Cannot find map!") end
-	else privMsg(source, "Usage: %s", arg[1]..' <toptime number>') end
-end
-
-CmdRegister('remtoptime', CmdRemTopTime, 'resource.'..g_ResName..'.remtoptime', "Removes specified Top Time on current map")
+		end
+		MiUpdateTops(map_id)
+		
+		local nextTops = ''
+		for i = n + 1, math.min (n+3, #rows), 1 do
+			nextTops = nextTops..', '..formatTimePeriod(rows[i].time / 1000)
+		end
+		
+		local logStr = ctx.player:getName()..' removed '..n..'. toptime ('..formatTimePeriod(rows[n].time / 1000)..
+			' by '..accountData:get('name')..') on map '..map:getName()..'.'..
+			(nextTops ~= '' and ' Next Top Times: '..nextTops:sub(3)..'.' or '')
+		outputServerLog('REMTOPTIME: '..logStr)
+		
+		local f = fileExists('logs/remtoptime.log') and fileOpen('logs/remtoptime.log') or fileCreate('logs/remtoptime.log')
+		if(f) then
+			fileSetPos(f, fileGetSize(f)) -- append to file
+			
+			local tm = getRealTime()
+			local timeStr = ('[%u.%02u.%u %u-%02u-%02u]'):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second)
+			fileWrite(f, timeStr..' '..logStr..'\n')
+			
+			fileClose(f)
+		end
+		
+		outputMsg(room.el, Styles.red, "%u. Top Time (%s by %s) has been removed by %s!",
+			n, formatTimePeriod(rows[n].time / 1000), accountData:get('name'), ctx.player:getName(true))
+	end
+}

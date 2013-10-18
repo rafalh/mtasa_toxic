@@ -140,26 +140,37 @@ local function CmdResetPw(message, arg)
 	local key = arg[2]
 	
 	if(key) then
-		local rows = DbQuery('SELECT player, account FROM '..PlayersTable..' WHERE passwordRecoveryKey=? AND serial=?', key, sourcePlayer:getSerial())
-		local data = rows and rows[1]
-		if(data) then
-			local newPw = md5(generateRandomStr(8)):sub(1, 8)
-			local account = getAccount(data.account)
-			local success = account and setAccountPassword(account, newPw)
-			if(success) then
-				local accountData = AccountData.create(data.player)
-				accountData.passwordRecoveryKey = false
-				outputMsg(source, Styles.green, "Password has been successfully changed. Your login credentials: username \"%s\", password \"%s\".", data.account, newPw)
-			else
-				outputMsg(source, Styles.red, "Failed to reset password. Please contact administrator.")
-			end
-		else
-			outputMsg(source, Styles.red, "Failed to reset password. Please generate a new key and try again.")
-		end
+		
 	else privMsg(source, "Usage: %s", arg[1]..' <key_from_email>') end
 end
 
-CmdRegister('resetpw', CmdResetPw, false, "Allows you to reset your password in case you forgot it")
+CmdMgr.register{
+	name = 'resetpw',
+	desc = "Allows you to reset your password in case you forgot it",
+	args = {
+		{'key', type = 'string'},
+	},
+	func = function(ctx, key)
+		local rows = DbQuery('SELECT player, account FROM '..PlayersTable..' WHERE passwordRecoveryKey=? AND serial=?', key, ctx.player:getSerial())
+		local data = rows and rows[1]
+		if(not data) then
+			outputMsg(ctx.player, Styles.red, "Failed to reset password. Please generate a new key and try again.")
+			return
+		end
+		
+		local newPw = md5(generateRandomStr(8)):sub(1, 8)
+		local account = getAccount(data.account)
+		local success = account and setAccountPassword(account, newPw)
+		if(success) then
+			local accountData = AccountData.create(data.player)
+			accountData.passwordRecoveryKey = false
+			outputMsg(ctx.player, Styles.green, "Password has been successfully changed. Your login credentials: username \"%s\", password \"%s\".", 
+				data.account, newPw)
+		else
+			outputMsg(ctx.player, Styles.red, "Failed to reset password. Please contact administrator.")
+		end
+	end
+}
 
 addInitFunc(function()
 	addEventHandler('main.onLogin', g_ResRoot, onLoginReq)
