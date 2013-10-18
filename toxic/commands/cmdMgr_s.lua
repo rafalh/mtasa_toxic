@@ -106,6 +106,12 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 				end
 			elseif(argDesc.type == 'string') then
 				newArg = arg
+			elseif(argDesc.type == 'bool') then
+				newArg = tobool(arg)
+				if(newArg == nil) then
+					privMsg(ctx.player, "Expected boolean value at argument #%u (%s).", i, argDesc[1])
+					return false
+				end
 			else
 				assert(false)
 			end

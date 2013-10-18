@@ -1,91 +1,100 @@
 g_OldVehicleWeapons = nil
 local g_RaceRes = Resource('race')
 
-local function CmdSetMapName(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setmapname',
+	aliases = {'smn'},
+	accessRight = AccessRight('setmapname'),
+	args = {
+		{'newName', type = 'string'},
+	},
+	func = function(ctx, newName)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
-		if(map) then
-			local newName = message:sub(arg[1]:len() + 2)
-			
-			if(map:setInfo('name', newName)) then
-				MiUpdateInfo()
-				scriptMsg("New map name: %s", newName)
-			else
-				privMsg(source, "Error! Cannot set map name.")
-			end
+		if(map and map:setInfo('name', newName)) then
+			MiUpdateInfo()
+			scriptMsg("New map name: %s", newName)
+		else
+			privMsg(ctx.player, "Error! Cannot set map name.")
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <name>') end
-end
+	end
+}
 
-CmdRegister('setmapname', CmdSetMapName, 'resource.'..g_ResName..'.setmapname')
-CmdRegisterAlias('smn', 'setmapname')
-
-local function CmdSetMapType(message, arg)
-	local map_types = { dd = 'DD', dm = 'DM', race = 'Race', cnr = 'CnR', tdd = 'TDD', tdm = 'TDM', fun = 'Fun' }
-	local new_map_type = arg[2] and map_types[arg[2]:lower()]
-	
-	if(new_map_type) then
-		local room = Player.fromEl(source).room
-		local map = getCurrentMap(room)
+CmdMgr.register{
+	name = 'setmaptype',
+	aliases = {'smt', 'setmaptag'},
+	accessRight = AccessRight('setmapname'),
+	args = {
+		{'newType', type = 'string'},
+	},
+	func = function(ctx, newMapType)
+		local mapTypes = { dd = 'DD', dm = 'DM', race = 'Race', cnr = 'CnR', tdd = 'TDD', tdm = 'TDM', fun = 'Fun' }
+		local newMapType = mapTypes[newMapType:lower()] or newMapType
 		
-		if(map) then
-			local name = map:getName()
-			local newName = '['..new_map_type..'] '..(name:match('^%[%w+%]%s*(.*)$') or name)
-			
-			if(map:setInfo('name', newName)) then
-				MiUpdateInfo()
-				scriptMsg("New map name: %s", newName)
-			else
-				privMsg(source, "Error! Cannot set map name.")
-			end
+		local room = ctx.player.room
+		local map = getCurrentMap(room)
+		local name = map and map:getName()
+		local newName = map and '['..newMapType..'] '..(name:match('^%[%w+%]%s*(.*)$') or name)
+		
+		if(map and map:setInfo('name', newName)) then
+			MiUpdateInfo()
+			scriptMsg("New map name: %s", newName)
+		else
+			privMsg(ctx.player, "Error! Cannot set map name.")
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <dd/dm/race/cnr/tdd/tdm/fun>') end
-end
+	end
+}
 
-CmdRegister('setmaptype', CmdSetMapType, 'resource.'..g_ResName..'.setmapname')
-CmdRegisterAlias('smt', 'setmaptype')
-
-local function CmdSetMapCreator(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setmapauthor',
+	aliases = {'setmapcreator', 'sc'},
+	desc = "Sets current map author",
+	accessRight = AccessRight('setmapcreator'),
+	args = {
+		{'newAuthor', type = 'string'},
+	},
+	func = function(ctx, newAuthor)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
-		if(map) then
-			local newAuthor = message:sub(arg[1]:len() + 2)
-			
-			if(map:setInfo('author', newAuthor)) then
-				MiUpdateInfo()
-				scriptMsg("New map creator: %s", newAuthor)
-			else
-				privMsg(source, "Error! Cannot set map creator.")
-			end
+		if(map and map:setInfo('author', newAuthor)) then
+			MiUpdateInfo()
+			scriptMsg("New map creator: %s", newAuthor)
+		else
+			privMsg(ctx.player, "Error! Cannot set map creator.")
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <creator>') end
-end
+	end
+}
 
-CmdRegister('setmapcreator', CmdSetMapCreator, 'resource.'..g_ResName..'.setmapcreator')
-CmdRegisterAlias('sc', 'setmapcreator')
-
-local function CmdSetMapRespawn(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setrespawn',
+	aliases = {'setrs'},
+	desc = "Sets current map respawn time",
+	accessRight = AccessRight('setrs'),
+	args = {
+		{'seconds|no|auto', type = 'string'},
+	},
+	func = function(ctx, val)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
 		if(map) then
-			local t = touint(arg[2], 0)
+			local sec = touint(val, 0)
 			local respawn, respawntime = nil, nil
 			
-			if(t and t > 0) then
+			if(sec > 0) then
 				respawn = 'timelimit'
-				respawntime = t
-			elseif(t == 0 or arg[2] == 'false' or arg[2] == 'no')  then
+				respawntime = sec
+			elseif(sec == 0 or val == 'false' or val == 'no')  then
 				respawn = 'none'
-			elseif(arg[2] == 'true' or arg[2] == 'yes')  then
+			elseif(val == 'true' or val == 'yes')  then
 				respawn = 'timelimit'
-			else
+			elseif(val == 'auto') then
 				respawn = nil
+			else
+				privMsg(source, "Invalid respawn value: %s", val)
+				return
 			end
 			
 			if(respawntime) then
@@ -94,134 +103,216 @@ local function CmdSetMapRespawn(message, arg)
 			if(map:setSetting('respawn', respawn)) then
 				scriptMsg("Respawn will be set to %s (%s) in the next round!", respawn or 'auto', respawntime or 'auto')
 			else
-				privMsg(source, "Failed to set respawn.")
+				privMsg(ctx.player, "Failed to set respawn.")
 			end
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <seconds/no/auto>') end
-end
+	end
+}
 
-CmdRegister('setrs', CmdSetMapRespawn, 'resource.'..g_ResName..'.setrs')
-
-local function CmdSetMapGhostmode(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setmapghostmode',
+	aliases = {'setmapgm', 'smgm'},
+	desc = "Enables or disabled ghostmode for current map",
+	accessRight = AccessRight('setmapgm'),
+	args = {
+		{'true/false/auto', type = 'string'},
+	},
+	func = function(ctx, val)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
 		if(map) then
 			local val
-			if(arg[2] == 'false' or arg[2] == 'no') then
+			if(val == 'false' or val == 'no') then
 				val = 'false'
-			elseif(arg[2] == 'true' or arg[2] == 'yes') then
+			elseif(val == 'true' or val == 'yes') then
 				val = 'true'
-			else
+			elseif(val == 'auto') then
 				val = nil
+			else
+				privMsg(source, "Invalid ghostmode value: %s", val)
+				return
 			end
 			
 			if(map:setSetting('ghostmode', val)) then
 				scriptMsg("Ghost Mode will be set to %s in the next round!", val or 'auto')
 			else
-				privMsg(source, "Failed to set map Ghost Mode.")
+				privMsg(ctx.player, "Failed to set map Ghost Mode.")
 			end
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <true/false/auto>') end
-end
+	end
+}
 
-CmdRegister('setmapgm', CmdSetMapGhostmode, 'resource.'..g_ResName..'.setmapgm')
-CmdRegisterAlias('smgm', 'setmapgm')
-
-local function CmdSetMapTimeLimit(message, arg)
-	local t = split(arg[2] or '', ':')
-	local h, m, s = tonumber(t[#t-2] or 0), tonumber(t[#t-1] or 0), tonumber(t[#t])
-	if(h and m and s) then
-		local map = getCurrentMap()
-		
-		if(map) then
-			local limit = h * 3600 + m * 60 + s
-			if(limit > 0) then
-				map:setSetting('duration', limit)
-				scriptMsg("Time limit will be set to %s in the next round!", arg[2])
-			else
-				map:setSetting('duration', nil)
-				scriptMsg("Time limit will not be set in the next round!")
+CmdMgr.register{
+	name = 'setmaptimelimit',
+	aliases = {'smtimelimit', 'settimelimit'},
+	desc = "Sets current map time limit",
+	accessRight = AccessRight('setmaptimelimit'),
+	args = {
+		{'timeLimit', type = 'string'},
+	},
+	func = function(ctx, val)
+		local t = split(val, ':')
+		local h, m, s = tonumber(t[#t-2] or 0), tonumber(t[#t-1] or 0), tonumber(t[#t])
+		if(h and m and s) then
+			local map = getCurrentMap()
+			
+			if(map) then
+				local limit = h * 3600 + m * 60 + s
+				if(limit > 0) then
+					map:setSetting('duration', limit)
+					scriptMsg("Time limit will be set to %s in the next round!", val)
+				else
+					map:setSetting('duration', nil)
+					scriptMsg("Time limit will not be set in the next round!")
+				end
 			end
+		else
+			privMsg(source, "Time limit format: %s", '[h:m:]s')
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <[h:m:]s>') end
-end
+	end
+}
 
-CmdRegister('setmaptimelimit', CmdSetMapTimeLimit, 'resource.'..g_ResName..'.setmaptimelimit')
-CmdRegisterAlias('smtimelimit', 'setmaptimelimit')
-CmdRegisterAlias('settimelimit', 'setmaptimelimit')
-
-local function CmdSetMapVehicleWeapons(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setmapvehwep',
+	aliases = {'smvehwep'},
+	desc = "Enables or disables vehicle weapons in current map",
+	accessRight = AccessRight('setmapvehwep'),
+	args = {
+		{'true/false/auto', type = 'string'},
+	},
+	func = function(ctx, val)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
 		if(map) then
-			if(arg[2] == 'true' or arg[2] == 'yes') then
+			if(val == 'true' or val == 'yes') then
 				map:setSetting('vehicleweapons', 'true')
 				scriptMsg("Vehicle weapons will be enabled in the next round!")
-			elseif(arg[2] == 'false' or arg[2] == 'no') then
+			elseif(val == 'false' or val == 'no') then
 				map:setSetting('vehicleweapons', 'false')
 				scriptMsg("Vehicle weapons will be disabled in the next round!")
-			else
+			elseif(val == 'auto') then
 				map:setSetting('vehicleweapons', nil)
 				scriptMsg("Vehicle weapons will not be set in the next round!")
+			else
+				privMsg(ctx.player, "Invalid argument: %s", val)
 			end
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <true/false/auto>') end
-end
+	end
+}
 
-CmdRegister('setmapvehwep', CmdSetMapVehicleWeapons, 'resource.'..g_ResName..'.setmapvehwep')
-CmdRegisterAlias('smvehwep', 'setmapvehwep')
-
-local function CmdSetMapHunterMinigun(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setmaphuntermg',
+	aliases = {'smhuntermg', 'smhuntmg'},
+	desc = "Enables or disables Hunter minigun in current map",
+	accessRight = AccessRight('setmaphuntermg'),
+	args = {
+		{'true/false/auto', type = 'string'},
+	},
+	func = function(ctx, val)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
 		if(map) then
-			if(arg[2] == 'true' or arg[2] == 'yes') then
+			if(val == 'true' or val == 'yes') then
 				map:setSetting('hunterminigun', 'true')
 				scriptMsg("Hunter mini-gun will be enabled in the next round!")
-			elseif(arg[2] == 'false' or arg[2] == 'no') then
+			elseif(val == 'false' or val == 'no') then
 				map:setSetting('hunterminigun', 'false')
 				scriptMsg("Hunter mini-gun will be disabled in the next round!")
-			else
+			elseif(val == 'auto') then
 				map:setSetting('hunterminigun', nil)
 				scriptMsg("Hunter mini-gun will be set to auto in the next round!")
+			else
+				privMsg(ctx.player, "Invalid argument: %s", val)
 			end
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <true/false/auto>') end
-end
+	end
+}
 
-CmdRegister('setmaphuntermg', CmdSetMapHunterMinigun, 'resource.'..g_ResName..'.setmaphuntermg')
-CmdRegisterAlias('smhuntermg', 'setmaphuntermg')
-CmdRegisterAlias('smhuntmg', 'setmaphuntermg')
+CmdMgr.register{
+	name = 'setmapwaveheight',
+	aliases = {'smwaveh'},
+	desc = "Sets current map wave height",
+	accessRight = AccessRight('setmapwaveheight'),
+	args = {
+		{'num/auto', type = 'string'},
+	},
+	func = function(ctx, val)
+		local room = ctx.player.room
+		local map = getCurrentMap(room)
+		local h = tonumber(val)
+		
+		if(not map) then
+			privMsg(ctx.player, "No map is running now!")
+		elseif(h) then
+			map:setSetting('waveheight', h)
+			scriptMsg("Wave height will be set to %.1f in the next round!", h)
+		elseif(val == 'auto') then
+			map:setSetting('waveheight', nil)
+			scriptMsg("Wave height will set to auto in the next round!")
+		else
+			privMsg(ctx.player, "Invalid argument: %s", val)
+		end
+	end
+}
 
-local function CmdSetMapWaveHeight(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
+CmdMgr.register{
+	name = 'setcompmode',
+	aliases = {'setcmode'},
+	desc = "Enables or disables compatiblity mode for current map (makes Race resource compatible with old MTA:RM)",
+	accessRight = AccessRight('setcompmode'),
+	args = {
+		{'enabled', type = 'bool'},
+	},
+	func = function(ctx, enabled)
+		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		
-		if(map) then
-			local h = tonumber(arg[2])
-			if(h) then
-				map:setSetting('waveheight', h)
-				scriptMsg("Wave height will be set to %.1f in the next round!", h)
-			else
-				map:setSetting('waveheight', nil)
-				scriptMsg("Wave height will set to auto in the next round!")
-			end
+		if(not map) then
+			privMsg(ctx.player, "No map is running now!")
+		elseif(enabled) then
+			map:setSetting('compmode', 'true')
+			scriptMsg("Compatibility mode will be enabled in the next round!")
+		else
+			map:setSetting('compmode', nil)
+			scriptMsg("Compatibility mode will be disabled in the next round!")
 		end
-	else privMsg(source, "Usage: %s", arg[1]..' <num/auto>') end
-end
+	end
+}
 
-CmdRegister('setmapwaveheight', CmdSetMapWaveHeight, 'resource.'..g_ResName..'.setmapwaveheight')
-CmdRegisterAlias('smwaveh', 'setmapwaveheight')
+CmdMgr.register{
+	name = 'setmapmaxspeed',
+	desc = "Sets max speed in map meta so AntiCheat can use it to determine if player drives too fast",
+	accessRight = AccessRight('setmapmaxspeed'),
+	args = {
+		{'maxSpeed', type = 'string'},
+	},
+	func = function(ctx, maxSpeed)
+		local room = ctx.player.room
+		local map = getCurrentMap(room)
+		local maxSpeedInt = touint(maxSpeed)
+		if(not map) then
+			privMsg(ctx.player, "No map is running now!")
+		elseif(not maxSpeedInt and maxSpeed ~= 'false') then
+			privMsg(ctx.player, "Invalid argument: %s", maxSpeed)
+		elseif(not map:setSetting('maxspeed', maxSpeedInt)) then
+			privMsg(ctx.player, "Failed to set maximal speed!")
+		else
+			scriptMsg("Maximal speed will be set to %u in the next round!", maxSpeed)
+		end
+	end
+}
 
-local function CmdVehicleWeapons(message, arg)
-	if(g_RaceRes:isReady()) then
+CmdMgr.register{
+	name = 'vehicleweapons',
+	aliases = {'vehwep'},
+	desc = "Toggles vehicle weapons for currently running map",
+	accessRight = AccessRight('vehicleweapons'),
+	func = function(ctx)
+		if(not g_RaceRes:isReady()) then return end
+		
 		local old_enabled, enabled = get('*race.vehicleweapons')
 		if(not g_OldVehicleWeapons) then
 			g_OldVehicleWeapons = old_enabled
@@ -236,48 +327,7 @@ local function CmdVehicleWeapons(message, arg)
 		set('*race.vehicleweapons', enabled)
 		triggerEvent('onSettingChange', getResourceRootElement(g_RaceRes.res), 'vehicleweapons', g_OldVehicleWeapons, enabled)
 	end
-end
-
-CmdRegister('vehicleweapons', CmdVehicleWeapons, 'resource.'..g_ResName..'.vehicleweapons')
-CmdRegisterAlias('vehwep', 'vehicleweapons')
-
-local function CmdSetMapCompMode(message, arg)
-	if(#arg >= 2) then
-		local room = Player.fromEl(source).room
-		local map = getCurrentMap(room)
-		
-		if(map) then
-			if(arg[2] == 'true' or arg[2] == 'yes') then
-				map:setSetting('compmode', 'true')
-				scriptMsg("Compatibility mode will be enabled in the next round!")
-			else
-				map:setSetting('compmode', nil)
-				scriptMsg("Compatibility mode will be disabled in the next round!")
-			end
-		end
-	else privMsg(source, "Usage: %s", arg[1]..' <true/false>') end
-end
-
-CmdRegister('setcompmode', CmdSetMapCompMode, 'resource.'..g_ResName..'.setcompmode')
-CmdRegisterAlias('setcmode', 'setcompmode')
-
-local function CmdSetMapMaxSpeed(message, arg)
-	local room = Player.fromEl(source).room
-	local map = getCurrentMap(room)
-	local max_speed = touint(arg[2])
-	if(map and (max_speed or arg[2] == 'false')) then
-		if(max_speed == 0) then
-			max_speed = nil
-		end
-		if(map:setSetting('maxspeed', max_speed)) then
-			scriptMsg("Maximal speed will be set to %u in the next round!", max_speed or 0)
-		else
-			privMsg(source, "Failed to set maximal speed!")
-		end
-	else privMsg(source, "Usage: %s", arg[1]..' <maxspeed>') end
-end
-
-CmdRegister('setmapmaxspeed', CmdSetMapMaxSpeed, 'resource.'..g_ResName..'.setmapmaxspeed')
+}
 
 local function GenMapResName(map)
 	local name = map:getName()
@@ -346,36 +396,43 @@ local function FixAllMapsResName(player)
 	privMsg(player, "Finished in %u ms: %u failures, %u/%u maps processed.", dt, fails, count, maps:getCount())
 end
 
-local function CmdFixMapResName(msg, arg)
-	if(arg[2] == 'all') then
-		if(g_FixMapResNameTimer) then return end
-		
-		local co = coroutine.create(FixAllMapsResName)
-		coroutine.resume(co, source)
-		if(coroutine.status(co) ~= 'dead') then
-			g_FixMapResNameTimer = setTimer(function()
-				coroutine.resume(co)
-				if(coroutine.status(co) == 'dead') then
-					killTimer(g_FixMapResNameTimer)
-					g_FixMapResNameTimer = false
-				end
-			end, 100, 0)
-		end
-	else
-		local room = Player.fromEl(source).room
-		local map = arg[2] and findMap(msg:sub(arg[1]:len() + 2)) or getCurrentMap(room)
-		if(not map) then return end
-		
-		local ok, status = FixMapResName(map)
-		if(ok) then
-			privMsg(source, '%s', status)
+CmdMgr.register{
+	name = 'fixmapresname',
+	accessRight = AccessRight('fixmapresname'),
+	args = {
+		{'mapName', type = 'string', def = false},
+	},
+	func = function(ctx, mapName)
+		if(mapName == 'all') then
+			if(g_FixMapResNameTimer) then return end
+			
+			local co = coroutine.create(FixAllMapsResName)
+			coroutine.resume(co, ctx.player.el)
+			if(coroutine.status(co) ~= 'dead') then
+				g_FixMapResNameTimer = setTimer(function()
+					coroutine.resume(co)
+					if(coroutine.status(co) == 'dead') then
+						killTimer(g_FixMapResNameTimer)
+						g_FixMapResNameTimer = false
+					end
+				end, 100, 0)
+			end
 		else
-			privMsg(source, "Failed: %s", status)
+			local room = ctx.player.room
+			local map = mapName and findMap(mapName) or getCurrentMap(room)
+			if(not map) then
+				privMsg(ctx.player, 'Cannot find map!')
+			end
+			
+			local ok, status = FixMapResName(map)
+			if(ok) then
+				privMsg(ctx.player, '%s', status)
+			else
+				privMsg(ctx.player, "Failed: %s", status)
+			end
 		end
 	end
-end
-
-CmdRegister('fixmapresname', CmdFixMapResName, 'resource.'..g_ResName..'.fixmapresname')
+}
 
 local function DetectMapType(map)
 	local map_res_name = getResourceName(map.res)
@@ -416,43 +473,45 @@ local function DetectMapType(map)
 	return map_type
 end
 
-local function CmdFixMapTags(msg, arg)
-	local fix = (arg[2] == 'fix')
-	local count = 0
-	
-	local maps = getMapsList()
-	for i = 1, maps:getCount() do
-		local map = maps:get(i)
-		local map_name = map:getName()
+CmdMgr.register{
+	name = 'fixmaptags',
+	accessRight = AccessRight('fixmaptags'),
+	args = {
+		{'fix', type = 'bool', def = false},
+	},
+	func = function(ctx, fix)
+		local count = 0
 		
-		if(not map_name:match('^%[%w+%] .*$')) then
-			count = count + 1
+		local maps = getMapsList()
+		for i = 1, maps:getCount() do
+			local map = maps:get(i)
+			local mapName = map:getName()
 			
-			local new_map_name
-			local map_type, mapNameWithoutTag = map_name:match('^%[(%w+)%]%s*(.*)$') -- no space
-			if(map_type) then -- Add space
-				new_map_name = '['..map_type..'] '..mapNameWithoutTag
-			else
-				map_type = DetectMapType(map)
-				new_map_name = map_type and '['..map_type..'] '..map_name
-			end
-			
-			if(fix) then
-				if(new_map_name and map:setInfo('name', new_map_name)) then
-					privMsg(source, 'Fixed: %s', new_map_name)
+			if(not mapName:match('^%[%w+%] .*$')) then
+				count = count + 1
+				
+				local newMapName
+				local map_type, mapNameWithoutTag = mapName:match('^%[(%w+)%]%s*(.*)$') -- no space
+				if(map_type) then -- Add space
+					newMapName = '['..map_type..'] '..mapNameWithoutTag
 				else
-					privMsg(source, 'Failed to fix: %s', map_name)
+					map_type = DetectMapType(map)
+					newMapName = map_type and '['..map_type..'] '..mapName
 				end
-			else
-				privMsg(source, 'To do: %s -> %s', map_name, tostring(new_map_name))
+				
+				if(not fix) then
+					privMsg(ctx.player, 'To do: %s -> %s', mapName, tostring(newMapName))
+				elseif(newMapName and map:setInfo('name', newMapName)) then
+					privMsg(ctx.player, 'Fixed: %s', newMapName)
+				else
+					privMsg(ctx.player, 'Failed to fix: %s', mapName)
+				end
 			end
 		end
+		
+		privMsg(ctx.player, '%d/%d maps %s.', count, maps:getCount(), fix and 'fixed' or 'detected')
 	end
-	
-	privMsg(source, '%d/%d maps %s.', count, maps:getCount(), fix and 'fixed' or 'detected')
-end
-
-CmdRegister('fixmaptags', CmdFixMapTags, 'resource.'..g_ResName..'.fixmaptags')
+}
 
 local function MocCleanup()
 	if(g_OldVehicleWeapons) then
