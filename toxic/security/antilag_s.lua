@@ -112,21 +112,25 @@ local function AlInit ()
 	setTimer(AlCheckAllPlayers, 1000, 0)
 end
 
-local function CmdMinFps(message, arg)
-	scriptMsg("Minimal FPS: %u.", g_MinFps)
-end
-
-CmdRegister('minfps', CmdMinFps, false)
-
-local function CmdMaxPing(message, arg)
-	local max_ping = Settings.max_ping
-	if ( max_ping > 0 ) then
-		scriptMsg("Maximal ping: %u.", max_ping)
-	else
-		scriptMsg("Maximal ping: disabled.")
+CmdMgr.register{
+	name = 'minfps',
+	desc = "Shows minimal FPS",
+	func = function(ctx)
+		scriptMsg("Minimal FPS: %u.", g_MinFps)
 	end
-end
+}
 
-CmdRegister('maxping', CmdMaxPing, false)
+CmdMgr.register{
+	name = 'maxping',
+	desc = "Shows maximal ping value",
+	func = function(ctx)
+		local maxPing = Settings.max_ping
+		if(maxPing > 0) then
+			scriptMsg("Maximal ping: %u.", maxPing)
+		else
+			scriptMsg("Maximal ping: disabled.")
+		end
+	end
+}
 
 addInitFunc(AlInit)

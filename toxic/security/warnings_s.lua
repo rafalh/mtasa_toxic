@@ -49,32 +49,37 @@ function getPlayerWarningsCount(player)
 	return DbCount(WarningsTable, 'serial=?', player:getSerial())
 end
 
-local function CmdWarnings(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2))) or Player.fromEl(source)
-	local sourcePlayer = Player.fromEl(source)
-	
-	if(player == sourcePlayer or ListWarningsRight:check(source)) then
-		local warns = DbQuery('SELECT w.id, w.reason, w.timestamp, p.name AS admin FROM '..WarningsTable..' w, '..PlayersTable..' p WHERE w.serial=? AND p.player=w.admin', player:getSerial())
-		RPC('openWarningsWnd', player.el, warns):setClient(source):exec()
-	else
-		local warnsCount = getPlayerWarningsCount(player)
-		scriptMsg("%s has %u/%u warnings.", player:getName(), warnsCount, Settings.max_warns)
+CmdMgr.register{
+	name = 'warnings',
+	aliases = {'warns'},
+	desc = "Shows player warnings count",
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		
+		if(player == ctx.player or ListWarningsRight:check(ctx.player.el)) then
+			local warns = DbQuery('SELECT w.id, w.reason, w.timestamp, p.name AS admin FROM '..WarningsTable..' w, '..PlayersTable..' p WHERE w.serial=? AND p.player=w.admin', player:getSerial())
+			RPC('openWarningsWnd', player.el, warns):setClient(ctx.player.el):exec()
+		else
+			local warnsCount = getPlayerWarningsCount(player)
+			scriptMsg("%s has %u/%u warnings.", player:getName(), warnsCount, Settings.max_warns)
+		end
 	end
-end
+}
 
-CmdRegister('warnings', CmdWarnings, false, "Shows player warnings count")
-CmdRegisterAlias('warns', 'warnings')
-
-local function CmdWarn(message, arg)
-	local player = (#arg >= 2 and Player.find(message:sub(arg[1]:len() + 2)))
-	local admin = Player.fromEl(source)
-	
-	if(player) then
-		RPC('openWarnPlayerWnd', player.el):setClient(source):exec()
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
-
-CmdRegister('warn', CmdWarn, 'resource.'..g_ResName..'.warn', "Adds player warning and bans if he has too many")
+CmdMgr.register{
+	name = 'warn',
+	desc = "Adds player warning and bans if he has too many",
+	accessRight = AccessRight('warn'),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
+		RPC('openWarnPlayerWnd', player.el):setClient(ctx.player.el):exec()
+	end
+}
 
 function warnPlayerRPC(playerEl, reason)
 	local player = Player.fromEl(playerEl)

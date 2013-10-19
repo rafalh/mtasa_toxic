@@ -37,22 +37,17 @@ local function aCommandToArgs(admin, arg_str, args)
 	return argv
 end
 
-local function onCommand(message, arg)
-	local cmd = arg[1]:sub(2)
-	local acmd = g_AdminCommands[cmd]
-	
-	if(arg[1]:sub(1, 1) == '!' and acmd) then
-		if(hasObjectPermissionTo(source, 'command.'..acmd.action, false)) then
-			arg = aCommandToArgs(source, message:sub(arg[1]:len() + 2), acmd.args)
-			if(acmd.type == 'player') then
-				triggerEvent('aPlayer', source, arg[1], acmd.action, arg[2], arg[3])
-			elseif(acmd.type == 'vehicle') then
-				triggerEvent('aVehicle', source, arg[1], acmd.action, arg[2], arg[3])
-			else
-				triggerEvent('a'..acmd.type:sub (1, 1):upper()..acmd.type:sub (2), source, acmd.action, arg[1], arg[2], arg[3], arg[4])
-			end
+local function onCommand(ctx, ...)
+	local acmd = g_AdminCommands[ctx.cmdName]
+	-- arg[1]:sub(1, 1) == '!'
+	if(acmd) then
+		arg = aCommandToArgs(ctx.player.el, table.concat({...}, ' '), acmd.args)
+		if(acmd.type == 'player') then
+			triggerEvent('aPlayer', ctx.player.el, arg[1], acmd.action, arg[2], arg[3])
+		elseif(acmd.type == 'vehicle') then
+			triggerEvent('aVehicle', ctx.player.el, arg[1], acmd.action, arg[2], arg[3])
 		else
-			privMsg(source, "Access denied for \"%s\"!", arg[1])
+			triggerEvent('a'..acmd.type:sub(1, 1):upper()..acmd.type:sub(2), ctx.player.el, acmd.action, arg[1], arg[2], arg[3], arg[4])
 		end
 	end
 end
@@ -82,7 +77,12 @@ local function init()
 						if(args) then
 							g_AdminCommands[handler].args = args
 						end
-						CmdRegister(handler, onCommand, 'command.'..action, false, true)
+						CmdMgr.register{
+							name = handler,
+							accessRight = AccessRight('command.'..action, true),
+							varargs = true,
+							func = onCommand
+						}
 					end
 				end
 			end
