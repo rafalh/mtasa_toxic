@@ -18,7 +18,14 @@ local function AvpInit()
 	setTimer(AvpTimerProc, 60000, 0)
 end
 
-CmdRegister('avgplayers', CmdAvgPlayers, false, "Shows average players count")
+CmdMgr.register{
+	name = 'avgplayers',
+	desc = "Shows average players count",
+	func = function(ctx)
+		scriptMsg("Average players count: %.1f.", Settings.avg_players)
+	end
+}
+
 addInitFunc(AvpInit)
 
 Settings.register

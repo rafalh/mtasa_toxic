@@ -24,28 +24,42 @@ function giveTempMod(player, days)
 	return timestamp
 end
 
-local function CmdGiveMod(msg, arg)
-	local player = arg[2] and Player.find(arg[2])
-	local days = math.floor(tonumber(arg[3]) or 30)
-	
-	local timestamp = player and giveTempMod(player, days)
-	if(timestamp) then
-		local tm = getRealTime(timestamp)
-		local name = player:getName()
-		
-		local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-		privMsg(source, "Temporary Moderator successfully given to %s! It will be valid until %s.", name, dateStr)
-		outputMsg(player, Styles.green, "You have become Temporary Moderator! It will be valid until %s.", dateStr)
-	else
-		privMsg(source, "Usage: %s", arg[1]..' <name> [<days>]')
+CmdMgr.register{
+	name = 'givemod',
+	desc = "Gives temporary moderator to specified player",
+	accessRight = AccessRight('givemod'),
+	args = {
+		{'player', type = 'player'},
+		{'days', type = 'integer', def = 30, min = 1},
+	},
+	func = function(ctx, player, days)
+		local timestamp = player and giveTempMod(player, days)
+		if(timestamp) then
+			local tm = getRealTime(timestamp)
+			local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+			
+			privMsg(ctx.player, "Temporary Moderator successfully given to %s! It will be valid until %s.", player:getName(), dateStr)
+			outputMsg(player, Styles.green, "You have become Temporary Moderator! It will be valid until %s.", dateStr)
+		else
+			privMsg(ctx.player, "Failed to give temporary moderator")
+		end
 	end
-end
-CmdRegister('givemod', CmdGiveMod, 'resource.'..g_ResName..'.givemod')
+}
 
-local function CmdModInfo(msg, arg)
-	local player = arg[2] and Player.find(arg[2])
-	local account = player and getPlayerAccount(player.el)
-	if(account and not isGuestAccount(account)) then
+CmdMgr.register{
+	name = 'modinfo',
+	desc = "Displays information about moderator",
+	accessRight = AccessRight('modinfo'),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
+		local account = getPlayerAccount(player.el)
+		if(isGuestAccount(account)) then
+			privMsg(ctx.player, "Player is not logged in!")
+			return
+		end
+		
 		local objStr = 'user.'..getAccountName(account)
 		local now = getRealTime().timestamp
 		local timestamp = getAccountData(account, 'toxic.tempModLimit')
@@ -60,43 +74,45 @@ local function CmdModInfo(msg, arg)
 		else
 			scriptMsg("%s is not a Moderator.", player:getName())
 		end
-	else
-		privMsg(source, "Usage: %s", arg[1]..' <name>')
 	end
-end
-CmdRegister('modinfo', CmdModInfo, 'resource.'..g_ResName..'.modinfo')
+}
 
-local function CmdCheckMods(msg, arg)
-	local objList = aclGroupListObjects(g_TempModGroup)
-	local vipGroup = aclGetGroup('VIP')
-	local now = getRealTime().timestamp
-	local msg = true
-	
-	for i, obj in ipairs(objList) do
-		local accountName = obj:match('^user%.(.+)$')
-		local account = accountName and getAccount(accountName)
-		local modLimit = account and getAccountData(account, 'toxic.tempModLimit')
-		local vipLimit = account and getAccountData(account, 'rafalh_vip_time')
-		local isTempMod = modLimit and modLimit > now
-		local isVip = account and isObjectInACLGroup('user.'..accountName, vipGroup) and (not vipLimit or vipLimit > now)
+CmdMgr.register{
+	name = 'checkmods',
+	desc = "Checks all premium moderators for expired time",
+	accessRight = AccessRight('modinfo'),
+	func = function(ctx)
+		local objList = aclGroupListObjects(g_TempModGroup)
+		local vipGroup = aclGetGroup('VIP')
+		local now = getRealTime().timestamp
+		local msg = true
 		
-		if(account and not isTempMod and not isVip) then
-			local modLimitDate = modLimit and getRealTime(modLimit)
-			local vipLimitDate = vipLimit and getRealTime(vipLimit)
-			local modLimitDateStr = modLimitDate and ('%d-%d-%d'):format(modLimitDate.monthday, modLimitDate.month + 1, modLimitDate.year + 1900)
-			local vipLimitDateStr = vipLimitDate and ('%d-%d-%d'):format(vipLimitDate.monthday, vipLimitDate.month + 1, vipLimitDate.year + 1900)
-			privMsg(source, "%s's Premium Moderator has expired (VIP: %s, Mod: %s)!", accountName, vipLimitDateStr or 'no', modLimitDateStr or 'no')
-			msg = false
+		for i, obj in ipairs(objList) do
+			local accountName = obj:match('^user%.(.+)$')
+			local account = accountName and getAccount(accountName)
+			local modLimit = account and getAccountData(account, 'toxic.tempModLimit')
+			local vipLimit = account and getAccountData(account, 'rafalh_vip_time')
+			local isTempMod = modLimit and modLimit > now
+			local isVip = account and isObjectInACLGroup('user.'..accountName, vipGroup) and (not vipLimit or vipLimit > now)
+			
+			if(account and not isTempMod and not isVip) then
+				local modLimitDate = modLimit and getRealTime(modLimit)
+				local vipLimitDate = vipLimit and getRealTime(vipLimit)
+				local modLimitDateStr = modLimitDate and ('%d-%d-%d'):format(modLimitDate.monthday, modLimitDate.month + 1, modLimitDate.year + 1900)
+				local vipLimitDateStr = vipLimitDate and ('%d-%d-%d'):format(vipLimitDate.monthday, vipLimitDate.month + 1, vipLimitDate.year + 1900)
+				privMsg(ctx.player, "%s's Premium Moderator has expired (VIP: %s, Mod: %s)!",
+					accountName, vipLimitDateStr or 'no', modLimitDateStr or 'no')
+				msg = false
+			end
+			
+			--outputDebugString(accountName..' - '..tostring(account)..' '..tostring(isTempMod)..' '..tostring(isVip), 3)
 		end
 		
-		--outputDebugString(accountName..' - '..tostring(account)..' '..tostring(isTempMod)..' '..tostring(isVip), 3)
+		if(msg) then
+			privMsg(ctx.player, "Everything is all right!")
+		end
 	end
-	
-	if(msg) then
-		privMsg(source, "Everything is all right!")
-	end
-end
-CmdRegister('checkmods', CmdCheckMods, 'resource.'..g_ResName..'.modinfo')
+}
 
 local function onPlayerLogin(prevAccount, account)
 	local player = Player.fromEl(source)
