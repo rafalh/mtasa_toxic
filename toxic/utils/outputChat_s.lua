@@ -147,6 +147,9 @@ function outputMsg(visibleTo, style, fmt, ...)
 			local msg = formatMsg(style, true, fmt, ...)
 			g_WebChatRes:call('addChatStr', msg)
 		end
+	elseif(getElementType(visibleTo) == 'console') then
+		local msg = fmt:format(...):gsub('#%x%x%x%x%x%x', '')
+		outputServerLog(msg)
 	end
 	
 	--local r, g, b = getColorFromString(color)

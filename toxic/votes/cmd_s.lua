@@ -1,56 +1,81 @@
 local g_VoteMgrRes = Resource('votemanager')
 
---[[local function CmdNew(message, arg)
-	executeCommandHandler('new', source, message:sub (arg[1]:len () + 2))
-end
+--[[
+-- ONLY CHAT
+CmdMgr.register{
+	name = 'new',
+	varargs = true,
+	func = function(ctx, ...)
+		executeCommandHandler('new', ctx.player.el, table.concat({...}, ' '))
+	end
+}
 
-CmdRegister('new', CmdNew, false, false, true)
-
-local function CmdVoteMap(message, arg)
-	local room = Player.fromEl(source).room
-	local mapName = message:sub(arg[1]:len () + 2)
-	local map = findMap(mapName)
-	if(map) then
-		local forb_reason, arg = map:isForbidden(room)
-		if(forb_reason) then
-			privMsg(source, forb_reason, arg)
+-- ONLY CHAT
+CmdMgr.register{
+	name = 'votemap',
+	args = {
+		{'mapName', type = 'string'},
+	},
+	func = function(ctx, mapName)
+		local room = ctx.player.room
+		local map = findMap(mapName)
+		if(map) then
+			local forb_reason, arg = map:isForbidden(room)
+			if(forb_reason) then
+				privMsg(ctx.player, forb_reason, arg)
+			else
+				executeCommandHandler('votemap', ctx.player.el, mapName)
+			end
 		else
-			executeCommandHandler('votemap', source, mapName)
+			privMsg(ctx.player, "Cannot find map '%s'!", mapName)
 		end
-	else
-		privMsg(source, "Cannot find map \"%s\"!", mapName)
 	end
-end
+}
 
-CmdRegister('votemap', CmdVoteMap, false, false, true)
-
-local function CmdVoteRedo(message, arg)
-	executeCommandHandler('voteredo', source, message:sub (arg[1]:len () + 2))
-end
-
-CmdRegister('voteredo', CmdVoteRedo, false, false, true)]]
-
-local function CmdCancel(message, arg)
-	if(g_VoteMgrRes:isReady() and g_VoteMgrRes:call('stopPoll')) then
-		outputMsg(g_Root, Styles.red, "Vote cancelled by %s!", getPlayerName (source))
-	else
-		privMsg(source, "No vote in progress!")
+-- ONLY CHAT
+CmdMgr.register{
+	name = 'voteredo',
+	varargs = true,
+	func = function(ctx, ...)
+		executeCommandHandler('voteredo', ctx.player.el, table.concat({...}, ' '))
 	end
-end
+}
+]]
 
-CmdRegister('cancel', CmdCancel, 'resource.'..g_ResName..'.cancel', "Cancels current vote")
+CmdMgr.register{
+	name = 'cancel',
+	desc = "Cancels current vote",
+	accessRight = AccessRight('cancel'),
+	func = function(ctx)
+		if(g_VoteMgrRes:isReady() and g_VoteMgrRes:call('stopPoll')) then
+			outputMsg(g_Root, Styles.red, "Vote cancelled by %s!", ctx.player:getName())
+		else
+			privMsg(ctx.player, "No vote is running now!")
+		end
+	end
+}
 
-local function CmdVoteNext(message, arg)
-	local pattern = message:sub(arg[1]:len() + 2)
-	VtnStart(pattern, source)
-end
+CmdMgr.register{
+	name = 'votenext',
+	desc = "Starts a vote for next map",
+	args = {
+		{'mapName', type = 'string'},
+	},
+	func = function(ctx, mapName)
+		VtnStart(mapName, ctx.player.el)
+	end
+}
 
-CmdRegister('votenext', CmdVoteNext, false, "Starts a vote for next map")
-
-local function CmdPoll(message, arg)
-	local title = message:sub(arg[1]:len() + 2)
-	
-	if(g_VoteMgrRes:isReady()) then
+CmdMgr.register{
+	name = 'poll',
+	desc = "Starts a custom poll",
+	accessRight = AccessRight('poll'),
+	args = {
+		{'title', type = 'string'},
+	},
+	func = function(ctx, title)
+		if(not g_VoteMgrRes:isReady()) then return end
+		
 		local pollDidStart = g_VoteMgrRes:call('startPoll', {
 			title = title,
 			percentage = 50,
@@ -60,12 +85,11 @@ local function CmdPoll(message, arg)
 			[1] = {"Yes"},
 			[2] = {"No"},
 		})
+		
 		if(pollDidStart) then
-			outputMsg(g_Root, Styles.poll, "%s started a poll: %s", getPlayerName(source), title)
+			outputMsg(g_Root, Styles.poll, "%s started a poll: %s", ctx.player:getName(true), title)
 		else
-			privMsg (source, "Error! Poll did not start.")
+			privMsg (ctx.player, "Error! Poll failed to start.")
 		end
 	end
-end
-
-CmdRegister('poll', CmdPoll, 'resource.'..g_ResName..'.poll', "Starts a custom poll")
+}

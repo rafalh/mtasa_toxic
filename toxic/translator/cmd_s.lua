@@ -22,43 +22,44 @@ local function validateLangCode(lang)
 	return false
 end
 
-local function CmdTranslate(message, arg)
-	local lang = arg[2] or ''
-	local text = message:sub(arg[1]:len () + lang:len () + 3)
-	
-	if(text ~= '') then
-		if (validateLangCode (lang)) then
+CmdMgr.register{
+	name = 'translate',
+	desc = "Translates text to any language",
+	aliases = {'t'},
+	args = {
+		{'langCode', type = 'string'},
+		{'text', type = 'string'},
+	},
+	func = function(ctx, langCode, text)
+		if(validateLangCode(langCode)) then
 			local state = table.copy(g_ScriptMsgState, true)
-			translate (text, false, lang, function (text, state)
-				local old_state = g_ScriptMsgState
+			translate(text, false, langCode, function (text, state)
+				local oldState = g_ScriptMsgState
 				g_ScriptMsgState = state
 				scriptMsg("Translation: %s", text)
-				g_ScriptMsgState = old_state
+				g_ScriptMsgState = oldState
 			end, state)
+		else
+			privMsg(ctx.player, "Invalid language code!")
 		end
-	else
-		privMsg(source, "Usage: %s", 'translate <langcode> <text>')
 	end
-end
+}
 
-CmdRegister('translate', CmdTranslate, false, "Translates text to any language")
-CmdRegisterAlias('t', 'translate')
-
-local function CmdTranslateSay(message, arg)
-	local lang = arg[2] or ''
-	local text = message:sub (arg[1]:len () + lang:len() + 3)
-	
-	if(text ~= '') then
-		if(validateLangCode (lang)) then
-			translate (text, false, lang, function (text, player)
-				if(not isElement (player)) then return end
-				
+CmdMgr.register{
+	name = 'tsay',
+	desc = "Translates message and says it",
+	args = {
+		{'langCode', type = 'string'},
+		{'text', type = 'string'},
+	},
+	func = function(ctx, langCode, text)
+		if(validateLangCode(langCode)) then
+			translate(text, false, langCode, function(text, player)
+				if(not isElement(player)) then return end
 				sayAsPlayer(text, player)
-			end, source)
+			end, ctx.player.el)
+		else
+			privMsg(ctx.player, "Invalid language code!")
 		end
-	else
-		privMsg(source, "Usage: %s", 'tsay <langcode> <text>')
 	end
-end
-
-CmdRegister('tsay', CmdTranslateSay, false, "Translate message and says it")
+}

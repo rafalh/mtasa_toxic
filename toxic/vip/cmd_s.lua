@@ -1,6 +1,9 @@
 local VIP_INFO_URL = 'http://mtatoxic.tk/vip/'
 
-local function CmdVip(message, arg)
-	outputMsg(source, Styles.info, "Information about VIP rank: %s", VIP_INFO_URL)
-end
-CmdRegister('vip', CmdVip, false)
+CmdMgr.register{
+	name = 'vip',
+	desc = "Displays URL to VIP rank information",
+	func = function(ctx)
+		outputMsg(ctx.player, Styles.info, "Information about VIP rank: %s", VIP_INFO_URL)
+	end
+}
