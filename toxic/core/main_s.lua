@@ -214,8 +214,8 @@ local function onPlayerChat(msg, msgType)
 		return -- if it is spam don't run commands
 	end
 	
-	-- fixme: CmdDoesIgnoreChat
-	--if(messageType ~= 1 and msg:sub ( 1, 1 ) == '!' and not CmdDoesIgnoreChat(cmd:sub(2))) then
+	-- TODO: Add optional '!cmd' commands support
+	--if(messageType ~= 1 and msg:sub(1, 1) == '!' and not CmdMgr.doesIgnoreChat(cmd:sub(2))) then
 	--	parseCommand(msg, player.el, recipients, type_str_br)
 	--end
 end

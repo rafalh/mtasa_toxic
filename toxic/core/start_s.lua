@@ -51,7 +51,7 @@ local function setupACL()
 	local rightsToAdd = {}
 	local save = false
 	
-	for i, right in ipairs(CmdGetAclRights()) do
+	for i, right in ipairs(CmdMgr.getAccessRights()) do
 		if(not aclGetRight(acl, right)) then
 			table.insert(rightsToAdd, right)
 		end

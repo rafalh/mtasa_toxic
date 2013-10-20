@@ -10,10 +10,6 @@ local function AvpTimerProc()
 	end
 end
 
-local function CmdAvgPlayers(message, arg)
-	scriptMsg("Average players count: %.1f.", Settings.avg_players)
-end
-
 local function AvpInit()
 	setTimer(AvpTimerProc, 60000, 0)
 end

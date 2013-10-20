@@ -70,7 +70,7 @@ local function init()
 					local action = xmlNodeGetAttribute(command, 'call')
 					local args = xmlNodeGetAttribute(command, 'args')
 					
-					if(handler and not CmdIsRegistered (handler)) then
+					if(handler and not CmdMgr.exists(handler)) then
 						g_AdminCommands[handler] = {}
 						g_AdminCommands[handler].type = type
 						g_AdminCommands[handler].action = action

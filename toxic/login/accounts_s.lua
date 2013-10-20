@@ -135,15 +135,6 @@ function passwordRecoveryReq(email)
 	return true
 end
 
-local function CmdResetPw(message, arg)
-	local sourcePlayer = Player.fromEl(source)
-	local key = arg[2]
-	
-	if(key) then
-		
-	else privMsg(source, "Usage: %s", arg[1]..' <key_from_email>') end
-end
-
 CmdMgr.register{
 	name = 'resetpw',
 	desc = "Allows you to reset your password in case you forgot it",

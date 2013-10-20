@@ -214,51 +214,6 @@ end
 --          OLD API          --
 -------------------------------
 
--- Stubs
-
-function CmdRegister(name, func, access, description, ignore_console, ignore_chat)
-	if(not access) then access = nil end
-	if(not description) then description = nil end
-	
-	if(access and type(access) ~= 'string') then
-		outputDebugString('Boolean access is not supported ('..name..')', 2)
-		access = nil
-	end
-	
-	CmdMgr.register{
-		name = name,
-		accessRight = access and AccessRight(access, true),
-		desc = description,
-		--args = {{type = '...'}},
-		varargs = true,
-		func = function(ctx, ...)
-			local args = {name, ...}
-			local msg = table.concat(args, ' ')
-			--outputDebugString('Running command - cmdline '..msg..', cmdargs '..#{...}, 3)
-			func(msg, args)
-		end,
-	}
-	
-	if(ignore_console ~= nil) then outputDebugString('ignore_console not supported ('..name..')', 2) end
-	if(ignore_chat ~= nil) then outputDebugString('ignore_chat not supported ('..name..')', 2) end
-end
-
-function CmdRegisterAlias(alias_name, cmd_name, ignore_console, ignore_chat)
-	local cmd = CmdMgr.map[cmd_name]
-	assert(cmd and not CmdMgr.map[alias_name])
-	
-	if(not cmd.aliases) then cmd.aliases = {} end
-	table.insert(cmd.aliases, alias_name)
-	CmdMgr.map[alias_name] = cmd
-	
-	if(ignore_console ~= nil) then outputDebugString('ignore_console not supported ('..alias_name..')', 2) end
-	if(ignore_chat ~= nil) then outputDebugString('ignore_chat not supported ('..alias_name..')', 2) end
-end
-
-CmdUnregister = CmdMgr.unregister
-CmdIsRegistered = CmdMgr.exists
-CmdGetAclRights = CmdMgr.getAccessRights
-
 -- Note: source can be console element
 local function onConsole(message)
 	-- Don't allow any commands from muted player
@@ -266,10 +221,6 @@ local function onConsole(message)
 	
 	-- Execute command
 	parseCommand('/'..message, source, {source}, 'PM: ', '#ff6060')
-end
-
-function CmdDoesIgnoreChat(cmd)
-	return false
 end
 
 -- exported
