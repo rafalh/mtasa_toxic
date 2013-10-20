@@ -20,178 +20,212 @@ local local_tops = {
 -- Global functions definitions --
 ----------------------------------
 
-local function CmdTop (message, arg)
-	local top_type = (arg[2] or ''):lower ()
-	
-	if (db_tops[top_type]) then
-		local field = db_tops[top_type][2]
-		scriptMsg (db_tops[top_type][1]..':')
-		rows = DbQuery ('SELECT name, '..field..' FROM '..PlayersTable..' WHERE online=1 AND serial<>\'0\' ORDER BY '..field..' DESC LIMIT 3')
-		for i, data in ipairs (rows) do
-			if (db_tops[top_type][3]) then
-				data[field] = db_tops[top_type][3] (data[field])
+CmdMgr.register{
+	name = 'top',
+	desc = "Shows top of given type",
+	args = {
+		{'type', type = 'string', def = false},
+	},
+	func = function(ctx, topType)
+		topType = topType and topType:lower()
+		
+		if(db_tops[topType]) then
+			local field = db_tops[topType][2]
+			scriptMsg(db_tops[topType][1]..':')
+			rows = DbQuery('SELECT name, '..field..' FROM '..PlayersTable..' WHERE online=1 AND serial<>\'0\' ORDER BY '..field..' DESC LIMIT 3')
+			for i, data in ipairs (rows) do
+				if (db_tops[topType][3]) then
+					data[field] = db_tops[topType][3] (data[field])
+				end
+				scriptMsg(i..'. '..data.name..' - '..data[field])
 			end
-			scriptMsg (i..'. '..data.name..' - '..data[field])
-		end
-	elseif (local_tops[top_type]) then
-		scriptMsg(local_tops[top_type][1]..':')
-		local top = {}
-		for player, pdata in pairs (g_Players) do
-			if (not pdata.is_console) then
-				local n = local_tops[top_type][2] (player)
+		elseif(local_tops[topType]) then
+			scriptMsg(local_tops[topType][1]..':')
+			local top = {}
+			for player, pdata in pairs (g_Players) do
+				if(not pdata.is_console) then
+					local n = local_tops[topType][2](player)
+					
+					table.insert(top, { player, n })
+				end
+			end
+			
+			table.sort(top, function (row1, row2) return row1[2] > row2[2] end)
+			
+			for i, toprow in ipairs(top) do
+				if(i > 3) then break end
 				
-				table.insert (top, { player, n })
+				if(local_tops[topType][3]) then
+					toprow[2] = local_tops[topType][3] (toprow[2])
+				end
+				
+				local name = getPlayerName(toprow[1])
+				scriptMsg('%u. %s - %s', i, name, toprow[2])
 			end
+		elseif(topType == 'times') then
+			BtPrintTopTimes ()
+		else
+			privMsg(ctx.player, "Supported types: %s.", 'lagger, fps_lagger, cash, points, playtime, bidlevel, times')
 		end
-		
-		table.sort (top, function (row1, row2) return row1[2] > row2[2] end)
-		
-		for i, toprow in ipairs (top) do
-			if (i > 3) then break end
-			
-			if (local_tops[top_type][3]) then
-				toprow[2] = local_tops[top_type][3] (toprow[2])
-			end
-			
-			local name = getPlayerName (toprow[1])
-			scriptMsg ('%u. %s - %s', i, name, toprow[2])
-		end
-	elseif (top_type == 'times') then
-		BtPrintTopTimes ()
-	else
-		privMsg (source, "Usage: %s", arg[1]..' <type>')
-		privMsg (source, "Supported types: %s.", 'lagger, fps_lagger, cash, points, playtime, bidlevel, times')
 	end
-end
+}
 
-CmdRegister ('top', CmdTop, false, "Shows top of given type")
-
-local function CmdGlobalTop (message, arg)
-	local top_type = (arg[2] or ''):lower ()
+CmdMgr.register{
+	name = 'gtop',
+	desc = "Shows global top of given type",
+	args = {
+		{'type', type = 'string', def = false},
+	},
+	func = function(ctx, topType)
+		topType = topType and topType:lower()
 	
-	if (db_tops[top_type]) then
-		local field = db_tops[top_type][2]
-		scriptMsg ('Global '..db_tops[top_type][1]..':')
-		rows = DbQuery ('SELECT name, '..field..' FROM '..PlayersTable..' WHERE serial<>\'0\' ORDER BY '..field..' DESC LIMIT 3')
-		for i, data in ipairs (rows) do
-			if (db_tops[top_type][3]) then
-				data[field] = db_tops[top_type][3] (data[field])
+		if (db_tops[topType]) then
+			local field = db_tops[topType][2]
+			scriptMsg ('Global '..db_tops[topType][1]..':')
+			rows = DbQuery ('SELECT name, '..field..' FROM '..PlayersTable..' WHERE serial<>\'0\' ORDER BY '..field..' DESC LIMIT 3')
+			for i, data in ipairs (rows) do
+				if (db_tops[topType][3]) then
+					data[field] = db_tops[topType][3] (data[field])
+				end
+				scriptMsg(i..'. '..data.name..' - '..data[field])
 			end
-			scriptMsg (i..'. '..data.name..' - '..data[field])
+		else
+			privMsg(ctx.player, "Supported types: %s.", 'cash, points, playtime, bidlevel.')
 		end
-	else
-		privMsg (source, "Usage: %s", arg[1]..' <type>')
-		privMsg (source, "Supported types: %s.", 'cash, points, playtime, bidlevel.')
 	end
-end
+}
 
-CmdRegister ('gtop', CmdGlobalTop, false, "Shows global top of given type")
+CmdMgr.register{
+	name = 'cash',
+	desc = "Shows player cash and bid-level",
+	aliases = {'money'},
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		scriptMsg("%s's cash: %s - Bid-level: %u.", player:getName(), formatMoney(player.accountData.cash), player.accountData.bidlvl)
+	end
+}
 
-local function CmdCash (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = Player.fromEl(player)
-	local stats = pdata.accountData:getTbl()
-	scriptMsg ("%s's cash: %s - Bid-level: %u.", getPlayerName (player), formatMoney (stats.cash), stats.bidlvl)
-end
+CmdMgr.register{
+	name = 'points',
+	desc = "Shows player points count",
+	aliases = {'pts', 'exp'},
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		scriptMsg("%s's points: %s.", player:getName(), formatNumber(player.accountData.points))
+	end
+}
 
-CmdRegister ('cash', CmdCash, false, "Shows player cash and bid-level")
-CmdRegisterAlias ('money', 'cash')
+CmdMgr.register{
+	name = 'rank',
+	desc = "Shows player rank title",
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		scriptMsg("%s's rank: %s.", player:getName(), StRankFromPoints(player.accountData.points))
+	end
+}
 
-local function CmdPoints (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local pdata = Player.fromEl(player)
-	local pts = pdata.accountData.points
-	scriptMsg ("%s's points: %s.", getPlayerName(player), formatNumber(pts))
-end
+CmdMgr.register{
+	name = 'bidlevel',
+	desc = "Displays player bid-level",
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		scriptMsg("%s's bid-level: %u.", player:getName(), player.accountData.bidlvl)
+	end
+}
 
-CmdRegister ('points', CmdPoints, false, "Shows player points count")
-CmdRegisterAlias ('pts', 'points')
-CmdRegisterAlias ('exp', 'points')
-
-local function CmdRank (message, arg)
-	local player = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local pdata = Player.fromEl(player)
-	local pts = pdata.accountData.points
-	scriptMsg ("%s's rank: %s.", getPlayerName(player), StRankFromPoints(pts))
-end
-
-CmdRegister ('rank', CmdRank, false, "Shows player rank title")
-
-local function CmdBidLevel (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local player = Player.fromEl(playerEl)
-	
-	scriptMsg("%s's bid-level: %u.", getPlayerName(player.el), player.accountData.bidlvl)
-end
-
-CmdRegister ('bidlevel', CmdBidLevel, false, "Shows player bid-level")
-
-local function CmdGiveMoney (message, arg)
-	local amount = touint (arg[3])
-	local dstEl = arg[2] and findPlayer (arg[2])
-	local srcPlayer = Player.fromEl(source)
-	local dstPlayer = dstEl and Player.fromEl(dstEl)
-	
-	if (amount and dstPlayer) then
-		if (srcPlayer.accountData.cash >= amount) then
-			srcPlayer.accountData:add('cash', -amount)
-			dstPlayer.accountData:add('cash', amount)
+CmdMgr.register{
+	name = 'givemoney',
+	desc = "Transfers money to other player",
+	aliases = {'givecash', 'transfer'},
+	args = {
+		{'player', type = 'player'},
+		{'cash', type = 'integer', min = 1},
+	},
+	func = function(ctx, recipient, amount)
+		if(ctx.player.accountData.cash >= amount) then
+			ctx.player.accountData:add('cash', -amount)
+			recipient.accountData:add('cash', amount)
 			
-			privMsg(source, "%s gave %s %s.", getPlayerName(source), getPlayerName(dstEl), formatMoney(amount))
-			privMsg(dstEl, "You received %s from %s.", formatMoney(amount), getPlayerName(source))
-		else privMsg(source, "You do not have enough cash!") end
-	else privMsg(source, "Usage: %s", arg[1]..' <player> <cash>') end
-end
+			privMsg(ctx.player, "%s gave %s %s.", ctx.player:getName(), recipient:getName(), formatMoney(amount))
+			privMsg(recipient, "You received %s from %s.", formatMoney(amount), ctx.player:getName())
+		else
+			privMsg(ctx.player, "You do not have enough cash!")
+		end
+	end
+}
 
-CmdRegister ('givemoney', CmdGiveMoney, false, "Transfers money to other player")
-CmdRegisterAlias ('givecash', 'givemoney')
-CmdRegisterAlias ('transfer', 'givemoney')
+CmdMgr.register{
+	name = 'seen',
+	desc = "Shows when player joined the game",
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		local tm = getRealTime(player.join_time)
+		scriptMsg("%s seen since %d:%02u:%02u.", player:getName(), tm.hour, tm.minute, tm.second)
+	end
+}
 
-local function CmdSeen (message, arg)
-	local player = (#arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))) or source
-	local tm = getRealTime (Player.fromEl(player).join_time)
-	
-	scriptMsg ("%s seen since %d:%02u:%02u.", getPlayerName (player), tm.hour, tm.minute, tm.second)
-end
+CmdMgr.register{
+	name = 'playtime',
+	desc = "Shows time player spent in game",
+	aliases = {'timehere'},
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		local playTime = player:getPlayTime()
+		scriptMsg("%s's time here: %s.", player:getName(), formatTimePeriod(playTime, 0))
+	end
+}
 
-CmdRegister ('seen', CmdSeen, false, "Shows when player joined the game")
-
-local function CmdPlayTime (message, arg)
-	local playerEl = (#arg >= 2 and findPlayer(message:sub(arg[1]:len () + 2))) or source
-	local player = Player.fromEl(playerEl)
-	local playtime = player:getPlayTime()
-	scriptMsg("%s's time here: %s.", getPlayerName(player.el), formatTimePeriod(playtime, 0))
-end
-
-CmdRegister('playtime', CmdPlayTime, false, "Shows time player spent in game")
-CmdRegisterAlias('timehere', 'playtime')
-
-local function CmdStats(msg, arg)
-	local player = (#arg >= 2 and Player.find(msg:sub(arg[1]:len() + 2))) or Player.fromEl(source)
-	local stats = player.accountData:getTbl()
-	
-	scriptMsg("%s's statistics:", player:getName())
+CmdMgr.register{
+	name = 'stats',
+	desc = "Shows player statistics",
+	aliases = {'stat', 'st'},
+	args = {
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, player)
+		if(not player) then player = ctx.player end
+		
+		local stats = player.accountData:getTbl()
+		
+		scriptMsg("%s's statistics:", player:getName())
 #if(TOP_TIMES) then
-	scriptMsg("Points: %s - Maps played: %s - Top Times held: %s - Win Streak: %s", formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.toptimes_count), formatNumber(stats.maxWinStreak))
+		scriptMsg("Points: %s - Maps played: %s - Top Times held: %s - Win Streak: %s",
+			formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.toptimes_count), formatNumber(stats.maxWinStreak))
 #else
-	scriptMsg("Points: %s - Maps played: %s - Win Streak: %s", formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.maxWinStreak))
+		scriptMsg("Points: %s - Maps played: %s - Win Streak: %s",
+			formatNumber(stats.points), formatNumber(stats.mapsPlayed), formatNumber(stats.maxWinStreak))
 #end
 #if(DM_STATS) then
-	local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
-	local huntRatio = stats.huntersTaken/math.max(stats.dmPlayed, 1)
-	--scriptMsg("DM Victories: %s / %s (%.2f%%)", formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmRatio*100)
-	scriptMsg("DM Hunters: %s / %s (%.2f%%)", formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRatio*100)
+		local dmRatio = stats.dmVictories/math.max(stats.dmPlayed, 1)
+		local huntRatio = stats.huntersTaken/math.max(stats.dmPlayed, 1)
+		--scriptMsg("DM Victories: %s / %s (%.2f%%)", formatNumber(stats.dmVictories), formatNumber(stats.dmPlayed), dmRatio*100)
+		scriptMsg("DM Hunters: %s / %s (%.2f%%)", formatNumber(stats.huntersTaken), formatNumber(stats.dmPlayed), huntRatio*100)
 #end
 #if(DD_STATS) then
-	local ddRatio = stats.ddVictories/math.max(stats.ddPlayed, 1)
-	scriptMsg("DD Victories: %s / %s (%.2f%%)", formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddRatio*100)
+		local ddRatio = stats.ddVictories/math.max(stats.ddPlayed, 1)
+		scriptMsg("DD Victories: %s / %s (%.2f%%)", formatNumber(stats.ddVictories), formatNumber(stats.ddPlayed), ddRatio*100)
 #end
 #if(RACE_STATS) then
-	local raceRatio = stats.raceVictories/math.max(stats.racesPlayed, 1)
-	scriptMsg("Race Victories: %s / %s (%.2f%%)", formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceRatio*100)
+		local raceRatio = stats.raceVictories/math.max(stats.racesPlayed, 1)
+		scriptMsg("Race Victories: %s / %s (%.2f%%)", formatNumber(stats.raceVictories), formatNumber(stats.racesPlayed), raceRatio*100)
 #end
-end
-
-CmdRegister ('stats', CmdStats, false, "Shows player statistics")
-CmdRegisterAlias ('stat', 'stats')
-CmdRegisterAlias ('st', 'stats')
+	end
+}

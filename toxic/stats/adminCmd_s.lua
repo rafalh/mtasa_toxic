@@ -1,59 +1,102 @@
 -- Includes
 #include 'include/config.lua'
 
-local function CmdSetAddCash (message, arg)
-	local player = (#arg >= 3 and Player.find(arg[2])) or Player.fromEl(source)
-	local cash = toint ((#arg >= 3 and arg[3]) or arg[2])
-	
-	if (cash) then
-		outputServerLog(getPlayerName(source):gsub ('#%x%x%x%x%x%x', '')..' executed: '..arg[1]..' '..getPlayerName(player.el):gsub ('#%x%x%x%x%x%x', '')..' '..cash)
-		if (arg[1] == '!addcash' or arg[1] == '/addcash' or arg[1] == 'addcash') then
-			cash = cash + player.accountData:get('cash')
-		end
-		player.accountData:set('cash', cash)
+CmdMgr.register{
+	name = 'setcash',
+	cat = 'Admin',
+	accessRight = AccessRight('command.setmoney', true),
+	args = {
+		{'cash', type = 'integer'},
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, cash, player)
+		if(not player) then player = ctx.player end
+		player.accountData.cash = cash
+		
+		outputServerLog('STATS: '..ctx.player:getName()..' set '..player:getName()..' cash: '..cash)
 		scriptMsg("%s's cash: %s.", player:getName(), formatMoney(cash))
-	else privMsg(source, "Usage: %s", arg[1]..' [<player>] <cash>') end
-end
+	end
+}
 
-CmdRegister('setcash', CmdSetAddCash, 'command.setmoney')
-CmdRegisterAlias ('addcash', 'setcash')
+CmdMgr.register{
+	name = 'addcash',
+	cat = 'Admin',
+	accessRight = AccessRight('command.setmoney', true),
+	args = {
+		{'cash', type = 'integer'},
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, cash, player)
+		if(not player) then player = ctx.player end
+		player.accountData.cash = player.accountData + cash
+		
+		outputServerLog('STATS: '..ctx.player:getName()..' added '..player:getName()..' cash: '..cash)
+		scriptMsg("%s's cash: %s.", player:getName(), formatMoney(player.accountData.cash))
+	end
+}
 
-local function CmdSetPoints (message, arg)
-	local player = (#arg >= 3 and Player.find(arg[2])) or Player.fromEl(source)
-	local pts = toint ((#arg >= 3 and arg[3]) or arg[2])
-	
-	if (pts) then
-		player.accountData:set('points', pts)
-		scriptMsg("%s's points: %s.", player:getName(), formatNumber(pts))
-	else privMsg(source, "Usage: %s", arg[1]..' [<player>] <points>') end
-end
+CmdMgr.register{
+	name = 'setpoints',
+	desc = "Sets player points",
+	cat = 'Admin',
+	accessRight = AccessRight('setpoints'),
+	args = {
+		{'cash', type = 'integer'},
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, points, player)
+		if(not player) then player = ctx.player end
+		player.accountData.points = points
+		
+		outputServerLog('STATS: '..ctx.player:getName()..' set '..player:getName()..' points: '..points)
+		scriptMsg("%s's points: %s.", player:getName(), formatNumber(points))
+	end
+}
 
-CmdRegister('setpoints', CmdSetPoints, 'resource.'..g_ResName..'.setpoints', "Sets player points")
-
-local function CmdSetBidLevel (message, arg)
-	local player = (#arg >= 3 and Player.find(arg[2])) or Player.fromEl(source)
-	local bidlvl = touint((#arg >= 3 and arg[3]) or arg[2])
-	
-	if(bidlvl) then
-		player.accountData:set('bidlvl', bidlvl)
+CmdMgr.register{
+	name = 'setbidlevel',
+	desc = "Sets player bid-level",
+	cat = 'Admin',
+	accessRight = AccessRight('setbidlevel'),
+	args = {
+		{'bidlvl', type = 'integer'},
+		{'player', type = 'player', def = false},
+	},
+	func = function(ctx, bidlvl, player)
+		if(not player) then player = ctx.player end
+		player.accountData.bidlvl = bidlvl
+		
+		outputServerLog('STATS: '..ctx.player:getName()..' set '..player:getName()..' bid-level: '..bidlvl)
 		scriptMsg("%s's bid-level: %u.", player:getName(), bidlvl)
-	else privMsg(source, "Usage: %s", arg[1]..' [<player>] <bidlvl>') end
-end
+	end
+}
 
-CmdRegister('setbidlevel', CmdSetBidLevel, 'resource.'..g_ResName..'.setbidlevel', "Sets player bid-level")
-
-local function CmdResetStats(message, arg)
-	local player = #arg >= 2 and findPlayer (message:sub (arg[1]:len () + 2))
-	local pdata = player and Player.fromEl(player)
-	if(pdata and pdata.id) then
-		DbQuery('DELETE FROM '..BestTimesTable..' WHERE player=?', pdata.id)
-		local stats = {cash = 0, bidlvl = 0, points = 0} -- TODO: reset all stats
+CmdMgr.register{
+	name = 'resetstats',
+	desc = "Resets player statistics",
+	cat = 'Admin',
+	accessRight = AccessRight('resetstats'),
+	args = {
+		{'player', type = 'player'},
+	},
+	func = function(ctx, player)
+		if(not player.id) then
+			privMsg(ctx.player, "Player is not logged in!")
+		else
+			if(BtDeleteTimes) then
+				-- TODO: Fix toptimes_count for other players
+				BtDeleteTimes('player=?', player.id)
+			end
+			
+			-- TODO: reset all stats
+			local stats = {cash = 0, bidlvl = 0, points = 0}
 #if(TOP_TIMES) then
-		stats.toptimes_count = 0
+			stats.toptimes_count = 0
 #end
-		pdata.accountData:set(stats)
-		scriptMsg("Statistics has been reset for %s!", getPlayerName(player))
-	else privMsg(source, "Usage: %s", arg[1]..' <player>') end
-end
-
-CmdRegister('resetstats', CmdResetStats, 'resource.'..g_ResName..'.resetstats', "Resets player statistics")
+			player.accountData:set(stats)
+			
+			outputServerLog('STATS: '..ctx.player:getName()..' reset '..player:getName()..' statistics')
+			scriptMsg("Statistics have been reset for %s!", player:getName())
+		end
+	end
+}
