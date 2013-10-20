@@ -6,7 +6,7 @@ CmdMgr.register{
 	accessRight = AccessRight('command.banserial', true),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason)
 		local accountName = ctx.player:getAccountName()
@@ -23,7 +23,7 @@ CmdMgr.register{
 	accessRight = AccessRight('ban1m'),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason)
 		local accountName = ctx.player:getAccountName()
@@ -39,7 +39,7 @@ CmdMgr.register{
 	accessRight = AccessRight('ban5m'),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason)
 		local accountName = ctx.player:getAccountName()
@@ -55,7 +55,7 @@ CmdMgr.register{
 	accessRight = AccessRight('ban1h'),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason)
 		local accountName = ctx.player:getAccountName()
@@ -71,7 +71,7 @@ CmdMgr.register{
 	accessRight = AccessRight('ban24h'),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason)
 		local accountName = ctx.player:getAccountName()
@@ -87,7 +87,7 @@ CmdMgr.register{
 	accessRight = AccessRight('ban7d'),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason)
 		local accountName = ctx.player:getAccountName()
@@ -103,8 +103,8 @@ CmdMgr.register{
 	accessRight = AccessRight('command.mute', true),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
-		{'seconds', type = 'integer', def = 60, min = 5},
+		{'reason', type = 'str'},
+		{'seconds', type = 'int', defVal = 60, min = 5},
 	},
 	func = function(ctx, player, reason, sec)
 		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
@@ -120,7 +120,7 @@ CmdMgr.register{
 	accessRight = AccessRight('pmute'),
 	args = {
 		{'player', type = 'player'},
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason, sec)
 		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
@@ -186,7 +186,7 @@ CmdMgr.register{
 	aliases = {'findaccip'},
 	accessRight = AccessRight('findaccounts'),
 	args = {
-		{'IP', type = 'string'},
+		{'IP', type = 'str'},
 	},
 	func = function(ctx, ip)
 		local buf = ''
@@ -206,7 +206,7 @@ CmdMgr.register{
 	aliases = {'descra'},
 	accessRight = AccessRight('findaccounts'),
 	args = {
-		{'AccountID', type = 'integer'},
+		{'AccountID', type = 'int'},
 	},
 	func = function(ctx, id)
 		local accountData = AccountData.create(id)
@@ -232,7 +232,7 @@ CmdMgr.register{
 	accessRight = AccessRight('mergeaccounts'),
 	args = {
 		{'Player', type = 'player'},
-		{'OtherAccountID', type = 'integer', min = 0},
+		{'OtherAccountID', type = 'int', min = 0},
 	},
 	func = function(ctx, player, id)
 		if(not player.id) then
@@ -385,7 +385,7 @@ CmdMgr.register{
 	desc = "Deletes player account",
 	accessRight = AccessRight('resetstats'),
 	args = {
-		{'AccountID', type = 'integer'},
+		{'AccountID', type = 'int'},
 	},
 	func = function(ctx, playerId)
 		if(Player.fromId(playerId)) then -- Note: fromId returns only online
@@ -410,7 +410,7 @@ CmdMgr.register{
 	desc = "Executes SQL query in script database",
 	accessRight = AccessRight('sqlquery'),
 	args = {
-		{'query', type = 'string'},
+		{'query', type = 'str'},
 	},
 	func = function(ctx, query)
 		local rows = DbQuerySync(query)

@@ -139,7 +139,7 @@ CmdMgr.register{
 	name = 'resetpw',
 	desc = "Allows you to reset your password in case you forgot it",
 	args = {
-		{'key', type = 'string'},
+		{'key', type = 'str'},
 	},
 	func = function(ctx, key)
 		local rows = DbQuery('SELECT player, account FROM '..PlayersTable..' WHERE passwordRecoveryKey=? AND serial=?', key, ctx.player:getSerial())

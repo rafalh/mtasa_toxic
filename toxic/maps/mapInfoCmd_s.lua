@@ -3,7 +3,7 @@ CmdMgr.register{
 	aliases = {'rs'},
 	desc = "Checks if map supports respawn",
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		local map
@@ -32,7 +32,7 @@ CmdMgr.register{
 	name = 'mapinfo',
 	desc = "Displays information about map",
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		local map
@@ -60,7 +60,7 @@ CmdMgr.register{
 	aliases = {'creator'},
 	desc = "Checks map author name",
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		local map
@@ -145,7 +145,7 @@ CmdMgr.register{
 	name = 'played',
 	desc = "Shows how many times map has been played",
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		local map
@@ -170,7 +170,7 @@ CmdMgr.register{
 	aliases = {'checkmap', 'check'},
 	desc = "Searches for a map with specified name",
 	args = {
-		{'mapName', type = 'string'},
+		{'mapName', type = 'str'},
 	},
 	func = function(ctx, str)
 		if(str:len() < 3) then

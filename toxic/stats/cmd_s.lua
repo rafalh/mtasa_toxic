@@ -24,7 +24,7 @@ CmdMgr.register{
 	name = 'top',
 	desc = "Shows top of given type",
 	args = {
-		{'type', type = 'string', def = false},
+		{'type', type = 'str', defVal = false},
 	},
 	func = function(ctx, topType)
 		topType = topType and topType:lower()
@@ -74,7 +74,7 @@ CmdMgr.register{
 	name = 'gtop',
 	desc = "Shows global top of given type",
 	args = {
-		{'type', type = 'string', def = false},
+		{'type', type = 'str', defVal = false},
 	},
 	func = function(ctx, topType)
 		topType = topType and topType:lower()
@@ -100,7 +100,7 @@ CmdMgr.register{
 	desc = "Shows player cash and bid-level",
 	aliases = {'money'},
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -113,7 +113,7 @@ CmdMgr.register{
 	desc = "Shows player points count",
 	aliases = {'pts', 'exp'},
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -125,7 +125,7 @@ CmdMgr.register{
 	name = 'rank',
 	desc = "Shows player rank title",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -137,7 +137,7 @@ CmdMgr.register{
 	name = 'bidlevel',
 	desc = "Displays player bid-level",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -151,7 +151,7 @@ CmdMgr.register{
 	aliases = {'givecash', 'transfer'},
 	args = {
 		{'player', type = 'player'},
-		{'cash', type = 'integer', min = 1},
+		{'cash', type = 'int', min = 1},
 	},
 	func = function(ctx, recipient, amount)
 		if(ctx.player.accountData.cash >= amount) then
@@ -170,7 +170,7 @@ CmdMgr.register{
 	name = 'seen',
 	desc = "Shows when player joined the game",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -184,7 +184,7 @@ CmdMgr.register{
 	desc = "Shows time player spent in game",
 	aliases = {'timehere'},
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -198,7 +198,7 @@ CmdMgr.register{
 	desc = "Shows player statistics",
 	aliases = {'stat', 'st'},
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end

@@ -105,7 +105,7 @@ CmdMgr.register{
 	aliases = {'ip2c'},
 	desc = "Shows player country based on IP",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
@@ -124,7 +124,7 @@ CmdMgr.register{
 	aliases = {'ver'},
 	desc = "Shows player MTA version",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end

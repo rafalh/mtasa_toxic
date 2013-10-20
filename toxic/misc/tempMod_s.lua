@@ -30,7 +30,7 @@ CmdMgr.register{
 	accessRight = AccessRight('givemod'),
 	args = {
 		{'player', type = 'player'},
-		{'days', type = 'integer', def = 30, min = 1},
+		{'days', type = 'int', defVal = 30, min = 1},
 	},
 	func = function(ctx, player, days)
 		local timestamp = player and giveTempMod(player, days)

@@ -2,8 +2,8 @@ CmdMgr.register{
 	name = 'bet',
 	desc = "Bets on a player",
 	args = {
-		{'cash', type = 'integer', min = 1},
-		{'player', type = 'player', def = false},
+		{'cash', type = 'int', min = 1},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, cash, targetPlayer)
 		if(not targetPlayer) then targetPlayer = ctx.player end

@@ -54,7 +54,7 @@ CmdMgr.register{
 	aliases = {'warns'},
 	desc = "Shows player warnings count",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end

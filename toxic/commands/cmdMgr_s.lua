@@ -80,7 +80,7 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 					privMsg(ctx.player, "Player '%s' has not been found!", arg)
 					return false
 				end
-			elseif(argDesc.type == 'number') then
+			elseif(argDesc.type == 'num') then
 				newArg = tonumber(arg)
 				if(not newArg) then
 					privMsg(ctx.player, "Expected number at argument #%u (%s).", i, argDesc[1])
@@ -92,7 +92,7 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 					privMsg(ctx.player, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
 					return false
 				end
-			elseif(argDesc.type == 'integer') then
+			elseif(argDesc.type == 'int') then
 				newArg = toint(arg)
 				if(not newArg) then
 					privMsg(ctx.player, "Expected integer at argument #%u (%s).", i, argDesc[1])
@@ -104,7 +104,7 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 					privMsg(ctx.player, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
 					return false
 				end
-			elseif(argDesc.type == 'string') then
+			elseif(argDesc.type == 'str') then
 				newArg = arg
 			elseif(argDesc.type == 'bool') then
 				newArg = tobool(arg)
@@ -115,8 +115,8 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 			else
 				assert(false)
 			end
-		elseif(argDesc.def ~= nil) then
-			newArg = argDesc.def
+		elseif(argDesc.defVal ~= nil) then
+			newArg = argDesc.defVal
 		else
 			privMsg(ctx.player, "Not enough arguments given. Expected argument #%u (%s).", i, argDesc[1])
 			return false

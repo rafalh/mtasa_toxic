@@ -6,8 +6,8 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('command.setmoney', true),
 	args = {
-		{'cash', type = 'integer'},
-		{'player', type = 'player', def = false},
+		{'cash', type = 'int'},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, cash, player)
 		if(not player) then player = ctx.player end
@@ -23,12 +23,12 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('command.setmoney', true),
 	args = {
-		{'cash', type = 'integer'},
-		{'player', type = 'player', def = false},
+		{'cash', type = 'int'},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, cash, player)
 		if(not player) then player = ctx.player end
-		player.accountData.cash = player.accountData + cash
+		player.accountData.cash = player.accountData.cash + cash
 		
 		outputServerLog('STATS: '..ctx.player:getName()..' added '..player:getName()..' cash: '..cash)
 		scriptMsg("%s's cash: %s.", player:getName(), formatMoney(player.accountData.cash))
@@ -41,8 +41,8 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('setpoints'),
 	args = {
-		{'cash', type = 'integer'},
-		{'player', type = 'player', def = false},
+		{'cash', type = 'int'},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, points, player)
 		if(not player) then player = ctx.player end
@@ -59,8 +59,8 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('setbidlevel'),
 	args = {
-		{'bidlvl', type = 'integer'},
-		{'player', type = 'player', def = false},
+		{'bidlvl', type = 'int'},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, bidlvl, player)
 		if(not player) then player = ctx.player end

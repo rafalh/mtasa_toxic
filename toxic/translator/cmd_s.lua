@@ -27,8 +27,8 @@ CmdMgr.register{
 	desc = "Translates text to any language",
 	aliases = {'t'},
 	args = {
-		{'langCode', type = 'string'},
-		{'text', type = 'string'},
+		{'langCode', type = 'str'},
+		{'text', type = 'str'},
 	},
 	func = function(ctx, langCode, text)
 		if(validateLangCode(langCode)) then
@@ -49,8 +49,8 @@ CmdMgr.register{
 	name = 'tsay',
 	desc = "Translates message and says it",
 	args = {
-		{'langCode', type = 'string'},
-		{'text', type = 'string'},
+		{'langCode', type = 'str'},
+		{'text', type = 'str'},
 	},
 	func = function(ctx, langCode, text)
 		if(validateLangCode(langCode)) then

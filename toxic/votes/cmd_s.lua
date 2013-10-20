@@ -14,7 +14,7 @@ CmdMgr.register{
 CmdMgr.register{
 	name = 'votemap',
 	args = {
-		{'mapName', type = 'string'},
+		{'mapName', type = 'str'},
 	},
 	func = function(ctx, mapName)
 		local room = ctx.player.room
@@ -59,7 +59,7 @@ CmdMgr.register{
 	name = 'votenext',
 	desc = "Starts a vote for next map",
 	args = {
-		{'mapName', type = 'string'},
+		{'mapName', type = 'str'},
 	},
 	func = function(ctx, mapName)
 		VtnStart(mapName, ctx.player.el)
@@ -71,7 +71,7 @@ CmdMgr.register{
 	desc = "Starts a custom poll",
 	accessRight = AccessRight('poll'),
 	args = {
-		{'title', type = 'string'},
+		{'title', type = 'str'},
 	},
 	func = function(ctx, title)
 		if(not g_VoteMgrRes:isReady()) then return end

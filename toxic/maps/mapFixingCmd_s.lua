@@ -12,7 +12,7 @@ CmdMgr.register{
 	name = 'fixmapscripts',
 	accessRight = AccessRight('fixmapscripts'),
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		if(mapName == 'all') then
@@ -122,8 +122,8 @@ CmdMgr.register{
 	name = 'checksp',
 	accessRight = AccessRight('checksp'),
 	args = {
-		{'mapNamePattern', type = 'string', def = false},
-		{'action', type = 'string', def = false},
+		{'mapNamePattern', type = 'str', defVal = false},
+		{'action', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapNamePattern, action)
 		if(mapNamePattern) then

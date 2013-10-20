@@ -201,7 +201,7 @@ CmdMgr.register{
 	desc = "Cleans script database from garbage",
 	accessRight = AccessRight('cleandb'),
 	args = {
-		{'mode', type = 'string', def = false},
+		{'mode', type = 'str', defVal = false},
 	},
 	func = function(ctx, mode)
 		RemoveUnknownPlayers(mode == 'players')

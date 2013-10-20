@@ -133,8 +133,8 @@ CmdMgr.register{
 	desc = "Adds a custom command",
 	accessRight = AccessRight('addcom'),
 	args = {
-		{'command', type = 'string'},
-		{'message', type = 'string'},
+		{'command', type = 'str'},
+		{'message', type = 'str'},
 	},
 	func = function(ctx, cmdName, msg)
 		cmdName = cmdName:lower()
@@ -178,7 +178,7 @@ CmdMgr.register{
 	desc = "Removes a custom command",
 	accessRight = AccessRight('remcom'),
 	args = {
-		{'command', type = 'string'},
+		{'command', type = 'str'},
 	},
 	func = function(ctx, cmdName)
 		if(not g_MsgCommands[cmdName]) then
@@ -213,8 +213,8 @@ CmdMgr.register{
 	desc = "Changes custom command message",
 	accessRight = AccessRight('addcom'),
 	args = {
-		{'command', type = 'string'},
-		{'message', type = 'string'},
+		{'command', type = 'str'},
+		{'message', type = 'str'},
 	},
 	func = function(ctx, cmdName, msg)
 		cmdName = cmdName:lower()

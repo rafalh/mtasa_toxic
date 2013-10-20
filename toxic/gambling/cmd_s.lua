@@ -21,8 +21,8 @@ CmdMgr.register{
 CmdMgr.register{
 	name = 'spin',
 	args = {
-		{'number', type = 'integer', min = 1, max = 65},
-		{'cash', type = 'integer', min = 1},
+		{'number', type = 'int', min = 1, max = 65},
+		{'cash', type = 'int', min = 1},
 	},
 	func = function(ctx, num, cash)
 		if(GbSpin(ctx.player.el, num, cash)) then

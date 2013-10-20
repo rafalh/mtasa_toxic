@@ -2,7 +2,7 @@ CmdMgr.register{
 	name = 'rate',
 	desc = "Rates current map",
 	args = {
-		{'rating', type = 'integer', min = 1, max = 5},
+		{'rating', type = 'int', min = 1, max = 5},
 	},
 	func = function(ctx, rate)
 		source = ctx.player.el -- FIXME

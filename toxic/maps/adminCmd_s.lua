@@ -7,7 +7,7 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('remmap'),
 	args = {
-		{'reason', type = 'string'},
+		{'reason', type = 'str'},
 	},
 	func = function(ctx, reason)
 		local map = getCurrentMap(ctx.player.room)
@@ -28,7 +28,7 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('restoremap'),
 	args = {
-		{'mapName', type = 'string'},
+		{'mapName', type = 'str'},
 	},
 	func = function(ctx, mapName)
 		local map = findMap(mapName, true)
@@ -49,7 +49,7 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('command.setmap', true),
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		if(mapName) then
@@ -98,7 +98,7 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('nextmap'),
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		if(mapName) then

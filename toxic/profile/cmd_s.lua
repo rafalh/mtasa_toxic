@@ -34,7 +34,7 @@ local function PfcInit()
 			name = field,
 			desc = 'Shows player '..data.longname,
 			args = {
-				{'player', type = 'player', def = false},
+				{'player', type = 'player', defVal = false},
 			},
 			func = CmdProfileGet
 		}
@@ -42,7 +42,7 @@ local function PfcInit()
 			name = 'set'..field,
 			desc = 'Changes your '..data.longname,
 			args = {
-				{'newValue', type = 'string'},
+				{'newValue', type = 'str'},
 			},
 			func = CmdProfileSet
 		}

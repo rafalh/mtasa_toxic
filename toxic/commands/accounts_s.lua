@@ -6,8 +6,8 @@ CmdMgr.register{
 	desc = "Changes player username",
 	aliases = {'chglogin'},
 	args = {
-		{'newAccountName', type = 'string'},
-		{'password', type = 'string'},
+		{'newAccountName', type = 'str'},
+		{'password', type = 'str'},
 	},
 	func = function(ctx, newAccName, passwd)
 		local oldAccount = getPlayerAccount(ctx.player.el)

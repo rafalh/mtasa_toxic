@@ -6,8 +6,8 @@ CmdMgr.register{
 	name = 'buy',
 	desc = "Buys a shop item",
 	args = {
-		{'item', type = 'string'},
-		{'count', type = 'integer', min = 1, def = false},
+		{'item', type = 'str'},
+		{'count', type = 'int', min = 1, defVal = false},
 	},
 	func = function(ctx, item, count)
 		item = item:lower()
@@ -48,7 +48,7 @@ CmdMgr.register{
 	name = 'cost',
 	desc = "Checks shop item cost",
 	args = {
-		{'item', type = 'string'},
+		{'item', type = 'str'},
 	},
 	func = function(ctx, item)
 		item = item:lower()
@@ -82,7 +82,7 @@ CmdMgr.register{
 	name = 'use',
 	desc = "Uses shop item",
 	args = {
-		{'item', type = 'string'},
+		{'item', type = 'str'},
 	},
 	func = function(ctx, item)
 		item = item:lower()
@@ -100,7 +100,7 @@ CmdMgr.register{
 	name = 'setjoinmsg',
 	desc = "Sets your Join Message (if you have bought it in Shop before)",
 	args = {
-		{'newMsg', type = 'string'},
+		{'newMsg', type = 'str'},
 	},
 	func = function(ctx, newMsg)
 		if(ctx.player.accountData:get('joinmsg')) then

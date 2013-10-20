@@ -31,7 +31,7 @@ CmdMgr.register{
 	name = 'trace',
 	desc = "Checks where the player lives",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end

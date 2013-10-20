@@ -3,7 +3,7 @@ CmdMgr.register{
 	desc = "Removes specified Top Time on the current map",
 	accessRight = AccessRight('remtoptime'),
 	args = {
-		{'toptimeNumber', type = 'integer', min = 1, max = 8},
+		{'toptimeNumber', type = 'int', min = 1, max = 8},
 	},
 	func = function(ctx, num)
 		local room = ctx.player.room

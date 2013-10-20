@@ -6,7 +6,7 @@ CmdMgr.register{
 	aliases = {'smn'},
 	accessRight = AccessRight('setmapname'),
 	args = {
-		{'newName', type = 'string'},
+		{'newName', type = 'str'},
 	},
 	func = function(ctx, newName)
 		local room = ctx.player.room
@@ -26,7 +26,7 @@ CmdMgr.register{
 	aliases = {'smt', 'setmaptag'},
 	accessRight = AccessRight('setmapname'),
 	args = {
-		{'newType', type = 'string'},
+		{'newType', type = 'str'},
 	},
 	func = function(ctx, newMapType)
 		local mapTypes = { dd = 'DD', dm = 'DM', race = 'Race', cnr = 'CnR', tdd = 'TDD', tdm = 'TDM', fun = 'Fun' }
@@ -52,7 +52,7 @@ CmdMgr.register{
 	desc = "Sets current map author",
 	accessRight = AccessRight('setmapcreator'),
 	args = {
-		{'newAuthor', type = 'string'},
+		{'newAuthor', type = 'str'},
 	},
 	func = function(ctx, newAuthor)
 		local room = ctx.player.room
@@ -73,7 +73,7 @@ CmdMgr.register{
 	desc = "Sets current map respawn time",
 	accessRight = AccessRight('setrs'),
 	args = {
-		{'seconds|no|auto', type = 'string'},
+		{'seconds|no|auto', type = 'str'},
 	},
 	func = function(ctx, val)
 		local room = ctx.player.room
@@ -115,7 +115,7 @@ CmdMgr.register{
 	desc = "Enables or disabled ghostmode for current map",
 	accessRight = AccessRight('setmapgm'),
 	args = {
-		{'true/false/auto', type = 'string'},
+		{'true/false/auto', type = 'str'},
 	},
 	func = function(ctx, val)
 		local room = ctx.player.room
@@ -149,7 +149,7 @@ CmdMgr.register{
 	desc = "Sets current map time limit",
 	accessRight = AccessRight('setmaptimelimit'),
 	args = {
-		{'timeLimit', type = 'string'},
+		{'timeLimit', type = 'str'},
 	},
 	func = function(ctx, val)
 		local t = split(val, ':')
@@ -179,7 +179,7 @@ CmdMgr.register{
 	desc = "Enables or disables vehicle weapons in current map",
 	accessRight = AccessRight('setmapvehwep'),
 	args = {
-		{'true/false/auto', type = 'string'},
+		{'true/false/auto', type = 'str'},
 	},
 	func = function(ctx, val)
 		local room = ctx.player.room
@@ -208,7 +208,7 @@ CmdMgr.register{
 	desc = "Enables or disables Hunter minigun in current map",
 	accessRight = AccessRight('setmaphuntermg'),
 	args = {
-		{'true/false/auto', type = 'string'},
+		{'true/false/auto', type = 'str'},
 	},
 	func = function(ctx, val)
 		local room = ctx.player.room
@@ -237,7 +237,7 @@ CmdMgr.register{
 	desc = "Sets current map wave height",
 	accessRight = AccessRight('setmapwaveheight'),
 	args = {
-		{'num/auto', type = 'string'},
+		{'num/auto', type = 'str'},
 	},
 	func = function(ctx, val)
 		local room = ctx.player.room
@@ -287,7 +287,7 @@ CmdMgr.register{
 	desc = "Sets max speed in map meta so AntiCheat can use it to determine if player drives too fast",
 	accessRight = AccessRight('setmapmaxspeed'),
 	args = {
-		{'maxSpeed', type = 'string'},
+		{'maxSpeed', type = 'str'},
 	},
 	func = function(ctx, maxSpeed)
 		local room = ctx.player.room
@@ -400,7 +400,7 @@ CmdMgr.register{
 	name = 'fixmapresname',
 	accessRight = AccessRight('fixmapresname'),
 	args = {
-		{'mapName', type = 'string', def = false},
+		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
 		if(mapName == 'all') then
@@ -477,7 +477,7 @@ CmdMgr.register{
 	name = 'fixmaptags',
 	accessRight = AccessRight('fixmaptags'),
 	args = {
-		{'fix', type = 'bool', def = false},
+		{'fix', type = 'bool', defVal = false},
 	},
 	func = function(ctx, fix)
 		local count = 0

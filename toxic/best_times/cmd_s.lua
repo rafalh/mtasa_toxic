@@ -2,7 +2,7 @@ CmdMgr.register{
 	name = 'besttime',
 	desc = "Shows player best time on current map",
 	args = {
-		{'player', type = 'player', def = false},
+		{'player', type = 'player', defVal = false},
 	},
 	func = function(ctx, player)
 		if(not player) then player = ctx.player end
