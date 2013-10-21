@@ -54,11 +54,9 @@ CmdMgr.register{
 	aliases = {'warns'},
 	desc = "Shows player warnings count",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
-		
 		if(player == ctx.player or ListWarningsRight:check(ctx.player.el)) then
 			local warns = DbQuery('SELECT w.id, w.reason, w.timestamp, p.name AS admin FROM '..WarningsTable..' w, '..PlayersTable..' p WHERE w.serial=? AND p.player=w.admin', player:getSerial())
 			RPC('openWarningsWnd', player.el, warns):setClient(ctx.player.el):exec()

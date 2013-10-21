@@ -7,10 +7,9 @@ CmdMgr.register{
 	accessRight = AccessRight('command.setmoney', true),
 	args = {
 		{'cash', type = 'int'},
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, cash, player)
-		if(not player) then player = ctx.player end
 		player.accountData.cash = cash
 		
 		outputServerLog('STATS: '..ctx.player:getName()..' set '..player:getName()..' cash: '..cash)
@@ -23,14 +22,13 @@ CmdMgr.register{
 	cat = 'Admin',
 	accessRight = AccessRight('command.setmoney', true),
 	args = {
-		{'cash', type = 'int'},
-		{'player', type = 'player', defVal = false},
+		{'amount', type = 'int'},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
-	func = function(ctx, cash, player)
-		if(not player) then player = ctx.player end
-		player.accountData.cash = player.accountData.cash + cash
+	func = function(ctx, amount, player)
+		player.accountData.cash = player.accountData.cash + amount
 		
-		outputServerLog('STATS: '..ctx.player:getName()..' added '..player:getName()..' cash: '..cash)
+		outputServerLog('STATS: '..ctx.player:getName()..' added '..player:getName()..' cash: '..amount)
 		scriptMsg("%s's cash: %s.", player:getName(), formatMoney(player.accountData.cash))
 	end
 }
@@ -39,13 +37,13 @@ CmdMgr.register{
 	name = 'setpoints',
 	desc = "Sets player points",
 	cat = 'Admin',
+	aliases = {'setexp'},
 	accessRight = AccessRight('setpoints'),
 	args = {
-		{'cash', type = 'int'},
-		{'player', type = 'player', defVal = false},
+		{'points', type = 'int'},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, points, player)
-		if(not player) then player = ctx.player end
 		player.accountData.points = points
 		
 		outputServerLog('STATS: '..ctx.player:getName()..' set '..player:getName()..' points: '..points)
@@ -60,10 +58,9 @@ CmdMgr.register{
 	accessRight = AccessRight('setbidlevel'),
 	args = {
 		{'bidlvl', type = 'int'},
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, bidlvl, player)
-		if(not player) then player = ctx.player end
 		player.accountData.bidlvl = bidlvl
 		
 		outputServerLog('STATS: '..ctx.player:getName()..' set '..player:getName()..' bid-level: '..bidlvl)

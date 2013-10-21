@@ -100,10 +100,9 @@ CmdMgr.register{
 	desc = "Shows player cash and bid-level",
 	aliases = {'money'},
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		scriptMsg("%s's cash: %s - Bid-level: %u.", player:getName(), formatMoney(player.accountData.cash), player.accountData.bidlvl)
 	end
 }
@@ -113,10 +112,9 @@ CmdMgr.register{
 	desc = "Shows player points count",
 	aliases = {'pts', 'exp'},
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		scriptMsg("%s's points: %s.", player:getName(), formatNumber(player.accountData.points))
 	end
 }
@@ -125,10 +123,9 @@ CmdMgr.register{
 	name = 'rank',
 	desc = "Shows player rank title",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		scriptMsg("%s's rank: %s.", player:getName(), StRankFromPoints(player.accountData.points))
 	end
 }
@@ -137,10 +134,9 @@ CmdMgr.register{
 	name = 'bidlevel',
 	desc = "Displays player bid-level",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		scriptMsg("%s's bid-level: %u.", player:getName(), player.accountData.bidlvl)
 	end
 }
@@ -170,10 +166,9 @@ CmdMgr.register{
 	name = 'seen',
 	desc = "Shows when player joined the game",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		local tm = getRealTime(player.join_time)
 		scriptMsg("%s seen since %d:%02u:%02u.", player:getName(), tm.hour, tm.minute, tm.second)
 	end
@@ -184,10 +179,9 @@ CmdMgr.register{
 	desc = "Shows time player spent in game",
 	aliases = {'timehere'},
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		local playTime = player:getPlayTime()
 		scriptMsg("%s's time here: %s.", player:getName(), formatTimePeriod(playTime, 0))
 	end
@@ -198,11 +192,9 @@ CmdMgr.register{
 	desc = "Shows player statistics",
 	aliases = {'stat', 'st'},
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
-		
 		local stats = player.accountData:getTbl()
 		
 		scriptMsg("%s's statistics:", player:getName())

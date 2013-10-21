@@ -4,7 +4,6 @@
 
 local function CmdProfileGet(ctx, player)
 	local field = ctx.cmdName
-	if(not player) then player = ctx.player end
 	
 	assert(g_ProfileFields[field])
 	
@@ -34,7 +33,7 @@ local function PfcInit()
 			name = field,
 			desc = 'Shows player '..data.longname,
 			args = {
-				{'player', type = 'player', defVal = false},
+				{'player', type = 'player', defValFromCtx = 'player'},
 			},
 			func = CmdProfileGet
 		}

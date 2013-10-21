@@ -3,11 +3,9 @@ CmdMgr.register{
 	desc = "Bets on a player",
 	args = {
 		{'cash', type = 'int', min = 1},
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, cash, targetPlayer)
-		if(not targetPlayer) then targetPlayer = ctx.player end
-		
 		local bet_min_players = Settings.bet_min_players
 		local max_bet = Settings.max_bet * ctx.player.accountData:get('bidlvl')
 		

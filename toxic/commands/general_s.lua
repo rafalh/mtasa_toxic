@@ -105,10 +105,9 @@ CmdMgr.register{
 	aliases = {'ip2c'},
 	desc = "Shows player country based on IP",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		local country = g_AdminRes:isReady() and g_AdminRes:call('getPlayerCountry', player.el)
 		
 		if(g_Countries[country]) then
@@ -124,12 +123,24 @@ CmdMgr.register{
 	aliases = {'ver'},
 	desc = "Shows player MTA version",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
 		local ver = getPlayerVersion(player.el)
 		
 		scriptMsg("%s's MTA version: %s (revision %s).", player:getName(), ver:sub(1, 5), ver:sub(7))
+	end
+}
+
+CmdMgr.register{
+	name = 'usage',
+	aliases = {'cmdusage'},
+	desc = "Shows arguments supported by specified commands",
+	args = {
+		{'cmd', type = 'str'},
+	},
+	func = function(ctx, cmdName)
+		local usageStr = CmdMgr.getUsage(cmdName)
+		scriptMsg("Usage: %s", '/'..cmdName..' '..usageStr)
 	end
 }

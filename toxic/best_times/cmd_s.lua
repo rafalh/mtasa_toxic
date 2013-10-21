@@ -2,11 +2,9 @@ CmdMgr.register{
 	name = 'besttime',
 	desc = "Shows player best time on current map",
 	args = {
-		{'player', type = 'player', defVal = false},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		if(not player) then player = ctx.player end
-		
 		local map = getCurrentMap(player.room)
 		local rows = player.id and DbQuery('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', player.id, map:getId())
 		

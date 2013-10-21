@@ -1,6 +1,7 @@
-local g_Commands = {}
-local g_CmdAliases = {}
+-- Defines
+#local DEBUG = true
 
+-- Command Manager
 CmdMgr = {}
 CmdMgr.map = {}
 CmdMgr.list = {}
@@ -11,13 +12,16 @@ addEvent('onClientCommandsList', true)
 -- checks if table doesn't contain disallowed keys and values
 local function checkTbl(tbl, allowed)
 	for k, v in pairs(tbl) do
-		if(type(v) ~= allowed[k]) then
+		-- Note: allowed[k] == true allows any type
+		if(type(v) ~= allowed[k] and allowed[k] ~= true) then
 			return k
 		end
 	end
 end
 
 function CmdMgr.register(info)
+
+#if(DEBUG) then
 	local invalidArg = checkTbl(info, {
 		name = 'string',
 		aliases = 'table', -- optional
@@ -28,6 +32,26 @@ function CmdMgr.register(info)
 		varargs = 'boolean', -- optional
 		func = 'function'})
 	assert(not invalidArg, 'Invalid arg for CmdMgr.register - '..tostring(invalidArg))
+	
+	if(info.args) then
+		local ARG_DESC_KEYS = {
+			'string',
+			type = 'string',
+			defVal = true, -- optional
+			defValFromCtx = 'string', -- optional
+			min = 'number', -- optional
+			max = 'number', -- optional
+		}
+		local VALID_ARG_TYPES = {'str', 'int', 'num', 'bool', 'player'}
+		
+		for i, argDesc in ipairs(info.args) do
+			local invalidArg = checkTbl(argDesc, ARG_DESC_KEYS)
+			assert(not invalidArg, 'Invalid argument descriptor for CmdMgr.register - '..tostring(invalidArg))
+			assert(table.find(VALID_ARG_TYPES, argDesc.type), 'Invalid argument type for CmdMgr.register - '..tostring(argDesc.type))
+		end
+	end
+#end -- DEBUG
+
 	assert(info.name and info.func)
 	
 	assert(not CmdMgr.map[info.name], 'Command '..info.name..' already exists')
@@ -117,6 +141,8 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 			end
 		elseif(argDesc.defVal ~= nil) then
 			newArg = argDesc.defVal
+		elseif(argDesc.defValFromCtx ~= nil and ctx[argDesc.defValFromCtx] ~= nil) then
+			newArg = ctx[argDesc.defValFromCtx]
 		else
 			privMsg(ctx.player, "Not enough arguments given. Expected argument #%u (%s).", i, argDesc[1])
 			return false
@@ -158,6 +184,27 @@ function CmdMgr.getAccessRights()
 	end
 	
 	return ret]]
+end
+
+function CmdMgr.getUsage(cmdName)
+	local cmd = CmdMgr.map[cmdName]
+	if(not cmd) then return false end
+	
+	local ret = {}
+	for i, argDesc in ipairs(cmd.args) do
+		local opt = (argDesc.defVal ~= nil) or argDesc.defValFromCtx
+		if(opt) then
+			table.insert(ret, '['..argDesc[1]..']')
+		else
+			table.insert(ret, argDesc[1])
+		end
+	end
+	
+	if(cmd.varargs) then
+		table.insert(ret, '...')
+	end
+	
+	return table.concat(ret, ' ')
 end
 
 function CmdMgr.invoke(ctx, cmd, ...)
