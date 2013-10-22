@@ -15,6 +15,7 @@ end
 function AccessRight.__mt.__index:check(player)
 	if(type(player) ~= 'table') then
 		player = Player.fromEl(player)
+		assert(player)
 	end
 	return player.acl:check(self)
 end

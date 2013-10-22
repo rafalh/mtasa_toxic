@@ -8,10 +8,6 @@ local g_SearchEdit
 local g_CmdList
 local g_HelpMgrRes = Resource('helpmanager')
 
--- CUSTOM EVENTS
-addEvent ( 'onCommandsListReq', true )
-addEvent ( 'onClientCommandsList', true )
-
 -- FUNCTIONS
 local function HlpUpdateList ()
 	if ( not g_CmdList or not g_Commands ) then return end
@@ -67,8 +63,8 @@ local function HlpTabShown ()
 	if ( not g_CmdList ) then
 		HlpCreateGui ()
 	end
-	if ( not g_Commands ) then
-		triggerServerEvent ( 'onCommandsListReq', g_Me )
+	if(not g_Commands) then
+		RPC('CmdMgr.getCommandsForHelp'):onResult(HlpCmdList):exec()
 	end
 end
 
@@ -93,4 +89,3 @@ end
 --------------
 
 addInternalEventHandler ( $(EV_CLIENT_INIT), HlpInit )
-addEventHandler ( 'onClientCommandsList', g_Root, HlpCmdList )

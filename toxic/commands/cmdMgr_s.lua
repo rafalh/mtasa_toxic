@@ -6,9 +6,6 @@ CmdMgr = {}
 CmdMgr.map = {}
 CmdMgr.list = {}
 
-addEvent('onCommandsListReq', true)
-addEvent('onClientCommandsList', true)
-
 -- checks if table doesn't contain disallowed keys and values
 local function checkTbl(tbl, allowed)
 	for k, v in pairs(tbl) do
@@ -165,7 +162,7 @@ function CmdMgr.getAllowedCommands(player)
 	
 	for i, cmd in ipairs(CmdMgr.list) do
 		if(not cmd.accessRight or cmd.accessRight:check(player)) then
-			table.insert(ret, {cmd.name, cmd.desc})
+			table.insert(ret, cmd)
 		end
 	end
 	
@@ -257,10 +254,6 @@ function CmdMgr.parseLine(str)
 	return args
 end
 
--------------------------------
---          OLD API          --
--------------------------------
-
 -- Note: source can be console element
 local function onConsole(message)
 	-- Don't allow any commands from muted player
@@ -323,17 +316,21 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	g_ScriptMsgState.color = false
 end
 
-local function onCommandsListReq()
+function CmdMgr.getCommandsForHelp()
 	local player = Player.fromEl(client)
 	local commmands = CmdMgr.getAllowedCommands(player)
 	
-	table.sort(commmands, function(cmd1, cmd2) return cmd1[1] < cmd2[1] end)
+	table.sort(commmands, function(cmd1, cmd2) return cmd1.name < cmd2.name end)
 	
-	triggerClientEvent(player.el, 'onClientCommandsList', g_Root, commmands)
+	for i, cmd in ipairs(commmands) do
+		commmands[i] = {cmd.name, cmd.desc, cmd.cat or false, cmd.aliases or false}
+	end
+	
+	return commmands
 end
+RPC.allow('CmdMgr.getCommandsForHelp')
 
 addInitFunc(function()
-	addEventHandler('onCommandsListReq', g_Root, onCommandsListReq)
 	addEventHandler('onConsole', g_Root, onConsole)
 end)
 
