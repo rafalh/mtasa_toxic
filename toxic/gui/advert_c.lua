@@ -1,10 +1,11 @@
 
 #include 'include/internal_events.lua'
 
+#local DEBUG = false
+
 local g_Adverts = {}
 local g_AdvertIdx = 0
 local g_Visible = false
-local DEBUG = false
 
 -- Settings
 local g_TextColor = tocolor(0, 255, 0)
@@ -20,35 +21,35 @@ local function AdvRender()
 	local dt = ticks - g_Visible
 	
 	local text = g_Adverts[g_AdvertIdx]
-	local text_w = dxGetTextWidth ( text, g_TextScale, g_TextFont )
-	local w, h = g_ScreenSize[1], dxGetFontHeight ( g_TextScale, g_TextFont )
+	local text_w = dxGetTextWidth(text, g_TextScale, g_TextFont)
+	local w, h = g_ScreenSize[1], dxGetFontHeight(g_TextScale, g_TextFont)
 	local h_fact = 1
-	local visible_time = ( w + text_w ) / g_Speed * 1000
+	local visible_time = (w + text_w) / g_Speed * 1000
 	
-	if ( dt > visible_time ) then
+	if(dt > visible_time) then
 		g_Visible = false
-		removeEventHandler ( 'onClientRender', g_Root, AdvRender )
+		removeEventHandler('onClientRender', g_Root, AdvRender)
 		return
-	elseif ( dt < g_AppearingTime ) then
+	elseif(dt < g_AppearingTime) then
 		h_fact = dt / g_AppearingTime
-	elseif ( dt > visible_time - g_AppearingTime ) then
-		h_fact = ( visible_time - dt ) / g_AppearingTime
+	elseif(dt > visible_time - g_AppearingTime) then
+		h_fact = (visible_time - dt) / g_AppearingTime
 	end
 	
-	local y = - h * ( 1 - h_fact )
+	local y = - h * (1 - h_fact)
 	local h = h * h_fact
-	dxDrawRectangle ( 0, 0, w, h, g_BgColor, true )
+	dxDrawRectangle(0, 0, w, h, g_BgColor, true)
 	
 	local x = w - dt * g_Speed / 1000
-	dxDrawText ( text, x, y, x, y, g_TextColor, g_TextScale, g_TextFont, 'left', 'top', false, false, true, true )
+	dxDrawText(text, x, y, x, y, g_TextColor, g_TextScale, g_TextFont, 'left', 'top', false, false, true, true)
 end
 
 local function AdvShowNext()
-	if ( not g_Visible ) then
+	if(not g_Visible) then
 		addEventHandler('onClientRender', g_Root, AdvRender)
 	end
 	
-	g_Visible = getTickCount ()
+	g_Visible = getTickCount()
 	g_AdvertIdx = g_AdvertIdx + 1
 	if ( g_AdvertIdx > #g_Adverts ) then
 		g_AdvertIdx = 1
@@ -57,35 +58,36 @@ local function AdvShowNext()
 	outputConsole(g_Adverts[g_AdvertIdx]:gsub('#%x%x%x%x%x%x', ''))
 end
 
-local function AdvInit ()
-	local tmp = {}
-	local node, i = xmlLoadFile('conf/adverts.xml'), 0
-	if ( node ) then
-		while ( true ) do
-			local subnode = xmlFindChild (node, 'advert', i)
-			if(not subnode) then break end
-			
-			local attr = xmlNodeGetAttributes ( subnode )
-			
-			local advert = {}
-			advert.freq = touint ( attr.freq, 1 )
-			if ( attr[Settings.locale] ) then
-				advert.text = attr[Settings.locale]
-			else
-				advert.text = xmlNodeGetValue ( subnode )
-			end
-			
-			table.insert ( tmp, advert )
-			i = i + 1
-		end
-		xmlUnloadFile ( node )
+local function AdvInit()
+	local node = xmlLoadFile('conf/adverts.xml')
+	if(not node) then
+		outputDebugString('Failed to load adverts.xml', 2)
+		return
 	end
 	
-	table.sort(tmp, function ( a, b ) return a.freq < b.freq end)
+	local tmp = {}
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local attr = xmlNodeGetAttributes(subnode)
+		
+		local advert = {}
+		advert.freq = touint(attr.freq, 1)
+		if(attr[Settings.locale]) then
+			advert.text = attr[Settings.locale]
+		else
+			advert.text = xmlNodeGetValue(subnode)
+		end
+		
+		table.insert(tmp, advert)
+		i = i + 1
+	end
 	
-	for i, advert in ipairs ( tmp ) do
+	xmlUnloadFile(node)
+	
+	table.sort(tmp, function(a, b) return a.freq < b.freq end)
+	
+	for i, advert in ipairs(tmp) do
 		for j = 1, advert.freq, 1 do
-			table.insert ( g_Adverts, math.floor ( #g_Adverts * j / advert.freq ) + 1, advert.text )
+			table.insert(g_Adverts, math.floor(#g_Adverts * j / advert.freq) + 1, advert.text)
 		end
 	end
 	
@@ -93,9 +95,10 @@ local function AdvInit ()
 		g_AdvertIdx = math.random(0, #g_Adverts)
 		setTimer(AdvShowNext, g_AdvertInterval, 0)
 		
-		if(DEBUG) then
-			AdvShowNext()
-		end
+#if(DEBUG) then
+		AdvShowNext()
+#end
+		
 	end
 end
 
