@@ -171,6 +171,7 @@
 	<settings>
 		<setting group="General" name="*mute_time" friendlyname="Mute time" accept="0-3600" value="60" desc="Default mute duration for /mute command. If it equals 0, mute is permanent." />
 		<setting group="General" name="*loginWnd" friendlyname="Login window" accept="false,true" value="true" desc="If enabled login window is displayed for all not logged-in players" />
+		<setting group="General" name="*helpmgr" type="client" friendlyname="Use Help Manager" accept="false,true" value="true" desc="If disabled script creates its own window when F9 is pressed. If enabled standard helpmgr GUI is used instead." />
 		<!--setting group="General" name="*stunt_bonus" friendlyname="Stunt bonus" accept="false,true" value="true" desc="Bonus for making stunts. 'stunt' resource is needed." /-->
 		
 		<setting group="Debugging" name="*debug" friendlyname="Debugging" accept="false,true" value="false" type="shared" desc="Scripts debugging" />
