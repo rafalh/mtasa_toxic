@@ -64,17 +64,17 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 	if(tobool(gm)) then return true end -- map has ghostmode, so low spawnpoints count is ok
 	
 	local mapPath = map:getPath()
-	local node = xmlLoadFile(mapPath..'/meta.xml')
-	if(not node) then
+	local metaFile = MetaFile(mapPath..'/meta.xml')
+	if(not metaFile:open()) then
 		outputDebugString('Failed to open '..mapPath..'/meta.xml', 2)
 		return false
 	end
 	
-	gm = getMetaSetting(node, 'ghostmode') -- getSetting returns cached value so check real setting
+	gm = metaFile:getSetting('ghostmode') -- map:getSetting returns cached value so check real setting
 	if(tobool(gm)) then return true end -- if gamemode is enabled, exit
 	
 	local cnt = 0
-	local children = xmlNodeGetChildren(node)
+	local children = xmlNodeGetChildren(metaFile.node)
 	for i, subnode in ipairs(children) do
 		local tag = xmlNodeGetName(subnode)
 		local attr = xmlNodeGetAttributes(subnode)
@@ -94,15 +94,20 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 		privMsg(player, "Map %s has only %u spawn-points", map:getName(), cnt)
 		
 		if(opts == 'enablegm') then
-			setMetaSetting(node, 'ghostmode', 'true')
-			xmlSaveFile(node)
+			metaFile:setSetting('ghostmode', 'true')
+			metaFile:save()
+			metaFile:close()
 		elseif(opts == 'moveres' and map.res) then
+			metaFile:close()
 			local resName = getResourceName(map.res)
 			renameResource(resName, resName, '[maps_to_fix]')
+		else
+			metaFile:close()
 		end
+	else
+		metaFile:close()
 	end
 	
-	xmlUnloadFile(node)
 	return true
 end
 

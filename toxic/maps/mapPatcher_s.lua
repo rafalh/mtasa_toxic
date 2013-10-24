@@ -210,7 +210,8 @@ function MusicPatch.fix(ctx)
 		xmlNodeSetName(music_node, 'html')
 		xmlNodeSetAttribute(music_node, 'raw', 'true')
 	end
-	setMetaSetting(ctx.node, 'music', ctx.music_path)
+	
+	ctx.metaFile:setSetting('music', ctx.music_path)
 	
 	return true
 end
@@ -361,8 +362,9 @@ function MapPatcher.processMap(map)
 	-- Load meta
 	local ctx = {}
 	ctx.mapPath = map:getPath()
-	ctx.node = xmlLoadFile(ctx.mapPath..'/meta.xml')
-	if(not ctx.node) then return false end
+	ctx.metaFile = MetaFile(ctx.mapPath..'/meta.xml')
+	if(not ctx.metaFile:open()) then return false end
+	ctx.node = ctx.metaFile.node
 	
 	local changed = false
 	
@@ -389,11 +391,11 @@ function MapPatcher.processMap(map)
 					changed = true
 				end
 			end
-		elseif (tag == 'file' and attr.src) then
+		elseif(tag == 'file' and attr.src) then
 			ctx.files[attr.src] = subnode
-		elseif (tag == 'sync_map_element_data') then
+		elseif(tag == 'sync_map_element_data') then
 			ctx.sync_map_element_data = subnode
-		elseif (tag == 'include' and attr.resource) then
+		elseif(tag == 'include' and attr.resource) then
 			ctx.includes[attr.resource] = subnode
 		end
 	end
@@ -415,11 +417,11 @@ function MapPatcher.processMap(map)
 	
 	if(changed) then
 		-- Save map meta if changed
-		xmlSaveFile(ctx.node)
+		ctx.metaFile:save()
 	end
 	
 	-- Unload meta
-	xmlUnloadFile(ctx.node)
+	ctx.metaFile:close()
 	
 	-- Set map as patched
 	DbQuery('UPDATE '..MapsTable..' SET patcherSeq=? WHERE map=?', MapPatcher.seq, map:getId())

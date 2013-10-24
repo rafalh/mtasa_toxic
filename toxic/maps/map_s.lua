@@ -6,71 +6,6 @@ local g_RoomMgrRes = Resource('roommgr')
 local g_MapMgrRes = Resource('mapmanager')
 local g_MapMgrNewRes = Resource('mapmgr')
 
-
--- Used by map.lua and map_fixing.lua
-function setMetaSetting(node, setting, value)
-	local subnode = xmlFindChild(node, 'settings', 0)
-	if(not subnode) then
-		subnode = xmlCreateChild(node, 'settings')
-		if(not subnode) then
-			return false
-		end
-	end
-	
-	local found, success = false, false
-	local i = 0
-	
-	while(true) do
-		local subnode2 = xmlFindChild(subnode, 'setting', i)
-		if(not subnode2) then break end
-		i = i + 1
-		
-		local name = xmlNodeGetAttribute(subnode2, 'name')
-		if(name == setting or name == '#'..setting or name == '@'..setting or name == '*'..setting) then
-			if(value) then
-				success = xmlNodeSetAttribute(subnode2, 'value', toJSON(value))
-			else
-				success = xmlDestroyNode(subnode2)
-				i = i - 1
-			end
-			found = true
-		end
-	end
-	
-	if(not found) then
-		subnode2 = xmlCreateChild(subnode, 'setting')
-		if(subnode2) then
-			success =
-				xmlNodeSetAttribute(subnode2, 'name', '#'..setting) and
-				xmlNodeSetAttribute(subnode2, 'value', toJSON(value))
-		else
-			success = false
-		end
-	end
-	
-	return success
-end
-
-function getMetaSetting(node, setting)
-	local subnode = xmlFindChild(node, 'settings', 0)
-	if(not subnode) then return nil end
-	
-	local i = 0
-	while(true) do
-		local subnode2 = xmlFindChild(subnode, 'setting', i)
-		if(not subnode2) then break end
-		i = i + 1
-		
-		local name = xmlNodeGetAttribute(subnode2, 'name')
-		if(name == setting or name == '#'..setting or name == '@'..setting or name == '*'..setting) then
-			local value = xmlNodeGetAttribute(subnode2, 'value')
-			return fromJSON(value) or value
-		end
-	end
-	
-	return nil
-end
-
 function Map:getName()
 	return self:getInfo('name') or self.resName
 end
@@ -92,17 +27,13 @@ function Map:setInfo(attr, value)
 	
 	if(not setResourceInfo(self.res, attr, value)) then return false end
 	
-	local node = xmlLoadFile(self:getPath()..'/meta.xml')
-	if(not node) then return false end
-	
-	local subnode = xmlFindChild(node, 'info', 0)
-	if(not subnode) then xmlUnloadFile(node) return false end
-	
-	xmlNodeSetAttribute(subnode, attr, value)
-	
-	local result = xmlSaveFile(node)
-	xmlUnloadFile(node)
-	return result
+	local meta = MetaFile(self:getPath()..'/meta.xml')
+	local success = meta:setInfo(attr, value)
+	if(success) then
+		success = meta:save()
+	end
+	meta:close()
+	return success
 end
 
 function Map:getSetting(name)
@@ -112,18 +43,12 @@ end
 
 function Map:setSetting(setting, value)
 	-- Note: this doesn't work for ZIP resources and I have no idea how to fix it...
-	local node = xmlLoadFile(self:getPath()..'/meta.xml')
-	if(not node) then
-		return false
-	end
-	
-	local success = setMetaSetting ( node, setting, value )
-	
+	local meta = MetaFile(self:getPath()..'/meta.xml')
+	local success = meta:setSetting(setting, value)
 	if(success) then
-		success = xmlSaveFile(node)
+		success = meta:save()
 	end
-	xmlUnloadFile(node)
-	
+	meta:close()
 	return success
 end
 
@@ -132,9 +57,7 @@ function Map:start(room)
 	
 	if(g_MapMgrRes:isReady()) then
 		return g_MapMgrRes:call('changeGamemodeMap', self.res)
-	end
-	
-	if(g_RoomMgrRes:isReady()) then
+	elseif(g_RoomMgrRes:isReady()) then
 		return g_RoomMgrRes:call('startRoomMap', room.el, self.path)
 	end
 	
@@ -236,40 +159,4 @@ end
 
 function Map.__mt:__eq(map)
 	return self.res == map.res
-end
-
-MapList = {}
-MapList.__mt = {__index = MapList}
-
-function MapList:get(i)
-	local mapRes = self.resList[i]
-	return mapRes and Map.create(mapRes)
-end
-
-function MapList:getCount()
-	return #self.resList
-end
-
-function MapList:iterator(i)
-	local map = self:get(i)
-	if(not map) then return end
-	i = i + 1
-	return i, map
-end
-
-function MapList:ipairs()
-	return MapList.iterator, self, 1
-end
-
-function MapList:remove(i)
-	local mapRes = table.remove(self.resList, i)
-	return mapRes and Map.create(mapRes)
-end
-
-function MapList.create(mapResList)
-	local self = setmetatable({}, MapList.__mt)
-	
-	self.resList = mapResList
-	
-	return self
 end
