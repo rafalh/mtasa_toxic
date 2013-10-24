@@ -1,5 +1,5 @@
 -- Defines
-#local ASK_FOR_EMAIL = false
+#local ASK_FOR_EMAIL = true
 
 local function onPlayerLogin(prevAccount, account, autoLogin)
 	local self = Player.fromEl(source)

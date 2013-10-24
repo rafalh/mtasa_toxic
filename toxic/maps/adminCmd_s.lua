@@ -1,5 +1,7 @@
 local g_LastRedo = 0
 
+addEvent('onClientDisplayNextMapGuiReq', true)
+
 CmdMgr.register{
 	name = 'removemap',
 	aliases = {'remmap'},
@@ -101,33 +103,34 @@ CmdMgr.register{
 		{'mapName', type = 'str', defVal = false},
 	},
 	func = function(ctx, mapName)
-		if(mapName) then
-			local map
-			if(mapName:lower () == 'random') then
-				map = getRandomMap()
-			elseif(mapName:lower () == 'redo') then
-				map = getCurrentMap(room)
-			else
-				map = findMap(mapName, false)
-			end
-			
-			if(map) then
-				local room = ctx.player.room
-				source = ctx.player.el -- FIXME
-				AddMapToQueue(room, map)
-			else
-				privMsg(ctx.player, "Cannot find map \"%s\"!", mapName)
-			end
-		else
-			addEvent('onClientDisplayNextMapGuiReq', true)
+		if(not mapName) then
 			triggerClientEvent(ctx.player.el, 'onClientDisplayNextMapGuiReq', g_ResRoot)
+			return
+		end
+		
+		local room = ctx.player.room
+		local mapNameLower = mapName:lower()
+		local map
+		if(mapNameLower == 'random') then
+			map = getRandomMap()
+		elseif(mapNameLower == 'redo') then
+			map = getCurrentMap(room)
+		else
+			map = findMap(mapName, false)
+		end
+		
+		if(map) then
+			source = ctx.player.el -- FIXME
+			AddMapToQueue(room, map)
+		else
+			privMsg(ctx.player, "Cannot find map \"%s\"!", mapName)
 		end
 	end
 }
 
 -- For Admin Panel
 local function onSetNextMap (mapName)
-	if (hasObjectPermissionTo(client, 'resource.'..g_ResName..'.nextmap', false)) then
+	if(hasObjectPermissionTo(client, 'resource.'..g_ResName..'.nextmap', false)) then
 		local map = findMap(mapName, false)
 		if(map) then
 			local pdata = Player.fromEl(client)

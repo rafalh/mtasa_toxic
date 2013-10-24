@@ -49,7 +49,7 @@ function addPlayerTime(player_id, map_id, time)
 			if(data) then -- someone left the top
 				AccountData.create(data.player):add('toptimes_count', -1)
 				DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL, cp_times=NULL WHERE player=? AND map=?', data.player, map_id)
-				if(date.rec) then
+				if(data.rec) then
 					DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', data.rec)
 				end
 				if(data.cp_times) then
