@@ -1,16 +1,15 @@
-Map = {}
-Map.__mt = {__index = Map}
+Map = Class('Map')
 Map.idCache = {}
 
 local g_RoomMgrRes = Resource('roommgr')
 local g_MapMgrRes = Resource('mapmanager')
 local g_MapMgrNewRes = Resource('mapmgr')
 
-function Map:getName()
+function Map.__mt.__index:getName()
 	return self:getInfo('name') or self.resName
 end
 
-function Map:getInfo(name)
+function Map.__mt.__index:getInfo(name)
 	if(self.res) then
 		return getResourceInfo(self.res, name)
 	end
@@ -22,7 +21,7 @@ function Map:getInfo(name)
 	return false
 end
 
-function Map:setInfo(attr, value)
+function Map.__mt.__index:setInfo(attr, value)
 	if(not self.res) then return end
 	
 	if(not setResourceInfo(self.res, attr, value)) then return false end
@@ -36,12 +35,12 @@ function Map:setInfo(attr, value)
 	return success
 end
 
-function Map:getSetting(name)
+function Map.__mt.__index:getSetting(name)
 	if(not self.res) then return end
 	return get(self.resName..'.'..name)
 end
 
-function Map:setSetting(setting, value)
+function Map.__mt.__index:setSetting(setting, value)
 	-- Note: this doesn't work for ZIP resources and I have no idea how to fix it...
 	local meta = MetaFile(self:getPath()..'/meta.xml')
 	local success = meta:setSetting(setting, value)
@@ -52,7 +51,7 @@ function Map:setSetting(setting, value)
 	return success
 end
 
-function Map:start(room)
+function Map.__mt.__index:start(room)
 	assert(room)
 	
 	if(g_MapMgrRes:isReady()) then
@@ -64,7 +63,7 @@ function Map:start(room)
 	return false
 end
 
-function Map:getId()
+function Map.__mt.__index:getId()
 	local map_id = Map.idCache[self.res or self.path]
 	if(map_id) then
 		return map_id
@@ -83,7 +82,7 @@ function Map:getId()
 	return map_id
 end
 
-function Map:getType()
+function Map.__mt.__index:getType()
 	local mapName = self:getName()
 	
 	local mapNameLower = mapName:lower()
@@ -96,7 +95,7 @@ function Map:getType()
 	return false
 end
 
-function Map:isForbidden(room)
+function Map.__mt.__index:isForbidden(room)
 	assert(room)
 	
 	local max_map_rep = Settings.max_map_rep
@@ -127,23 +126,21 @@ function Map:isForbidden(room)
 	return false
 end
 
-function Map:getElements(type)
+function Map.__mt.__index:getElements(type)
 	assert(type and self.resRoot)
 	return getElementsByType(type, self.resRoot)
 end
 
-function Map:getPath()
+function Map.__mt.__index:getPath()
 	return ':'..getResourceName(self.res)
 end
 
-function Map:getRespawn()
+function Map.__mt.__index:getRespawn()
 	local respawnStr = self:getSetting('respawn') or get('race.respawnmode')
 	return respawnStr ~= 'none'
 end
 
-function Map.create(res)
-	local self = setmetatable({}, Map.__mt)
-	
+function Map.__mt.__index:init(res)
 	assert(res)
 	if(type(res) == 'userdata') then
 		self.res = res
@@ -153,8 +150,6 @@ function Map.create(res)
 		self.path = res
 		assert(type(self.path) == 'string', type(self.path))
 	end
-	
-	return self
 end
 
 function Map.__mt:__eq(map)

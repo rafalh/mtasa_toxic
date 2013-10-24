@@ -8,8 +8,8 @@ addEvent('onVotenextReq', true)
 local function onVotenextResult(roomEl, map_res)
 	if(not map_res) then return end
 	
-	local room = Room.create(roomEl)
-	local map = Map.create(map_res)
+	local room = Room(roomEl)
+	local map = Map(map_res)
 	if(not MqAdd(room, map, true)) then
 		outputMsg(g_Root, Styles.red, "Map queue is full!")
 	end

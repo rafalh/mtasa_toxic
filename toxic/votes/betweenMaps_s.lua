@@ -59,7 +59,7 @@ local function onPollStarting ( poll )
 		while(i <= #poll) do
 			local opt = poll[i]
 			if(exports.mapmanager:isMap(opt[4])) then
-				local map = Map.create(opt[4])
+				local map = Map(opt[4])
 				local mapName = map:getName()
 				
 				if(map ~= getLastMap(room) and opt[1] == mapName) then
@@ -86,7 +86,7 @@ local function onPollStarting ( poll )
 							if(randomPlayAgainVote) then
 								opt[1] = "Random"
 							elseif(showRatings) then
-								local map = Map.create(opt[4])
+								local map = Map(opt[4])
 								local map_id = map:getId()
 								local rows = DbQuery('SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
 								opt[1] = map:getName()

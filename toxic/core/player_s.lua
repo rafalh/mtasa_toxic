@@ -146,7 +146,7 @@ end
 
 function Player.onRoomChange(roomEl)
 	local self = Player.fromEl(source)
-	local room = Room.create(roomEl)
+	local room = Room(roomEl)
 	self.room = room
 	MiSendMapInfo(self)
 	if(self.new) then
@@ -201,7 +201,7 @@ function Player.create(el)
 	if(not self.is_console and g_RoomMgrRes:isReady()) then
 		roomEl = g_RoomMgrRes:call('getPlayerRoom', self.el)
 	end
-	self.room = roomEl and Room.create(roomEl)
+	self.room = roomEl and Room(roomEl)
 	
 	-- get player account name
 	local account = getPlayerAccount(self.el)

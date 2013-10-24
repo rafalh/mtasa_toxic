@@ -130,7 +130,7 @@ end
 -- race_delay_indicator uses it
 function getTopTime(map_res, cp_times)
 	assert(map_res and cp_times)
-	local map = Map.create(map_res)
+	local map = Map(map_res)
 	local map_id = map:getId()
 	
 	local rows

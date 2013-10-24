@@ -103,10 +103,10 @@ local function MqOnAddReq(mapResName)
 	
 	local mapRes = getResourceFromName(mapResName)
 	if(mapRes) then
-		map = Map.create(mapRes)
+		map = Map(mapRes)
 	else
 		if(g_MapMgrNewRes:isReady() and g_MapMgrNewRes:call('isMap', mapResName)) then
-			map = Map.create(mapResName)
+			map = Map(mapResName)
 		end
 	end
 	

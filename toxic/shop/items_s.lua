@@ -411,7 +411,7 @@ local function ShpBuyNextMap(mapResName)
 	end
 	
 	local mapRes = getResourceFromName(mapResName)
-	local map = mapRes and Map.create(mapRes)
+	local map = mapRes and Map(mapRes)
 	if ( not map ) then
 		outputDebugString('getResourceFromName failed', 2)
 		return

@@ -39,12 +39,12 @@ function initRoomMaps(room)
 	
 	if(g_MapMgrRes:isReady()) then
 		local mapRes = g_MapMgrRes:call('getRunningGamemodeMap')
-		map = mapRes and Map.create(mapRes)
+		map = mapRes and Map(mapRes)
 	elseif(room.el ~= g_Root) then
 		if(g_RoomMgrRes:isReady()) then
 			outputDebugString(tostring(room.el), 3)
 			local mapPath = g_RoomMgrRes:call('getRoomMap', room.el)
-			map = mapPath and Map.create(mapPath)
+			map = mapPath and Map(mapPath)
 		end
 	end
 	
@@ -59,7 +59,7 @@ function findMap(str, removed)
 	if(g_MapMgrNewRes:isReady()) then
 		local maps = g_MapMgrNewRes:call('findMaps', str)
 		for i, mapPath in ipairs(maps) do
-			local map = Map.create(mapPath)
+			local map = Map(mapPath)
 			if(removed ~= nil) then
 				local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
 				local isRemoved = (rows[1].removed ~= '')
@@ -457,10 +457,10 @@ local function onChangeMapReq(mapResName)
 	local map = false
 	local mapRes = getResourceFromName(mapResName)
 	if(mapRes) then
-		map = Map.create(mapRes)
+		map = Map(mapRes)
 	else
 		if(g_MapMgrNewRes:isReady() and g_MapMgrNewRes:call('isMap', mapResName)) then
-			map = Map.create(mapResName)
+			map = Map(mapResName)
 		end
 	end
 	
@@ -505,31 +505,31 @@ function getMapsList()
 	if(g_MapMgrRes:isReady()) then
 		local gamemodeRes = g_MapMgrRes:call('getRunningGamemode')
 		local mapResList = g_MapMgrRes:call('getMapsCompatibleWithGamemode', gamemodeRes)
-		return MapList.create(mapResList)
+		return MapList(mapResList)
 	end
 	
 	if(g_MapMgrNewRes:isReady()) then
 		local mapList = g_MapMgrNewRes:call('getMapsList')
-		return MapList.create(mapList)
+		return MapList(mapList)
 	end
 	
 	return false
 end
 
 addInitFunc(function()
-	g_RootRoom = Room.create(g_Root)
+	g_RootRoom = Room(g_Root)
 	
 	addEventHandler('onRoomMapStart', g_Root, function(mapPath)
-		local map = Map.create(mapPath)
-		local room = Room.create(source)
+		local map = Map(mapPath)
+		local room = Room(source)
 		onMapStart(map, room)
 	end)
 	addEventHandler('onRoomMapStop', g_Root, function()
-		local room = Room.create(source)
+		local room = Room(source)
 		onMapStop(room)
 	end)
 	addEventHandler('onGamemodeMapStart', g_Root, function(mapRes)
-		local map = Map.create(mapRes)
+		local map = Map(mapRes)
 		onMapStart(map, g_RootRoom)
 	end)
 	addEventHandler('onGamemodeMapStop', g_Root, function()
