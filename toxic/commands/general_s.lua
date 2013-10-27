@@ -141,6 +141,10 @@ CmdMgr.register{
 	},
 	func = function(ctx, cmdName)
 		local usageStr = CmdMgr.getUsage(cmdName)
-		scriptMsg("Usage: %s", '/'..cmdName..' '..usageStr)
+		if(usageStr) then
+			scriptMsg("Usage: %s", '/'..cmdName..' '..usageStr)
+		else
+			privMsg(ctx.player, "Command %s has not been found!", cmdName)
+		end
 	end
 }
