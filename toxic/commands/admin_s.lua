@@ -107,9 +107,14 @@ CmdMgr.register{
 		{'seconds', type = 'int', defVal = 60, min = 5},
 	},
 	func = function(ctx, player, reason, sec)
+		if(sec > 3600 and not AccessRight('pmute'):check(ctx.player)) then
+			privMsg(ctx.player, "Access denied! You can mute up to 1 hour.")
+			return
+		end
+		
 		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
 		if(player:mute(sec, reason)) then
-			outputMsg(g_Root, Styles.red, "%s has been muted by %s!", player:getName(true), ctx.player:getName(true))
+			outputMsg(g_Root, Styles.red, "%s has been muted by %s (%u seconds)!", player:getName(true), ctx.player:getName(true), sec)
 		end
 	end
 }

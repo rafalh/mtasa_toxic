@@ -169,20 +169,6 @@ function CmdMgr.getAllowedCommands(player)
 	return ret
 end
 
-function CmdMgr.getAccessRights()
-	return {}
-	--[[local ret = {}
-	local added = {}
-	
-	for i, cmd in ipairs(CmdMgr.list) do
-		if(cmd.accessRight and not added[cmd.accessRight]) then
-			table.insert(ret, cmd.accessRight)
-		end
-	end
-	
-	return ret]]
-end
-
 function CmdMgr.getUsage(cmdName)
 	local cmd = CmdMgr.map[cmdName]
 	if(not cmd) then return false end

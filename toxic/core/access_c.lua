@@ -5,9 +5,10 @@ function AccessRight.__mt:__tostring()
 	return 'AccessRight('..self.name..')'
 end
 
-function AccessRight.__mt.__index:init(name)
+function AccessRight.__mt.__index:init(name, absolute)
 	assert(name)
-	self.name = name
+	local fullName = absolute and name or 'resource.'..g_ResName..'.'..name
+	self.name = fullName
 	self.handlers = {}
 	table.insert(AccessRight.list, self)
 end

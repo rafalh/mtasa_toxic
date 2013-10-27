@@ -1,15 +1,22 @@
 AccessRight = Class('AccessRight')
 AccessRight.list = {}
+AccessRight.map = {}
 
 function AccessRight.__mt:__tostring()
 	return 'AccessRight('..self.name..')'
 end
 
+function AccessRight.preInit(name, absolute)
+	local fullName = absolute and name or 'resource.'..g_ResName..'.'..name
+	return AccessRight.map[fullName]
+end
+
 function AccessRight.__mt.__index:init(name, absolute)
 	assert(name)
-	self.name = name
-	self.abs = absolute
+	local fullName = absolute and name or 'resource.'..g_ResName..'.'..name
+	self.name = fullName
 	table.insert(AccessRight.list, self)
+	AccessRight.map[self.name] = self
 end
 
 function AccessRight.__mt.__index:check(player)
@@ -21,11 +28,7 @@ function AccessRight.__mt.__index:check(player)
 end
 
 function AccessRight.__mt.__index:getFullName()
-	if(self.abs) then
-		return self.name
-	else
-		return 'resource.'..g_ResName..'.'..self.name
-	end
+	return self.name
 end
 
 AccessList = Class('AccessList')
@@ -46,7 +49,7 @@ end
 function AccessList.__mt.__index:send(player)
 	local tbl = {}
 	for right, perm in pairs(self) do
-		tbl[right.name] = perm
+		tbl[right:getFullName()] = perm
 	end
 	RPC('AccessList.updateLocal', tbl):setClient(player):exec()
 end

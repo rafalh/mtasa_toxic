@@ -51,14 +51,8 @@ local function setupACL()
 	local rightsToAdd = {}
 	local save = false
 	
-	for i, right in ipairs(CmdMgr.getAccessRights()) do
-		if(not aclGetRight(acl, right)) then
-			table.insert(rightsToAdd, right)
-		end
-	end
-	
 	for i, right in ipairs(AccessRight.list) do
-		local rightName = 'resource.'..g_ResName..'.'..right.name
+		local rightName = right:getFullName()
 		if(not aclGetRight(acl, rightName)) then
 			table.insert(rightsToAdd, rightName)
 		end
