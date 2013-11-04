@@ -16,6 +16,8 @@ end
 
 function privMsg(player, fmt, ...)
 	if(type(player) == 'table') then player = player.el end
+	assert(type(player) == 'userdata' and type(fmt) == 'string')
+	
 	local msg = 'PM: '..MuiGetMsg(fmt, player):format(...):gsub('#%x%x%x%x%x%x', '')
 	local is_console = getElementType(player) == 'console'
 	
@@ -30,7 +32,9 @@ function privMsg(player, fmt, ...)
 	end
 end
 
-function scriptMsg ( fmt, ... )
+function scriptMsg(fmt, ...)
+	assert(type(fmt) == 'string')
+	
 	if ( g_ScriptMsgState.recipients[1] == g_Root ) then -- everybody is a recipient
 		local part = g_ScriptMsgState.prefix..fmt:format ( ... ):gsub ( '#%x%x%x%x%x%x', '' ):sub ( 1, 128 )
 		
@@ -135,6 +139,8 @@ function outputMsg(visibleTo, style, fmt, ...)
 	elseif(not style) then
 		style = {'#FFC080', '#FFFFFF'}
 	end
+	
+	assert(type(fmt) == 'string')
 	
 	if(visibleTo == g_Root or getElementType(visibleTo) == 'game-room') then
 		local msg = fmt:format(...):gsub('#%x%x%x%x%x%x', '')

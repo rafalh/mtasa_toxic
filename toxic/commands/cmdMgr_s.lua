@@ -295,7 +295,10 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 		end
 	end
 	
-	cmd.func(ctx, unpack(args))
+	local status, err = pcall(cmd.func, ctx, unpack(args))
+	if(not status) then
+		outputDebugString('Command '..msg:sub(1, 100)..' failed: '..err, 1)
+	end
 	
 	g_ScriptMsgState.recipients = {g_Root}
 	g_ScriptMsgState.prefix = ''

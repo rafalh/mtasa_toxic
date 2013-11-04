@@ -47,8 +47,10 @@ function RPC.__mt.__index:init(fnName, ...)
 end
 
 local function onRpc(id, fnName, ...)
+	fnName = tostring(fnName)
+	
 	if(SERVER and not g_AllowedRpc[fnName]) then
-		outputDebugString('Denied RPC: '..tostring(fnName), 2)
+		outputDebugString('Denied RPC: '..fnName, 2)
 		return
 	end
 	
@@ -60,11 +62,11 @@ local function onRpc(id, fnName, ...)
 		source = client
 		results = {pcall(fn, ...)}
 		if(not results[1]) then
-			outputDebugString('RPC failed: '..results[2], 2)
+			outputDebugString('RPC '..fnName..' failed: '..results[2], 2)
 			results = {}
 		end
 	else
-		outputDebugString('Failed to execute RPC '..tostring(fnName), 2)
+		outputDebugString('Failed to execute RPC '..fnName, 2)
 	end
 	if(id) then
 		if(SERVER) then

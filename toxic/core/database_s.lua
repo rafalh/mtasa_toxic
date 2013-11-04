@@ -267,7 +267,7 @@ function Database.Drivers.SQLite:query(query, ...)
 		return result
 	end
 	
-	outputDebugString('SQL query failed: '..errmsg, 2)
+	outputDebugString('SQL query ('..query:sub(1, 100)..') failed: '..errmsg, 2)
 	DbgTraceBack()
 	return false
 end
@@ -353,7 +353,7 @@ function Database.Drivers.MySQL:query(query, ...)
 		return result
 	end
 	
-	outputDebugString('SQL query failed: '..errmsg, 2)
+	outputDebugString('SQL query ('..query:sub(1, 100)..') failed: '..errmsg, 2)
 	DbgTraceBack()
 	return false
 end

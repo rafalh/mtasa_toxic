@@ -25,7 +25,7 @@ CmdMgr.register{
 			return
 		end
 		
-		BtDeleteTimes('WHERE player=? AND map=?', rows[num].player, map_id)
+		BtDeleteTimes('player=? AND map=?', rows[num].player, map_id)
 		local accountData = AccountData.create(rows[num].player)
 		if(num <= 3) then
 			accountData:add('toptimes_count', -1)

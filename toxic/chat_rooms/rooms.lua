@@ -9,9 +9,9 @@ ChatRoom.create{
 	right = g_ModChatRight,
 	getPlayers = function(self, sender)
 		local recipients = {}
-		for i, player in ipairs(getElementsByType('player')) do
+		for el, player in pairs(g_Players) do
 			if(g_ModChatRight:check(player)) then
-				table.insert(recipients, player)
+				table.insert(recipients, player.el)
 			end
 		end
 		return recipients
@@ -37,9 +37,9 @@ ChatRoom.create{
 	getPlayers = function(sender)
 		local lang = getElementData(sender, 'country')
 		local recipients = {}
-		for i, player in ipairs(getElementsByType('player')) do
-			if(getElementData(player, 'country') == lang) then
-				table.insert(recipients, player)
+		for el, player in pairs(g_Players) do
+			if(getElementData(player.el, 'country') == lang) then
+				table.insert(recipients, player.el)
 			--else
 			--	assert(player ~= sender)
 			end
