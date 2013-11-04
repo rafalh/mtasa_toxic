@@ -1,8 +1,9 @@
-Teams = {}
-Teams.list = {} -- used by admin_s.lua
-Teams.fromName = {}
-Teams.fromID = {}
-Teams.autoFromName = {}
+namespace('Teams')
+
+g_List = {} -- used by admin_s.lua
+g_TeamFromName = {}
+g_TeamFromID = {}
+g_AutoTeamFromName = {}
 local g_Patterns = {
 	'^%[([^%]][^%]]?[^%]]?[^%]]?[^%]]?[^%]]?)%]',
 	'^%(([^%)][^%)]?[^%)]?[^%)]?[^%)]?[^%)]?)%)',
@@ -31,7 +32,7 @@ TeamsTable = Database.Table{
 
 addEvent('onPlayerChangeTeam')
 
-local function Teams_getClanFromName(name)
+local function getClanFromName(name)
 	name = name:gsub('#%x%x%x%x%x%x', '')
 	
 	for i, pattern in ipairs(g_Patterns) do
@@ -44,16 +45,16 @@ local function Teams_getClanFromName(name)
 	return false
 end
 
-local function Teams_findTeamForPlayer(player, name)
+local function findTeamForPlayer(player, name)
 	local account = getPlayerAccount(player)
 	local accName = account and getAccountName(account)
 	if(not name) then
 		name = getPlayerName(player)
 	end
-	local clanTag = Teams_getClanFromName(name)
+	local clanTag = getClanFromName(name)
 	
 	-- Find team for specified player
-	for i, teamInfo in ipairs(Teams.list) do
+	for i, teamInfo in ipairs(g_List) do
 		if(teamInfo.aclGroup ~= '' and accName and isObjectInACLGroup('user.'..accName, aclGetGroup(teamInfo.aclGroup))) then
 			return teamInfo
 		end
@@ -67,22 +68,22 @@ local function Teams_findTeamForPlayer(player, name)
 		return false
 	end
 	
-	local teamInfo = Teams.fromName[clanTag]
+	local teamInfo = g_TeamFromName[clanTag]
 	if(teamInfo) then
 		-- Don't allow teams from database here
 		return false
 	end
 	
-	local teamInfo = Teams.autoFromName[clanTag]
+	local teamInfo = g_AutoTeamFromName[clanTag]
 	if(not teamInfo) then
 		teamInfo = {name = clanTag}
-		Teams.autoFromName[clanTag] = teamInfo
+		g_AutoTeamFromName[clanTag] = teamInfo
 	end
 	
 	return teamInfo
 end
 
-local function Teams_createTeamFromInfo(teamInfo)
+local function createTeamFromInfo(teamInfo)
 	if(isElement(teamInfo.el)) then
 		destroyElement(teamInfo.el)
 	end
@@ -104,7 +105,7 @@ local function Teams_createTeamFromInfo(teamInfo)
 	return teamInfo.el
 end
 
-local function Teams_removePlayerFromTeam(player)
+local function removePlayerFromTeam(player)
 	local pdata = Player.fromEl(player)
 	local teamInfo = pdata.teamInfo or false
 	if(not teamInfo) then return end
@@ -119,14 +120,14 @@ local function Teams_removePlayerFromTeam(player)
 		teamInfo.el = false
 	end
 	if(teamInfo.count == 0 and not teamInfo.id) then
-		Teams.autoFromName[teamInfo.name] = nil
+		g_AutoTeamFromName[teamInfo.name] = nil
 	end
 end
 
-local function Teams_updatePlayerTeam(player, name)
+local function updatePlayerTeam(player, name)
 	local pdata = Player.fromEl(player)
 	if(not pdata) then return end -- happens when setPlayerNick is called in onPlayerJoin handler
-	local teamInfo = Teams_findTeamForPlayer(player, name)
+	local teamInfo = findTeamForPlayer(player, name)
 	
 	local oldTeamInfo = pdata.teamInfo or false
 	if(oldTeamInfo == teamInfo) then
@@ -134,7 +135,7 @@ local function Teams_updatePlayerTeam(player, name)
 		return
 	end
 	
-	Teams_removePlayerFromTeam(player)
+	removePlayerFromTeam(player)
 	
 	pdata.teamInfo = teamInfo
 	if(not teamInfo) then return end
@@ -152,7 +153,7 @@ local function Teams_updatePlayerTeam(player, name)
 	local created = false
 	if(not isElement(teamInfo.el) and teamInfo.count >= Settings.min_team) then
 		--outputDebugString('Creating team '..teamInfo.name, 3)
-		created = Teams_createTeamFromInfo(teamInfo) and true
+		created = createTeamFromInfo(teamInfo) and true
 	end
 	
 	if(isElement(teamInfo.el)) then
@@ -171,7 +172,7 @@ local function Teams_updatePlayerTeam(player, name)
 	end
 end
 
-local function Teams_destroyEmpty()
+local function destroyEmptyTeams()
 	for i, team in ipairs(getElementsByType('team', g_ResRoot)) do
 		if(countPlayersInTeam(team) == 0) then -- in team there was only source player
 			outputDebugString('Destroying team '..getTeamName(team), 3)
@@ -180,7 +181,7 @@ local function Teams_destroyEmpty()
 	end
 end
 
-local function Teams_detectTeamChange()
+local function detectTeamChange()
 	for player, pdata in pairs(g_Players) do
 		local team = not pdata.is_console and getPlayerTeam(player)
 		if(team ~= pdata.team) then
@@ -190,28 +191,28 @@ local function Teams_detectTeamChange()
 	end
 end
 
-local function Teams_onPlayerLogout()
+local function onPlayerLogout()
 	setPlayerTeam(source, nil)
-	Teams_updatePlayerTeam(source)
-	--Teams_destroyEmpty()
+	updatePlayerTeam(source)
+	--destroyEmptyTeams()
 end
 
-local function Teams_onPlayerJoinLogin()
-	Teams_updatePlayerTeam(source)
-	--Teams_destroyEmpty()
+local function onPlayerJoinLogin()
+	updatePlayerTeam(source)
+	--destroyEmptyTeams()
 end
 
-local function Teams_onPlayerChangeNick(oldNick, newNick)
-	Teams_updatePlayerTeam(source, newNick)
-	--Teams_destroyEmpty()
+local function onPlayerChangeNick(oldNick, newNick)
+	updatePlayerTeam(source, newNick)
+	--destroyEmptyTeams()
 end
 
-local function Teams_onPlayerQuit()
-	Teams_removePlayerFromTeam(source)
-	--Teams_destroyEmpty()
+local function onPlayerQuit()
+	removePlayerFromTeam(source)
+	--destroyEmptyTeams()
 end
 
-local function Teams_loadFromXML()
+local function loadFromXML()
 	local node, i = xmlLoadFile('conf/teams.xml'), 0
 	if(not node) then return false end
 	
@@ -236,23 +237,23 @@ local function Teams_loadFromXML()
 	return teams
 end
 
-function Teams.updateAllPlayers()
+function updateAllPlayers()
 	for player, pdata in pairs(g_Players) do
 		if(not pdata.is_console) then
-			Teams_updatePlayerTeam(player)
+			updatePlayerTeam(player)
 		end
 	end
-	--Teams_destroyEmpty()
+	--destroyEmptyTeams()
 end
 RPC.allow('Teams.updateAllPlayers')
 
-local function Teams_initDelayed()
-	Teams.updateAllPlayers()
-	setTimer(Teams_detectTeamChange, 1000, 0)
+local function initDelayed()
+	updateAllPlayers()
+	setTimer(detectTeamChange, 1000, 0)
 end
 
-local function Teams_init()
-	local oldTeams = Teams_loadFromXML()
+local function init()
+	local oldTeams = loadFromXML()
 	if(oldTeams) then
 		fileDelete('conf/teams.xml')
 		local cnt = DbQuery('SELECT COUNT(id) AS c FROM '..TeamsTable)[1].c
@@ -262,25 +263,25 @@ local function Teams_init()
 			cnt = cnt + 1
 		end
 	end
-	Teams.list = DbQuery('SELECT * FROM '..TeamsTable..' ORDER BY priority')
+	g_List = DbQuery('SELECT * FROM '..TeamsTable..' ORDER BY priority')
 	
-	for i, teamInfo in ipairs(Teams.list) do
-		Teams.fromName[teamInfo.name] = teamInfo
-		Teams.fromID[teamInfo.id] = teamInfo
+	for i, teamInfo in ipairs(g_List) do
+		g_TeamFromName[teamInfo.name] = teamInfo
+		g_TeamFromID[teamInfo.id] = teamInfo
 	end
 	
 	for player, pdata in pairs(g_Players) do
 		pdata.team = false
 	end
 	
-	addEventHandler('onPlayerJoin', g_Root, Teams_onPlayerJoinLogin)
-	addEventHandler('onPlayerLogin', g_Root, Teams_onPlayerJoinLogin)
-	addEventHandler('onPlayerLogout', g_Root, Teams_onPlayerLogout)
-	addEventHandler('onPlayerChangeNick', g_Root, Teams_onPlayerChangeNick)
-	addEventHandler('onPlayerQuit', g_Root, Teams_onPlayerQuit)
+	addEventHandler('onPlayerJoin', g_Root, onPlayerJoinLogin)
+	addEventHandler('onPlayerLogin', g_Root, onPlayerJoinLogin)
+	addEventHandler('onPlayerLogout', g_Root, onPlayerLogout)
+	addEventHandler('onPlayerChangeNick', g_Root, onPlayerChangeNick)
+	addEventHandler('onPlayerQuit', g_Root, onPlayerQuit)
 	
 	-- Don't setup teams in onResourceStart event - see MTA bug #6861
-	setTimer(Teams_initDelayed, 50, 1)
+	setTimer(initDelayed, 50, 1)
 end
 
-addInitFunc(Teams_init)
+addInitFunc(init)

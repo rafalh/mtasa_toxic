@@ -136,9 +136,12 @@ function generateRandomStr(len)
 	return table.concat(chars)
 end
 
-function module(name)
-	local env = {}
-	setmetatable(env, {__index = _G})
-	_G[name] = env
+function namespace(name)
+	local env = _G[name]
+	if(not env) then
+		env = {}
+		setmetatable(env, {__index = _G})
+		_G[name] = env
+	end
 	setfenv(2, env)
 end

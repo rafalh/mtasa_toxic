@@ -88,17 +88,36 @@ function triggerInternalEvent ( eventtype, source, ... )
 end
 
 _isPlayerDead = isPlayerDead
-function isPlayerDead ( player )
-	local state = getElementData ( player, 'state' )
-	if ( not state ) then
-		return _isPlayerDead ( player )
+function isPlayerDead(player)
+	local state = getElementData(player, 'state')
+	if(not state) then
+		return _isPlayerDead(player)
 	end
-	return ( state ~= 'alive' )
+	return (state ~= 'alive')
+end
+
+local g_DelayedList = {}
+
+local function delayedTick()
+	removeEventHandler('onClientPreRender', root, delayedTick)
+	for i, info in ipairs(g_DelayedList) do
+		local status, err = pcall(unpack(info))
+		if(not status) then
+			outputDebugString('Delayed call failed: '..err, 1)
+		end
+	end
+	g_DelayedList = {}
+end
+
+function delayExecution(fn, ...)
+	table.insert(g_DelayedList, {fn, ...})
+	if(#g_DelayedList == 1) then
+		addEventHandler('onClientPreRender', root, delayedTick)
+	end
 end
 
 ------------
 -- Events --
 ------------
 
-addEventHandler ( 'onEvent_'..g_ThisResName, g_Root, onEventHandler )
-
+addEventHandler('onEvent_'..g_ThisResName, g_Root, onEventHandler)

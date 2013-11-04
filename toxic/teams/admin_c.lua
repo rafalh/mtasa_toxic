@@ -42,7 +42,14 @@ local function updateRow(row, teamInfo)
 end
 
 local function updateList(teams, selectedID, selectedCol)
+	-- Save scrollbars position
+	local scrollH = guiGridListGetHorizontalScrollPosition(g_GUI.teamsList)
+	local scrollV = guiGridListGetVerticalScrollPosition(g_GUI.teamsList)
+	
+	-- Clear list
 	guiGridListClear(g_GUI.teamsList)
+	
+	-- Add all items back
 	for i, teamInfo in ipairs(teams) do
 		local row = guiGridListAddRow(g_GUI.teamsList)
 		updateRow(row, teamInfo)
@@ -50,6 +57,13 @@ local function updateList(teams, selectedID, selectedCol)
 			guiGridListSetSelectedItem(g_GUI.teamsList, row, selectedCol)
 		end
 	end
+	
+	-- Restore scrollbars position
+	-- HACKFIX: guiGridListSet*ScrollPosition doesn't work just after guiGridListClear so delay it a bit
+	delayExecution(function()
+		guiGridListSetHorizontalScrollPosition(g_GUI.teamsList, scrollH)
+		guiGridListSetVerticalScrollPosition(g_GUI.teamsList, scrollV)
+	end)
 end
 
 local function onDelResult(row, success)
