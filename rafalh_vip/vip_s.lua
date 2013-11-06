@@ -39,6 +39,26 @@ addEvent("onPlayerPickUpRacePickup")
 -- Local function definitions --
 --------------------------------
 
+function DbgTraceBack(lvl, len, offset)
+	local trace = debug.traceback()
+	trace = trace:gsub('\r', '')
+	local lines = split(trace, '\n')
+	local start = 3 + (offset or 0)
+	local stop = #lines
+	if(len) then
+		stop = math.min(stop, start+len-1)
+	end
+	local tbl = {}
+	for i = start, stop do
+		table.insert(tbl, lines[i])
+		if(lvl ~= -1) then
+			outputDebugString(lines[i], lvl or 2)
+		end
+	end
+	
+	return tbl
+end
+
 local function VipIsPromoActive()
 	local promo_end = tonumber(get("promo_end")) or 0
 	local now = getRealTime().timestamp
@@ -67,7 +87,12 @@ end
 local function VipDestroyNeon(player)
 	local pdata = g_Players[player]
 	if(pdata.neon) then
-		destroyElement(pdata.neon.obj)
+		if(not isElement(pdata.neon.obj)) then
+			outputDebugString('[VIP] Neon marker is invalid: '..tostring(pdata.neon.obj), 2)
+			DbgTraceBack()
+		else
+			destroyElement(pdata.neon.obj)
+		end
 		pdata.neon = nil
 	end
 	--outputDebugString("VipDestroyNeon("..getPlayerName(player)..")")
@@ -407,7 +432,7 @@ function formatDateTime(timestamp)
 end
 
 function isPlayer(val)
-	return isElement(val) and getElementType(val) == 'player'
+	return isElement(val) and (getElementType(val) == 'player' or getElementType(val) == 'console')
 end
 
 function urlEncode(str)
@@ -539,9 +564,9 @@ function VipGetAll()
 				table.insert(ret, {accountName, false})
 			else
 				local access, limit = VipCheck(account)
-				if(access) then
+				--if(access) then
 					table.insert(ret, {account, limit})
-				end
+				--end
 			end
 		end
 	end

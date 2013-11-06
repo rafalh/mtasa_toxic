@@ -107,6 +107,8 @@ addCommandHandler('checkallvips', function(source, cmd, name)
 				msg = name..' is endless VIP!'
 			elseif(info[2] > now + 100*24*3600) then
 				msg = name..' is a VIP untill '..formatDateTime(info[2])
+			elseif(info[2] < now) then
+				msg = name..' is still in VIP group but his rank has expired '..formatDateTime(info[2])
 			end
 		end
 		
