@@ -125,7 +125,7 @@ function MuiSetLang ( lang )
 	if ( lang ~= g_Lang ) then
 		MuiLoad ( "lang/"..tostring ( lang ).."_c.xml" )
 		MuiUpdate ()
-		triggerEvent ( "onClientLangChanged", getResourceRootElement ( getThisResource () ) )
+		triggerEvent("onClientLangChanged", getResourceRootElement())
 		g_Lang = lang
 	end
 end

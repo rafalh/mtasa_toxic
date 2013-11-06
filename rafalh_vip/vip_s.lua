@@ -2,29 +2,12 @@
 -- Global variables --
 ----------------------
 
-#local ACTIVATION_URL = 'http://mtatoxic.tk/scripts/NGWm5LtQ5fmnnmpx/activate_code.php?code=%s'
-
 g_Root = getRootElement()
 g_ThisRes = getThisResource()
 g_ResRoot = getResourceRootElement(g_ThisRes)
-local g_Players = {}
-local g_VipGroup = aclGetGroup('VIP')
-local g_VipRight = 'resource.rafalh_vip'
-
------------------
--- Definitions --
------------------
-
-#PROMO_MONTHS = 2
-#PROMO_TEXT = "It's CHRISTMAS PROMOTION so you get one month more for free."
-
-#PROMO_DAY1 = 20
-#PROMO_MONTH1 = 12
-#PROMO_YEAR1 = 2010
-
-#PROMO_DAY2 = 4
-#PROMO_MONTH2 = 1
-#PROMO_YEAR2 = 2011
+g_Players = {}
+g_VipGroup = aclGetGroup('VIP')
+g_VipRight = 'resource.rafalh_vip'
 
 -------------------
 -- Custom events --
@@ -38,26 +21,6 @@ addEvent("onPlayerPickUpRacePickup")
 --------------------------------
 -- Local function definitions --
 --------------------------------
-
-function DbgTraceBack(lvl, len, offset)
-	local trace = debug.traceback()
-	trace = trace:gsub('\r', '')
-	local lines = split(trace, '\n')
-	local start = 3 + (offset or 0)
-	local stop = #lines
-	if(len) then
-		stop = math.min(stop, start+len-1)
-	end
-	local tbl = {}
-	for i = start, stop do
-		table.insert(tbl, lines[i])
-		if(lvl ~= -1) then
-			outputDebugString(lines[i], lvl or 2)
-		end
-	end
-	
-	return tbl
-end
 
 local function VipIsPromoActive()
 	local promo_end = tonumber(get("promo_end")) or 0
@@ -86,48 +49,16 @@ end
 
 local function VipDestroyNeon(player)
 	local pdata = g_Players[player]
-	if(pdata.neon) then
-		if(not isElement(pdata.neon.obj)) then
-			outputDebugString('[VIP] Neon marker is invalid: '..tostring(pdata.neon.obj), 2)
-			DbgTraceBack()
-		else
-			destroyElement(pdata.neon.obj)
-		end
-		pdata.neon = nil
+	if(not pdata.neon) then return end
+	
+	if(not isElement(pdata.neon.obj)) then
+		outputDebugString('[VIP] Neon marker is invalid: '..tostring(pdata.neon.obj), 2)
+		DbgTraceBack()
+	else
+		destroyElement(pdata.neon.obj)
 	end
+	pdata.neon = nil
 	--outputDebugString("VipDestroyNeon("..getPlayerName(player)..")")
-end
-
-local function VipCleanup()
-	for player, pdata in pairs(g_Players) do
-		if(pdata.neon) then
-			VipDestroyNeon(player)
-		end
-		if(pdata.vehclrtimer) then
-			killTimer(pdata.vehclrtimer)
-		end
-	end
-end
-
-local function VipOnRafalhVipStart()
-	g_Players[client] = {}
-	local is_vip, timestamp = isVip(client, getPlayerAccount(client))
-	if(is_vip) then
-		triggerClientEvent(client, "vip.onVerified", g_Root, timestamp)
-	end
-	if(VipIsPromoActive()) then
-		addEvent("vip.onShowPromoBannerReq", true)
-		triggerClientEvent(client, "vip.onShowPromoBannerReq", g_Root)
-	end
-end
-
-local function VipRandVehColor(player)
-	local veh = getPedOccupiedVehicle(player)
-	if(veh) then
-		local r1, g1, b1 = math.random(0, 255), math.random(0, 255), math.random(0, 255)
-		local r2, g2, b2 = math.random(0, 255), math.random(0, 255), math.random(0, 255)
-		setVehicleColor(veh, r1, g1, b1, r2, g2, b2)
-	end
 end
 
 local function VipAutopilotFunc(player)
@@ -147,13 +78,7 @@ local function VipUpdateVehicle(player, veh)
 			local r2, g2, b2 = getColorFromString(settings.vehcolor2)
 			setVehicleColor(veh, r1, g1, b1, r2, g2, b2)
 		end
-		if(pdata.vehclrtimer) then
-			killTimer(pdata.vehclrtimer)
-			pdata.vehclrtimer = nil
-		end
-		if(settings.vehcolortimer) then
-			pdata.vehclrtimer = setTimer(VipRandVehColor, math.max(tonumber(settings.vehcolortimer_int) or 3, 3)*1000, 0, player)
-		end
+		
 		if(settings.vehlicolor) then
 			local r, g, b = getColorFromString(settings.vehlicolor_clr)
 			setVehicleHeadLightColor(veh, r, g, b)
@@ -218,15 +143,29 @@ local function VipSetAvatar(player, avatar)
 	end
 end
 
-local function VipApplySettings(player, veh, old_settings)
+local function VipBroadcastGlobalInfo(srcPlayer)
+	local srcData = g_Players[srcPlayer]
+	
+	for player, pdata in pairs(g_Players) do
+		triggerClientEvent(player, 'vip.onPlayerInfo', resourceRoot, srcPlayer, srcData.globalInfo)
+	end
+end
+
+local function VipApplySettings(player, veh, oldSettings)
 	local pdata = g_Players[player]
 	local settings = pdata and pdata.settings
 	if(not settings) then return end
 	
 	VipUpdateVehicle(player, veh)
 	
+	pdata.globalInfo = {
+		rainbow = settings.vehrainbow and settings.vehrainbow_speed,
+	}
+	
+	VipBroadcastGlobalInfo(player)
+	
 	settings.avatar = tostring(settings.avatar)
-	if(not old_settings or old_settings.avatar ~= settings.avatar) then
+	if(not oldSettings or oldSettings.avatar ~= settings.avatar) then
 		if(settings.avatar ~= "") then
 			local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
 			outputDebugString("Downloading "..playerName.." avatar: "..settings.avatar, 3)
@@ -239,62 +178,60 @@ local function VipApplySettings(player, veh, old_settings)
 	setElementData(player, "ignored_players", settings.ignored, false)
 end
 
-local function VipOnPlayerSettings(settings)
-	if(isVip(client, getPlayerAccount(client)) and g_Players[client]) then
-		local old_settings = g_Players[client].settings
-		g_Players[client].settings = settings
-		local veh = getPedOccupiedVehicle(client)
-		VipApplySettings(client, veh, old_settings)
-	end
-end
-
 local function VipOnPlayerQuit()
-	if(g_Players[source]) then
-		if(g_Players[source].neon) then
-			VipDestroyNeon(source)
-		end
-		if(g_Players[source].vehclrtimer) then
-			killTimer(g_Players[source].vehclrtimer)
-		end
+	local pdata = g_Players[source]
+	if(not pdata) then return end
+	
+	if(pdata.neon) then
+		VipDestroyNeon(source)
 	end
+	
 	g_Players[source] = nil
 end
 
 local function VipOnPlayerLogin(thePreviousAccount, theCurrentAccount)
-	local is_vip, timestamp = isVip(source, theCurrentAccount)
-	if(is_vip and g_Players[source]) then
-		g_Players[source].settings = nil
-		triggerClientEvent(source, "vip.onVerified", g_Root, timestamp)
+	local pdata = g_Players[source]
+	local access, timestamp = isVip(source, theCurrentAccount)
+	if(access and pdata) then
+		pdata.access = true
+		pdata.settings = nil
+		triggerClientEvent(source, "vip.onVerified", resourceRoot, timestamp)
 	end
 end
 
 local function VipOnPlayerVehicleEnter(veh)
 	--outputDebugString("VipOnPlayerVehicleEnter ("..getPlayerName(source)..")")
-	if(g_Players[source] and g_Players[source].settings) then
+	local pdata = g_Players[source]
+	if(not pdata) then return end
+	
+	if(pdata.settings) then
 		VipUpdateVehicle(source, veh)
 	end
 end
 
 local function VipOnPlayerVehicleExit(veh)
-	local neon = g_Players[source] and g_Players[source].neon
-	if(neon and neon.veh == veh) then
+	local pdata = g_Players[source]
+	if(not pdata) then return end
+	
+	if(pdata.neon and pdata.neon.veh == veh) then
 		VipDestroyNeon(source)
 	end
 end
 
 local function VipOnPlayerWasted()
-	local neon = g_Players[source] and g_Players[source].neon
-	if(neon) then
+	local pdata = g_Players[source]
+	if(not pdata) then return end
+	
+	if(pdata.neon) then
 		VipDestroyNeon(source)
 	end
 end
 
 local function VipOnElementDestroy()
-	if(getElementType(source) ~= "vehicle") then
-		return
-	end
-	for player, data in pairs(g_Players) do
-		if(data.neon and data.neon.veh == source) then
+	if(getElementType(source) ~= "vehicle") then return end
+	
+	for player, pdata in pairs(g_Players) do
+		if(pdata.neon and pdata.neon.veh == source) then
 			VipDestroyNeon(player)
 		end
 	end
@@ -311,12 +248,54 @@ local function VipOnPlayerPickUpRacePickup()
 	end
 end
 
+local function VipOnClientReady()
+	local pdata = {}
+	g_Players[client] = pdata
+	
+	local access, timestamp = isVip(client, getPlayerAccount(client))
+	
+	if(access) then
+		triggerClientEvent(client, "vip.onVerified", resourceRoot, timestamp)
+		pdata.access = true
+	end
+	
+	if(VipIsPromoActive()) then
+		addEvent("vip.onShowPromoBannerReq", true)
+		triggerClientEvent(client, "vip.onShowPromoBannerReq", g_Root)
+		pdata.access = true
+	end
+	
+	for curPlayer, curData in pairs(g_Players) do
+		if(curData.globalInfo) then
+			triggerClientEvent(player, 'vip.onPlayerInfo', curPlayer, curData.globalInfo)
+		end
+	end
+end
+
+local function VipOnPlayerSettings(settings)
+	local pdata = g_Players[client]
+	if(not pdata or not pdata.access) then return end
+	
+	local oldSettings = pdata.settings
+	pdata.settings = settings
+	local veh = getPedOccupiedVehicle(client)
+	VipApplySettings(client, veh, oldSettings)
+end
+
+local function VipCleanup()
+	for player, pdata in pairs(g_Players) do
+		if(pdata.neon) then
+			VipDestroyNeon(player)
+		end
+	end
+end
+
 local function VipInit()
 	if(not g_VipGroup) then
 		g_VipGroup = aclCreateGroup("VIP")
 	end
 	
-	addEventHandler("vip.onReady", g_Root, VipOnRafalhVipStart)
+	addEventHandler("vip.onReady", g_Root, VipOnClientReady)
 	addEventHandler("vip.onSettings", g_Root, VipOnPlayerSettings)
 	addEventHandler("onResourceStop", g_ResRoot, VipCleanup)
 	addEventHandler("onPlayerQuit", g_Root, VipOnPlayerQuit)
@@ -326,263 +305,6 @@ local function VipInit()
 	addEventHandler("onPlayerWasted", g_Root, VipOnPlayerWasted)
 	addEventHandler("onElementDestroy", g_Root, VipOnElementDestroy)
 	addEventHandler("onPlayerPickUpRacePickup", g_Root, VipOnPlayerPickUpRacePickup)
-end
-
-local function VipGetPlayerFromAccount(account)
-	for i, player in ipairs(getElementsByType("player")) do
-		if(getPlayerAccount(player) == account) then
-			return player
-		end
-	end
-	
-	return false
-end
-
-local function VipActivationError(reason, player)
-	local fmt = "VIP activation failed: %s. Please contact administrator."
-	outputChatBox(fmt:format(reason), player or root, 255, 0, 0)
-	outputDebugString('VIP activation failed: '..reason..' for '..(player and getPlayerName(player) or 'unknown'), 3)
-end
-
-local function VipActivatePlayerPromoCode(player)
-	local account = getPlayerAccount(player)
-	if(getAccountData(account, "rafalh_vip_promo")) then
-		outputChatBox("You have already used VIP promotion code.", player, 255, 0, 0)
-		return false
-	elseif(not g_VipGroup) then
-		VipActivationError("VIP group has not been found.")
-		return false
-	end
-	
-	local accName = getAccountName(account)
-	setAccountData(account, 'rafalh_vip_promo', 1)
-	
-	local status, limit = VipAdd(account, 60*60)
-	if(not status) then
-		VipActivationError("VipAdd failed")
-		return false
-	end
-	
-	outputChatBox("VIP activated successfully! Rank will be valid for 1 hour untill "..(limit and formatDateTime(limit) or 'N/A'), player, 0, 255, 0)
-	return true
-end
-
-local function VipActivationCallback(data, errno, account)
-	local player = VipGetPlayerFromAccount(account)
-	
-	if(errno ~= 0) then
-		VipActivationError("fetchRemote failed with code "..tostring(errno), player)
-		return
-	end
-	
-	local accName = account and getAccountName(account)
-	if(not accName) then
-		VipActivationError("account is invalid", player)
-		return
-	end
-	
-	local days, statusMsg = fromJSON(data)
-	local days = tonumber(days)
-	if(not days or days <= 0 or days > 100) then
-		if(statusMsg) then
-			statusMsg = tostring(statusMsg):sub(1, 64)
-		else
-			statusMsg = tostring(data):gsub("<[^>]+>", ""):sub(1, 64)
-		end
-		VipActivationError(statusMsg, player)
-		return
-	elseif(not g_VipGroup) then
-		VipActivationError("VipGroup does not exist", player)
-		return
-	end
-	
-	-- Check if this is a promotion
-	local tm = getRealTime()
-	local promo = false
-	if(tm.year*12*31 + tm.month*31 + tm.monthday >= $((PROMO_YEAR1-1900)*12*31+(PROMO_MONTH1-1)*31+PROMO_DAY1) and tm.year*12*31 + tm.month*31 + tm.monthday <= $((PROMO_YEAR2-1900)*12*31+(PROMO_MONTH2-1)*31+PROMO_DAY2)) then
-		days = days + $(PROMO_MONTHS)*30
-		promo = true
-	end
-	
-	local status, limit = VipAdd(account, days*24*3600)
-	if(not status) then
-		VipActivationError('giveVip failed', player)
-		return
-	end
-	
-	if(player) then
-		local limitStr = limit and formatDateTime(limit) or 'N/A'
-		local msg
-		if(not promo) then
-			msg = "VIP activated successfully! Rank will be valid untill "..limitStr
-		else
-			msg = "VIP activated successfully! Rank will be valid untill "..limitStr
-		end
-		outputChatBox(msg, player, 0, 255, 0)
-	end
-end
-
-----------------------
--- Global functions --
-----------------------
-
-function formatDateTime(timestamp)
-	local tm = getRealTime(timestamp)
-	return ("%u.%02u.%u %u:%02u GMT."):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
-end
-
-function isPlayer(val)
-	return isElement(val) and (getElementType(val) == 'player' or getElementType(val) == 'console')
-end
-
-function urlEncode(str)
-	return str:gsub('[^%w%.%-_ ]', function(ch)
-		return ('%%%02X'):format(ch:byte())
-	end):gsub(' ', '+')
-end
-
-function VipCheck(playerOrAccount)
-	local account = isPlayer(playerOrAccount) and getPlayerAccount(playerOrAccount) or playerOrAccount
-	assert(account)
-	
-	local status, limit = false, false
-	local now = getRealTime().timestamp
-	
-	local promoEnd = tonumber(get("promo_end"))
-	if(promoEnd > now) then
-		status = true
-		limit = promoEnd
-	end
-	
-	local accountName = getAccountName(account)
-	if(hasObjectPermissionTo('user.'..accountName, g_VipRight, false)) then
-		local accLimit = getAccountData(account, "rafalh_vip_time")
-		if(accLimit and accLimit < now) then
-			-- Expired
-			VipRemove(account)
-		elseif(not status or not accLimit or accLimit > limit) then
-			-- Account limit is better
-			status = true
-			limit = accLimit
-		end
-	end
-	
-	return status, limit
-end
-
-function VipAdd(playerOrAccount, seconds)
-	local player = isPlayer(playerOrAccount) and playerOrAccount or VipGetPlayerFromAccount(playerOrAccount)
-	local account = isPlayer(playerOrAccount) and getPlayerAccount(playerOrAccount) or playerOrAccount
-	local seconds = tonumber(seconds)
-	assert(account and seconds)
-	
-	if(isGuestAccount(account) or not g_VipGroup) then
-		return false
-	end
-	
-	local now = getRealTime().timestamp
-	local newLimit
-	local access, limit = VipCheck(account)
-	if(access) then
-		if(limit) then
-			-- extend access
-			newLimit = math.max(math.max(limit, now) + seconds, now)
-		else
-			-- endless access
-			return true, false 
-		end
-	else
-		if(seconds <= 0) then
-			-- Trying to give negative number for not VIP
-			return false, false
-		else
-			-- new VIP
-			newLimit = now + seconds
-		end
-	end
-	
-	--outputDebugString('VipAdd '..getAccountName(account)..' '..seconds..' - old '..tostring(limit)..', new '..tostring(newLimit), 3)
-	
-	-- Update limit
-	setAccountData(account, 'rafalh_vip_time', newLimit)
-	
-	if(newLimit > now) then
-		-- Add to group if needed
-		local accountName = getAccountName(account)
-		aclGroupAddObject(g_VipGroup, 'user.'..accountName)
-		outputServerLog("VIP rank activated for "..accountName..". It will be active untill "..formatDateTime(newLimit))
-	elseif(access) then
-		-- Not VIP anymore
-		VipRemove(account)
-	end
-	
-	if(player) then
-		-- Send VIP limit to player (even if he was a VIP)
-		triggerClientEvent(player, 'vip.onVerified', g_Root, newLimit)
-	end
-	
-	return true, newLimit
-end
-
-function VipRemove(playerOrAccount)
-	local player = isPlayer(playerOrAccount) and playerOrAccount or VipGetPlayerFromAccount(playerOrAccount)
-	local account = isPlayer(playerOrAccount) and getPlayerAccount(playerOrAccount) or playerOrAccount
-	assert(account)
-	
-	local accName = getAccountName(account)
-	if(not aclGroupRemoveObject(g_VipGroup, 'user.'..accName)) then return false end
-	
-	outputServerLog("VIP rank disactivated for "..accName..".")
-	if(player) then
-		outputChatBox("Your VIP rank has been disactivated!", player, 255, 0, 0)
-	end
-end
-
-function VipActivatePlayerCode(player, code)
-	if(code == 'PROMO') then
-		return VipActivatePlayerPromoCode(player)
-	end
-	
-	local account = getPlayerAccount(player)
-	local url = ('$ACTIVATION_URL'):format(urlEncode(code))
-	if(not fetchRemote(url, VipActivationCallback, '', false, account)) then
-		VipActivationError('fetchRemote failed', player)
-		return false
-	end
-	
-	return true
-end
-
-function VipGetAll()
-	local ret = {}
-	local vips = aclGroupListObjects(g_VipGroup)
-	for i, objName in ipairs(vips) do
-		if(objName:sub(1, 5) == 'user.') then
-			local accountName = objName:sub(6)
-			local account = getAccount(accountName)
-			if(not account) then
-				table.insert(ret, {accountName, false})
-			else
-				local access, limit = VipCheck(account)
-				--if(access) then
-					table.insert(ret, {account, limit})
-				--end
-			end
-		end
-	end
-	return ret
-end
-
-function giveVip(playerOrAccount, days)
-	local days = tonumber(days or 30)
-	assert(playerOrAccount and days)
-	local success = VipAdd(playerOrAccount, days*24*3600)
-	--outputDebugString('giveVip '..getPlayerName(playerOrAccount)..' '..days..': '..tostring(success), 3)
-	return success
-end
-
-function isVip(player, account)
-	return VipCheck(account or player)
 end
 
 ------------

@@ -6,7 +6,8 @@
 	<msg id="Choose">Wybierz</msg>
 	<msg id="Neon under the car">Neon pod samochodem</msg>
 	<msg id="Car's color">Kolor samochodu</msg>
-	<msg id="Random car's color timer">Timer losowego koloru samochodu</msg>
+	<msg id="Variable car's color">Zmienny kolor samochodu</msg>
+	<msg id="Speed:">Szybkość:</msg>
 	<msg id="Car's lights color">Kolor świateł samochodu</msg>
 	<msg id="Force car's lights on">Światła samochodu zawsze włączone</msg>
 	<msg id="Driver">Kierowca</msg>
