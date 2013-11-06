@@ -29,7 +29,7 @@ local g_Settings = {
 local g_IsVip, g_VipEnd = false, false
 local g_Gui
 local g_NeonColorWnd, g_VehColorWnd, g_VehColor1Wnd, g_VehColor2Wnd, g_VehLightsColorWnd, g_NametagColorWnd
-local g_Skins = {}
+local g_Skins = false
 
 -------------------
 -- Custom events --
@@ -53,6 +53,8 @@ local function VipLoadSkins()
 		outputDebugString('Failed to load skins for VIP panel', 2)
 		return
 	end
+	
+	g_Skins = {}
 	
 	local loaded = {}
 	for i, groupNode in ipairs(xmlNodeGetChildren(node)) do
@@ -79,6 +81,9 @@ local function VipLoadSkins()
 end
 
 local function VipLoadSettings()
+	-- Mark settings as loaded even if file does not exist
+	g_SettingsLoaded = true
+	
 	local node = xmlLoadFile('settings.xml')
 	if(not node) then return end
 	
@@ -248,53 +253,6 @@ local function VipSaveSettings()
 	xmlUnloadFile(node)
 end
 
-local function VipInit()
-	triggerServerEvent('vip.onReady', g_Me)
-	VipLoadSkins()
-	VipLoadSettings()
-end
-
-local function VipCloseSettings()
-	showCursor(false)
-	if(g_NeonColorWnd) then
-		destroyElement(g_NeonColorWnd)
-		g_NeonColorWnd = nil
-	end
-	if(g_VehColor1Wnd) then
-		destroyElement(g_VehColor1Wnd)
-		g_VehColor1Wnd = nil
-	end
-	if(g_VehColor2Wnd) then
-		destroyElement(g_VehColor2Wnd)
-		g_VehColor2Wnd = nil
-	end
-	if(g_VehLightsColorWnd) then
-		destroyElement(g_VehLightsColorWnd)
-		g_VehLightsColorWnd = nil
-	end
-	if(g_NametagColorWnd) then
-		destroyElement(g_NametagColorWnd)
-		g_NametagColorWnd = nil
-	end
-	for wnd, name in pairs(g_Gui.wgWnd) do
-		destroyElement(wnd)
-		local res = getResourceFromName(name)
-		if(res and g_Settings.widgets[name]) then
-			if(g_Settings.widgets[name].pos) then
-				call(res, 'widgetCtrl', $(wg_move), g_Settings.widgets[name].pos[1], g_Settings.widgets[name].pos[2])
-			end
-			if(g_Settings.widgets[name].size) then
-				call(res, 'widgetCtrl', $(wg_resize), g_Settings.widgets[name].size[1], g_Settings.widgets[name].size[2])
-			end
-			if(g_Settings.widgets[name].visible ~= nil) then
-				call(res, 'widgetCtrl', $(wg_show), g_Settings.widgets[name].visible)
-			end
-		end
-	end
-	destroyElement(g_Gui.wnd)
-	g_Gui = nil
-end
-
 local function VipActivateSettings()
 	setBlurLevel(( g_Settings.blur and 36) or 0)
 	setCloudsEnabled(g_Settings.clouds)
@@ -436,9 +394,53 @@ local function onWidgetResetBtnClick()
 	end
 end
 
-local function VipOpenSettings()
+local function VipCloseSettingsWnd()
+	if(not g_Gui) then return end
+	
+	showCursor(false)
+	
+	if(g_NeonColorWnd) then
+		destroyElement(g_NeonColorWnd)
+		g_NeonColorWnd = nil
+	end
+	if(g_VehColor1Wnd) then
+		destroyElement(g_VehColor1Wnd)
+		g_VehColor1Wnd = nil
+	end
+	if(g_VehColor2Wnd) then
+		destroyElement(g_VehColor2Wnd)
+		g_VehColor2Wnd = nil
+	end
+	if(g_VehLightsColorWnd) then
+		destroyElement(g_VehLightsColorWnd)
+		g_VehLightsColorWnd = nil
+	end
+	if(g_NametagColorWnd) then
+		destroyElement(g_NametagColorWnd)
+		g_NametagColorWnd = nil
+	end
+	for wnd, name in pairs(g_Gui.wgWnd) do
+		destroyElement(wnd)
+		local res = getResourceFromName(name)
+		if(res and g_Settings.widgets[name]) then
+			if(g_Settings.widgets[name].pos) then
+				call(res, 'widgetCtrl', $(wg_move), g_Settings.widgets[name].pos[1], g_Settings.widgets[name].pos[2])
+			end
+			if(g_Settings.widgets[name].size) then
+				call(res, 'widgetCtrl', $(wg_resize), g_Settings.widgets[name].size[1], g_Settings.widgets[name].size[2])
+			end
+			if(g_Settings.widgets[name].visible ~= nil) then
+				call(res, 'widgetCtrl', $(wg_show), g_Settings.widgets[name].visible)
+			end
+		end
+	end
+	destroyElement(g_Gui.wnd)
+	g_Gui = nil
+end
+
+local function VipOpenSettingsWnd()
 	if(g_Gui) then
-		VipCloseSettings()
+		guiBringToFront(g_Gui.wnd)
 		return
 	end
 	
@@ -470,12 +472,12 @@ local function VipOpenSettings()
 		guiLabelSetColor(label, 0, 128, 0)
 	end
 	button = guiCreateButton(330, h - 30, 60, 20, "Cancel", false, g_Gui.wnd)
-	addEventHandler('onClientGUIClick', button, VipCloseSettings, false)
+	addEventHandler('onClientGUIClick', button, VipCloseSettingsWnd, false)
 	
 	button = guiCreateButton(260, h - 30, 60, 20, "OK", false, g_Gui.wnd)
 	addEventHandler('onClientGUIClick', button, function()
 		VipApplySettings()
-		VipCloseSettings()
+		VipCloseSettingsWnd()
 	end, false)
 	
 	-- Vehicle
@@ -697,8 +699,23 @@ local function VipOpenSettings()
 	showCursor(true)
 end
 
+local function VipToggleSettingsWnd()
+	if(g_Gui) then
+		VipCloseSettingsWnd()
+	else
+		VipOpenSettingsWnd()
+	end
+end
+
 local function VipOnClientVip(timestamp)
 	g_VipEnd = timestamp
+	
+	if(not g_Skins) then
+		VipLoadSkins()
+	end
+	if(not g_SettingsLoaded) then
+		VipLoadSettings()
+	end
 	
 	if(g_IsVip) then
 		return
@@ -712,7 +729,7 @@ local function VipOnClientVip(timestamp)
 	
 	VipActivateSettings()
 	
-	bindKey('g', 'down', VipOpenSettings)
+	bindKey('g', 'down', VipToggleSettingsWnd)
 	
 	triggerEvent('vip.onStatus', resourceRoot, g_IsVip)
 	triggerEvent('onRafalhGetWidgets', g_Root)
@@ -744,13 +761,17 @@ local function VipOnAddWidget(res, widgetName)
 	end
 end
 
+local function VipInit()
+	triggerServerEvent('vip.onReady', g_Me)
+end
+
 -- Exported function
 function openVipPanel()
 	if(not g_IsVip) then
 		return false
 	end
 	
-	VipOpenSettings()
+	VipToggleSettingsWnd()
 	return true
 end
 
