@@ -326,7 +326,7 @@ function VipOpenSettingsWnd()
 	y = y + 65
 	
 	g_Gui.vehrainbow = guiCreateCheckBox(10, y, 300, 25, "Variable car's color", g_Settings.vehrainbow, false, tab)
-	guiCreateLabel(10, y + 30, 80, 20, "Speed:", false, tab)
+	guiCreateLabel(10, y + 30, 80, 20, "Interval (sec.):", false, tab)
 	g_Gui.vehrainbow_speed = guiCreateEdit(100, y + 25, 40, 25, tostring(g_Settings.vehrainbow_speed), false, tab)
 	y = y + 65
 	

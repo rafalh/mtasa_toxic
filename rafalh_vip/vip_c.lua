@@ -242,7 +242,8 @@ local function VipUpdateRainbowPlayers()
 end
 
 local function VipSetRainbow(player, speed)
-	outputDebugString('VipSetRainbow '..getPlayerName(player)..' '..tostring(speed), 3)
+	--outputDebugString('VipSetRainbow '..getPlayerName(player)..' '..tostring(speed), 3)
+	
 	if(not g_RainbowPlayers[player]) then
 		if(not speed) then return end
 		g_RainbowPlayers[player] = {
