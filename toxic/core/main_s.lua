@@ -151,6 +151,8 @@ local function onPlayerChat(msg, msgType)
 			CsPunish(player, punishment)
 			cancelEvent()
 			return
+		else
+			msgPlain = msg:gsub('#%x%x%x%x%x%x', '')
 		end
 	end
 	

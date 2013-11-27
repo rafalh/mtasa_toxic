@@ -1,40 +1,74 @@
 local g_ForbWords = {}
 
-function CsProcessMsg(msg)
+function table.removeMultiple(tbl, pos, count)
+	--assert(pos + count <= #tbl + 1)
+	for i = 1, count do
+		table.remove(tbl, pos)
+	end
+end
+
+function CsPreprocessStr(str)
 	local offsets = {}
-	local offset = 0
 	
-	local buf = msg:lower():gsub('()%A', function(i) -- remove color codes
-		offsets[i-offset] = i + 1
-		offset = offset + 1
+	for i = 1, #str do
+		table.insert(offsets, i)
+	end
+	
+	str = str:lower()
+	
+	local tmp = 0
+	str = str:gsub('()#%x%x%x%x%x%x', function(idx)
+		table.removeMultiple(offsets, idx - tmp, 7)
+		tmp = tmp + 7
 		return ''
 	end)
 	
-	offset = 0
-	for i = 1, buf:len()+1, 1 do
-		if(not offsets[i]) then
-			offsets[i] = offset + 1
+	tmp = 0
+	local i = 0
+	str = str:gsub('()(%W*)(%w+)', function(idx, rest, word)
+		if(word:len() ~= 1) then
+			i = 0
+		elseif(i >= 1) then
+			if(#rest > 0) then
+				table.removeMultiple(offsets, idx - tmp, #rest)
+				tmp = tmp + #rest
+			end
+			return word
+		else
+			i = i + 1
 		end
-		offset = offsets[i]
-	end
+	end)
+	
+	return str, offsets
+end
+
+function CsProcessMsg(msg)
+	local prof = DbgPerf(5)
+	
+	local buf, offsets = CsPreprocessStr(msg)
 	
 	local punish = {fine = 0, mute = 0, warn = false, hide = false}
-	local maskWords = Settings.censor_mask
+	local replaceWords = Settings.censor_replace
 	local found = false
 	
-	for word, item in pairs(g_ForbWords) do
-		local pattern = word:lower()
-		pattern = pattern:gsub('.', '%1+')
-		for i, j in buf:gmatch('()'..pattern..'()') do
+	for i, item in ipairs(g_ForbWords) do
+		for i, j in buf:gmatch('()'..item.pattern..'()') do
 			-- Bad word has been found
 			found = true
 			
-			if(maskWords) then
-				-- Change word to *****
+			if(replaceWords) then
+				local repl = item.repl
+				local repl2 = ('*'):rep(j - i + 1)
+				if(not repl) then
+					-- Change word to *****
+					repl = repl2
+				end
+				
+				-- FIXME: offsets are invalid if #repl ~= #repl2
 				local before = msg:sub(1, offsets[i] - 1)
-				local after = msg:sub(offsets[j])
-				local masked = ('*'):rep(word:len())
-				msg = before..masked..after
+				local after = msg:sub(offsets[j - 1] + 1)
+				msg = before..repl..after
+				buf = buf:sub(1, i - 1)..repl2..buf:sub(j)
 			end
 			
 			-- Update punishment data
@@ -59,6 +93,8 @@ function CsProcessMsg(msg)
 		msg = false
 	end
 	
+	prof:cp('CsProcessMsg')
+	
 	return msg, punish
 end
 
@@ -67,10 +103,8 @@ function CsCheckNickname(name)
 	--outputDebugString('CsCheckNickname '..name, 3)
 	
 	local plainName = name:lower():gsub('#%x%x%x%x%x%x', '')
-	for word, item in pairs(g_ForbWords) do
-		local pattern = word:lower()
-		pattern = pattern:gsub('.', '%1+')
-		if(plainName:find(pattern)) then
+	for i, item in ipairs(g_ForbWords) do
+		if(plainName:find(item.pattern)) then
 			--outputDebugString('Detected banned nickname: '..plainName, 3)
 			return true
 		end
@@ -116,11 +150,13 @@ local function CsLoadWords()
 		assert(word:len() > 0)
 		
 		local item = {}
+		item.pattern = word:lower():gsub('%a', '%1+')
 		item.fine = touint(attr.price, 0)
 		item.mute = touint(attr.mute, 0)
 		item.hide = tobool(attr.hide)
 		item.warn = tobool(attr.warn)
-		g_ForbWords[word] = item
+		item.repl = attr.repl
+		table.insert(g_ForbWords, item)
 	end
 	
 	xmlUnloadFile(node)
@@ -133,3 +169,60 @@ local function CsInit()
 end
 
 addPreInitFunc(CsInit)
+
+#local TEST = false
+#if(TEST) then
+	local function areTablesEqual(tbl1, tbl2)
+		if(type(tbl1) ~= 'table' or type(tbl2) ~= 'table') then return false end
+		
+		for i, v in pairs(tbl1) do
+			if(type(tbl2[i]) == 'table' and type(v) == 'table') then
+				if(not areTablesEqual(tbl2[i], v)) then return false end
+			elseif(tbl2[i] ~= v) then
+				return false
+			end
+		end
+		
+		for i, v in pairs(tbl2) do
+			if(type(tbl1[i]) == 'table' and type(v) == 'table') then
+				if(not areTablesEqual(tbl1[i], v)) then return false end
+			elseif(tbl1[i] ~= v) then
+				return false
+			end
+		end
+		
+		return true
+	end
+
+	local function TestEq(result, validResult)
+		if(result == validResult) then return end
+		local trace = DbgTraceBack(-1, 1, 1)
+		outputDebugString('Test failed: expected '..tostring(validResult)..', got '..tostring(result)..' in '..trace[1], 2)
+	end
+
+	local function TestTblEq(tbl, validTbl)
+		assert(type(tbl) == 'table' and type(validTbl) == 'table')
+		if(areTablesEqual(tbl, validTbl)) then return end
+		local trace = DbgTraceBack(-1, 1, 1)
+		outputDebugString('Test failed: expected '..table.dump(validTbl)..', got '..table.dump(tbl)..' in '..trace[1], 2)
+	end
+
+	local prof = DbgPerf(5)
+	
+	TestTblEq({CsPreprocessStr('AbC')}, {'abc', {1, 2, 3}})
+	TestTblEq({CsPreprocessStr('abc d')}, {'abc d', {1, 2, 3, 4, 5}})
+	TestTblEq({CsPreprocessStr('a bcd')}, {'a bcd', {1, 2, 3, 4, 5}})
+	TestTblEq({CsPreprocessStr('a b')}, {'ab', {1, 3}})
+	TestTblEq({CsPreprocessStr('abc d e')}, {'abc de', {1, 2, 3, 4, 5, 7}})
+	TestTblEq({CsPreprocessStr('a b cde')}, {'ab cde', {1, 3, 4, 5, 6, 7}})
+	TestTblEq({CsPreprocessStr('abc d e fg')}, {'abc de fg', {1, 2, 3, 4, 5, 7, 8, 9, 10}})
+	TestTblEq({CsPreprocessStr('a b c')}, {'abc', {1, 3, 5}})
+	
+	TestTblEq({CsPreprocessStr('#000000')}, {'', {}})
+	TestTblEq({CsPreprocessStr('#000000#FFFFFF')}, {'', {}})
+	TestTblEq({CsPreprocessStr('ab#000000cd')}, {'abcd', {1, 2, 10, 11}})
+	
+	TestTblEq({CsPreprocessStr('a b#000000 c d')}, {'abcd', {1, 3, 12, 14}})
+	
+	prof:cp('CsPreprocessStr test')
+#end

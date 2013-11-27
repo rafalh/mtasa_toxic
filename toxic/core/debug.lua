@@ -13,9 +13,10 @@ function DbgTraceBack(lvl, len, offset)
 	end
 	local tbl = {}
 	for i = start, stop do
-		table.insert(tbl, lines[i])
+		local line = trimStr(lines[i])
+		table.insert(tbl, line)
 		if(lvl ~= -1) then
-			outputDebugString(lines[i], lvl or 2)
+			outputDebugString(line, lvl or 2)
 		end
 	end
 	

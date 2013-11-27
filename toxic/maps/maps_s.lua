@@ -176,6 +176,7 @@ local function onMapStart(map, room)
 	end
 	room.currentMap = map
 	room.mapsInit = true
+	room.matchInfo = {}
 	prof2:cp('onMapStart 1')
 	
 	if(rows[1].removed ~= '') then

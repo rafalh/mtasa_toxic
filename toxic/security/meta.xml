@@ -18,7 +18,7 @@
 		<setting group="General" name="*kill_afk" accept="0-3600" value="0" desc="Kill players, which does not move for the number of seconds." friendlyname="Kill AFK players" />
 		
 		<setting group="Censor" name="*censor" accept="false,true" value="true" desc="If enabled players messages are censored." friendlyname="Censor enabled" />
-		<setting group="Censor" name="*censor_mask" accept="false,true" value="true" desc="If enabled censored words are changed to asterisks (***)." friendlyname="Censor masking enabled" />
+		<setting group="Censor" name="*censor_replace" accept="false,true" value="true" desc="If enabled censored words are replaced by strings defined in configuration or by asterisks (***)." friendlyname="Censor replacing enabled" />
 		<setting group="Censor" name="*censor_fine" accept="0-3600" value="0" desc="Default fine for censored word. Set to 0 to disable." friendlyname="Censor fine" />
 		<setting group="Censor" name="*censor_mute" accept="0-3600" value="0" desc="Duration in seconds of mute when censored word is used. Set to 0 to disable." friendlyname="Censor mute duration" />
 		<setting group="Censor" name="*censor_warn" accept="false,true" value="false" desc="Warn when censored word is used." friendlyname="Censor warnings" />
