@@ -2,13 +2,9 @@ local g_TempModGroup = aclGetGroup('PremiumModerator')
 local g_ModGroup = aclGetGroup('Moderator')
 local g_SuperModGroup = aclGetGroup('SuperModerator')
 
-function giveTempMod(player, days)
-	local days = tonumber(days) or 30
-	local account = player and getPlayerAccount(player.el)
-	
-	if(not account or isGuestAccount(account) or not g_TempModGroup) then
-		return false
-	end
+function giveTempModAccount(account, days)
+	local days = tonumber(days or 30)
+	if(not days or not g_TempModGroup) then return false end
 	
 	aclGroupAddObject(g_TempModGroup, 'user.'..getAccountName(account))
 	
@@ -22,6 +18,12 @@ function giveTempMod(player, days)
 	outputServerLog('Temporary Moderator activated for '..getAccountName(account)..'. It will be active until '..dateStr)
 	
 	return timestamp
+end
+
+function giveTempMod(player, days)
+	local account = player and getPlayerAccount(player.el)
+	if(not account or isGuestAccount(account)) then return false end
+	return giveTempModAccount(account, days)
 end
 
 CmdMgr.register{
@@ -40,6 +42,33 @@ CmdMgr.register{
 			
 			privMsg(ctx.player, "Temporary Moderator successfully given to %s! It will be valid until %s.", player:getName(), dateStr)
 			outputMsg(player, Styles.green, "You have become Temporary Moderator! It will be valid until %s.", dateStr)
+		else
+			privMsg(ctx.player, "Failed to give temporary moderator")
+		end
+	end
+}
+
+CmdMgr.register{
+	name = 'givemodaccount',
+	desc = "Gives temporary moderator to specified account",
+	accessRight = AccessRight('givemod'),
+	args = {
+		{'accountName', type = 'string'},
+		{'days', type = 'int', defVal = 30, min = 1},
+	},
+	func = function(ctx, accountName, days)
+		local account = getAccount(accountName)
+		if(not account) then
+			privMsg(ctx.player, "Cannot find account '%s'!", accountName)
+			return
+		end
+			
+		local timestamp = giveTempModAccount(account, days)
+		if(timestamp) then
+			local tm = getRealTime(timestamp)
+			local dateStr = ('%u.%02u.%u %u:%02u GMT'):format(tm.monthday, tm.month+1, tm.year+1900, tm.hour, tm.minute)
+			
+			privMsg(ctx.player, "Temporary Moderator successfully given to %s! It will be valid until %s.", accountName, dateStr)
 		else
 			privMsg(ctx.player, "Failed to give temporary moderator")
 		end

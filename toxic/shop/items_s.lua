@@ -172,7 +172,7 @@ local OilItem = {
 			if(isElement(marker)) then
 				addEventHandler('onMarkerHit', marker, ShpOnOilHit, false)
 			end
-		end, math.max ( 60/v, 50 ), 1, marker)
+		end, math.max ( 80/v, 50 ), 1, marker)
 		Player.fromEl(player).accountData:add('oil', -1)
 		return true
 	end,
@@ -230,7 +230,7 @@ local InvisibilityItem = {
 				triggerClientEvent(player2, 'onSetPlayerAlphaReq', player, 0)
 			end
 		end
-		Player.fromEl(player).accountData:add('invisibility', -1)
+		pdata.accountData:add('invisibility', -1)
 		pdata.invisible = true
 		return true
 	end,
