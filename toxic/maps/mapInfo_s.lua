@@ -33,21 +33,15 @@ function MiSendMapInfo(playerOrRoom)
 		BtUpdatePlayerTops(g_PlayerTops, map, players)
 	end
 	
-	for i, player in ipairs(players) do
-		RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player]):setClient(player):exec()
-		
-		if(show) then
-			RPC('MiShow'):setClient(player):exec()
-		end
+	RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player]):setClient(players):exec()
+	if(show) then
+		RPC('MiShow'):setClient(players):exec()
 	end
 	prof:cp('MiSendMapInfo')
 end
 
 function MiShow(playerOrRoom)
-	local players = getElementsByType('player', playerOrRoom.el)
-	for i, player in ipairs(players) do
-		RPC('MiShow'):setClient(player):exec()
-	end
+	RPC('MiShow'):setClient(playerOrRoom.el):exec()
 end
 
 function MiUpdateInfo()

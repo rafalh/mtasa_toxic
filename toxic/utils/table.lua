@@ -22,6 +22,22 @@ function table.find(tbl, v)
 	return false
 end
 
+function table.keys(tbl)
+	local ret = {}
+	for k, v in pairs(tbl) do
+		table.insert(ret, k)
+	end
+	return ret
+end
+
+function table.values(tbl)
+	local ret = {}
+	for k, v in pairs(tbl) do
+		table.insert(ret, v)
+	end
+	return ret
+end
+
 function table.copy(tbl, full)
 	local ret = {}
 	for k, v in pairs(tbl) do

@@ -224,10 +224,11 @@ local InvisibilityItem = {
 			return false
 		end
 		
-		addEvent ( 'onSetPlayerAlphaReq', true )
-		for player2, pdata2 in pairs ( g_Players ) do
-			local a = ( player2 == player ) and 102 or 0
-			triggerClientEvent ( player2, 'onSetPlayerAlphaReq', player, a )
+		addEvent('onSetPlayerAlphaReq', true)
+		for player2, pdata2 in pairs(g_Players) do
+			if(player2 ~= player) then
+				triggerClientEvent(player2, 'onSetPlayerAlphaReq', player, 0)
+			end
 		end
 		Player.fromEl(player).accountData:add('invisibility', -1)
 		pdata.invisible = true
