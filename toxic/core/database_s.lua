@@ -1,5 +1,5 @@
 -- Defines
-#ALWAYS_WAIT = false
+#local ALWAYS_WAIT = false
 
 -- Globals
 local g_Connection, g_Ready, g_Driver = false, false, false
@@ -14,7 +14,7 @@ Database.Drivers = {}
 DbPrefix = ''
 
 function DbStr(str)
-	return '\''..tostring(str):gsub('\'', '\'\'')..'\''
+	return '\''..g_Driver:escape(str)..'\''
 end
 
 function DbBlob(data)
@@ -62,7 +62,7 @@ function DbQuery(query, ...)
 	if(not g_Driver) then return false end
 	local prof = DbgPerf(100)
 	local result
-	if(query:sub(1, 6) == 'SELECT' or $ALWAYS_WAIT) then
+	if(query:sub(1, 6):upper() == 'SELECT' or $ALWAYS_WAIT) then
 		result = g_Driver:query(query, ...)
 	else
 		result = g_Driver:exec(query, ...)
@@ -258,6 +258,10 @@ function Database.Drivers.SQLite:init()
 	return true
 end
 
+function Database.Drivers.SQLite:escape(str)
+	return tostring(str):gsub('\'', '\'\'')
+end
+
 function Database.Drivers.SQLite:query(query, ...)
 	local qh = dbQuery(g_Connection, query, ...)
 	assert(qh)
@@ -317,6 +321,11 @@ function Database.Drivers.SQLite:getLastInsertID()
 	return rows[1].id
 end
 
+function Database.Drivers.SQLite:optimize()
+	self:query('COMMIT')
+	self:query('VACUUM')
+end
+
 ----------------- MySQL Driver -----------------
 
 Database.Drivers.MySQL = {}
@@ -342,6 +351,10 @@ function Database.Drivers.MySQL:init()
 	end
 	
 	return true
+end
+
+function Database.Drivers.MySQL:escape(str)
+	return tostring(str):gsub('\\', '\\\\'):gsub('\'', '\\\'')
 end
 
 function Database.Drivers.MySQL:query(query, ...)
@@ -401,6 +414,14 @@ function Database.Drivers.MySQL:getLastInsertID()
 	return rows[1].id
 end
 
+function Database.Drivers.MySQL:optimize()
+	local tableNames = {}
+	for i, tbl in ipairs(Database.tblList) do
+		table.insert(tableNames, tbl.name)
+	end
+	self:query('OPTIMIZE TABLE '..table.concat(tableNames, ', '))
+end
+
 ----------------- MTA Internal Driver -----------------
 
 Database.Drivers.Internal = {}
@@ -410,9 +431,11 @@ function Database.Drivers.Internal:query(query, ...)
 end
 
 Database.Drivers.Internal.exec = Database.Drivers.Internal.query
+Database.Drivers.Internal.escape = Database.Drivers.SQLite.escape
 Database.Drivers.Internal.createTable = Database.Drivers.SQLite.createTable
 Database.Drivers.Internal.insertDefault = Database.Drivers.SQLite.insertDefault
 Database.Drivers.Internal.getLastInsertID = Database.Drivers.SQLite.getLastInsertID
+Database.Drivers.Internal.optimize = Database.Drivers.SQLite.optimize
 
 ----------------- End -----------------
 

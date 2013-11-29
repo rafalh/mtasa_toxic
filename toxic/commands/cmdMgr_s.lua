@@ -87,6 +87,7 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 	
 	if(not cmd.varargs and #args > #argsDesc) then
 		privMsg(ctx.player, "Too many arguments given. Expected %u, got %u.", #argsDesc, #args)
+		return false
 	end
 	
 	local newArgs = {}
