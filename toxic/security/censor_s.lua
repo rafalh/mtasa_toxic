@@ -1,5 +1,12 @@
 local g_ForbWords = {}
 
+function table.insertMultiple(tbl, pos, val, count)
+	for i = 1, count do
+		table.insert(tbl, pos, val)
+		pos = pos + 1
+	end
+end
+
 function table.removeMultiple(tbl, pos, count)
 	--assert(pos + count <= #tbl + 1)
 	for i = 1, count do
@@ -44,7 +51,6 @@ end
 
 function CsProcessMsg(msg)
 	local prof = DbgPerf(5)
-	
 	local buf, offsets = CsPreprocessStr(msg)
 	
 	local punish = {fine = 0, mute = 0, warn = false, hide = false}
@@ -58,13 +64,17 @@ function CsProcessMsg(msg)
 			
 			if(replaceWords) then
 				local repl = item.repl
-				local repl2 = ('*'):rep(j - i + 1)
+				local repl2 = ('*'):rep(j - i)
 				if(not repl) then
 					-- Change word to *****
 					repl = repl2
 				end
 				
-				-- FIXME: offsets are invalid if #repl ~= #repl2
+				if(#repl ~= #repl2) then
+					for k = j, #offsets do
+						offsets[k] = offsets[k] + #repl - #repl2
+					end
+				end
 				local before = msg:sub(1, offsets[i] - 1)
 				local after = msg:sub(offsets[j - 1] + 1)
 				msg = before..repl..after

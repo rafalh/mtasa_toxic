@@ -53,7 +53,7 @@ CmdMgr.register{
 	desc = "Gives temporary moderator to specified account",
 	accessRight = AccessRight('givemod'),
 	args = {
-		{'accountName', type = 'string'},
+		{'accountName', type = 'str'},
 		{'days', type = 'int', defVal = 30, min = 1},
 	},
 	func = function(ctx, accountName, days)
