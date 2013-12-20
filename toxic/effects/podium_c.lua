@@ -126,6 +126,7 @@ function PodiumStart(winners, n)
 		local pos = g_Loc.pos + g_Loc.vehOff[i]
 		local veh = createVehicle(winner[2], pos[1], pos[2], pos[3], 0, 0, g_Loc.vehRotZ)
 		local ped = createPed(winner[3], pos[1], pos[2], pos[3])
+		setElementFrozen(veh, true)
 		warpPedIntoVehicle(ped, veh)
 		setElementParent(ped, veh)
 		table.insert(g_Vehicles, veh)

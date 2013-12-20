@@ -86,14 +86,14 @@ CmdMgr.register{
 			if(sec > 0) then
 				respawn = 'timelimit'
 				respawntime = sec
-			elseif(sec == 0 or val == 'false' or val == 'no')  then
+			elseif(val == '0' or val == 'false' or val == 'no')  then
 				respawn = 'none'
 			elseif(val == 'true' or val == 'yes')  then
 				respawn = 'timelimit'
 			elseif(val == 'auto') then
 				respawn = nil
 			else
-				privMsg(source, "Invalid respawn value: %s", val)
+				privMsg(ctx.player, "Invalid respawn value: %s", val)
 				return
 			end
 			
@@ -122,7 +122,6 @@ CmdMgr.register{
 		local map = getCurrentMap(room)
 		
 		if(map) then
-			local val
 			if(val == 'false' or val == 'no') then
 				val = 'false'
 			elseif(val == 'true' or val == 'yes') then
@@ -130,7 +129,7 @@ CmdMgr.register{
 			elseif(val == 'auto') then
 				val = nil
 			else
-				privMsg(source, "Invalid ghostmode value: %s", val)
+				privMsg(ctx.player, "Invalid ghostmode value: %s", val)
 				return
 			end
 			
@@ -168,7 +167,7 @@ CmdMgr.register{
 				end
 			end
 		else
-			privMsg(source, "Time limit format: %s", '[h:m:]s')
+			privMsg(ctx.player, "Time limit format: %s", '[h:m:]s')
 		end
 	end
 }
@@ -319,10 +318,10 @@ CmdMgr.register{
 		end
 		if(old_enabled == 'false') then
 			enabled = 'true'
-			outputMsg(g_Root, Styles.green, "Vehicle weapons enabled by %s!", getPlayerName(source))
+			outputMsg(g_Root, Styles.green, "Vehicle weapons enabled by %s!", ctx.player:getName(true))
 		else
 			enabled = 'false'
-			outputMsg(g_Root, Styles.red, "Vehicle weapons disabled by %s!", getPlayerName(source))
+			outputMsg(g_Root, Styles.red, "Vehicle weapons disabled by %s!", ctx.player:getName(true))
 		end
 		set('*race.vehicleweapons', enabled)
 		triggerEvent('onSettingChange', getResourceRootElement(g_RaceRes.res), 'vehicleweapons', g_OldVehicleWeapons, enabled)
