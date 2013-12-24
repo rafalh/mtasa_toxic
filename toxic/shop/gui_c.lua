@@ -32,7 +32,7 @@ local function ShpUpdateButtons ( itemId )
 	local buy, sell, use = item.getAllowedAct ( g_Inventory[itemId] )
 	local cost = item.cost
 	if(g_IsVip and not item.noDiscount) then
-		cost = cost * VIP_COST
+		cost = math.ceil(cost * VIP_COST)
 	end
 	
 	guiSetEnabled ( g_BuyButton, buy and g_Cash >= cost )
@@ -52,7 +52,7 @@ local function ShpUpdateCostLabel(itemId)
 	if(item) then
 		local cost = item.cost
 		if(g_IsVip and not item.noDiscount) then
-			cost = cost * VIP_COST
+			cost = math.ceil(cost * VIP_COST)
 		end
 		costStr = costStr..' '..formatMoney(cost)
 		if(g_IsVip and not item.noDiscount) then

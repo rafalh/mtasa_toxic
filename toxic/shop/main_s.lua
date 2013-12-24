@@ -67,7 +67,7 @@ local function ShpSellShopItemRequest ( item_id )
 	local val = item.field and pdata.accountData:get(item.field)
 	
 	if(item.onSell(client, val)) then
-		pdata.accountData:add('cash', item.cost / 2)
+		pdata.accountData:add('cash', math.floor(item.cost / 2))
 		ShpGetInventoryRequest()
 	end
 end
