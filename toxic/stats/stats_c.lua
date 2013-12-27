@@ -70,12 +70,12 @@ function StGetValCache(idOrEl)
 	return stats.valCache
 end
 
-function StOnSync(sync_tbl)
+function StOnSync(syncTbl)
 	-- is it stats sync?
-	if(not sync_tbl.stats or not sync_tbl.stats[2]) then return end
+	if(not syncTbl.stats or not syncTbl.stats[2]) then return end
 	
 	-- check id
-	local id = sync_tbl.stats[1]
+	local id = syncTbl.stats[1]
 	if(not g_Stats[id] and id ~= g_MyId and id ~= g_Me) then return end
 	
 	-- create table if not exists
@@ -88,7 +88,7 @@ function StOnSync(sync_tbl)
 	if(not stats.data) then
 		stats.data = {}
 	end
-	for field, val in pairs(sync_tbl.stats[2]) do
+	for field, val in pairs(syncTbl.stats[2]) do
 		stats.data[field] = val
 	end
 	stats.data._playTime = g_Stats[id].time_here

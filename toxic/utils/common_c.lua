@@ -30,10 +30,17 @@ addEvent('onEvent_'..g_ThisResName, true)
 -- Local function definitions --
 --------------------------------
 
-local function onEventHandler ( event, ... )
-	if ( g_InternalEventHandlers[event or false] and sourceResource == g_ThisRes ) then
-		for _, handler in ipairs ( g_InternalEventHandlers[event] ) do
-			handler ( ... )
+local function onEventHandler(event, ...)
+	if(sourceResource) then -- HACKFIX: sourceResource is nil after r5937
+		if(sourceResource ~= g_ThisRes) then
+			outputDebugString('Access denied', 2)
+		end
+	else
+		--outputDebugString('onEventHandler: sourceResource is nil (event '..tostring(event)..')', 2)
+	end
+	if(g_InternalEventHandlers[event or false]) then
+		for _, handler in ipairs(g_InternalEventHandlers[event]) do
+			handler(...)
 		end
 	end
 end

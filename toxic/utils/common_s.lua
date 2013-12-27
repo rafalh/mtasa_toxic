@@ -21,15 +21,20 @@ addEvent('onEvent_'..g_ResName, true)
 --------------------------------
 
 local function onEventHandler(event, ...)
-	--outputChatBox(getResourceName ( sourceResource )..' '..tostring(event))
 	if(not event or not g_InternalEventHandlers[event]) then return end
-	if(sourceResource == g_Res or getResourceName(sourceResource):sub(1, 6) == 'rafalh') then
-		for _, handler in ipairs(g_InternalEventHandlers[event]) do
-			-- Note: unpack must be last arg
-			handler(unpack({...}))
+	
+	if(sourceResource) then -- HACKFIX: sourceResource is nil after r5937
+		if(sourceResource ~= g_Res and getResourceName(sourceResource):sub(1, 6) ~= 'rafalh') then
+			outputDebugString('Access denied', 2)
+			return
 		end
 	else
-		outputDebugString('Access denied', 2)
+		--outputDebugString('onEventHandler: sourceResource is nil (event '..tostring(event)..')', 2)
+	end
+	
+	for _, handler in ipairs(g_InternalEventHandlers[event]) do
+		-- Note: unpack must be last arg
+		handler(unpack({...}))
 	end
 end
 

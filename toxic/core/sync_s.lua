@@ -62,13 +62,13 @@ function notifySyncerChange ( name, arg, val )
 end
 
 function startSync ( player, tbl, force )
-	assert ( Player.fromEl(player) and tbl )
+	assert(Player.fromEl(player) and tbl)
 	local sync_tbl = {}
 	
-	for name, arg in pairs ( tbl ) do
-		--outputDebugString ( 'startSync - '..name )
+	for name, arg in pairs(tbl) do
+		--outputDebugString('startSync - '..name, 3)
 		local syncer = g_Sync[name]
-		if ( syncer ) then -- are parameters valid?
+		if(syncer) then -- are parameters valid?
 			if ( not syncer.data[arg] ) then -- noone synced it before
 				syncer.data[arg] = { t = getTickCount (), p = {} }
 			end
@@ -80,13 +80,13 @@ function startSync ( player, tbl, force )
 			end
 			el_data.p[player] = 0
 		else
-			outputDebugString ( 'Unknown syncer: '..tostring ( name ), 2 )
+			outputDebugString('Unknown syncer: '..tostring(name), 2)
 		end
 	end
 	
-	if ( not table.empty ( sync_tbl ) ) then
-		--outputDebugString ( 'syncing...' )
-		triggerClientInternalEvent ( player, $(EV_SYNC), g_Root, sync_tbl ) -- sync with player
+	if(not table.empty(sync_tbl)) then
+		--outputDebugString('syncing...', 3)
+		triggerClientInternalEvent(player, $(EV_SYNC), g_Root, sync_tbl) -- sync with player
 	end
 end
 
