@@ -231,7 +231,8 @@ local function GifLoadInternal(gif, stream)
 		gct = GifLoadColorTable(stream, gctSize)
 	end
 	
-	local bgClr = '\0\0\0\0' -- gct and gct[bgClrIdx] or '\0\0\0\0'
+	local bgClr = gct and gct[bgClrIdx] or '\0\0\0\0'
+	DbgPrint('bg color: %x %x %x %x', bgClr:byte(1, 4))
 	
 	local frame = false
 	local imageRows = {}
@@ -281,16 +282,16 @@ local function GifLoadInternal(gif, stream)
 				clrTbl = lct or gct
 			end
 			
-			-- Setup transparent color
-			if(gc.tr_idx) then
-				clrTbl[gc.tr_idx] = not usePrevFrame and bgClr
-			end
-			
 			-- Load some flags into variables
 			local usePrevFrame = (frame and frame.disp <= 1)
 			local interlace = _bitTest(flags, 64)
 			if(interlace) then
 				DbgPrint('interlace 0x%x', flags)
+			end
+			
+			-- Setup transparent color
+			if(gc.tr_idx) then
+				clrTbl[gc.tr_idx] = not usePrevFrame and bgClr
 			end
 			
 			-- Clean top and bottom rows if needed
@@ -327,7 +328,7 @@ local function GifLoadInternal(gif, stream)
 					
 					local clr = clrTbl[idx]
 					if(not clr) then
-						clr = string_sub(oldRow, x*4 + 1, x*4 + 4)
+						clr = string_sub(oldRow, (frameX + x)*4 + 1, (frameX + x)*4 + 4)
 					end
 					rowTbl[x + 1] = clr
 				end
@@ -552,3 +553,13 @@ local function GifOnResStop(res)
 end
 
 addEventHandler('onClientResourceStop', resourceRoot, GifOnResStop)
+
+#local TEST = false
+#if(TEST) then
+	setTimer(function()
+		local gif = GifLoad("test/mrbean.gif")
+		addEventHandler("onClientRender", root, function()
+			GifRender(600, 400, 480, 240, gif)
+		end)
+	end, 50, 1)
+#end

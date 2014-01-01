@@ -13,7 +13,7 @@ local g_DbgPerfData = {}
 			local file = fileExists("$(LOG_PATH)") and fileOpen("$(LOG_PATH)") or fileCreate("$(LOG_PATH)")
 			if(file) then
 				fileSetPos(file, fileGetSize(file))
-				fileWrite(file, fmt:format(...))
+				fileWrite(file, fmt:format(...).."\n")
 				fileClose(file)
 			else
 				outputDebugString("Failed to open $(LOG_PATH)", 2)
