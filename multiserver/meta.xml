@@ -1,5 +1,5 @@
 <meta>
-	<info name="Multiserver" version="1.0" author="rafalh" type="script" />
+	<info name="Multiserver" version="1.1" author="rafalh" type="script" />
 	
 	<script src="multiserv_s.lua" type="server" />
 	

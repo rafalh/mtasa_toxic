@@ -1,12 +1,15 @@
-local g_ServersList = {}
+local TIMEOUT = 10000
+local MSG_CLR = '#FFFF00'
 
 local g_Root = getRootElement()
 local g_ResRoot = getResourceRootElement(getThisResource())
 local g_ResName = getResourceName(getThisResource())
 local g_StatusQueries = false
+local g_ServersPullingTicks
+local g_StatusReportsLeft = 0
+local g_ServersList = {}
 local g_ThisServ = false
-local g_MsgClr = '#FFFF00'
-local g_MsgR, g_MsgG, g_MsgB = getColorFromString(g_MsgClr)
+local g_MsgR, g_MsgG, g_MsgB = getColorFromString(MSG_CLR)
 
 local function CmdRedirect(source, cmd)
 	for id, data in ipairs(g_ServersList) do
@@ -21,44 +24,81 @@ local function CmdRedirect(source, cmd)
 	end
 end
 
-local function MsStatusCallback(id, playerNames)
-	if(id ~= 'ERROR' and g_ServersList[id]) then
-		local data = g_ServersList[id]
-		--outputDebugString('MsStatusCallback '..data.name, 3)
-		
-		local msg = data.name..' - '..#playerNames..' players'
-		
-		if(get('display_player_names') == 'true' and #playerNames > 0) then
-			local namesStr = table.concat(playerNames, ', ')
-			if(namesStr:len() > 128) then
-				namesStr = namesStr:sub(1, 128)..'...'
+local function MsCompleteQueries()
+	local displayNames = (get('display_player_names') == 'true')
+	for id, data in ipairs(g_ServersList) do
+		if(data ~= g_ThisServ) then
+			local msg = data.name..' - '..#data.playerNames..' players'
+			if(displayNames and #data.playerNames > 0) then
+				local namesStr = table.concat(data.playerNames, ', ')
+				if(namesStr:len() > 128) then
+					namesStr = namesStr:sub(1, 128)..'...'
+				end
+				msg = msg..' ('..namesStr..')'
 			end
-			msg = msg..' ('..namesStr..')'
-		end
-		
-		for player, v in pairs(g_StatusQueries) do
-			outputChatBox(msg, player, g_MsgR, g_MsgG, g_MsgB)
-		end
-	else
-		outputDebugString('Cannot query server: '..tostring(id)..' '..tostring(playerNames), 1)
-	end
-	g_StatusQueries = false
-end
-
-local function MsRequestStatus(el)
-	if(not g_StatusQueries) then
-		--outputDebugString('MsRequestStatus (new)', 3)
-		
-		for id, data in ipairs(g_ServersList) do
-			if(data ~= g_ThisServ) then
-				local host = data.ip..':'..data.http_port
-				
-				if(not callRemote(host, g_ResName, 'getServerStatus', MsStatusCallback, id)) then
-					outputDebugString('callRemote failed: '..host..', '..g_ResName, 2)
+			
+			for player, v in pairs(g_StatusQueries) do
+				if(getElementType(player) == 'console') then
+					outputServerLog(msg)
+				else
+					outputChatBox(msg, player, g_MsgR, g_MsgG, g_MsgB)
 				end
 			end
 		end
-		g_StatusQueries = {}
+	end
+	
+	g_StatusQueries = false
+end
+
+local function MsStatusCallback(id, playerNames)
+	-- Find server
+	local data = g_ServersList[id or false]
+	if(not data) then
+		outputDebugString('Cannot query server: '..tostring(id)..' '..tostring(playerNames), 1)
+		return
+	end
+	
+	-- Remember data for later
+	--outputDebugString('MsStatusCallback '..data.name, 3)
+	data.playerNames = playerNames
+	
+	if(data.waiting) then
+		-- Update waiting count
+		g_StatusReportsLeft = g_StatusReportsLeft - 1
+		assert(g_StatusReportsLeft >= 0)
+		data.waiting = false
+		
+		-- Print status if all servers responded
+		if(g_StatusReportsLeft == 0) then
+			MsCompleteQueries()
+		end
+	end
+end
+
+local function MsPullServers()
+	local cnt = 0
+	for id, data in ipairs(g_ServersList) do
+		if(data ~= g_ThisServ) then
+			local addr = data.ip..':'..data.http_port
+			
+			if(not callRemote(addr, g_ResName, 'getServerStatus', MsStatusCallback, id)) then
+				outputDebugString('callRemote failed: '..addr..', '..g_ResName, 2)
+			else
+				data.waiting = true -- waiting for reply
+				cnt = cnt + 1
+			end
+		end
+	end
+	
+	g_StatusReportsLeft = cnt
+	g_ServersPullingTicks = getTickCount()
+	g_StatusQueries = {}
+end
+
+local function MsRequestStatus(el)
+	if(not g_StatusQueries or getTickCount() > g_ServersPullingTicks + TIMEOUT) then
+		--outputDebugString('MsRequestStatus (new)', 3)
+		MsPullServers()
 	end
 	
 	g_StatusQueries[el] = true
@@ -77,8 +117,10 @@ end
 local function MsBroadcastMsg(fmt, ...)
 	for id, data in ipairs(g_ServersList) do
 		if(data ~= g_ThisServ) then
-			local host = data.ip..':'..data.http_port
-			callRemote(host, g_ResName, 'outputGlobalChat', function() end, id, fmt, ...)
+			local addr = data.ip..':'..data.http_port
+			if(not callRemote(addr, g_ResName, 'outputGlobalChat', function() end, id, fmt, ...)) then
+				outputDebugString('callRemote failed', 2)
+			end
 		end
 	end
 end
@@ -112,10 +154,12 @@ local function CmdGlobal(source, cmd, ...)
 		r, g, b = getPlayerNametagColor(source)
 	end
 	local color =('#%02X%02X%02X'):format(r, g, b)
-	MsBroadcastMsg('%s: %s', color..name, table.concat({ ...}, ' '))
+	local msg = table.concat({...}, ' ')
+	MsBroadcastMsg('%s: %s', color..name, msg)
 	
-	local msg = color..name..': #FFFF00'..table.concat({ ...}, ' ')
-	outputChatBox('[GLOBAL] '..msg, g_Root, g_MsgR, g_MsgG, g_MsgB, true)
+	local text = color..name..': #FFFF00'..msg
+	outputChatBox('[GLOBAL] '..text, g_Root, g_MsgR, g_MsgG, g_MsgB, true)
+	outputServerLog('[GLOBAL] '..text:gsub('#%x%x%x%x%x%x', ''))
 end
 
 local function MsLoadServers()
@@ -216,7 +260,7 @@ function getServerStatus(id)
 end
 
 function outputGlobalChat(id, fmt, ...)
-	fmt = fmt:gsub('%%s', '%%s'..g_MsgClr)
+	fmt = fmt:gsub('%%s', '%%s'..MSG_CLR)
 	local text = fmt:format(...)
 	
 	outputChatBox('[GLOBAL] '..text, g_Root, g_MsgR, g_MsgG, g_MsgB, true)
