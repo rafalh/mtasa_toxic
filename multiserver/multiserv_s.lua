@@ -24,7 +24,7 @@ end
 local function MsStatusCallback(id, playerNames)
 	if(id ~= 'ERROR' and g_ServersList[id]) then
 		local data = g_ServersList[id]
-		--outputDebugString('MsStatusCallback '..data.name, 2)
+		--outputDebugString('MsStatusCallback '..data.name, 3)
 		
 		local msg = data.name..' - '..#playerNames..' players'
 		
@@ -47,7 +47,7 @@ end
 
 local function MsRequestStatus(el)
 	if(not g_StatusQueries) then
-		--outputDebugString('new call', 2)
+		--outputDebugString('MsRequestStatus (new)', 3)
 		
 		for id, data in ipairs(g_ServersList) do
 			if(data ~= g_ThisServ) then
@@ -138,8 +138,28 @@ local function MsLoadServers()
 	end
 end
 
-local function MsInit()
-	MsLoadServers()
+local function MsDetectCurrentServer()
+	local currentIP = get('ip')
+	local currentPort = getServerPort()
+	for id, data in ipairs(g_ServersList) do
+		if(data.ip == currentIP and data.port == currentPort) then
+			g_ThisServ = data
+			outputDebugString('This server has been detected: '..data.name, 3)
+			break
+		end
+	end
+	
+	if(not g_ThisServ) then
+		outputDebugString('This server has not been found in servers.xml!', 2)
+	end
+end
+
+local function MsRegisterCommands()
+	for id, data in ipairs(g_ServersList) do
+		if(data.cmd and data ~= g_ThisServ) then
+			addCommandHandler(data.cmd, CmdRedirect, false, false)
+		end
+	end
 	
 	local servStatusCmd = get('serv_status_cmd') or ''
 	if(servStatusCmd ~= '') then
@@ -150,25 +170,36 @@ local function MsInit()
 	if(globalChatCmd ~= '') then
 		addCommandHandler(globalChatCmd, CmdGlobal, false, false)
 	end
+end
+
+local function MsPlayerJoin()
+	if(get('join_quit') == 'true') then
+		MsBroadcastMsg('* %s has joined %s', getPlayerName(source), g_ThisServ.name)
+	end
+end
+
+local function MsPlayerQuit()
+	if(get('join_quit') == 'true') then
+		MsBroadcastMsg('* %s has left %s', getPlayerName(source), g_ThisServ.name)
+	end
+end
+
+local function MsInit()
+	MsLoadServers()
+	MsDetectCurrentServer()
+	MsRegisterCommands()
 	
 	local statusInt = tonumber(get('serv_status_int')) or 0
 	if(statusInt > 0) then
 		setTimer(MsRequestStatus, statusInt*1000, 0, g_Root)
 	end
 	
-	for id, data in ipairs(g_ServersList) do
-		if(data.ip == get('ip') and data.port == getServerPort()) then
-			g_ThisServ = data
-			outputDebugString('This server has been detected: '..data.name, 3)
-		elseif(data.cmd) then
-			addCommandHandler(data.cmd, CmdRedirect, false, false)
-		end
-	end
-	
-	if(not g_ThisServ) then
-		outputDebugString('This server has not been found in servers.xml!', 2)
-	end
+	--addEventHandler('onPlayerChat', g_Root, MsPlayerChat)
+	addEventHandler('onPlayerJoin', g_Root, MsPlayerJoin)
+	addEventHandler('onPlayerQuit', g_Root, MsPlayerQuit)
 end
+
+addEventHandler('onResourceStart', g_ResRoot, MsInit)
 
 -- EXPORTS
 
@@ -191,20 +222,3 @@ function outputGlobalChat(id, fmt, ...)
 	outputChatBox('[GLOBAL] '..text, g_Root, g_MsgR, g_MsgG, g_MsgB, true)
 	outputServerLog('[GLOBAL] '..text:gsub('#%x%x%x%x%x%x', ''))
 end
-
-local function MsPlayerJoin()
-	if(get('join_quit') == 'true') then
-		MsBroadcastMsg('* %s has joined %s', getPlayerName(source), g_ThisServ.name)
-	end
-end
-
-local function MsPlayerQuit()
-	if(get('join_quit') == 'true') then
-		MsBroadcastMsg('* %s has left %s', getPlayerName(source), g_ThisServ.name)
-	end
-end
-
-addEventHandler('onResourceStart', g_ResRoot, MsInit)
---addEventHandler('onPlayerChat', g_Root, MsPlayerChat)
-addEventHandler('onPlayerJoin', g_Root, MsPlayerJoin)
-addEventHandler('onPlayerQuit', g_Root, MsPlayerQuit)
