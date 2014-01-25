@@ -8,16 +8,7 @@ ListView.style.hover = {clr = {255, 255, 255}, a = 1, fnt = 'default-normal'}
 ListView.style.active = {clr = {255, 255, 255}, a = 1, fnt = 'default-bold-small'}
 ListView.style.iconPos = 'top'
 
-function ListView:addItem(name, img, id, style)
-	local idxX = #self.items % self.cols
-	local idxY = math.floor(#self.items/self.cols)
-	local x, y = idxX*self.itemSize[1], idxY*self.itemSize[2]
-	local w, h = self.itemSize[1], self.itemSize[2]
-	local item = {title = name, id = id, style = style or self.style}
-	
-	item.bgEl = guiCreateStaticImage(x, y, w, h, 'img/white.png', false, self.el)
-	guiSetAlpha(item.bgEl, 0)
-	
+function ListView:getImgTitleCoords(w, h)
 	local imgX, imgY
 	local titleX, titleY
 	local titleW, titleH
@@ -34,13 +25,28 @@ function ListView:addItem(name, img, id, style)
 		assert(false)
 	end
 	
+	return Vector2(imgX, imgY), Rect(Vector2(titleX, titleY), Vector2(titleW, titleH))
+end
+
+function ListView:addItem(name, img, id, style)
+	local idxX = #self.items % self.cols
+	local idxY = math.floor(#self.items/self.cols)
+	local x, y = idxX*self.itemSize[1], idxY*self.itemSize[2]
+	local w, h = self.itemSize[1], self.itemSize[2]
+	local item = {title = name, id = id, style = style or self.style}
+	
+	item.bgEl = guiCreateStaticImage(x, y, w, h, 'img/white.png', false, self.el)
+	guiSetAlpha(item.bgEl, 0)
+	
+	local imgPos, titleRc = self:getImgTitleCoords(w, h)
+	
 	local imgPath = img or 'img/empty.png'
 	--item.imgEl = guiCreateStaticImage(imgX, imgY, self.imgSize[1], self.imgSize[2], imgPath, false, item.el)
-	item.imgEl = guiCreateStaticImage(x + imgX, y + imgY, self.imgSize[1], self.imgSize[2], imgPath, false, self.el)
+	item.imgEl = guiCreateStaticImage(x + imgPos[1], y + imgPos[2], self.imgSize[1], self.imgSize[2], imgPath, false, self.el)
 	guiSetAlpha(item.imgEl, item.style.normal.a)
 	
 	--item.titleEl = guiCreateLabel(titleX, titleY, titleW, titleH, name, false, item.el)
-	item.titleEl = guiCreateLabel(x + titleX, y + titleY, titleW, titleH, name, false, self.el)
+	item.titleEl = guiCreateLabel(x + (titleRc:getOrigin()[1]), y + (titleRc:getOrigin()[2]), titleRc:getSize()[1], titleRc:getSize()[2], name, false, self.el)
 	if(self.style.iconPos == 'top' or not self.style.iconPos) then
 		guiLabelSetHorizontalAlign(item.titleEl, 'center', true)
 	end
@@ -118,15 +124,23 @@ function ListView:setFilter(filter)
 	local idx = 0
 	for i, item in ipairs(self.items) do
 		local visible = item.title:lower():find(filter, 1, true) and true or false
-		guiSetVisible(item.el, visible)
+		--guiSetVisible(item.el, visible)
+		guiSetVisible(item.bgEl, visible)
+		guiSetVisible(item.imgEl, visible)
+		guiSetVisible(item.titleEl, visible)
+		
 		if(visible) then
 			local idxX = idx % self.cols
 			local idxY = math.floor(idx/self.cols)
+			local w, h = self.itemSize[1], self.itemSize[2]
 			local x, y = idxX*self.itemSize[1], idxY*self.itemSize[2]
-			guiSetPosition(item.el, x, y, false)
+			local imgPos, titleRc = self:getImgTitleCoords(w, h)
+			guiSetPosition(item.bgEl, x, y, false)
+			guiSetPosition(item.imgEl, x + imgPos[1], y + imgPos[2], false)
+			guiSetPosition(item.titleEl, x + titleRc:getOrigin()[1], y + titleRc:getOrigin()[2], false)
 			idx = idx + 1
 		else
-			guiSetPosition(item.el, 0, 0, false)
+			--guiSetPosition(item.el, 0, 0, false)
 		end
 	end
 end

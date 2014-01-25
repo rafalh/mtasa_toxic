@@ -8,6 +8,14 @@ function Rect.__mt:__tostring()
 	return '('..tostring(self[1])..' '..tostring(self[1] + self[2])..')'
 end
 
+function Rect.__mt.__index:getOrigin()
+	return self[1]
+end
+
+function Rect.__mt.__index:getSize()
+	return self[2]
+end
+
 function Rect.__mt.__index:init(pos, size)
 	self[1] = pos or Vector2()
 	self[2] = size or Vector2()
