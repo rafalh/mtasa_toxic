@@ -44,7 +44,7 @@ local function ChVehDestroy()
 end
 
 local function ChVehEnter(player)
-	if(g_KnownVehicles[source]) then return end
+	if(g_KnownVehicles[source] or getElementType(player) ~= 'player') then return end
 	
 	g_KnownVehicles[source] = true
 	addEventHandler('onClientElementDataChange', source, ChVehDataChange, false)
@@ -120,8 +120,6 @@ local function ChInit()
 	local key = getKeyBoundToCommand('carhide') or 'O'
 	bindKey(key, 'down', 'carhide')
 end
-
-
 
 addEventHandler('onClientResourceStart', resourceRoot, ChInit)
 
