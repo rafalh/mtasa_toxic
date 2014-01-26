@@ -20,7 +20,7 @@ CmdMgr.register{
 			privMsg(ctx.player, "Your maximal bet is %s!", formatNumber(maxBet))
 		elseif(ctx.player.bet) then
 			privMsg(ctx.player, "You already bet %s on %s!", formatMoney(ctx.player.betcash), getPlayerName(ctx.player.bet))
-		elseif(not targetPlayer:isAlive() and targetMap and targetMap:getRespawn()) then
+		elseif(not targetPlayer:isAlive() and targetMap and not targetMap:getRespawn()) then
 			privMsg(ctx.player, "%s is already dead!", targetPlayer:getName())
 		else
 			GbBet(ctx.player.el, targetPlayer.el, cash)

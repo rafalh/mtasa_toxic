@@ -79,7 +79,12 @@ function Player.__mt.__index:addNotify(info)
 end
 
 function Player.__mt.__index:isAlive()
-	return not isPedDead(self.el)
+	if(isPedDead(self.el)) then
+		return false
+	end
+	
+	local state = getElementData(self.el, 'state')
+	return (state == 'alive')
 end
 
 function Player.__mt.__index:disconnectFromAccount()
