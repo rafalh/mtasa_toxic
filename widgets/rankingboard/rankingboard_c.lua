@@ -14,7 +14,9 @@ local PLAYER_FONT = 'default-bold'
 local FONT_HEIGHT = dxGetFontHeight(SCALE, FONT)
 local WHITE = tocolor(255, 255, 255)
 local BLACK = tocolor(0, 0, 0)
-local POS_OFFSET = 30
+local POS_WIDTH = 30
+local TIME_WIDTH = 65
+local EYE_WIDTH = 22
 local USE_RENDER_TARGET = true
 local g_WidgetName = {'Ranking board', pl = 'Tablica wyników'}
 
@@ -85,21 +87,22 @@ local function RbRenderBoard(x, y, w, h, anim)
 			first = false
 			
 			local text = rank..')'
-			dxDrawText(text, x+1, itemY+1, x+POS_OFFSET+1, itemY+1, black, SCALE, PLAYER_FONT, 'right')
-			dxDrawText(text, x, itemY, x+POS_OFFSET, itemY, white, SCALE, PLAYER_FONT, 'right')
+			dxDrawText(text, x+1, itemY+1, x+POS_WIDTH+1, itemY+1, black, SCALE, PLAYER_FONT, 'right')
+			dxDrawText(text, x, itemY, x+POS_WIDTH, itemY, white, SCALE, PLAYER_FONT, 'right')
 			
 			local r, g, b = unpack(item.clr)
 			local color = tocolor(r, g, b, itemAlpha)
-			dxDrawText(item.name2..':', x+5+POS_OFFSET+1, itemY+1, 0, 0, black, SCALE, PLAYER_FONT)
-			dxDrawText(item.name..':', x+5+POS_OFFSET, itemY, 0, 0, color, SCALE, PLAYER_FONT, 'left', 'top', false, false, false, true)
+			local nameX = x+5+POS_WIDTH
+			dxDrawText(item.name2..':', nameX+1, itemY+1, nameX+1+g_MaxNameW+5, itemY+1+FONT_HEIGHT, black, SCALE, PLAYER_FONT)
+			dxDrawText(item.name..':', nameX, itemY, nameX+g_MaxNameW+5, itemY+FONT_HEIGHT, color, SCALE, PLAYER_FONT, 'left', 'top', false, false, false, true)
 			
-			local tmX = x+5+POS_OFFSET+g_MaxNameW+5
+			local tmX = x+5+POS_WIDTH+g_MaxNameW+5
 			dxDrawText(item.tm, tmX + 1, itemY + 1, 0, 0, black, SCALE, FONT)
 			dxDrawText(item.tm, tmX, itemY, 0, 0, white, SCALE, FONT)
 			
 			if(item.spec) then
-				local eyeX = x+5+POS_OFFSET+g_MaxNameW+5+1 + item.tmW + 5
-				dxDrawImage(eyeX, itemY, 22, 16, g_EyeTexture)
+				local eyeX = x+5+POS_WIDTH+g_MaxNameW+5+1 + item.tmW + 5
+				dxDrawImage(eyeX, itemY, EYE_WIDTH, 16, g_EyeTexture)
 			end
 			
 			y = y + FONT_HEIGHT
@@ -184,6 +187,24 @@ local function RbClear()
 	end
 end
 
+local function RbUpdateName(item)
+	item.name2 = item.name:gsub('#%x%x%x%x%x%x', '')
+	item.nameW = dxGetTextWidth(item.name2..':', SCALE, PLAYER_FONT)
+	local tempName = item.name
+	local maxNameW = g_Size[1] - POS_WIDTH - TIME_WIDTH - EYE_WIDTH - 15
+	
+	while(item.nameW > maxNameW) do
+		tempName = tempName:sub(1, tempName:len() - 1)
+		item.name = tempName..'...'
+		item.name2 = item.name:gsub('#%x%x%x%x%x%x', '')
+		item.nameW = dxGetTextWidth(item.name2..':', SCALE, PLAYER_FONT)
+	end
+	
+	if(item.nameW > g_MaxNameW) then
+		g_MaxNameW = item.nameW + 10
+	end
+end
+
 local function RbAddItem(player, rank, time)
 	local timeStr
 	if(g_FirstTime) then
@@ -213,11 +234,8 @@ local function RbAddItem(player, rank, time)
 		item.clr = {255, 255, 255}
 		item.spec = false
 	end
-	item.name2 = item.name:gsub('#%x%x%x%x%x%x', '')
-	item.nameW = dxGetTextWidth(item.name2..':', SCALE, PLAYER_FONT)
-	if(item.nameW > g_MaxNameW) then
-		g_MaxNameW = item.nameW + 10
-	end
+	
+	RbUpdateName(item)
 	
 	item.tm = timeStr
 	item.tmW = dxGetTextWidth(item.tm, SCALE, FONT)
@@ -234,9 +252,6 @@ end
 local function RbPlayerQuit()
 	for rank, item in ipairs(g_Items) do
 		if(item and item.p == source) then
-			local playerName = getPlayerName(source)
-			local r, g, b = getPlayerNametagColor(source)
-			playerName = ('#%02X%02X%02X'):format(r, g, b)..playerName
 			item.p = false
 		end
 	end
@@ -246,12 +261,9 @@ local function RbPlayerChangeNick()
 	for rank, item in ipairs(g_Items) do
 		if(item and item.p == source) then
 			item.name = getPlayerName(source)
-			item.name2 = item.name:gsub('#%x%x%x%x%x%x', '')
 			item.clr = {getPlayerNametagColor(item.p)}
-			item.nameW = dxGetTextWidth(item.name2..':', SCALE, PLAYER_FONT)
-			if(item.nameW > g_MaxNameW) then
-				g_MaxNameW = item.nameW + 10
-			end
+			
+			RbUpdateName(item)
 			
 			if(USE_RENDER_TARGET) then
 				RbUpdateBuffer()

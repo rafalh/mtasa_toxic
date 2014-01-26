@@ -1,7 +1,7 @@
 local g_Root = getRootElement ()
 local g_ReadyPlayers = {}
 local g_Items = {} -- in chronology order
-#TEST = false
+#local TEST = false
 
 addEvent("rb_onPlayerReady", true)
 
