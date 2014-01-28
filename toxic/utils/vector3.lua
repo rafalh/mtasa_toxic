@@ -18,12 +18,12 @@ function Vector3.__mt.__index:distFromSeg(a, b)
     local w = self - a
 	
     local c1 = w:dot(v)
-    if ( c1 <= 0 ) then
+    if(c1 <= 0) then
         return self:dist(a)
 	end
 	
     local c2 = v:dot(v)
-    if ( c2 <= c1 ) then
+    if(c2 <= c1) then
         return self:dist(b)
 	end
 	
@@ -78,7 +78,7 @@ function Vector3.__mt.__index:init(x, y, z)
 end
 
 -- Simple test
-#TEST = false
+#local TEST = false
 #if(TEST) then
 	assert(((Vector3(1, 0, 0) + Vector3(0, 1, 0)) * 2) == Vector3(2, 2, 0))
 #end

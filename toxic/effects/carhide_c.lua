@@ -105,6 +105,20 @@ end
 local function ChPulse()
 	local target = getCameraTarget()
 	local localVeh = getPedOccupiedVehicle(localPlayer)
+	
+	-- If there is no target check if camera direction points to local vehicle (for example in TRIALS maps)
+	if(not target and localVeh) then
+		local cx, cy, cz, tx, ty, tz = getCameraMatrix()
+		local camPos = Vector3(cx, cy, cz)
+		local camDir = Vector3(tx - cx, ty - cy, tz - cz)
+		local vehPos = Vector3(getElementPosition(localVeh))
+		if(vehPos:distFromSeg(camPos, camPos + 100*camDir) < 0.1) then
+			target = localVeh
+			--outputDebugString('TRIALS camera!', 3)
+		end
+	end
+	
+	-- If spectator mode has been enabled/disabled update all players
 	local specMode = (target ~= localPlayer and target ~= localVeh)
 	if(specMode ~= g_SpecMode) then
 		g_SpecMode = specMode
