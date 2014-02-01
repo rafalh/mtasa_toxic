@@ -8,6 +8,7 @@ Styles = {
 	pm = '#FF6060',
 	red = {'#FF0000', '#EEEEEE'},
 	green = {'#00FF00', '#EEEEEE'},
+	yellow = {'#FFFF00', '#EEEEEE'},
 }
 g_Init = true
 
