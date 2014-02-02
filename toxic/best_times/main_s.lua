@@ -115,12 +115,14 @@ function BtUpdatePlayerTops(playerTimes, map, players)
 	if(#idList > 0) then
 		local rows = DbQuery(
 			'SELECT bt1.player, bt1.time, ('..
-				'SELECT COUNT(*) FROM '..BestTimesTable..' AS bt2 '..
+				'SELECT COUNT(*) FROM '..BestTimesTable..' bt2 '..
 				'WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos '..
 			'FROM '..BestTimesTable..' bt1 '..
 			'WHERE bt1.map=? AND bt1.player IN (??)', map:getId(), table.concat(idList, ','))
+		
 		for i, data in ipairs(rows) do
 			local player = Player.fromId(data.player)
+			assert(player)
 			data.time = formatTimePeriod(data.time / 1000)
 			playerTimes[player.el] = data
 		end

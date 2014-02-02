@@ -33,10 +33,14 @@ function MiSendMapInfo(playerOrRoom)
 		BtUpdatePlayerTops(g_PlayerTops, map, players)
 	end
 	
-	RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player]):setClient(players):exec()
+	for i, player in ipairs(players) do
+		RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player]):setClient(player):exec()
+	end
+	
 	if(show) then
 		RPC('MiShow'):setClient(players):exec()
 	end
+	
 	prof:cp('MiSendMapInfo')
 end
 
