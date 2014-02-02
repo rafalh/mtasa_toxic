@@ -53,16 +53,18 @@ tryVerify = function()
 		--outputDebugString('Timer proc start')
 		-- Hook addEventHandler to catch all onResourceStart handlers
 		local initFuncTbl = {}
+		local _addEventHandler = addEventHandler
 		if(g_ResStarted) then
-			local _addEventHandler = addEventHandler
 			addEventHandler = function(event, element, func, ...)
 				if(event and element and func) then
-					_addEventHandler(event, element, func, ...)
-					if(event == EvResStart and (element == root or element == resourceRoot)) then
+					local success = _addEventHandler(event, element, func, ...)
+					if(success and event == EvResStart and (element == root or element == resourceRoot)) then
 						table.insert(initFuncTbl, func)
 					end
+					return success
 				else
 					outputDebugString(debug.traceback('Invalid argument for addEventHandler', 2), 2)
+					return false
 				end
 			end
 		end

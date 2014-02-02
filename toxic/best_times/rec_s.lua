@@ -10,6 +10,11 @@
 
 #MAX_RECORDINGS = 3
 
+-------------------
+-- Custom events --
+-------------------
+addEvent('onPlayerReachCheckpoint')
+
 --------------------------------
 -- Local function definitions --
 --------------------------------
@@ -190,7 +195,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			end
 			local blob = DbBlob(buf)
 			
-			if(foundRow.cp_times) then
+			if(foundRow and foundRow.cp_times) then
 				DbQuery('UPDATE '..BlobsTable..' SET data='..blob..' WHERE id=?', foundRow.cp_times)
 			else
 				DbQuery('INSERT INTO '..BlobsTable..' (data) VALUES('..blob..')')

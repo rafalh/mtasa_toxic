@@ -281,5 +281,5 @@ _addEventHandler = addEventHandler
 function addEventHandler(...)
 	outputDebugString('addEventHandler is not recommended at startup! Use addInitFunc instead.', 2)
 	DbgTraceBack()
-	_addEventHandler(...)
+	return _addEventHandler(...)
 end

@@ -31,6 +31,15 @@ function assert(val, str)
 	end
 end
 
+local _addEventHandler = addEventHandler
+function addEventHandler(...)
+	local success = _addEventHandler(...)
+	if(not success) then
+		outputDebugString(debug.traceback('addEventHandler failed', 2), 2)
+	end
+	return success
+end
+
 if(DEBUG) then
 	function DbgPrint(fmt, ...)
 		outputDebugString(fmt:format(...), 3)
@@ -92,14 +101,14 @@ if(DEBUG) then
 				end
 			end
 			g_Handlers[handlerFunction] = func -- what about different eventName/source
-			_addEventHandler(eventName, attachedTo, func, ...)
+			return _addEventHandler(eventName, attachedTo, func, ...)
 		end
 		
 		local _removeEventHandler = removeEventHandler
 		function removeEventHandler(eventName, attachedTo, handlerFunction, ...)
 			local func = g_Handlers[handlerFunction] or handlerFunction
 			g_Handlers[handlerFunction] = nil
-			_removeEventHandler(eventName, attachedTo, func, ...)
+			return _removeEventHandler(eventName, attachedTo, func, ...)
 		end
 	end
 else

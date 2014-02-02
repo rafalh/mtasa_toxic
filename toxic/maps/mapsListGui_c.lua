@@ -4,6 +4,7 @@ addEvent('onClientDisplayNextMapGuiReq', true )
 addEvent('onAddMapToQueueReq', true )
 addEvent('onClientDisplayChangeMapGuiReq', true )
 addEvent('onChangeMapReq', true )
+addEvent('onClientMapStarting')
 
 local g_GuiList = {}
 local g_MapList = false
