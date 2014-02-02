@@ -3,6 +3,7 @@ local INVISIBLE_DIM = 65534
 local g_CarHide = false
 local g_KnownVehicles = {}
 local g_SpecMode = nil -- unknown
+local g_HasWeapon = false
 
 local function ChUpdatePlayer(player)
 	local veh = getPedOccupiedVehicle(player)
@@ -10,7 +11,7 @@ local function ChUpdatePlayer(player)
 	local dim = 0
 	local cols = (isElement(veh) and getElementData(veh, 'race.collideothers') or 0) ~= 0
 	
-	if(g_CarHide and player ~= localPlayer and not cols and not g_SpecMode) then
+	if(g_CarHide and player ~= localPlayer and not cols and not g_SpecMode and not g_HasWeapon) then
 		dim = INVISIBLE_DIM
 	end
 	
@@ -118,10 +119,19 @@ local function ChPulse()
 		end
 	end
 	
-	-- If spectator mode has been enabled/disabled update all players
+	-- Check if spectator mode has been enabled
 	local specMode = (target ~= localPlayer and target ~= localVeh)
-	if(specMode ~= g_SpecMode) then
-		g_SpecMode = specMode
+	
+	-- Check if player has any weapon
+	local hasWeapon = getPedWeapon(localPlayer) ~= 0
+	
+	local update = (specMode ~= g_SpecMode or hasWeapon ~= g_HasWeapon)
+	g_SpecMode = specMode
+	g_HasWeapon = hasWeapon
+	
+	-- If spectator mode has been enabled/disabled or weapon has been given update all players
+	if(update) then
+		--outputDebugString('g_SpecMode '..tostring(g_SpecMode)..' g_HasWeapon '..tostring(g_HasWeapon), 3)
 		ChUpdateAllPlayers()
 	end
 end
