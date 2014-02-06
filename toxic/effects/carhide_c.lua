@@ -45,11 +45,13 @@ local function ChVehDestroy()
 end
 
 local function ChVehEnter(player)
-	if(g_KnownVehicles[source] or getElementType(player) ~= 'player') then return end
+	if(getElementType(player) ~= 'player') then return end
 	
-	g_KnownVehicles[source] = true
-	addEventHandler('onClientElementDataChange', source, ChVehDataChange, false)
-	addEventHandler('onClientElementDestroy', source, ChVehDestroy, false)
+	if(not g_KnownVehicles[source]) then
+		g_KnownVehicles[source] = true
+		addEventHandler('onClientElementDataChange', source, ChVehDataChange, false)
+		addEventHandler('onClientElementDestroy', source, ChVehDestroy, false)
+	end
 	
 	ChUpdatePlayer(player)
 end
