@@ -75,7 +75,7 @@ function MqPop(room)
 	assert(room)
 	if(not room.mapQueue) then return false end
 	
-	local map = table.remove (room.mapQueue, 1)
+	local map = table.remove(room.mapQueue, 1)
 	
 	local nextMap = room.mapQueue[1]
 	local nextMapName = nextMap and nextMap:getName()
@@ -118,14 +118,25 @@ local function MqOnAddReq(mapResName)
 end
 
 local function MqOnRaceStateChanging(state, oldState)
-	if(state ~= 'PostFinish') then return end
+	if(state ~= 'PostFinish' and state ~= 'NextMapSelect') then return end
 	
 	local room = g_RootRoom
-	local nextMap = MqPop(room)
-	if(not nextMap) then return end
+	local nextMap
 	
+	if(state == 'PostFinish') then
+		-- Check if there is any map in queue and if there is some notify
+		-- 'race' to allow it use a proper message in the count-down
+		nextMap = room.mapQueue and room.mapQueue[1]
+		if(not nextMap) then return end
+	else -- NextMapSelect
+		-- Map change happens just after this event so remove map from
+		-- queue if there is any and send it to 'race' resource
+		nextMap = MqPop(room)
+	end
+	
+	-- Notify 'race' resource
 	if(g_RaceRes:isReady()) then
-		g_RaceRes:call('setNextMap', nextMap.res)
+		g_RaceRes:call('setNextMap', nextMap and nextMap.res)
 	end
 end
 
