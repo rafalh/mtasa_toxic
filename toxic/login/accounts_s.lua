@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 local g_RegTimeStamp = 0
 local g_LastMailTicks = 0
 
@@ -86,6 +89,8 @@ function getAccountEmail()
 	return player.accountData.email
 end
 
+#if(PASSWORD_RECOVERY) then
+
 RPC.allow('passwordRecoveryReq')
 function passwordRecoveryReq(email)
 	local rows = DbQuery('SELECT player FROM '..PlayersTable..' WHERE email=?', email)
@@ -162,6 +167,8 @@ CmdMgr.register{
 		end
 	end
 }
+
+#end
 
 addInitFunc(function()
 	addEventHandler('main.onLogin', g_ResRoot, onLoginReq)

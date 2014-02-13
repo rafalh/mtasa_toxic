@@ -1,6 +1,7 @@
 --------------
 -- Includes --
 --------------
+#include 'include/config.lua'
 
 local g_GUI
 g_UserName = false
@@ -150,7 +151,11 @@ function openLoginWnd()
 	addEventHandler('onClientGUIClick', g_GUI.logBtn, onLoginClick, false)
 	addEventHandler('onClientGUIClick', g_GUI.regBtn, onRegisterClick, false)
 	addEventHandler('onClientGUIClick', g_GUI.guestBtn, onPlayAsGuestClick, false)
+#if(PASSWORD_RECOVERY) then
 	addEventHandler('onClientGUIClick', g_GUI.lostPw, onLostPwClick, false)
+#else
+	guiSetVisible(g_GUI.lostPw, false)
+#end
 	
 	loadAutoLogin()
 end

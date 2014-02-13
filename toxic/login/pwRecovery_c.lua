@@ -1,3 +1,8 @@
+
+#include 'include/config.lua'
+
+#if(PASSWORD_RECOVERY) then
+
 local g_GUI = false
 
 function closeLostPasswordWnd()
@@ -47,3 +52,5 @@ function openLostPasswordWnd()
 	addEventHandler('onClientGUIClick', g_GUI.ok, onOkClick, false)
 	addEventHandler('onClientGUIClick', g_GUI.cancel, closeLostPasswordWnd, false)
 end
+
+#end

@@ -1,3 +1,8 @@
+
+#include 'include/config.lua'
+
+#if(PASSWORD_RECOVERY) then
+
 local g_Config = false
 
 Mail = Class('Mail')
@@ -73,3 +78,5 @@ function Mail.__mt.__index:send()
 	
 	return true
 end
+
+#end
