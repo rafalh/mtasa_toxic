@@ -28,6 +28,7 @@ TeamsTable = Database.Table{
 	{'color', 'VARCHAR(7)', default = ''},
 	{'priority', 'INT'},
 	{'lastUsage', 'INT UNSIGNED', default = 0},
+	{'owner', 'INT', default = false, null = true, fk = {'players', 'player'}},
 }
 
 addEvent('onPlayerChangeTeam')
@@ -266,18 +267,20 @@ function updateItem(teamInfo)
 			teamCopy[k] = v
 		end
 		g_TeamFromName[teamCopy.name] = teamCopy
-		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=? WHERE id=?',
-				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.id)) then
+		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=?, owner=? WHERE id=?',
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, teamInfo.id)) then
 			return false, 'Failed to modify team'
 		end
 	else
 		local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
 		if(rows and rows[1]) then
-			return false, 'Failed to create team'
+			return false, 'Such team already exists'
 		end
 		
-		DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)',
-			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, #g_List + 1)
+		if(not DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, owner, priority) VALUES(?, ?, ?, ?, ?, ?)',
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, #g_List + 1)) then
+			return false, 'Failed to insert team to database'
+		end
 		teamInfo.id = Database.getLastInsertID()
 		g_TeamFromName[teamInfo.name] = teamInfo
 		g_TeamFromID[teamInfo.id] = teamInfo
@@ -290,16 +293,32 @@ end
 function delItem(id)
 	assert(id)
 	
+	-- Find team by ID
 	local teamInfo = g_TeamFromID[id]
 	if(not teamInfo) then
 		return false, 'Unknown team'
 	end
 	
-	DbQuery('UPDATE '..TeamsTable..' SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
+	-- Unlink team from player
+	if(teamInfo.owner) then
+		local ownerPlayer = Player.fromId(teamInfo.owner)
+		local teamPrice = ShpGetItemPrice('team', ownerPlayer and ownerPlayer.el)
+		local accountData = AccountData.create(teamInfo.owner)
+		accountData:set{
+			ownedTeam = false,
+			cash = accountData.cash + teamPrice,
+		}
+	end
+	
+	-- Delete team
 	DbQuery('DELETE FROM '..TeamsTable..' WHERE id=?', teamInfo.id)
 	table.removeValue(g_List, teamInfo)
 	g_TeamFromName[teamInfo.name] = nil
 	g_TeamFromID[teamInfo.id] = nil
+	
+	-- Update priorities
+	DbQuery('UPDATE '..TeamsTable..' SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
+	
 	return true
 end
 

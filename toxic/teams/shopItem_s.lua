@@ -42,8 +42,22 @@ function updateOwnedRPC(teamInfo)
 		return false, 'Unknown error '..tostring(teamInfo.id)..' '..tostring(pdata.accountData.ownedTeam)
 	end
 	
+	if(teamInfo.tag ~= '') then
+		local rows = DbQuery('SELECT COUNT(*) AS c FROM '..TeamsTable..' WHERE tag=? AND id<>?', teamInfo.tag, teamInfo.id)
+		if(rows[1].c > 0) then
+			return false, 'Team with specified tag already exists'
+		end
+	end
+	
 	teamInfo.aclGroup = ''
-	return updateItem(teamInfo)
+	teamInfo.owner = pdata.id
+	
+	local status, err = updateItem(teamInfo)
+	if(status) then
+		updateAllPlayers()
+	end
+	
+	return status, err
 end
 RPC.allow('Teams.updateOwnedRPC')
 

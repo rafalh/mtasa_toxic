@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 164,
+	currentVer = 165,
 	list = {
 		{
 			ver = 149,
@@ -269,7 +269,17 @@ Updater = {
 			func = function()
 #if(SHOP_ITEM_TEAM) then
 				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN ownedTeam INT DEFAULT NULL')) then
-					return 'Failed to add team column'
+					return 'Failed to add ownedTeam column'
+				end
+#end
+			end
+		},
+		{
+			ver = 165,
+			func = function()
+#if(SHOP_ITEM_TEAM) then
+				if(not DbQuerySync('ALTER TABLE '..Teams.TeamsTable..' ADD COLUMN owner INT DEFAULT NULL')) then
+					return 'Failed to add owner column'
 				end
 #end
 			end
