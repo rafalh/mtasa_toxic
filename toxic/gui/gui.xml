@@ -216,13 +216,14 @@
 		<label id="info" x="10" y="30" rw="100" w="-20" h="20" text="Please enter information about your clan" align="center" />
 		
 		<label x="10" y="60" w="60" h="20" text="Tag:" />
-		<edit  x="80" y="55" rw="100" w="-90" h="25" id="tag" />
+		<edit  x="80" y="55" w="80" h="25" id="tag" />
 		
 		<label x="10" y="90" w="60" h="20" text="Name:" />
 		<edit  x="80" y="85" rw="100" w="-90" h="25" id="name" />
 		
 		<label x="10" y="120" w="60" h="20" text="Color:" />
-		<edit  x="80" y="115" rw="100" w="-90" h="25" id="color" />
+		<edit  x="80" y="115" w="80" h="25" id="color" />
+		<button  x="170" y="115" w="80" h="25" text="Change" id="changeColor" />
 		
 		<button id="ok" rx="50" x="-85" ry="100" y="-35" w="80" h="25" text="OK" />
 		<button id="cancel" rx="50" x="5" ry="100" y="-35" w="80" h="25" text="Cancel" />

@@ -6,6 +6,9 @@ namespace('Teams')
 #if(SHOP_ITEM_TEAM) then
 
 local g_TeamGUI
+local g_TeamClrWnd
+
+addEvent('toxic.onColorDlgClose')
 
 local function closeOwnedTeamGUI()
 	if(not g_TeamGUI) then return end
@@ -49,6 +52,22 @@ local function onOwnedTeamInfo(teamInfo, err)
 	
 	addEventHandler('onClientGUIClick', g_TeamGUI.ok, acceptOwnedTeamGUI, false)
 	addEventHandler('onClientGUIClick', g_TeamGUI.cancel, closeOwnedTeamGUI, false)
+	
+	addEventHandler('onClientGUIClick', g_TeamGUI.changeColor, function()
+		if(g_TeamClrWnd) then
+			guiBringToFront(g_TeamClrWnd)
+		else
+			local r, g, b = getColorFromString(guiGetText(g_TeamGUI.color))
+			local sharedRes = Resource('rafalh_shared')
+			g_TeamClrWnd = sharedRes:call('createColorDlg', 'toxic.onColorDlgClose', r, g, b)
+			addEventHandler('toxic.onColorDlgClose', g_TeamClrWnd, function(r, g, b)
+				if(r) then
+					guiSetText(g_TeamGUI.color, ('#%02X%02X%02X'):format(r, g, b))
+				end
+				g_TeamClrWnd = nil
+			end, false)
+		end
+	end, false)
 	
 	showCursor(true)
 end

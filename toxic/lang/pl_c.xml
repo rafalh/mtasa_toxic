@@ -15,6 +15,7 @@
 	<msg id="Delete">Usuń</msg>
 	<msg id="Up">Góra</msg>
 	<msg id="Down">Dół</msg>
+	<msg id="Change">Zmień</msg>
 	
     <msg id="Usage: %s">Użycie: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Naciśnij %s aby otworzyć Panel Użytkownika, a %s aby otworzyć Panel Statystyk!</msg>
