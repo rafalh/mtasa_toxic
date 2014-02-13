@@ -1,6 +1,7 @@
 local g_Strings = {}
 local g_Patterns = {}
 local g_Mui = {}
+local g_IgnoredSet = {}
 local g_Lang
 
 addEvent ( "onClientLangChange", true )
@@ -49,6 +50,10 @@ function MuiGetMsg ( text )
 	return text
 end
 
+function MuiIgnoreElement(el)
+	g_IgnoredSet[el] = true
+end
+
 local _guiSetText = guiSetText
 function guiSetText ( guiElement, text )
 	if ( g_Mui[guiElement] ) then
@@ -95,12 +100,18 @@ end
 
 local _guiGridListAddColumn = guiGridListAddColumn
 function guiGridListAddColumn ( gridList, title, ... )
-	return _guiGridListAddColumn ( gridList, MuiGetMsg ( title ), ... )
+	if(not g_IgnoredSet[gridList]) then
+		title = MuiGetMsg(title)
+	end
+	return _guiGridListAddColumn ( gridList, title, ... )
 end
 
 local _guiGridListSetItemText = guiGridListSetItemText
 function guiGridListSetItemText ( gridList, rowIndex, columnIndex, text, ... )
-	return _guiGridListSetItemText ( gridList, rowIndex, columnIndex, MuiGetMsg ( text ), ... )
+	if(not g_IgnoredSet[gridList]) then
+		text = MuiGetMsg(text)
+	end
+	return _guiGridListSetItemText ( gridList, rowIndex, columnIndex, text, ... )
 end
 
 local _guiComboBoxAddItem = guiComboBoxAddItem
@@ -128,11 +139,10 @@ local function MuiUpdate ()
 end
 
 function MuiSetLang ( lang )
-	assert ( lang )
-	
-	if ( lang ~= g_Lang ) then
-		MuiLoad ( "lang/"..tostring ( lang ).."_c.xml" )
-		MuiUpdate ()
+	assert(lang)
+	if(lang ~= g_Lang) then
+		MuiLoad("lang/"..tostring (lang).."_c.xml")
+		MuiUpdate()
 		triggerEvent("onClientLangChanged", getResourceRootElement())
 		g_Lang = lang
 	end
