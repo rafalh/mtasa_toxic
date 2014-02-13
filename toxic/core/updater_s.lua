@@ -254,6 +254,7 @@ Updater = {
 		{
 			ver = 163,
 			func = function()
+#if(TOP_TIMES) then
 				if(not DbRecreateTable(BestTimesTable)) then
 					return 'Failed to recreate besttimes table'
 				end
@@ -262,6 +263,7 @@ Updater = {
 					not DbQuerySync('UPDATE '..BestTimesTable..' SET cp_times=NULL WHERE cp_times=0')) then
 					return 'Failed to update rec or cp_times columns'
 				end
+#end
 			end
 		},
 		{

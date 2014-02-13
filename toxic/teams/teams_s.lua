@@ -272,9 +272,12 @@ function updateItem(teamInfo)
 			return false, 'Failed to modify team'
 		end
 	else
-		local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
-		if(rows and rows[1]) then
-			return false, 'Such team already exists'
+		-- Check only if this is not empty item
+		if(teamInfo.name ~= '' or teamInfo.tag ~= '' or teamInfo.aclGroup ~= '') then
+			local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
+			if(rows and rows[1]) then
+				return false, 'Such team already exists'
+			end
 		end
 		
 		if(not DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, owner, priority) VALUES(?, ?, ?, ?, ?, ?)',
