@@ -154,5 +154,13 @@ local function MuiOnElementDestroy()
 	end
 end
 
-addEventHandler("onClientLangChange", getResourceRootElement(), MuiSetLang)
-addEventHandler("onClientElementDestroy", getResourceRootElement(), MuiOnElementDestroy)
+local function MuiInit()
+	local lang = getElementData(localPlayer, 'lang')
+	if(lang) then
+		MuiSetLang(lang)
+	end
+end
+
+addEventHandler("onClientResourceStart", resourceRoot, MuiInit)
+addEventHandler("onClientLangChange", resourceRoot, MuiSetLang)
+addEventHandler("onClientElementDestroy", resourceRoot, MuiOnElementDestroy)
