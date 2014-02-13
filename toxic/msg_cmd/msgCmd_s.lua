@@ -206,7 +206,7 @@ CmdMgr.register{
 		
 		xmlUnloadFile(node)
 	end
-end
+}
 
 CmdMgr.register{
 	name = 'editcom',
@@ -243,7 +243,7 @@ CmdMgr.register{
 		
 		xmlUnloadFile(node)
 	end
-end
+}
 
 #end -- MODIFY_MSG_CMD
 
