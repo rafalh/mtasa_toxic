@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 163,
+	currentVer = 164,
 	list = {
 		{
 			ver = 149,
@@ -262,6 +262,16 @@ Updater = {
 					not DbQuerySync('UPDATE '..BestTimesTable..' SET cp_times=NULL WHERE cp_times=0')) then
 					return 'Failed to update rec or cp_times columns'
 				end
+			end
+		},
+		{
+			ver = 164,
+			func = function()
+#if(SHOP_ITEM_TEAM) then
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN ownedTeam INT DEFAULT NULL')) then
+					return 'Failed to add team column'
+				end
+#end
 			end
 		},
 	}

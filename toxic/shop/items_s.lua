@@ -3,6 +3,7 @@
 --------------
 
 #include 'include/internal_events.lua'
+#include 'include/config.lua'
 
 addEvent('onBuyNextMapReq', true)
 
@@ -19,7 +20,7 @@ function JoinMsgItem.onBuy(player, val)
 	return not val and Player.fromEl(player).accountData:set('joinmsg', '')
 end
 
-function JoinMsgItem.onSell ( player, val )
+function JoinMsgItem.onSell(player, val)
 	return val and Player.fromEl(player).accountData:set('joinmsg', nil)
 end
 

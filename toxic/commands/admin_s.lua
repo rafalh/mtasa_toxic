@@ -167,7 +167,7 @@ CmdMgr.register{
 	desc = "Shows player IP address",
 	accessRight = AccessRight('ip'),
 	args = {
-		{'player', type = 'player'},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
 		local ip = player:getIP()
@@ -179,7 +179,7 @@ CmdMgr.register{
 	name = 'account',
 	desc = "Shows player account ID",
 	args = {
-		{'player', type = 'player'},
+		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
 		scriptMsg("%s's account ID: %s.", player:getName(), player.id or "none")

@@ -5,6 +5,10 @@
 	<script src="teams_s.lua" type="server" />
 	<script src="admin_s.lua" type="server" />
 	<script src="admin_c.lua" type="client" />
+	<script src="shopItem_s.lua" type="server" />
+	<script src="shopItem_c.lua" type="client" />
+	
+	<file src="img/team.png" />
 	
 	<settings>
 		<setting group="General" name="*clan_teams" accept="false,true" value="false" desc="If enabled player names will be searched for tags in form of (tag), [tag], |tag| and more. Players with tags will have they own teams." friendlyname="Clan teams" />

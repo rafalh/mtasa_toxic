@@ -247,6 +247,62 @@ function updateAllPlayers()
 end
 RPC.allow('Teams.updateAllPlayers')
 
+function updateItem(teamInfo)
+	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
+	teamInfo.lastUsage = getRealTime().timestamp
+	
+	if(not getColorFromString(teamInfo.color)) then
+		return false, 'Color is invalid'
+	end
+	
+	if(teamInfo.id) then
+		local teamCopy = g_TeamFromID[teamInfo.id]
+		if(not teamCopy) then
+			return false, 'Team has not been found'
+		end
+		
+		g_TeamFromName[teamCopy.name] = nil
+		for k, v in pairs(teamInfo) do
+			teamCopy[k] = v
+		end
+		g_TeamFromName[teamCopy.name] = teamCopy
+		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=? WHERE id=?',
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.id)) then
+			return false, 'Failed to modify team'
+		end
+	else
+		local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
+		if(rows and rows[1]) then
+			return false, 'Failed to create team'
+		end
+		
+		DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)',
+			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, #g_List + 1)
+		teamInfo.id = Database.getLastInsertID()
+		g_TeamFromName[teamInfo.name] = teamInfo
+		g_TeamFromID[teamInfo.id] = teamInfo
+		table.insert(g_List, teamInfo)
+	end
+	
+	return teamInfo
+end
+
+function delItem(id)
+	assert(id)
+	
+	local teamInfo = g_TeamFromID[id]
+	if(not teamInfo) then
+		return false, 'Unknown team'
+	end
+	
+	DbQuery('UPDATE '..TeamsTable..' SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
+	DbQuery('DELETE FROM '..TeamsTable..' WHERE id=?', teamInfo.id)
+	table.removeValue(g_List, teamInfo)
+	g_TeamFromName[teamInfo.name] = nil
+	g_TeamFromID[teamInfo.id] = nil
+	return true
+end
+
 local function initDelayed()
 	updateAllPlayers()
 	setTimer(detectTeamChange, 1000, 0)

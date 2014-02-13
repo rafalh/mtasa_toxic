@@ -5,3 +5,5 @@
 
 #TOP_TIMES = true
 #DD_TOPS = false
+
+#SHOP_ITEM_TEAM = true

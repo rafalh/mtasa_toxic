@@ -8,64 +8,29 @@ function getList()
 end
 RPC.allow('Teams.getList')
 
-function updateItem(teamInfo)
+function updateItemRPC(teamInfo)
 	if(not g_Right:check(client)) then return false end
-	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
 	
-	if(teamInfo.id) then
-		local teamCopy = g_TeamFromID[teamInfo.id]
-		if(not teamCopy) then
-			privMsg(client, "Failed to modify team")
-			return false
-		end
-		
-		g_TeamFromName[teamCopy.name] = nil
-		for k, v in pairs(teamInfo) do
-			teamCopy[k] = v
-		end
-		g_TeamFromName[teamCopy.name] = teamCopy
-		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=? WHERE id=?',
-				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.id)) then
-			return false
-		end
-	else
-		local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
-		if(rows and rows[1]) then
-			privMsg(client, "Failed to add team %s", teamInfo.name)
-			return false
-		end
-		
-		DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, priority) VALUES(?, ?, ?, ?, ?)',
-			teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, #g_List + 1)
-		local rows = DbQuery('SELECT last_insert_rowid() AS id')
-		teamInfo.id = rows[1].id
-		g_TeamFromName[teamInfo.name] = teamInfo
-		g_TeamFromID[teamInfo.id] = teamInfo
-		table.insert(g_List, teamInfo)
+	local teamInfo, err = updateItem(teamInfo)
+	if(not teamInfo) then
+		privMsg(client, err)
 	end
 	
 	return teamInfo
 end
-RPC.allow('Teams.updateItem')
+RPC.allow('Teams.updateItemRPC')
 
-function delItem(id)
+function delItemRPC(id)
 	if(not g_Right:check(client)) then return false end
-	assert(id)
 	
-	local teamInfo = g_TeamFromID[id]
-	if(not teamInfo) then
-		privMsg(client, "Failed to delete team")
-		return false
+	local status, err = delItem(id)
+	if(not status) then
+		privMsg(client, err)
 	end
 	
-	DbQuery('UPDATE '..TeamsTable..' SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
-	DbQuery('DELETE FROM '..TeamsTable..' WHERE id=?', teamInfo.id)
-	table.removeValue(g_List, teamInfo)
-	g_TeamFromName[teamInfo.name] = nil
-	g_TeamFromID[teamInfo.id] = nil
-	return true
+	return status
 end
-RPC.allow('Teams.delItem')
+RPC.allow('Teams.delItemRPC')
 
 function changePriority(id, up)
 	local teamInfo = id and g_TeamFromID[id]

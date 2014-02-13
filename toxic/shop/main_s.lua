@@ -3,6 +3,7 @@
 --------------
 
 #include 'include/internal_events.lua'
+#include 'include/config.lua'
 
 --------------------------------
 -- Local function definitions --
@@ -22,6 +23,9 @@ PlayersTable:addColumns{
 	{'bidlvl', 'SMALLINT UNSIGNED', default = 1},
 	{'mapBoughtTimestamp', 'INT UNSIGNED', default = 0},
 	{'joinmsg', 'VARCHAR(128)', default = false, null = true},
+#if(SHOP_ITEM_TEAM) then
+	{'ownedTeam', 'INT', default = false, null = true, fk = {'teams', 'id'}},
+#end
 	
 	{'health100',    'TINYINT UNSIGNED', default = 0},
 	{'selfdestr',    'TINYINT UNSIGNED', default = 0},
@@ -39,7 +43,7 @@ local function ShpGetInventoryRequest ()
 	local inventory = {}
 	local pdata = Player.fromEl(client)
 	
-	for item_id, item in pairs ( g_ShopItems ) do
+	for item_id, item in pairs(g_ShopItems) do
 		if(item.field) then
 			inventory[item_id] = pdata.accountData:get(item.field)
 		end
@@ -50,16 +54,16 @@ local function ShpGetInventoryRequest ()
 	triggerClientInternalEvent(client, $(EV_CLIENT_INVENTORY), client, inventory, isVip)
 end
 
-local function ShpBuyShopItemRequest ( item_id )
+local function ShpBuyShopItemRequest(item_id)
 	local item = item_id and g_ShopItems[item_id]
-	if ( not item ) then return end
+	if(not item) then return end
 	
-	if ( ShpBuyItem ( item_id, client ) ) then
-		ShpGetInventoryRequest ()
+	if(ShpBuyItem(item_id, client)) then
+		ShpGetInventoryRequest()
 	end
 end
 
-local function ShpSellShopItemRequest ( item_id )
+local function ShpSellShopItemRequest(item_id)
 	local item = item_id and g_ShopItems[item_id]
 	if(not item) then return end
 	
@@ -72,11 +76,11 @@ local function ShpSellShopItemRequest ( item_id )
 	end
 end
 
-local function ShpUseShopItemRequest ( item_id )
+local function ShpUseShopItemRequest(item_id)
 	local item = item_id and g_ShopItems[item_id]
-	if ( not item ) then return end
+	if(not item) then return end
 	
-	if ( ShpUseItem ( item_id, client ) ) then
+	if(ShpUseItem(item_id, client)) then
 		ShpGetInventoryRequest ()
 	end
 end
@@ -144,8 +148,8 @@ end
 ------------
 
 addInitFunc(function()
-	addInternalEventHandler ( $(EV_BUY_SHOP_ITEM_REQUEST), ShpBuyShopItemRequest )
-	addInternalEventHandler ( $(EV_SELL_SHOP_ITEM_REQUEST), ShpSellShopItemRequest )
-	addInternalEventHandler ( $(EV_USE_SHOP_ITEM_REQUEST), ShpUseShopItemRequest )
-	addInternalEventHandler ( $(EV_GET_INVENTORY_REQUEST), ShpGetInventoryRequest )
+	addInternalEventHandler($(EV_BUY_SHOP_ITEM_REQUEST), ShpBuyShopItemRequest)
+	addInternalEventHandler($(EV_SELL_SHOP_ITEM_REQUEST), ShpSellShopItemRequest)
+	addInternalEventHandler($(EV_USE_SHOP_ITEM_REQUEST), ShpUseShopItemRequest)
+	addInternalEventHandler($(EV_GET_INVENTORY_REQUEST), ShpGetInventoryRequest)
 end)
