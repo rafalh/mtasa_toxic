@@ -2,6 +2,8 @@ FormattedLabel = Class('FormattedLabel')
 
 local g_Map = {}
 
+addEvent('onClientLangChanged')
+
 local function onDestroy()
 	g_Map[source] = nil
 end
