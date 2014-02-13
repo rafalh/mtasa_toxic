@@ -3,7 +3,7 @@
 ----------------------
 
 local g_StartTime = false
-local DELAY_TIME = 3000
+local DELAY_TIME = 10000
 local FADE_TIME = 500
 local SHOW_TIME = 6000
 local g_Root = getRootElement()

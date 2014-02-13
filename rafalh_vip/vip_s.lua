@@ -31,36 +31,6 @@ local function VipIsPromoActive()
 	return false
 end
 
-local function VipCreateNeon(player, veh)
-	local pdata = g_Players[player]
-	local settings = pdata and pdata.settings
-	if(not isElement(veh) or not settings) then return end
-	
-	local r, g, b = getColorFromString(settings.neon_clr)
-	if(not pdata.neon) then
-		pdata.neon = {obj = createMarker(0, 0, 0, "corona", 2, r, g, b, 128, g_Root)}
-	else
-		setMarkerColor(pdata.neon.obj, r, g, b, 128)
-	end
-	pdata.neon.veh = veh
-	attachElements(pdata.neon.obj, veh, 0, 0, -1.5)
-	--outputDebugString("VipCreateNeon("..getPlayerName(player)..")")
-end
-
-local function VipDestroyNeon(player)
-	local pdata = g_Players[player]
-	if(not pdata.neon) then return end
-	
-	if(not isElement(pdata.neon.obj)) then
-		outputDebugString('[VIP] Neon marker is invalid: '..tostring(pdata.neon.obj), 2)
-		DbgTraceBack()
-	else
-		destroyElement(pdata.neon.obj)
-	end
-	pdata.neon = nil
-	--outputDebugString("VipDestroyNeon("..getPlayerName(player)..")")
-end
-
 local function VipAutopilotFunc(player)
 	local pdata = g_Players[player]
 	pdata.autopilot = not pdata.autopilot
@@ -227,16 +197,6 @@ local function VipOnPlayerWasted()
 	end
 end
 
-local function VipOnElementDestroy()
-	if(getElementType(source) ~= "vehicle") then return end
-	
-	for player, pdata in pairs(g_Players) do
-		if(pdata.neon and pdata.neon.veh == source) then
-			VipDestroyNeon(player)
-		end
-	end
-end
-
 local function VipOnPlayerPickUpRacePickup()
 	local veh = getPedOccupiedVehicle(source)
 	local settings = g_Players[source] and g_Players[source].settings
@@ -267,7 +227,7 @@ local function VipOnClientReady()
 	
 	for curPlayer, curData in pairs(g_Players) do
 		if(curData.globalInfo) then
-			triggerClientEvent(player, 'vip.onPlayerInfo', curPlayer, curData.globalInfo)
+			triggerClientEvent(client, 'vip.onPlayerInfo', curPlayer, curData.globalInfo)
 		end
 	end
 end
@@ -303,7 +263,6 @@ local function VipInit()
 	addEventHandler("onPlayerVehicleEnter", g_Root, VipOnPlayerVehicleEnter)
 	addEventHandler("onPlayerVehicleExit", g_Root, VipOnPlayerVehicleExit)
 	addEventHandler("onPlayerWasted", g_Root, VipOnPlayerWasted)
-	addEventHandler("onElementDestroy", g_Root, VipOnElementDestroy)
 	addEventHandler("onPlayerPickUpRacePickup", g_Root, VipOnPlayerPickUpRacePickup)
 end
 

@@ -60,6 +60,35 @@ addCommandHandler('givevip', function(source, cmd, name, days)
 	end
 end, false, false)
 
+addCommandHandler('giveviptoall', function(source, cmd, days)
+	if(not hasObjectPermissionTo(source, 'resource.rafalh_vip.givevip', false)) then
+		outputChatBox("PM: Access is denied!", source, 255, 0, 0)
+		return
+	end
+	
+	local days = math.floor(tonumber(days) or 0)
+	
+	if(days < 1) then
+		outputChatBox("PM: Usage: /giveviptoall <days>", source, 255, 96, 96)
+		return
+	end
+	
+	local now = getRealTime().timestamp
+	local vips = VipGetAll()
+	for i, info in ipairs(vips) do
+		if(type(info[1]) == 'userdata' and info[2] and info[2] > now) then
+			local account = info[1]
+			local accountName = getAccountName(account)
+			local success, limit = VipAdd(account, days*24*3600)
+			if(success) then
+				outputChatBox("PM: VIP rank successfully extended for "..accountName.."!", source, 255, 96, 96, true)
+			else
+				outputChatBox("PM: Failed to extend VIP rank for "..accountName, source, 255, 96, 96)
+			end
+		end
+	end
+end, false, false)
+
 addCommandHandler('isvip', function(source, cmd, name)
 	local player = findPlayer(name)
 	
