@@ -54,7 +54,7 @@ local function onOwnedTeamInfo(teamInfo, err)
 end
 
 g_ShopItems.team = {
-	name = "Team",
+	name = "Clan Team",
 	cost = 1500000,
 	descr = "Buy team for your clan. You can set tag, full name and color of your team.",
 	img = 'teams/img/team.png',

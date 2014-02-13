@@ -244,4 +244,10 @@
 	<msg id="From">Od</msg>
 	<msg id="Date">Data</msg>
 	<msg id="Reason">Powód</msg>
+	
+	<msg id="Clan Team">Drużyna klanowa</msg>
+	<msg id="Edit Clan Team">Modyfikuj drużynę klanową</msg>
+	<msg id="Please enter information about your clan">Wpisz podstawowe informacje o Twoim klanie</msg>
+	<msg id="Name:">Nazwa:</msg>
+	<msg id="Color:">Kolor:</msg>
 </strings>
