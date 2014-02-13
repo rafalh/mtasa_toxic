@@ -103,6 +103,14 @@ function guiGridListSetItemText ( gridList, rowIndex, columnIndex, text, ... )
 	return _guiGridListSetItemText ( gridList, rowIndex, columnIndex, MuiGetMsg ( text ), ... )
 end
 
+local _guiComboBoxAddItem = guiComboBoxAddItem
+function guiComboBoxAddItem ( cb, text, ... )
+	if(not g_IgnoredSet[gridList]) then
+		text = MuiGetMsg(text)
+	end
+	return _guiComboBoxAddItem ( cb, text, ... )
+end
+
 local _outputChatBox = outputChatBox
 function outputChatBox ( text, ... )
 	return _outputChatBox ( MuiGetMsg ( text ), ... )
