@@ -226,7 +226,7 @@ local function VipUpdateRainbowPlayers()
 	for player, info in pairs(g_RainbowPlayers) do
 		local veh = getPedOccupiedVehicle(player)
 		if(veh) then
-			if(now - info.ticks > info.speed*1000) then
+			if(not info.ticks or now - info.ticks > info.speed*1000) then
 				info.r1, info.g1, info.b1 = getVehicleColor(veh, true)
 				info.r2, info.g2, info.b2 = math.random(0, 255), math.random(0, 255), math.random(0, 255)
 				info.ticks = now
@@ -247,7 +247,7 @@ local function VipSetRainbow(player, speed)
 	if(not g_RainbowPlayers[player]) then
 		if(not speed) then return end
 		g_RainbowPlayers[player] = {
-			ticks = 0,
+			ticks = false,
 			speed = speed}
 		g_RainbowPlayersCount = g_RainbowPlayersCount + 1
 		if(g_RainbowPlayersCount == 1) then
