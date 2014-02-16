@@ -145,6 +145,7 @@ function Player.__mt.__index:setAccount(account)
 		ip = self:getIP(),
 		last_visit = now,
 		name = self:getName(true),
+		namePlain = self:getName(false),
 	}, true)
 	return true
 end
@@ -162,7 +163,11 @@ end
 function Player.onTeamChange(team)
 	local self = Player.fromEl(source)
 	local fullName = self:getName(true)
-	self.accountData:set('name', fullName)
+	local plainName = self:getName(false)
+	self.accountData:set{
+		name = fullName,
+		namePlain = plainName,
+	}
 end
 
 function Player.__mt.__index:destroy()
@@ -224,9 +229,6 @@ function Player.create(el)
 	if(not self.is_console) then
 		g_PlayersCount = g_PlayersCount + 1
 	end
-	
-	local fullName = self:getName(true)
-	self.accountData:set('name', fullName, true)
 	
 	self.country = g_AdminRes:isReady() and g_AdminRes:call('getPlayerCountry', self.el)
 	

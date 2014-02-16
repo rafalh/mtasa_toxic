@@ -1,5 +1,5 @@
--- Defines
-#local ASK_FOR_EMAIL = true
+-- Includes
+#include 'include/config.lua'
 
 local function onPlayerLogin(prevAccount, account, autoLogin)
 	local self = Player.fromEl(source)

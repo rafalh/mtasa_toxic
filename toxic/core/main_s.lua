@@ -117,7 +117,10 @@ local function onPlayerChangeNick(oldNick, newNick)
 		fullNick = ('#%02X%02X%02X'):format(r, g, b)..fullNick
 	end
 	
-	pdata.accountData:set('name', fullNick)
+	pdata.accountData:set{
+		name = fullNick,
+		namePlain = newNickPlain,
+	}
 	if(not onlyColorChanged) then
 		outputMsg(g_Root, Styles.joinQuit, "* %s is now known as %s.", oldNickPlain, newNickPlain)
 	end

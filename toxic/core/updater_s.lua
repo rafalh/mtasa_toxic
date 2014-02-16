@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 165,
+	currentVer = 166,
 	list = {
 		{
 			ver = 149,
@@ -284,6 +284,26 @@ Updater = {
 					return 'Failed to add owner column'
 				end
 #end
+			end
+		},
+		{
+			ver = 166,
+			func = function()
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN namePlain VARCHAR(32) DEFAULT \'\'')) then
+					return 'Failed to add namePlain column'
+				end
+				if(not DbQuerySync('UPDATE '..PlayersTable..' SET namePlain=name')) then
+					return 'Failed to update namePlain column'
+				end
+				local rows = DbQuerySync('SELECT player, name FROM '..PlayersTable..' WHERE name LIKE ?', '%#%')
+				if(not rows) then
+					return 'Failed to find players with colored names'
+				end
+				for i, data in ipairs(rows) do
+					if(not DbQuerySync('UPDATE '..PlayersTable..' SET namePlain=? WHERE player=?', data.name:gsub('#%x%x%x%x%x%x', ''), data.player)) then
+						return 'Failed to update player plain name'
+					end
+				end
 			end
 		},
 	}

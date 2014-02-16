@@ -23,11 +23,15 @@ local function setupDatabase()
 		Settings.version = Updater.currentVer
 		outputDebugString('Version: '..ver, 2)
 	elseif(ver < currentVer) then
+		DbQuery('COMMIT')
+		DbQuery('BEGIN')
 		for i, upd in ipairs(Updater.list) do
 			if(upd.ver > ver) then
 				local err = upd.func()
 				if(err) then
 					outputDebugString('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err), 1)
+					DbQuery('ROLLBACK')
+					DbQuery('BEGIN')
 					return false
 				else
 					outputDebugString('Database update ('..ver..' -> '..upd.ver..') succeeded!', 3)

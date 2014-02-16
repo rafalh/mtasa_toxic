@@ -32,7 +32,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 		table.insert(cond, 'player='..player_id)
 		limit = 1
 	elseif(player and player ~= '') then
-		table.insert(cond, 'name LIKE '..DbStr('%'..tostring(player)..'%'))
+		table.insert(cond, 'namePlain LIKE '..DbStr('%'..tostring(player)..'%'))
 	end
 	if(online) then
 		table.insert(cond, 'online=1')
