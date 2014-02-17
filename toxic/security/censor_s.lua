@@ -50,6 +50,10 @@ function CsPreprocessStr(str)
 end
 
 function CsProcessMsg(msg)
+	if(not Settings.censor) then
+		return msg, false
+	end
+	
 	local prof = DbgPerf(5)
 	local buf, offsets = CsPreprocessStr(msg)
 	
@@ -109,7 +113,7 @@ function CsProcessMsg(msg)
 end
 
 function CsCheckNickname(name)
-	if(not Settings.censor_nicknames) then return false end
+	if(not Settings.censor or not Settings.censor_nicknames) then return false end
 	--outputDebugString('CsCheckNickname '..name, 3)
 	
 	local plainName = name:lower():gsub('#%x%x%x%x%x%x', '')
