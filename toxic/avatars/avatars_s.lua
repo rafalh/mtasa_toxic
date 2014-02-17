@@ -100,7 +100,7 @@ end
 local function AvtInit()
 	addEventHandler('main.onSetAvatarReq', resourceRoot, AvtSetReq)
 	addEventHandler('main.onPlayerReady', resourceRoot, AvtPlayerReady)
-	addEventHandler('onPlayerLogin', g_Root, AvtPlayerLoginLogout)
+	Event('onPlayerLogin'):addHandler(AvtPlayerLoginLogout)
 	addEventHandler('onPlayerLogout', g_Root, AvtPlayerLoginLogout)
 end
 

@@ -62,7 +62,6 @@ function sayAsPlayer(text, playerEl)
 		if(not text) then
 			-- Message has been blocked
 			CsPunish(player, punishment)
-			cancelEvent()
 			return
 		end
 	end

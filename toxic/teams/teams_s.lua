@@ -1,3 +1,6 @@
+-- Includes
+#include 'include/config.lua'
+
 namespace('Teams')
 
 g_List = {} -- used by admin_s.lua
@@ -193,7 +196,6 @@ local function detectTeamChange()
 end
 
 local function onPlayerLogout()
-	setPlayerTeam(source, nil)
 	updatePlayerTeam(source)
 	--destroyEmptyTeams()
 end
@@ -302,6 +304,7 @@ function delItem(id)
 		return false, 'Unknown team'
 	end
 	
+#if(SHOP_ITEM_TEAM) then
 	-- Unlink team from player
 	if(teamInfo.owner) then
 		local ownerPlayer = Player.fromId(teamInfo.owner)
@@ -312,6 +315,7 @@ function delItem(id)
 			cash = accountData.cash + teamPrice,
 		}
 	end
+#end
 	
 	-- Delete team
 	DbQuery('DELETE FROM '..TeamsTable..' WHERE id=?', teamInfo.id)
@@ -353,10 +357,10 @@ local function init()
 	end
 	
 	addEventHandler('onPlayerJoin', g_Root, onPlayerJoinLogin)
-	addEventHandler('onPlayerLogin', g_Root, onPlayerJoinLogin)
+	Event('onPlayerLogin'):addHandler(onPlayerJoinLogin)
 	addEventHandler('onPlayerLogout', g_Root, onPlayerLogout)
-	addEventHandler('onPlayerChangeNick', g_Root, onPlayerChangeNick)
 	addEventHandler('onPlayerQuit', g_Root, onPlayerQuit)
+	Event('onPlayerChangeNick'):addHandler(onPlayerChangeNick)
 	
 	-- Don't setup teams in onResourceStart event - see MTA bug #6861
 	setTimer(initDelayed, 50, 1)

@@ -45,7 +45,7 @@ local function AlInit()
 	end
 	
 	addEventHandler('onPlayerJoin', g_Root, AlOnPlayerJoin)
-	addEventHandler('onPlayerChangeNick', g_Root, AlOnPlayerChangeNick)
+	Event('onPlayerChangeNick'):addHandler(AlOnPlayerChangeNick)
 end
 
 addInitFunc(AlInit)

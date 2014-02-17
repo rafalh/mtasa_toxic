@@ -93,7 +93,7 @@ local function onPlayerPrivateMessage(msg, recipient)
 	triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), source, msg)
 end
 
-local function onPlayerChangeNick(oldNick, newNick)
+local function onPlayerChangeNickFilter(oldNick, newNick)
 	local pdata = Player.fromEl(source)
 	if(not pdata) then return end
 	
@@ -102,9 +102,19 @@ local function onPlayerChangeNick(oldNick, newNick)
 	local onlyColorChanged = (oldNickPlain == newNickPlain)
 	
 	if(not onlyColorChanged and not isNickChangeAllowed(source, newNickPlain)) then
-		cancelEvent()
-		return
+		return false
 	end
+	
+	return true
+end
+
+local function onPlayerChangeNick(oldNick, newNick)
+	local pdata = Player.fromEl(source)
+	if(not pdata) then return end
+	
+	local oldNickPlain = oldNick:gsub('#%x%x%x%x%x%x', '')
+	local newNickPlain = newNick:gsub('#%x%x%x%x%x%x', '')
+	local onlyColorChanged = (oldNickPlain == newNickPlain)
 	
 	if(AsNotifyOfNickChange) then
 		AsNotifyOfNickChange(source)
@@ -275,7 +285,8 @@ end
 addInitFunc(function()
 	addEventHandler('onPlayerJoin', g_Root, onPlayerJoin)
 	addEventHandler('onPlayerPrivateMessage', g_Root, onPlayerPrivateMessage)
-	addEventHandler('onPlayerChangeNick', g_Root, onPlayerChangeNick)
+	Event('onPlayerChangeNick'):addFilter(onPlayerChangeNickFilter)
+	Event('onPlayerChangeNick'):addHandler(onPlayerChangeNick)
 	addEventHandler('onPlayerChat', g_Root, onPlayerChat)
 	addEventHandler('main.onPlayerReady', g_ResRoot, onPlayerReady)
 	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)

@@ -110,8 +110,7 @@ function Player.__mt.__index:setAccount(account)
 	
 	local id = false
 	if(account) then
-		local rows = DbQuery('SELECT player, online FROM '..PlayersTable..' WHERE account=? LIMIT 1', account)
-		local data = rows and rows[1]
+		local data = DbQuerySingle('SELECT player, online FROM '..PlayersTable..' WHERE account=? LIMIT 1', account)
 		if(data and data.online == 1) then return false end
 		id = data and data.player
 	end

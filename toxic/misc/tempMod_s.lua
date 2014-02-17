@@ -161,5 +161,5 @@ local function onPlayerLogin(prevAccount, account)
 end
 
 addInitFunc(function()
-	addEventHandler('onPlayerLogin', g_Root, onPlayerLogin)
+	Event('onPlayerLogin'):addHandler(onPlayerLogin)
 end)

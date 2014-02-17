@@ -53,7 +53,7 @@ local function AvInit()
 		AvSetVoteEnabled('map', enabled)
 	end
 	
-	addEventHandler('onPlayerLogin', g_Root, AvOnPlayerLogin)
+	Event('onPlayerLogin'):addHandler(AvOnPlayerLogin)
 	addEventHandler('onPlayerLogout', g_Root, AvOnPlayerLogout)
 	addEventHandler('onPlayerQuit', g_Root, AvOnPlayerLogout)
 	

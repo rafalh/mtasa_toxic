@@ -336,7 +336,7 @@ local function StInit()
 	addSyncer('stats', StPlayerStatsSyncCallback)
 	
 	addEventHandler('onPlayerJoin', g_Root, StOnPlayerJoinOrLogin)
-	addEventHandler('onPlayerLogin', g_Root, StOnPlayerJoinOrLogin)
+	Event('onPlayerLogin'):addHandler(StOnPlayerJoinOrLogin)
 	addEventHandler('onPlayerLogout', g_Root, StOnPlayerJoinOrLogin)
 	addEventHandler('onPlayerWasted', g_Root, StOnPlayerWasted)
 	addEventHandler('onVehicleExplode', g_Root, StOnVehicleExplode)

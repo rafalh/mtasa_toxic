@@ -79,6 +79,11 @@ function DbQuerySync(query, ...)
 	return result
 end
 
+function DbQuerySingle(query, ...)
+	local rows = DbQuery(query, ...)
+	return rows and rows[1]
+end
+
 function DbCount(tbl, whereCond, ...)
 	local rows = DbQuery('SELECT COUNT(*) AS c FROM '..tbl..' WHERE '..whereCond, ...)
 	return rows and rows[1] and rows[1].c

@@ -162,7 +162,7 @@ local function AchvInit()
 		AchvInitAccount(player)
 	end
 	
-	addEventHandler('onPlayerLogin', g_Root, AchvPlayerLoginLogout)
+	Event('onPlayerLogin'):addHandler(AchvPlayerLoginLogout)
 	addEventHandler('onPlayerLogout', g_Root, AchvPlayerLoginLogout)
 	addEventHandler('onPlayerJoin', g_Root, AchvPlayerJoin)
 	addEventHandler('main.onAchvActivate', g_ResRoot, AchvClientActivate)

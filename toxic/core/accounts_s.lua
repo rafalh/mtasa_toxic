@@ -1,6 +1,13 @@
 -- Includes
 #include 'include/config.lua'
 
+local function onPlayerLoginFilter(prevAccount, account)
+	local accountName = getAccountName(account)
+	local data = DbQuerySingle('SELECT online FROM '..PlayersTable..' WHERE account=? LIMIT 1', account)
+	if(data and data.online == 1) then return false end
+	return true
+end
+
 local function onPlayerLogin(prevAccount, account, autoLogin)
 	local self = Player.fromEl(source)
 	if(not self) then return end
@@ -13,6 +20,7 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 	
 	if(not self:setAccount(account)) then
 		cancelEvent()
+		outputDebugString('Failed to set account for player', 1)
 		return
 	end
 	
@@ -53,6 +61,7 @@ local function onPlayerLogout()
 end
 
 addInitFunc(function()
-	addEventHandler('onPlayerLogin', g_Root, onPlayerLogin)
+	Event('onPlayerLogin'):addFilter(onPlayerLoginFilter)
+	Event('onPlayerLogin'):addHandler(onPlayerLogin)
 	addEventHandler('onPlayerLogout', g_Root, onPlayerLogout)
 end)
