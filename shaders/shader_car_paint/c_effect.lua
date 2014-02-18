@@ -4,14 +4,14 @@ local g_AutoEnable = true
 local g_Enabled = false
 local g_Changed = false
 
-addEvent ( "onRafalhAddEffect" )
-addEvent ( "onRafalhGetEffects" )
+addEvent("onRafalhAddEffect")
+addEvent("onRafalhGetEffects")
 
-function setEffectEnabled ( enable )
+function setEffectEnabled(enable)
 	g_Changed = true
-	if ( enable == g_Enabled ) then return true end
+	if(enable == g_Enabled ) then return true end
 	
-	if ( not enable ) then
+	if(not enable ) then
 		disableCarPaint()
 	elseif(not enableCarPaint()) then
 		return false
@@ -21,7 +21,7 @@ function setEffectEnabled ( enable )
 	return true
 end
 
-function isEffectEnabled ()
+function isEffectEnabled()
 	return g_Enabled
 end
 
