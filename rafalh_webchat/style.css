@@ -1,0 +1,30 @@
+body {
+	background-color: #000040;
+	font-family: sans-serif;
+}
+
+.chattime {
+	color: #bbbbbb;
+}
+
+.chatmsg {
+	color: #ffffff;
+}
+
+#nick {
+	color: #ffffff;
+	background-color: #000080;
+	border: 1px solid #404080;
+}
+
+#msg {
+	color: #ffffff;
+	background-color: #000080;
+	border: 1px solid #404080;
+}
+
+.newmsgbutton {
+	color: #ffffff;
+	background-color: #000060;
+	border: 1px solid #404080;
+}

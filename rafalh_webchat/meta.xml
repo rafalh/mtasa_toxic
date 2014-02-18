@@ -1,0 +1,14 @@
+<meta>
+	<info name="rafalh webchat" version="1.0" author="rafalh" type="misc" description="Web chat made by rafalh" />
+	
+	<include resource="ajax" />
+	
+	<script src="chat_s.lua" type="server" />
+	<html src="chat.htm" default="true" />
+	<html src="style.css" raw="true" />
+	<html src="script.js" raw="true" />
+	
+	<export function="sendChatMsg" http="true" />
+	<export function="getChatMessages" http="true" />
+	<export function="addChatStr" />
+</meta>
