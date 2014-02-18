@@ -8,13 +8,13 @@ local g_ModRoom = ChatRoom.create{
 	logPrefix = "MODSAY: ",
 	cmd = "modsay",
 	checkAccess = function(sender)
-		return hasObjectPermissionTo(sender, "resource.rafalh_modchat", false)
+		return hasObjectPermissionTo(sender, "resource.toxic.modchat", false)
 	end,
 	disabled = true,
 	getPlayers = function(sender)
 		local recipients = {}
 		for i, player in ipairs(getElementsByType("player")) do
-			if(hasObjectPermissionTo(player, "resource.rafalh_modchat", false)) then
+			if(hasObjectPermissionTo(player, "resource.toxic.modchat", false)) then
 				table.insert(recipients, player)
 			end
 		end
@@ -58,7 +58,7 @@ addEvent("chatext.onReady", true)
 
 local function onPlayerReady()
 	g_ReadyPlayers[client] = true
-	if(hasObjectPermissionTo(client, "resource.rafalh_modchat", false)) then
+	if(hasObjectPermissionTo(client, "resource.toxic.modchat", false)) then
 		triggerClientEvent(client, "chatext.onModVerified", resourceRoot)
 	end
 end
@@ -68,7 +68,7 @@ local function onModVerified()
 end
 
 local function onPlayerLogin()
-	if(g_ReadyPlayers[source] and hasObjectPermissionTo(source, "resource.rafalh_modchat", false)) then
+	if(g_ReadyPlayers[source] and hasObjectPermissionTo(source, "resource.toxic.modchat", false)) then
 		triggerClientEvent(source, "chatext.onModVerified", resourceRoot)
 	end
 end

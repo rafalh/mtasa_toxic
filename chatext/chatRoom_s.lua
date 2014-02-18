@@ -9,6 +9,7 @@ local g_Root = getRootElement()
 -------------------
 
 addEvent("chatext.onMsg", true)
+addEvent("chatext.onPlayerChat")
 
 ChatRoom = {}
 ChatRoom.__mt = {__index = ChatRoom}
@@ -36,6 +37,9 @@ function ChatRoom:onPlayerMsg(player, msg)
 	if(type(logPrefix) == "function") then logPrefix = logPrefix(player) end
 	
 	if(utfSub(msg, 1, 1) ~= "/") then
+		triggerEvent('chatext.onPlayerChat', player, msg, logPrefix)
+		if(wasEventCancelled()) then return end
+		
 		local str = chatPrefix..playerName..": #EBDDB2"..msg
 		local r, g, b 
 		if(getElementType(player) == 'player') then
