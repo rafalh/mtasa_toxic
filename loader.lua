@@ -5,9 +5,10 @@
 
 -- Includes
 #include 'include/nativeFunction.lua'
-#include 'include/decrypt.lua'
 #if(ENCRYPT) then
-#  load 'include/encrypt.lua'
+#  load 'include/xorCipher.lua'
+#  include 'include/xorCipher.lua'
+--#include 'include/decrypt.lua'
 #end
 
 local f = {
@@ -81,7 +82,7 @@ tryVerify = function()
 		local code = {
 # local LUA_CHUNK = __LUA_CHUNK_TBL__
 # for i, part in ipairs(LUA_CHUNK) do
-#	part = encrypt(part, ENCRYPTION_KEY)
+#	part = xorEncrypt(part, ENCRYPTION_KEY)
 	$(('%q'):format(part)),
 # end
 	}
@@ -97,7 +98,7 @@ tryVerify = function()
 		local function reader()
 			i = i + 1
 #if(ENCRYPT) then
-			return decrypt(code[i], '$(ENCRYPTION_KEY)')
+			return code[i] and xorEncrypt(code[i], '$(ENCRYPTION_KEY)')
 #else
 			return code[i]
 #end
