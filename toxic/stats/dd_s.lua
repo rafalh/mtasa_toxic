@@ -60,7 +60,7 @@ local function onKillersList(killer, assist)
 	local killerLvl = LvlFromExp(killerPlayer.accountData.points)
 	victimPlayer:addNotify{
 		icon = 'stats/img/skull.png',
-		{"You have been killed by %s (%u. level)", killerPlayer:getName(), killerLvl}}
+		{"You have been killed by %s (%u. level)!", killerPlayer:getName(), killerLvl}}
 	
 	local victimExp = victimPlayer.accountData.points
 	local victimLvl = LvlFromExp(victimExp)
@@ -69,12 +69,12 @@ local function onKillersList(killer, assist)
 	local expBonus = math.floor(victimLvl^0.5*5)
 	killerPlayer:addNotify{
 		icon = 'stats/img/skull.png',
-		{"You have killed %s (%u. level) and receive %s", victimPlayer:getName(), victimLvl, expBonus..' EXP'}}
+		{"You have killed %s (%u. level) and receive %s!", victimPlayer:getName(), victimLvl, expBonus..' EXP'}}
 	killerPlayer.accountData:add('points', expBonus)
 #else
 	killerPlayer:addNotify{
 		icon = 'stats/img/skull.png',
-		{"You have killed %s (%u. level)", victimPlayer:getName(), victimLvl}}
+		{"You have killed %s (%u. level)!", victimPlayer:getName(), victimLvl}}
 #end
 	killerPlayer.accountData:add('kills', 1)
 	killerPlayer.currentMapKills = (killerPlayer.currentMapKills or 0) + 1
@@ -84,12 +84,12 @@ local function onKillersList(killer, assist)
 		local expBonus = math.floor(expBonus/2)
 		assistPlayer:addNotify{
 			icon = 'stats/img/skull.png',
-			{"You have killed %s (assist) and receive %s", victimPlayer:getName(), expBonus..' EXP'}}
+			{"You have killed %s (assist) and receive %s!", victimPlayer:getName(), expBonus..' EXP'}}
 		assistPlayer.accountData:add('points', expBonus)
 #else
 		assistPlayer:addNotify{
 			icon = 'stats/img/skull.png',
-			{"You have killed %s (assist)", victimPlayer:getName()}}
+			{"You have killed %s (assist)!", victimPlayer:getName()}}
 #end
 	end
 end
