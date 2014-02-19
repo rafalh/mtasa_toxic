@@ -17,13 +17,13 @@ CmdMgr.register{
 		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		if(map) then
-			local rows = DbQuery('SELECT rates/2, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+			local data = DbQuerySingle('SELECT rates/2 AS rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
 			local rating = 0
-			if(rows[1].rates_count > 0) then
-				rating = rows[1].rates / rows[1].rates_count
+			if(data.rates_count > 0) then
+				rating = data.rates / data.rates_count
 			end
 			
-			scriptMsg("Map rating: %.2f (rated by %u players).", rating, rows[1].rates_count)
+			scriptMsg("Map rating: %.2f (rated by %u players).", rating, data.rates_count)
 		end
 	end
 }
