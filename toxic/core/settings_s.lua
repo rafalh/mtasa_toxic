@@ -180,7 +180,7 @@ function Settings.__mt.__newindex(self, key, val)
 			if(type(sqlVal) == 'boolean') then
 				sqlVal = sqlVal and 1 or 0
 			end
-			DbQuery('UPDATE '..DbPrefix..'settings SET '..key..'=?', sqlVal)
+			DbQuery('UPDATE '..SettingsTable..' SET '..key..'=?', sqlVal)
 		else
 			set(key, newVal)
 		end

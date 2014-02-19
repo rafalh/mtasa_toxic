@@ -294,26 +294,39 @@ function Database.Drivers.SQLite:exec(query, ...)
 end
 
 function Database.Drivers.SQLite:createTable(tbl)
-	local cols, constr = {}, {}
+	local cols, constr, indexes = {}, {}, {}
 	for i, col in ipairs(tbl) do
 		if(col[2]) then -- normal column
+			local colDef
 			if(col.pk) then -- Primary Key
 				-- AUTO_INCREMENT is not needed for SQLite (and is called different)
-				local colDef = col[1]..' INTEGER PRIMARY KEY NOT NULL'
-				table.insert(cols, colDef)
+				colDef = col[1]..' INTEGER PRIMARY KEY NOT NULL'
 			else
-				local colDef = self:getColDef(col, constr)
-				table.insert(cols, colDef)
+				colDef = self:getColDef(col, constr)
+			end
+			table.insert(cols, colDef)
+			
+			if(col.fk) then
+				table.insert(constr, 'FOREIGN KEY('..col[1]..') REFERENCES '..DbPrefix..col.fk[1]..'('..col.fk[2]..')')
 			end
 		elseif(col.unique) then -- unique constraint
 			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
+		elseif(col.index) then -- index descriptor
+			table.insert(indexes, col)
 		end
 	end
 	
 	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..
 		table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')..')'
 	--outputDebugString(query, 3)
-	return self:query(query)
+	if(not self:query(query)) then return false end
+	
+	for i, col in ipairs(indexes) do
+		query = 'CREATE INDEX IF NOT EXISTS '..DbPrefix..col[1]..' ON '..tbl..'('..table.concat(col.index, ', ')..')'
+		if(not self:query(query)) then return false end
+	end
+	
+	return true
 end
 
 function Database.Drivers.SQLite:insertDefault(tbl)
@@ -389,15 +402,19 @@ function Database.Drivers.MySQL:exec(query, ...)
 end
 
 function Database.Drivers.MySQL:createTable(tbl)
-	local cols, constr = {}, {}
+	local cols, constr, indexes = {}, {}, {}
 	for i, col in ipairs(tbl) do
 		if(col[2]) then -- normal column
+			local colDef
 			if(col.pk) then -- Primary Key
-				local colDef = col[1]..' '..col[2]..' NOT NULL AUTO_INCREMENT PRIMARY KEY'
-				table.insert(cols, colDef)
+				colDef = col[1]..' '..col[2]..' NOT NULL AUTO_INCREMENT PRIMARY KEY'
 			else
-				local colDef = self:getColDef(col, constr)
-				table.insert(cols, colDef)
+				colDef = self:getColDef(col, constr)
+			end
+			table.insert(cols, colDef)
+			
+			if(col.fk) then
+				table.insert(constr, 'FOREIGN KEY('..col[1]..') REFERENCES '..DbPrefix..col.fk[1]..'('..col.fk[2]..')')
 			end
 		elseif(col.unique) then -- unique constraint
 			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
@@ -407,7 +424,14 @@ function Database.Drivers.MySQL:createTable(tbl)
 	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..
 		table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')..')'
 	--outputDebugString(query, 3)
-	return self:query(query)
+	if(not self:query(query)) then return false end
+	
+	for i, col in ipairs(indexes) do
+		query = 'CREATE INDEX IF NOT EXISTS '..DbPrefix..col[1]..' ON '..tbl..'('..table.concat(col.index, ', ')..')'
+		if(not self:query(query)) then return false end
+	end
+	
+	return true
 end
 
 function Database.Drivers.MySQL:insertDefault(tbl)
