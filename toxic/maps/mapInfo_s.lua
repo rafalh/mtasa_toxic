@@ -1,15 +1,32 @@
 local g_MapInfo, g_Tops = false, false
 local g_PlayerTops = {}
+local g_PlayerRates = {}
 
 local function MiGetInfo(map)
-	local rows = DbQuery('SELECT played, rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
-	local info = rows and rows[1]
+	local info = DbQuerySingle('SELECT played, rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
 	info.name = map:getName()
 	info.rating = (info.rates_count > 0 and info.rates/info.rates_count) or 0
 	info.author = map:getInfo('author')
 	local mapType = map:getType()
 	info.type = mapType and mapType.name
 	return info
+end
+
+local function MiUpdateRates(map, players)
+	local idList = {}
+	for i, player in ipairs(players) do
+		local pdata = Player.fromEl(player)
+		if(g_PlayerRates[player] == nil and pdata) then
+			table.insert(idList, pdata.id)
+			g_PlayerRates[player] = false
+		end
+	end
+	
+	local rows = DbQuery('SELECT player, rate FROM '..RatesTable..' WHERE map=? AND player IN (??)', map:getId(), table.concat(idList, ','))
+	for i, data in ipairs(rows) do
+		local pdata = Player.fromId(data.player)
+		g_PlayerRates[pdata.el] = data.rate
+	end
 end
 
 function MiSendMapInfo(playerOrRoom)
@@ -33,8 +50,10 @@ function MiSendMapInfo(playerOrRoom)
 		BtUpdatePlayerTops(g_PlayerTops, map, players)
 	end
 	
+	MiUpdateRates(map, players)
+	
 	for i, player in ipairs(players) do
-		RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player]):setClient(player):exec()
+		RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player], g_PlayerRates[player]):setClient(player):exec()
 	end
 	
 	if(show) then
@@ -70,6 +89,7 @@ function MiDeleteCache()
 	g_MapInfo = false
 	g_Tops = false
 	g_PlayerTops = {}
+	g_PlayerRates = {}
 end
 
 addInitFunc(function()

@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 166,
+	currentVer = 167,
 	list = {
 		{
 			ver = 149,
@@ -303,6 +303,17 @@ Updater = {
 					if(not DbQuerySync('UPDATE '..PlayersTable..' SET namePlain=? WHERE player=?', data.name:gsub('#%x%x%x%x%x%x', ''), data.player)) then
 						return 'Failed to update player plain name'
 					end
+				end
+			end
+		},
+		{
+			ver = 167,
+			func = function()
+				if(not DbQuerySync('UPDATE '..RatesTable..' SET rate=ROUND(rate/2, 0)')) then
+					return 'Failed to update rates table'
+				end
+				if(not DbQuerySync('UPDATE '..MapsTable..' SET rates=ROUND(rates/2, 0)')) then
+					return 'Failed to update maps table'
 				end
 			end
 		},

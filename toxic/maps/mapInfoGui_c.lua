@@ -18,7 +18,7 @@ local MAX_NAME_WIDTH = WIDTH - NAME_OFFSET - 10
 
 local g_MapInfo = {name = '', author = false, rating = 0, rates_count = 0, played = 0}
 local g_Tops = {}
-local g_MyBestTime = false
+local g_MyBestTime, m_MyRating = false, false
 local g_HideTimer = false
 local g_Visible, g_AnimStart, g_Hiding = false, false, false
 local g_Textures = {}
@@ -54,13 +54,13 @@ local function MiRenderMapInfo(x, y, w, h)
 	-- Rates
 	dxDrawText("Rating:", x + 10, y + 55)
 	for i = 0, 4, 1 do
-		if(i*2 < g_MapInfo.rating and g_MapInfo.rating <= i*2 + 1) then
+		if(i < g_MapInfo.rating and g_MapInfo.rating <= i + 0.5) then
 			-- half star
 			dxDrawImage(x + 60 + i*16, y + 55, 8, 16, g_Textures.star_l)
 			dxDrawImage(x + 60 + i*16 + 8, y + 55, 8, 16, g_Textures.star_r, 0, 0, 0, DISABLED_STAR_CLR)
 		else
 			-- full star
-			local clr = (g_MapInfo.rating <= i*2) and DISABLED_STAR_CLR or ENABLED_STAR_CLR
+			local clr = (g_MapInfo.rating <= i) and DISABLED_STAR_CLR or ENABLED_STAR_CLR
 			dxDrawImage(x + 60 + i*16, y + 55, 16, 16, g_Textures.star, 0, 0, 0, clr)
 		end
 	end
@@ -225,10 +225,11 @@ local function MiToggle()
 end
 
 -- Used by RPC
-function MiSetMapInfo(mapInfo, topTimes, myBestTime)
+function MiSetMapInfo(mapInfo, topTimes, myBestTime, myRating)
 	g_Tops = topTimes or {}
 	g_MapInfo = mapInfo
 	g_MyBestTime = myBestTime and myBestTime.pos > #g_Tops and myBestTime
+	m_MyRating = myRating
 	
 	MiShortenTooLongNames()
 	

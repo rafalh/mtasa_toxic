@@ -18,31 +18,29 @@ function RtPlayerRate(rate)
 	rate = touint(rate, 0)
 	if(rate < 1 or rate > 5 or not map or not pdata.id) then return end
 	
-	rate = rate * 2
-	local map_id = map:getId()
-	local rows = DbQuery('SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
-	local mapData = rows and rows[1]
+	local mapId = map:getId()
+	local mapData = DbQuerySingle('SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
 	
-	local rows = DbQuery('SELECT rate FROM '..RatesTable..' WHERE player=? AND map=? LIMIT 1', pdata.id, map_id)
-	local oldRate = rows and rows[1] and rows[1].rate
+	local rateData = DbQuerySingle('SELECT rate FROM '..RatesTable..' WHERE player=? AND map=? LIMIT 1', pdata.id, mapId)
+	local oldRate = rateData and rateData.rate
 	if(not oldRate or Settings.allow_rate_change) then
 		if(oldRate) then
 			assert(mapData.rates_count > 0 and mapData.rates > 0)
 			mapData.rates = mapData.rates - oldRate + rate
-			DbQuery('UPDATE '..RatesTable..' SET rate=? WHERE player=? AND map=?', rate, pdata.id, map_id)
+			DbQuery('UPDATE '..RatesTable..' SET rate=? WHERE player=? AND map=?', rate, pdata.id, mapId)
 		else
 			mapData.rates_count = mapData.rates_count + 1
 			mapData.rates = mapData.rates + rate
-			DbQuery('INSERT INTO '..RatesTable..' (player, map, rate) VALUES(?, ?, ?)', pdata.id, map_id, rate)
+			DbQuery('INSERT INTO '..RatesTable..' (player, map, rate) VALUES(?, ?, ?)', pdata.id, mapId, rate)
 			pdata.accountData:add('mapsRated', 1)
 		end
 		
-		DbQuery('UPDATE '..MapsTable..' SET rates=?, rates_count=? WHERE map=?', mapData.rates, mapData.rates_count, map_id)
-		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates/2 / mapData.rates_count)
+		DbQuery('UPDATE '..MapsTable..' SET rates=?, rates_count=? WHERE map=?', mapData.rates, mapData.rates_count, mapId)
+		privMsg(source, "Rate added! Current average rating: %.2f", mapData.rates / mapData.rates_count)
 		
 		MiUpdateInfo()
 	else
-		privMsg(source, "You rated this map before: %u!", oldRate/2)
+		privMsg(source, "You rated this map before: %u!", oldRate)
 	end
 end
 RPC.allow('RtPlayerRate')

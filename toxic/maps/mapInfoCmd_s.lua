@@ -44,11 +44,11 @@ CmdMgr.register{
 		end
 		
 		if(map) then
-			local rows = DbQuery('SELECT played, rates, rates_count, removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
-			local rating = rows[1].rates_count > 0 and(('%.1f'):format(rows[1].rates/2/rows[1].rates_count)) or 0
+			local data = DbQuerySingle('SELECT played, rates, rates_count, removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+			local rating = data.rates_count > 0 and(('%.1f'):format(data.rates / data.rates_count)) or 0
 			
 			scriptMsg("Map name: %s - Played: %u - Rating: %.1f (rated by %u players)%s",
-				map:getName(), rows[1].played, rating, rows[1].rates_count, rows[1].removed ~= '' and ' - Removed: '..rows[1].removed or '')
+				map:getName(), data.played, rating, data.rates_count, data.removed ~= '' and ' - Removed: '..data.removed or '')
 		else
 			privMsg(ctx.player, "Cannot find map!")
 		end
