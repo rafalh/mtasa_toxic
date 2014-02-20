@@ -8,4 +8,7 @@
 	<script src="tempMod_s.lua" type="server" />
 	<script src="waterFix_c.lua" type="client" />
 	<script src="copyUrl_c.lua" type="client" />
+	<script src="serverRules_c.lua" type="client" />
+	
+	<file src="../conf/server_rules.txt" type="client" />
 </meta>
