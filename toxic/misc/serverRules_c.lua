@@ -4,21 +4,32 @@ local g_Rules = false
 local g_MsgBox
 
 local function load()
-	local file = fileOpen("conf/server_rules.txt", true)
-	if(not file) then return false end
-	
-	local buf = fileRead(file, fileGetSize(file))
-	fileClose(file)
-	
-	g_Rules = split(buf, '\n')
-	for i, str in ipairs(g_Rules) do
-		str = trimStr(str)
-		local idxStr = tostring(i)
-		if(str:sub(1, idxStr:len()) ~= idxStr) then
-			str = idxStr..'. '..str
-		end
-		g_Rules[i] = str
+	local node = xmlLoadFile('conf/server_rules.xml')
+	if(not node) then
+		outputDebugString('Failed to load server_rules.xml', 2)
+		return false
 	end
+	
+	g_Rules = {[false] = {}}
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		local attr = xmlNodeGetAttributes(subnode)
+		local lang = attr.lang ~= '*' and attr.lang
+		local text = xmlNodeGetValue(subnode)
+		local tbl = split(text, '\n')
+		for i, str in ipairs(tbl) do
+			str = trimStr(str)
+			local idxStr = tostring(i)
+			if(str:sub(1, idxStr:len()) ~= idxStr) then
+				str = idxStr..'. '..str
+			end
+			tbl[i] = str
+		end
+		g_Rules[lang] = tbl
+	end
+	
+	xmlUnloadFile(node)
+	return true
 end
 
 function display()
@@ -28,7 +39,9 @@ function display()
 		load()
 	end
 	
-	g_MsgBox = MsgBox("Server Rules", table.concat(g_Rules, '\n'), 'info')
+	local rules = g_Rules[Settings.locale] or g_Rules[false]
+	local text = table.concat(rules, '\n')
+	g_MsgBox = MsgBox("Server Rules", text, 'info')
 	g_MsgBox:show()
 end
 

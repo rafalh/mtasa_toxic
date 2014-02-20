@@ -139,7 +139,7 @@ end
 local function UpCreateGui()
 	local userH = UpGetLocalUserBlockHeight()
 	local w = 10 + ITEM_W * PANEL_COLUMNS + math.max(VIEW_W, 10)
-	local h = 110 + userH + ITEM_H * math.ceil(#g_Items / PANEL_COLUMNS)
+	local h = 100 + userH + ITEM_H * math.ceil(#g_Items / PANEL_COLUMNS)
 	local x = (g_ScreenSize[1] - w) / 2
 	local y = (g_ScreenSize[2] - h) / 2
 	g_Wnd = guiCreateWindow(x, y, w, h, "User Panel", false)
@@ -164,6 +164,7 @@ local function UpCreateGui()
 	
 	if(ServerRules) then
 		local link = Link(10, h - 50, 180, 20, g_Wnd, "Server Rules")
+		link:setNormalColor('#cc8800')
 		addEventHandler('onClientGUIClick', link.el, ServerRules.display, false)
 	end
 	

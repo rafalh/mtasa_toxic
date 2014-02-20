@@ -211,6 +211,7 @@
 	<msg id="Back">Wstecz</msg>
 	<msg id="You are logged in as %s">Jesteś zalogowany jako %s</msg>
 	<msg id="You are not logged in">Nie jesteś zalogowany</msg>
+	<msg id="Server Rules">Regulamin serwera</msg>
 	
     <msg id="About">O serwerze</msg>
 	<msg id="About ToxiC Server">O serwerze ToxiC</msg>

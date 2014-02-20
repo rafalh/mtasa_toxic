@@ -10,5 +10,5 @@
 	<script src="copyUrl_c.lua" type="client" />
 	<script src="serverRules_c.lua" type="client" />
 	
-	<file src="../conf/server_rules.txt" type="client" />
+	<config src="../conf/server_rules.xml" type="client" />
 </meta>
