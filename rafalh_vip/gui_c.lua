@@ -235,7 +235,7 @@ function VipOpenSettingsWnd()
 	g_Gui = {}
 	g_Gui.wnd = guiCreateWindow(x, y, w, h, "VIP Panel", false)
 	guiWindowSetMovable(g_Gui.wnd, true)
-	guiWindowSetSizable(g_Gui.wnd, true)
+	guiWindowSetSizable(g_Gui.wnd, false)
 	guiBringToFront(g_Gui.wnd)
 	
 	local tab_panel = guiCreateTabPanel(10, 20, w - 20, h - 80, false, g_Gui.wnd)
