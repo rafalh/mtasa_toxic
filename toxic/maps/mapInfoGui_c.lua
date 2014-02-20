@@ -52,43 +52,47 @@ local function MiRenderMapInfo(x, y, w, h)
 	dxDrawText(MuiGetMsg("Played: %u times"):format(g_MapInfo.played), x + 10, y + 40, 0, 0, TEXT_COLOR, 1, 'default')
 	
 	-- Rates
-	dxDrawText("Rating:", x + 10, y + 55)
+	local rating = g_MapInfo.rates_count > 0 and ('%.1f'):format(g_MapInfo.rating) or MuiGetMsg("none")
+	dxDrawText(MuiGetMsg("Rating: %s (%u votes)"):format(rating, g_MapInfo.rates_count), x + 10, y + 55)
 	for i = 0, 4, 1 do
 		if(i < g_MapInfo.rating and g_MapInfo.rating <= i + 0.5) then
 			-- half star
-			dxDrawImage(x + 60 + i*16, y + 55, 8, 16, g_Textures.star_l)
-			dxDrawImage(x + 60 + i*16 + 8, y + 55, 8, 16, g_Textures.star_r, 0, 0, 0, DISABLED_STAR_CLR)
+			dxDrawImage(x + 150 + i*16, y + 55, 8, 16, g_Textures.star_l)
+			dxDrawImage(x + 150 + i*16 + 8, y + 55, 8, 16, g_Textures.star_r, 0, 0, 0, DISABLED_STAR_CLR)
 		else
 			-- full star
 			local clr = (g_MapInfo.rating <= i) and DISABLED_STAR_CLR or ENABLED_STAR_CLR
-			dxDrawImage(x + 60 + i*16, y + 55, 16, 16, g_Textures.star, 0, 0, 0, clr)
+			dxDrawImage(x + 150 + i*16, y + 55, 16, 16, g_Textures.star, 0, 0, 0, clr)
 		end
 	end
-	dxDrawText(MuiGetMsg("(%u rates)"):format(g_MapInfo.rates_count), x + 65 + 5*16, y + 55)
+	
+	-- Your Rating
+	local yourRating = m_MyRating or MuiGetMsg("none")
+	dxDrawText(MuiGetMsg("Your Rating: %s"):format(yourRating), x + 10, y + 70)
 	
 	-- Top times
 	if(#g_Tops == 0) then return end
 	
 	-- Draw header
 	if(g_MapInfo.type == 'DD') then
-		dxDrawText("Top Winners:", x + 10, y + 75)
+		dxDrawText("Top Winners:", x + 10, y + 90)
 		
-		dxDrawText("Pos", x + POS_OFFSET, y + 90)
-		dxDrawText("Wins", x + TIME_OFFSET, y + 90)
-		dxDrawText("Player", x + NAME_OFFSET, y + 90)
+		dxDrawText("Pos", x + POS_OFFSET, y + 105)
+		dxDrawText("Wins", x + TIME_OFFSET, y + 105)
+		dxDrawText("Player", x + NAME_OFFSET, y + 105)
 	else
-		dxDrawText("Top Times:", x + 10, y + 75)
+		dxDrawText("Top Times:", x + 10, y + 90)
 		
-		dxDrawText("Pos", x + POS_OFFSET, y + 90)
-		dxDrawText("Time", x + TIME_OFFSET, y + 90)
-		dxDrawText("Player", x + NAME_OFFSET, y + 90)
+		dxDrawText("Pos", x + POS_OFFSET, y + 105)
+		dxDrawText("Time", x + TIME_OFFSET, y + 105)
+		dxDrawText("Player", x + NAME_OFFSET, y + 105)
 	end
 	
-	dxDrawLine(x + 10, y + 105, x + w - 10, y + 105)
+	dxDrawLine(x + 10, y + 120, x + w - 10, y + 120)
 	
 	-- Draw tops
 	for i, data in ipairs(g_Tops) do
-		local itemY = y + 95 + i * 14
+		local itemY = y + 110 + i * 14
 		local clr = (data.player == g_MyId) and MYSELF_COLOR or TEXT_COLOR
 		
 		dxDrawText(tostring(i), x + POS_OFFSET, itemY, x + TIME_OFFSET, itemY + 15, clr, 1, FONT_RANKING)
@@ -97,7 +101,7 @@ local function MiRenderMapInfo(x, y, w, h)
 	end
 	
 	if(g_MyBestTime) then
-		local itemY = y + 95 + (#g_Tops + 1) * 14
+		local itemY = y + 110 + (#g_Tops + 1) * 14
 		
 		if(g_MyBestTime.pos > #g_Tops + 1) then -- dont display '...' if we are 9th
 			dxDrawText('...', x + POS_OFFSET, itemY)
@@ -114,7 +118,7 @@ local function MiRenderMapInfo(x, y, w, h)
 end
 
 local function MiGetSize()
-	local w, h = WIDTH, 80
+	local w, h = WIDTH, 95
 	if(#g_Tops > 0) then
 		h = h + 35 + #g_Tops * 14
 	end

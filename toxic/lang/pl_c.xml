@@ -174,8 +174,8 @@
     <msg id="Author: %s">Autor: %s</msg>
 	<msg id="unknown">nieznany</msg>
     <msg id="Played: %u times">Grana: %u razy</msg>
-    <msg id="Rating:">Ocena:</msg>
-	<msg id="(%u rates)">(%u ocen)</msg>
+    <msg id="Rating: %s (%u votes)">Ocena: %s (%u głosów)</msg>
+	<msg id="Your Rating: %s">Twoja ocena: %s</msg>
     <msg id="Top Times:">Najlepsze Czasy:</msg>
 	<msg id="Top Winners:">Najlepsi Zwyciężcy:</msg>
     <msg id="Pos">Lp</msg>
@@ -183,6 +183,7 @@
 	<msg id="Wins">Zwycięstwa</msg>
 	<msg id="Player">Gracz</msg>
     <msg id="Empty">Puste</msg>
+	<msg id="none">brak</msg>
 	
 	<msg id="Rate this map">Oceń tę mapę</msg>
 	<msg id="Press 1-5 to rate this map">Naciśnij 1-5 aby ocenić tę mapę</msg>
