@@ -68,8 +68,6 @@ local function stopRadio()
 end
 
 local function onChannelClick(i)
-	stopRadio()
-	
 	local ch = g_Channels[i]
 	Settings.radioChannel = ch.url
 	
@@ -247,10 +245,9 @@ Settings.register
 	default = '',
 	cast = tostring,
 	onChange = function(oldVal, newVal)
+		stopRadio()
 		if(newVal ~= '' and not g_Muted) then
 			startRadio(newVal)
-		else
-			stopRadio()
 		end
 	end,
 }
