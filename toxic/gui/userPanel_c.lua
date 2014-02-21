@@ -163,7 +163,7 @@ local function UpCreateGui()
 	end
 	
 	if(ServerRules) then
-		local link = Link(10, h - 50, 180, 20, g_Wnd, "Server Rules")
+		local link = Link(10, h - 50, 150, 20, g_Wnd, "Server Rules")
 		link:setNormalColor('#cc8800')
 		addEventHandler('onClientGUIClick', link.el, ServerRules.display, false)
 	end

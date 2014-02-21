@@ -43,6 +43,12 @@ local function HlpCreateGui(parent, x, y, w, h)
 	guiCreateLabel(x, y + 2*15, w, 15, MuiGetMsg("Press %s to show User Panel."):format(userPanelKey), false, parent)
 	guiCreateLabel(x, y + 3*15, w, 15, MuiGetMsg("Press %s to show User Items."):format(invKey), false, parent)
 	guiCreateLabel(x, y + 4*15, w, 15, MuiGetMsg("Press %s to show Map Info."):format(mapInfoKey), false, parent)
+	
+	if(ServerRules) then
+		local rulesLink = Link(x + w - 120, y, 150, 15, parent, "Server Rules")
+		addEventHandler('onClientGUIClick', rulesLink.el, ServerRules.display, false)
+	end
+	
 	y = y + 5*15 + 10
 	
 	local title = guiCreateLabel(x, y, w, 15, "Commands", false, parent)
