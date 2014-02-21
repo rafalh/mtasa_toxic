@@ -114,3 +114,17 @@ function table.foreach(tbl, fn)
 		fn(v)
 	end
 end
+
+function table.insertMultiple(tbl, pos, val, count)
+	for i = 1, count do
+		table.insert(tbl, pos, val)
+		pos = pos + 1
+	end
+end
+
+function table.removeMultiple(tbl, pos, count)
+	--assert(pos + count <= #tbl + 1)
+	for i = 1, count do
+		table.remove(tbl, pos)
+	end
+end

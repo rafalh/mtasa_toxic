@@ -117,6 +117,8 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		setupPos = false
 	elseif(tpl.type == 'tabpanel') then
 		ctrl = guiCreateTabPanel(x, y, w, h, false, parent)
+	elseif(tpl.type == 'scrollpane') then
+		ctrl = guiCreateScrollPane(x, y, w, h, false, parent)
 	elseif(tpl.type == 'tab') then
 		ctrl = guiCreateTab(tpl.text, parent)
 		if(tpl.selected) then
@@ -127,7 +129,7 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		local cls = _G[tpl.type]
 		ctrl = cls.fromTpl(tpl, parent)
 	else
-		assert(false)
+		assert(false, 'Unknown control type '..tostring(tpl.type))
 	end
 	
 	if(setupPos) then
@@ -261,4 +263,32 @@ function GUI.getFontHeight(font)
 	if(not font or font == 'default-normal') then return 15 end -- HACK
 	if(not GUI.prepareTempLabel(font)) then return false end
 	return guiLabelGetFontHeight(GUI.tempLabel)
+end
+
+function GUI.wordWrap(str, maxW, font)
+	local tbl = {}
+	
+	while(str:len() > 0) do
+		local c = str:len()
+		local sub
+		
+		while(true) do
+			sub = str:sub(1, c)
+			local w = GUI.getTextWidth(sub, font)
+			if(w < maxW) then break end
+			
+			local subRev = sub:reverse()
+			local idxRev = subRev:find(' ', 1, true)
+			local newC = c - idxRev
+			if(newC == 0) then break end
+			
+			c = newC
+		end
+		
+		assert(sub:len() > 0)
+		table.insert(tbl, sub)
+		str = str:sub(1 + c + 1)
+	end
+	
+	return tbl
 end
