@@ -55,7 +55,7 @@ function addEventHandler(...)
 end
 
 if(DEBUG) then
-	function DbgDump(str, title)
+	function Debug.dump(str, title)
 		local len = str:len()
 		local bytes = {str:byte(1, len)}
 		local buf = ''
@@ -125,6 +125,6 @@ else
 	local function DbgDummy()
 	end
 	
-	DbgDump = DbgDummy
+	Debug.dump = DbgDummy
 	DbgPerf = function() return {cp = DbgDummy} end
 end
