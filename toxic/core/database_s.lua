@@ -277,7 +277,7 @@ function Database.Drivers.SQLite:query(query, ...)
 	end
 	
 	Debug.warn('SQL query ('..query:sub(1, 100)..') failed: '..errmsg)
-	DbgTraceBack()
+	Debug.traceBack()
 	return false
 end
 
@@ -289,7 +289,7 @@ function Database.Drivers.SQLite:exec(query, ...)
 	end
 	
 	Debug.warn('SQL exec failed: '..query)
-	DbgTraceBack()
+	Debug.traceBack()
 	return false
 end
 
@@ -385,7 +385,7 @@ function Database.Drivers.MySQL:query(query, ...)
 	end
 	
 	Debug.warn('SQL query ('..query:sub(1, 100)..') failed: '..errmsg)
-	DbgTraceBack()
+	Debug.traceBack()
 	return false
 end
 
@@ -397,7 +397,7 @@ function Database.Drivers.MySQL:exec(query, ...)
 	end
 	
 	Debug.warn('SQL exec failed: '..query)
-	DbgTraceBack()
+	Debug.traceBack()
 	return false
 end
 

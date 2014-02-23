@@ -16,7 +16,7 @@ function Debug.err(str)
 	outputDebugString(str, 1)
 end
 
-function DbgTraceBack(lvl, len, offset)
+function Debug.traceBack(lvl, len, offset)
 	local trace = debug.traceback()
 	trace = trace:gsub('\r', '')
 	local lines = split(trace, '\n')
@@ -40,7 +40,7 @@ end
 local _assert = assert
 function assert(val, str)
 	if(not val) then
-		DbgTraceBack()
+		Debug.traceBack()
 		_assert(val, str)
 	end
 end
@@ -56,7 +56,7 @@ end
 
 if(DEBUG) then
 	function DbgPrint(fmt, ...)
-		Debug.info(fmt:format(...), 3)
+		Debug.info(fmt:format(...))
 	end
 	
 	function DbgDump(str, title)
@@ -100,7 +100,7 @@ if(DEBUG) then
 		local g_Handlers = {}
 		
 		function addEventHandler(eventName, attachedTo, handlerFunction, ...)
-			local trace = DbgTraceBack(-1, 1, 1)
+			local trace = Debug.traceBack(-1, 1, 1)
 			local func = function(...)
 				local prof = DbgPerf()
 				local cnt = repeatEventHandler[eventName] or 1

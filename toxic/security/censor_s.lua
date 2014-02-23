@@ -196,14 +196,14 @@ addPreInitFunc(CsInit)
 
 	local function TestEq(result, validResult)
 		if(result == validResult) then return end
-		local trace = DbgTraceBack(-1, 1, 1)
+		local trace = Debug.traceBack(-1, 1, 1)
 		Debug.warn('Test failed: expected '..tostring(validResult)..', got '..tostring(result)..' in '..trace[1])
 	end
 
 	local function TestTblEq(tbl, validTbl)
 		assert(type(tbl) == 'table' and type(validTbl) == 'table')
 		if(areTablesEqual(tbl, validTbl)) then return end
-		local trace = DbgTraceBack(-1, 1, 1)
+		local trace = Debug.traceBack(-1, 1, 1)
 		Debug.warn('Test failed: expected '..table.dump(validTbl)..', got '..table.dump(tbl)..' in '..trace[1])
 	end
 

@@ -265,7 +265,7 @@ end
 function addInitFunc(func)
 	assert(func)
 #if(DBG_START_PERF) then
-	local name = DbgTraceBack(-1, 1, 1)[1]
+	local name = Debug.traceBack(-1, 1, 1)[1]
 	table.insert(g_InitFuncs, {func, name})
 #else
 	table.insert(g_InitFuncs, func)
@@ -284,6 +284,6 @@ addEventHandler('onResourceStart', g_ResRoot, init)
 _addEventHandler = addEventHandler
 function addEventHandler(...)
 	Debug.warn('addEventHandler is not recommended at startup! Use addInitFunc instead.')
-	DbgTraceBack()
+	Debug.traceBack()
 	return _addEventHandler(...)
 end
