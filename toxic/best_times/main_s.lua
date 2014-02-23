@@ -8,7 +8,7 @@ BestTimesTable = Database.Table{
 	{'time', 'INT UNSIGNED'},
 	{'rec', 'INT UNSIGNED', null = true, fk = {'blobs', 'id'}},
 	{'cp_times', 'INT UNSIGNED', null = true, fk = {'blobs', 'id'}},
-	{'timestamp', 'INT UNSIGNED'},
+	{'timestamp', 'INT UNSIGNED', null = true},
 	{'besttimes_idx', unique = {'map', 'time', 'player'}},
 	{'besttimes_idx2', unique = {'map', 'player'}},
 }

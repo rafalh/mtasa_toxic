@@ -9,7 +9,7 @@ setmetatable(AccountData.map, {__mode = 'v'}) -- weak table
 PlayersTable = Database.Table{
 	name = 'players',
 	{'player',         'INT UNSIGNED',       pk = true, default = 0},
-	{'serial',         'VARCHAR(32)',        default = ''},
+	{'serial',         'VARCHAR(32)',        default = '', null = true},
 	{'account',        'VARCHAR(255)',       default = '', null = true},
 	{'time_here',      'INT UNSIGNED',       default = 0},
 	{'first_visit',    'INT UNSIGNED',       default = 0},
@@ -18,7 +18,7 @@ PlayersTable = Database.Table{
 	{'name',           'VARCHAR(32)',        default = ''},
 	{'namePlain',      'VARCHAR(32)',        default = ''},
 	{'online',         'BOOL',               default = 0},
-	{'email',          'VARCHAR(128)',       default = ''},
+	{'email',          'VARCHAR(128)',       default = '', null = true},
 	
 	{'players_idx', unique = {'account'}},
 }
