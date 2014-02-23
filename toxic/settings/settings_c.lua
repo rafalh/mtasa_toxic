@@ -39,16 +39,16 @@ Settings.__mt.__index = function(self, key)
 		return val
 	end
 	
-	outputDebugString('Unknown setting '..tostring(key), 2)
+	Debug.warn('Unknown setting '..tostring(key))
 	return nil
 end
 
 function Settings.__mt.__newindex(self, key, val)
 	local item = rawget(Settings, 'localMap')[key]
 	if(not item) then
-		outputDebugString('Unknown setting '..tostring(key), 2)
+		Debug.warn('Unknown setting '..tostring(key))
 	elseif(item.validate and not item.validate(val)) then
-		outputDebugString('Invalid setting value '..tostring(val), 2)
+		Debug.warn('Invalid setting value '..tostring(val))
 	else
 		local oldVal = item.value
 		if(item.cast) then
@@ -75,7 +75,7 @@ function Settings.load()
 		if(attr.name and attr.value) then
 			Settings[attr.name] = attr.value
 		else
-			outputDebugString('Invalid setting '..tostring(attr.name), 2)
+			Debug.warn('Invalid setting '..tostring(attr.name))
 		end
 	end
 	

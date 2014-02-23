@@ -379,7 +379,7 @@ local function ShpOnItemKeyUp ( key )
 	local item = g_ShopItems[item_id]
 	
 	if ( g_Inventory[item_id] ) then
-		--outputDebugString ( 'Use '..item.name, 2 )
+		--Debug.warn('Use '..item.name)
 		guiLabelSetColor ( gui.label, 0, 255, 0 )
 		setTimer ( function ( label )
 			if ( isElement ( label ) ) then

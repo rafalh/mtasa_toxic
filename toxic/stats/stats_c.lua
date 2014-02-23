@@ -13,7 +13,7 @@ function StStartSync(idOrEl)
 	end
 	
 	if(g_Stats[idOrEl].refs == 0) then
-		--outputDebugString('start sync '..tostring(idOrEl), 2)
+		--Debug.info('start sync '..tostring(idOrEl))
 		triggerServerInternalEvent($(EV_START_SYNC_REQUEST), g_Me, {stats = idOrEl}, force)
 	end
 	g_Stats[idOrEl].refs = g_Stats[idOrEl].refs + 1
@@ -26,7 +26,7 @@ function StStopSync(idOrEl, stopSync)
 	assert(stats.refs > 0)
 	stats.refs = stats.refs - 1
 	if(stats.refs == 0) then
-		--outputDebugString('pause sync '..tostring(idOrEl), 2)
+		--Debug.info('pause sync '..tostring(idOrEl), 2)
 		local req = stopSync and $(EV_STOP_SYNC_REQUEST) or $(EV_PAUSE_SYNC_REQUEST)
 		triggerServerInternalEvent(req, g_Me, {stats = idOrEl})
 	end

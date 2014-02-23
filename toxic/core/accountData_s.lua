@@ -63,7 +63,7 @@ function AccountData:get(name)
 		if(value ~= nil) then
 			result[field] = value
 		else
-			outputDebugString('Unknown field '..field, 2)
+			Debug.warn('Unknown field '..field)
 		end
 	end
 	
@@ -182,6 +182,6 @@ function AccountData.__mt.__index(self, k)
 end
 
 function AccountData.__mt.__newindex(self, k, v)
-	--outputDebugString('__newindex '..tostring(k), 3)
+	--Debug.info('__newindex '..tostring(k))
 	AccountData.set(self, k, v)
 end

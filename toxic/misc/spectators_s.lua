@@ -13,7 +13,7 @@ local function updateSpectators()
 		local target = not pdata.is_console and getCameraTarget(player)
 		if(target) then
 			local specList = getPlayerSpectators(target)
-			--outputDebugString(getPlayerName(player)..' - '..getPlayerName(target)..' has '..#specList..' spectators', 3)
+			--Debug.info(getPlayerName(player)..' - '..getPlayerName(target)..' has '..#specList..' spectators')
 			
 			local specNameList = {}
 			for i, player2 in ipairs(specList) do
@@ -29,7 +29,7 @@ local function updateSpectators()
 				triggerClientEvent(player, 'toxic.onSpecListChange', g_Root, specList)
 			end
 		else
-			--outputDebugString('no target', 3)
+			--Debug.info('no target')
 		end
 	end
 end

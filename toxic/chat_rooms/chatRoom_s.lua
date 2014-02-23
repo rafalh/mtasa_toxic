@@ -8,7 +8,7 @@ ChatRoom.__mt = {__index = ChatRoom}
 ChatRoom.idToRoom = {}
 
 function ChatRoom:onPlayerMsg(player, msg)
-	--outputDebugString('[chatext] Chat msg: '..self.id..' player '..getPlayerName(player), 3)
+	--Debug.info('[chatext] Chat msg: '..self.id..' player '..getPlayerName(player))
 	
 	msg = tostring(msg)
 	if(msg == '') then return end

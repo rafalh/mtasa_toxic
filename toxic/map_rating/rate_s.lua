@@ -75,7 +75,7 @@ local function RtMapStart()
 end
 
 local function RtPoolStarting()
-	--outputDebugString('RtPoolStarting', 3)
+	--Debug.info('RtPoolStarting')
 	RPC('RtSetVisible', false):exec()
 	g_Poll = true
 end

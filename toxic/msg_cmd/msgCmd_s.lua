@@ -81,7 +81,7 @@ end
 local function McCheckSoundsExist()
 	for cmd, msg in pairs(g_MsgCommands) do
 		if(msg.sound and not fileExists(':'..g_MediaRes.name..'/sounds/'..msg.sound)) then
-			outputDebugString(msg.sound..' has not been found in txmedia resource!', 2)
+			Debug.warn(msg.sound..' has not been found in txmedia resource!')
 		end
 	end
 end
@@ -89,7 +89,7 @@ end
 local function McInit()
 	local node = xmlLoadFile('conf/msg_cmd.xml')
 	if(not node) then
-		outputDebugString('Failed to load msg_cmd.xml', 2)
+		Debug.warn('Failed to load msg_cmd.xml')
 		return
 	end
 	

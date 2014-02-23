@@ -41,13 +41,13 @@ function DbRecreateTable(tbl)
 	
 	local success = g_Driver:createTable(tbl)
 	if(not success) then
-		outputDebugString('Failed to recreate '..tbl.name..' table', 1)
+		Debug.err('Failed to recreate '..tbl.name..' table')
 		DbQuery('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
 		return false
 	end
 	
 	if(not DbQuery('INSERT INTO '..tbl..' SELECT '..fieldsStr..' FROM __'..tbl)) then
-		outputDebugString('Failed to copy rows when recreating '..tbl.name, 1)
+		Debug.err('Failed to copy rows when recreating '..tbl.name)
 		DbQuery('DROP TABLE '..tbl)
 		DbQuery('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
 		return false
@@ -215,7 +215,7 @@ function Database.Drivers.SQLite:makeBackup()
 	
 	-- copy database file
 	if(not fileCopy(SQLITE_DB_PATH, 'backups/db1.sqlite')) then
-		outputDebugString('Failed to copy file', 2)
+		Debug.warn('Failed to copy file')
 	else
 		outputServerLog('Database backup created')
 	end
@@ -230,7 +230,7 @@ local function Database_Drivers_SQLite_AutoBackup()
 	local backupsInt = touint(g_Config.backupInterval, 0) * 3600 * 24
 	if(backupsInt > 1000 and now - Settings.backupTimestamp < backupsInt - 1000) then return end
 	
-	outputDebugString('Auto-backup...', 3)
+	Debug.info('Auto-backup...')
 	Database.Drivers.SQLite:makeBackup()
 	
 	Settings.backupTimestamp = now
@@ -240,7 +240,7 @@ function Database.Drivers.SQLite:init()
 	--fileCopy('backups/db1.sqlite', SQLITE_DB_PATH)
 	g_Connection = dbConnect('sqlite', SQLITE_DB_PATH)
 	if(not g_Connection) then
-		outputDebugString('Failed to connect to SQLite database!', 1)
+		Debug.err('Failed to connect to SQLite database!')
 		return false
 	end
 	
@@ -276,7 +276,7 @@ function Database.Drivers.SQLite:query(query, ...)
 		return result
 	end
 	
-	outputDebugString('SQL query ('..query:sub(1, 100)..') failed: '..errmsg, 2)
+	Debug.warn('SQL query ('..query:sub(1, 100)..') failed: '..errmsg)
 	DbgTraceBack()
 	return false
 end
@@ -288,7 +288,7 @@ function Database.Drivers.SQLite:exec(query, ...)
 		return result
 	end
 	
-	outputDebugString('SQL exec failed: '..query, 2)
+	Debug.warn('SQL exec failed: '..query)
 	DbgTraceBack()
 	return false
 end
@@ -318,7 +318,7 @@ function Database.Drivers.SQLite:createTable(tbl)
 	
 	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..
 		table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')..')'
-	--outputDebugString(query, 3)
+	--Debug.info(query, 3)
 	if(not self:query(query)) then return false end
 	
 	for i, col in ipairs(indexes) do
@@ -351,7 +351,7 @@ Database.Drivers.MySQL.getColDef = Database.Drivers._common.getColDef
 
 function Database.Drivers.MySQL:init()
 	if(not g_Config.host or not g_Config.dbname or not g_Config.username or not g_Config.password) then
-		outputDebugString('Required setting for MySQL connection has not been found (host, dbname, username, password)', 1)
+		Debug.err('Required setting for MySQL connection has not been found (host, dbname, username, password)', 1)
 		return false
 	end
 	
@@ -363,8 +363,8 @@ function Database.Drivers.MySQL:init()
 	outputServerLog('MySQL support is experimental!', 3)
 	g_Connection = dbConnect('mysql', params, g_Config.username, g_Config.password)
 	if(not g_Connection) then
-		outputDebugString('Failed to connect to MySQL database!', 1)
-		outputDebugString('Params: '..params..' '..g_Config.username..' '..('*'):rep(g_Config.password:len()), 3)
+		Debug.err('Failed to connect to MySQL database!')
+		Debug.info('Params: '..params..' '..g_Config.username..' '..('*'):rep(g_Config.password:len()))
 		return false
 	end
 	
@@ -384,7 +384,7 @@ function Database.Drivers.MySQL:query(query, ...)
 		return result
 	end
 	
-	outputDebugString('SQL query ('..query:sub(1, 100)..') failed: '..errmsg, 2)
+	Debug.warn('SQL query ('..query:sub(1, 100)..') failed: '..errmsg)
 	DbgTraceBack()
 	return false
 end
@@ -396,7 +396,7 @@ function Database.Drivers.MySQL:exec(query, ...)
 		return result
 	end
 	
-	outputDebugString('SQL exec failed: '..query, 2)
+	Debug.warn('SQL exec failed: '..query)
 	DbgTraceBack()
 	return false
 end
@@ -423,7 +423,7 @@ function Database.Drivers.MySQL:createTable(tbl)
 	
 	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..
 		table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')..')'
-	--outputDebugString(query, 3)
+	--Debug.info(query)
 	if(not self:query(query)) then return false end
 	
 	for i, col in ipairs(indexes) do
@@ -486,7 +486,7 @@ end
 
 function DbInit()
 	if(not DbLoadConfig()) then
-		outputDebugString('Failed to load database config', 1)
+		Debug.err('Failed to load database config')
 		return false
 	end
 	
@@ -500,7 +500,7 @@ function DbInit()
 	end
 	
 	if(not g_Driver) then
-		outputDebugString('Unknown database type '..tostring(g_Config.type), 1)
+		Debug.err('Unknown database type '..tostring(g_Config.type))
 		return false
 	end
 	
@@ -513,10 +513,10 @@ function DbInit()
 	for i, tbl in ipairs(Database.tblList) do
 		local success = g_Driver:createTable(tbl)
 		if(not success) then
-			outputDebugString('Failed to create '..tbl.name..' table', 1)
+			Debug.err('Failed to create '..tbl.name..' table')
 			return false
 		else
-			--outputDebugString('Created '..tbl.name..' table', 3)
+			--Debug.info('Created '..tbl.name..' table')
 		end
 	end
 	

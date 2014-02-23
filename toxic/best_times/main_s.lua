@@ -97,7 +97,7 @@ function BtGetTops(map, count)
 	for i, data in ipairs(rows) do
 		data.time = formatTimePeriod(data.time / 1000)
 	end
-	--outputDebugString('Toptimes: '..(getTickCount()-start)..' ms', 2)
+	--Debug.warn('Toptimes: '..(getTickCount()-start)..' ms')
 	return rows
 end
 
@@ -145,7 +145,7 @@ function getTopTime(map_res, cp_times)
 				row.cp_times = zlibUncompress(row.cp_times)
 			end
 			if(not row.cp_times) then
-				outputDebugString('Failed to uncompress '..row.cp_times:len(), 2)
+				Debug.warn('Failed to uncompress '..row.cp_times:len())
 				row.cp_times = {}
 			end
 		end

@@ -7,7 +7,7 @@ function RcEncodeTrace(rec)
 		local drx, dry, drz = tonumber(data[5]), tonumber(data[6]), tonumber(data[7])
 		
 		if(not dticks or not dx or not dy or not dz or not drx or not dry or not drz) then
-			outputDebugString('Invalid rec', 2)
+			Debug.warn('Invalid rec')
 			return false
 		end
 		
@@ -35,7 +35,7 @@ function RcEncodeTrace(rec)
 	end
 	
 	if(longFmtCnt*10 > #rec) then
-		outputDebugString('Too bad '..longFmtCnt..'/'..#rec, 2)
+		Debug.warn('Too bad '..longFmtCnt..'/'..#rec)
 	end
 	
 	return buf

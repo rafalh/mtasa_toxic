@@ -84,7 +84,7 @@ function Recorder.preRender() -- checks for countdown end
 	local veh = getPedOccupiedVehicle(g_Me)
 	if(not veh or isVehicleFrozen(veh)) then return end
 	
-	--outputDebugString('Countdown has finished', 3)
+	--Debug.info('Countdown has finished')
 	removeEventHandler('onClientPreRender', g_Root, Recorder.preRender)
 	
 	g_Waiting = false
@@ -92,7 +92,7 @@ function Recorder.preRender() -- checks for countdown end
 end
 
 function Recorder.startReq(map_id)
-	--outputDebugString('Recorder.startReq', 3)
+	--Debug.info('Recorder.startReq')
 	
 	if(g_Rec) then
 		g_Rec:destroy()
@@ -107,7 +107,7 @@ function Recorder.startReq(map_id)
 end
 
 function Recorder.stopReq()
-	outputDebugString('Recorder.stopReq', 3)
+	Debug.info('Recorder.stopReq')
 	
 	if(g_Rec) then
 		g_Rec:destroy()
@@ -120,13 +120,13 @@ function Recorder.stopReq()
 end
 
 function Recorder.stopSendReq(mapId)
-	outputDebugString('Recorder.stopSendReq', 3)
+	Debug.info('Recorder.stopSendReq')
 	assert(g_Rec and not g_Waiting)
 	
 	if(mapId == g_MapID) then
 		triggerServerInternalEvent($(EV_RECORDING), g_Me, g_MapID, g_Rec.data)
 	else
-		outputDebugString('Wrong map ID: '..tostring(map_id)..'<>'..tostring(g_MapID), 3)
+		Debug.warn('Wrong map ID: '..tostring(map_id)..'<>'..tostring(g_MapID))
 	end
 	
 	g_Rec:destroy()

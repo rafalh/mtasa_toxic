@@ -26,7 +26,7 @@ local g_PanelH
 -- Functions
 
 local function UpHide()
-	--outputDebugString('UpHide', 3)
+	--Debug.info('UpHide')
 	GaFadeOut(g_Wnd, FADE_DELAY)
 	
 	if(g_CurrentItem) then
@@ -176,7 +176,7 @@ local function UpCreateGui()
 end
 
 local function UpShow()
-	--outputDebugString('UpShow', 3)
+	--Debug.info('UpShow')
 	if(not g_Wnd) then
 		UpCreateGui()
 	end
@@ -216,7 +216,7 @@ function UpRegister(item)
 end
 
 function UpToggle()
-	--outputDebugString('UpToggle g_Hiding '..tostring(g_Hiding), 3)
+	--Debug.info('UpToggle g_Hiding '..tostring(g_Hiding))
 	if((not g_Wnd or not guiGetVisible(g_Wnd)) and (not g_CurrentItem or VIEW_W > 0)) then
 		UpShow()
 	elseif(not g_Hiding) then

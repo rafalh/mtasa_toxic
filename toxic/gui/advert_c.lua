@@ -61,7 +61,7 @@ end
 local function AdvInit()
 	local node = xmlLoadFile('conf/adverts.xml')
 	if(not node) then
-		outputDebugString('Failed to load adverts.xml', 2)
+		Debug.warn('Failed to load adverts.xml')
 		return
 	end
 	

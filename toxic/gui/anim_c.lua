@@ -84,7 +84,7 @@ function GaFadeIn(wnd, delay, targetAlpha)
 	if(not targetAlpha) then
 		targetAlpha = 1
 	end
-	--outputDebugString('GaFadeIn '..g_WndCount..' '..guiGetAlpha ( wnd )..'-'..targetAlpha, 3)
+	--Debug.info('GaFadeIn '..g_WndCount..' '..guiGetAlpha ( wnd )..'-'..targetAlpha)
 	GaFade(wnd, delay, targetAlpha)
 end
 
@@ -92,6 +92,6 @@ function GaFadeOut(wnd, delay, targetAlpha)
 	if(not targetAlpha) then
 		targetAlpha = 0
 	end
-	--outputDebugString('GaFadeOut '..g_WndCount..' '..guiGetAlpha(wnd)..'-'..targetAlpha, 3)
+	--Debug.info('GaFadeOut '..g_WndCount..' '..guiGetAlpha(wnd)..'-'..targetAlpha)
 	GaFade(wnd, delay, targetAlpha)
 end

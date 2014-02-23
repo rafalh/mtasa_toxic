@@ -49,7 +49,7 @@ function notifySyncerChange ( name, arg, val )
 		return -- noone sync it
 	end
 	
-	--outputDebugString ( 'notifySyncerChange - '..name )
+	--Debug.info('notifySyncerChange - '..name)
 	el_data.t = getTickCount () -- update modification time
 	for player, sync_time in pairs ( el_data.p ) do
 		if ( sync_time == 0 ) then
@@ -66,7 +66,7 @@ function startSync ( player, tbl, force )
 	local sync_tbl = {}
 	
 	for name, arg in pairs(tbl) do
-		--outputDebugString('startSync - '..name, 3)
+		--Debug.info('startSync - '..name)
 		local syncer = g_Sync[name]
 		if(syncer) then -- are parameters valid?
 			if ( not syncer.data[arg] ) then -- noone synced it before
@@ -80,12 +80,12 @@ function startSync ( player, tbl, force )
 			end
 			el_data.p[player] = 0
 		else
-			outputDebugString('Unknown syncer: '..tostring(name), 2)
+			Debug.warn('Unknown syncer: '..tostring(name))
 		end
 	end
 	
 	if(not table.empty(sync_tbl)) then
-		--outputDebugString('syncing...', 3)
+		--Debug.info('syncing...')
 		triggerClientInternalEvent(player, $(EV_SYNC), g_Root, sync_tbl) -- sync with player
 	end
 end
@@ -94,7 +94,7 @@ function stopSync ( player, tbl )
 	assert ( tbl )
 	
 	for name, arg in pairs ( tbl ) do
-		--outputDebugString ( 'stopSync - '..name )
+		--Debug.info ( 'stopSync - '..name )
 		local syncer = g_Sync[name]
 		local el_data = syncer and syncer.data[arg]
 		if ( el_data ) then -- are parameters valid?
@@ -110,7 +110,7 @@ function pauseSync ( player, tbl )
 	assert ( Player.fromEl(player) and tbl )
 	
 	for name, arg in pairs ( tbl ) do
-		--outputDebugString ( 'pauseSync - '..name )
+		--Debug.info ( 'pauseSync - '..name )
 		local syncer = g_Sync[name]
 		local el_data = syncer and syncer.data[arg]
 		if ( el_data ) then -- are parameters valid?
@@ -124,7 +124,7 @@ function syncOnce ( player, tbl, force )
 	local sync_tbl = {}
 	
 	for name, arg in pairs ( tbl ) do
-		--outputDebugString ( 'syncOnce - '..name )
+		--Debug.info ( 'syncOnce - '..name )
 		local syncer = g_Sync[name]
 		if ( syncer ) then
 			if ( not syncer.data[arg] ) then -- noone synced it before
@@ -135,14 +135,14 @@ function syncOnce ( player, tbl, force )
 			if ( not el_data.p[player] or ( el_data.p[player] < el_data.t and el_data.p[player] ~= 0 ) or syncer.alwaysupload or force ) then -- player need a sync
 				local v = syncer.func ( arg ) -- call syncer function
 				sync_tbl[name] = { arg, v }
-				--outputDebugString ( name..' added' )
+				--Debug.info ( name..' added' )
 			else
-				--outputDebugString ( name..' ignored' )
+				--Debug.info ( name..' ignored' )
 				sync_tbl[name] = { arg, false }
 			end
 			el_data.p[player] = el_data.t -- pause sync for player, save time of last sync
 		else
-			outputDebugString ( 'Unknown syncer: '..tostring ( name ), 2 )
+			Debug.warn ( 'Unknown syncer: '..tostring ( name ))
 		end
 	end
 	

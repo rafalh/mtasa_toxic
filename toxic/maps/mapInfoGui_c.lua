@@ -252,7 +252,7 @@ local function MiInit()
 	g_Textures.star_r = dxCreateTexture('img/star_r.png')
 	
 	if(not g_Textures.star or not g_Textures.star_l or not g_Textures.star_r) then
-		outputDebugString('Failed to load textures', 1)
+		Debug.err('Failed to load textures')
 		return
 	end
 	

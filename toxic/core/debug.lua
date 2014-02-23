@@ -2,6 +2,20 @@ local DEBUG = true
 local PERF_DEBUG_CHECKPOINTS = true
 local PERF_DEBUG_EVENTS = false
 
+Debug = {}
+
+function Debug.info(str)
+	outputDebugString(str, 3)
+end
+
+function Debug.warn(str)
+	outputDebugString(str, 2)
+end
+
+function Debug.err(str)
+	outputDebugString(str, 1)
+end
+
 function DbgTraceBack(lvl, len, offset)
 	local trace = debug.traceback()
 	trace = trace:gsub('\r', '')
@@ -35,14 +49,14 @@ local _addEventHandler = addEventHandler
 function addEventHandler(...)
 	local success = _addEventHandler(...)
 	if(not success) then
-		outputDebugString(debug.traceback('addEventHandler failed', 2), 2)
+		Debug.warn(debug.traceback('addEventHandler failed', 2), 2)
 	end
 	return success
 end
 
 if(DEBUG) then
 	function DbgPrint(fmt, ...)
-		outputDebugString(fmt:format(...), 3)
+		Debug.info(fmt:format(...), 3)
 	end
 	
 	function DbgDump(str, title)
@@ -50,7 +64,7 @@ if(DEBUG) then
 		local bytes = {str:byte(1, len)}
 		local buf = ''
 		for i, byte in ipairs(bytes) do
-			buf = buf..(' %02X'):format (byte)
+			buf = buf..(' %02X'):format(byte)
 		end
 		DbgPrint((title or 'dump')..':'..buf)
 	end
@@ -97,7 +111,7 @@ if(DEBUG) then
 					end
 				end
 				if(prof:cp(eventName) and trace[1]) then
-					outputDebugString(trace[1], 3)
+					Debug.info(trace[1], 3)
 				end
 			end
 			g_Handlers[handlerFunction] = func -- what about different eventName/source

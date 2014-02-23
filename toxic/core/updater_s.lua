@@ -76,7 +76,7 @@ Updater = {
 				for i, data in ipairs(rows) do
 					DbQuerySync('INSERT INTO '..MutesTable..' (serial, timestamp, duration) VALUES(?, ?, ?)', data.serial, now, 3600*24*31)
 				end
-				outputDebugString(#rows..' pmutes updated', 3)
+				Debug.info(#rows..' pmutes updated')
 			end
 		},
 		{
@@ -91,19 +91,19 @@ Updater = {
 					if(data.rec ~= '') then
 						DbQuerySync('INSERT INTO '..BlobsTable..' (data) VALUES('..DbBlob(data.rec)..')')
 						local id = Database.getLastInsertID()
-						if(id == 0) then outputDebugString('last insert ID == 0', 2) end
+						if(id == 0) then Debug.warn('last insert ID == 0') end
 						DbQuerySync('UPDATE '..BestTimesTable..' SET rec=? WHERE map=? AND player=?', id, data.map, data.player)
 					end
 					if(data.cp_times ~= '') then
 						DbQuerySync('INSERT INTO '..BlobsTable..' (data) VALUES('..DbBlob(data.cp_times)..')')
 						local id = Database.getLastInsertID()
-						if(id == 0) then outputDebugString('last insert ID == 0', 2) end
+						if(id == 0) then Debug.warn('last insert ID == 0') end
 						DbQuerySync('UPDATE '..BestTimesTable..' SET cp_times=? WHERE map=? AND player=?', id, data.map, data.player)
 					end
 					
 					coroutine.yield()
 				end
-				outputDebugString(#rows..' best times updated', 3)
+				Debug.info(#rows..' best times updated')
 			end
 		},
 		{
@@ -191,7 +191,7 @@ Updater = {
 			func = function()
 				local rows = DbQuerySync('SELECT m1.map AS map1, m2.map AS map2 FROM '..MapsTable..' m1, '..MapsTable..' m2 WHERE m1.name=m2.name AND m1.map<m2.map')
 				for i, row in ipairs(rows) do
-					outputDebugString('Merging maps: '..row.map1..' <- '..row.map2, 3)
+					Debug.info('Merging maps: '..row.map1..' <- '..row.map2)
 					if(not mergeMaps(row.map1, row.map2)) then
 						return 'Merging maps failed'
 					end

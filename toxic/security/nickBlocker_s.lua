@@ -1,7 +1,7 @@
 local g_BannedNames = {}
 
 function NbCheckName(name)
-	--outputDebugString('NbCheckName '..name, 3)
+	--Debug.info('NbCheckName '..name)
 	local plainName = name:lower():gsub('#%x%x%x%x%x%x', '')
 	if(plainName == '') then return true end -- empty is banned
 	

@@ -9,7 +9,7 @@ Settings.register
 	priority = 60,
 	onChange = function(oldVal, newVal)
 		if(not g_RaceAudioRes:isReady()) then return end
-		--outputDebugString('Changing race audio volume to '..newVal/200, 3)
+		--Debug.info('Changing race audio volume to '..newVal/200)
 		g_RaceAudioRes:call('setRaceAudioVolume', newVal/200) -- normally its 0.5
 	end,
 	createGui = function(wnd, x, y, w, onChange)
@@ -83,7 +83,7 @@ Settings.register
 }
 
 g_RaceAudioRes:addReadyHandler(function()
-	--outputDebugString('race_audio start detected', 3)
+	--Debug.info('race_audio start detected')
 	g_RaceAudioRes:call('setRaceAudioVolume', Settings.raceVolume/200) -- normally its 0.5
 end)
 

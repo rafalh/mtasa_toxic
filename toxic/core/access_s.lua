@@ -37,7 +37,7 @@ function AccessList.__mt.__index:update(accountName)
 	local obj = 'user.'..(accountName or 'guest')
 	for i, right in ipairs(AccessRight.list) do
 		local fullName = right:getFullName()
-		--outputDebugString('Checking access '..fullName, 3)
+		--Debug.info('Checking access '..fullName)
 		self[right] = hasObjectPermissionTo(obj, fullName, false)
 	end
 end

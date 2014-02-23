@@ -10,7 +10,7 @@ addEvent('onHttpResult')
 
 local function onTranslateResult(new_text, errno, old_text, lang_to)
 	if(new_text == 'ERROR' or not new_text) then
-		outputDebugString('Failed to translate: '..tostring(errno), 1)
+		Debug.info('Failed to translate: '..tostring(errno))
 		return
 	end
 	
@@ -40,7 +40,7 @@ function translate(text, from, to, callback, ...)
 	local from_enc = urlEncode(from or '')
 	local to_enc = urlEncode(to or 'en')
 	local url = 'http://api.microsofttranslator.com/v1/Http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
-	--outputDebugString(url, 2)
+	--Debug.warn(url)
 	if(not fetchRemote(url, onTranslateResult, '', false, text, to)) then
 		return false
 	end
@@ -96,7 +96,7 @@ end
 
 local function onTranslateLangList(data, errno, player)
 	if(data == 'ERROR') then
-		outputDebugString('Failed to get translator languages: '..tostring(errno), 2)
+		Debug.warn('Failed to get translator languages: '..tostring(errno))
 		return
 	end
 	

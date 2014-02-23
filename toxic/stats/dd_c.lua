@@ -44,7 +44,7 @@ function DdGetKillers()
 	if(#killersSorted > 0) then
 		local killerName = getPlayerName(killersSorted[1])
 		local assistName = killersSorted[2] and getPlayerName(killersSorted[2]) or 'no'
-		outputDebugString('Killer '..killerName..' assist '..assistName, 3)
+		Debug.info('Killer '..killerName..' assist '..assistName)
 	end
 	
 	g_LastCol = {}
@@ -59,7 +59,7 @@ end]]
 function DdSetKillersDetectionEnabled(enabled)
 	local curEnabled = g_LastCol and true
 	if(curEnabled == enabled) then return end
-	--outputDebugString('DD killers detection: '..tostring(enabled), 3)
+	--Debug.info('DD killers detection: '..tostring(enabled))
 	
 	if(enabled) then
 		addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)

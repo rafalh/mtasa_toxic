@@ -64,7 +64,7 @@ function AchvCheckPlayer(player)
 	
 	if(#newAchv > 0) then
 		if(#newAchv >= 3) then
-			outputDebugString('Tried to activate '..#newAchv..' achievements at once!', 1)
+			Debug.err('Tried to activate '..#newAchv..' achievements at once!')
 		else
 			AchvActivate(player, newAchv)
 		end
@@ -100,16 +100,16 @@ function AchvActivate(player, names)
 		if(not pdata.achvSet[achv.id]) then
 			if(achv.save or achv.client) then
 				achvStr = achvStr..string.char(achv.id)
-				--outputDebugString('add '..achv.id..' to DB', 3)
+				--Debug.info('add '..achv.id..' to DB')
 			end
 			
-			outputDebugString('Achievement '..achv.name..' activated for '..tostring(getPlayerName(player)), 3)
+			Debug.info('Achievement '..achv.name..' activated for '..tostring(getPlayerName(player)))
 			pdata.achvSet[achv.id] = true
 			pdata.accountData:add('achvCount', 1)
 			table.insert(newAchv, achv.id)
 			pdata.accountData:add('cash', achv.prize)
 		else
-			--outputDebugString('Failed to activate achievement: '..achv.name, 3)
+			--Debug.info('Failed to activate achievement: '..achv.name)
 		end
 	end
 	
@@ -133,7 +133,7 @@ local function AchvInitAccount(player)
 end
 
 local function AchvPlayerLoginLogout()
-	--outputDebugString('AchvPlayerLoginLogout!', 3)
+	--Debug.info('AchvPlayerLoginLogout!')
 	AchvInitAccount(source)
 end
 
@@ -142,7 +142,7 @@ local function AchvPlayerJoin()
 end
 
 local function AchvClientActivate(name)
-	--outputDebugString('AchvClientActivate', 3)
+	--Debug.info('AchvClientActivate')
 	
 	local achv = g_NameToAchv[name]
 	if(not achv or not achv.client) then return end -- hacking attempt

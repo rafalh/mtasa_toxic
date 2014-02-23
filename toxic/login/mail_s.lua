@@ -20,7 +20,7 @@ local function loadSmtpConfig()
 			if(config[key] ~= nil) then
 				config[key] = val
 			else
-				outputDebugString('Invalid SMTP option: '..key, 2)
+				Debug.warn('Invalid SMTP option: '..key)
 			end
 		end
 	end
@@ -28,7 +28,7 @@ local function loadSmtpConfig()
 	config.port = tonumber(config.port)
 	
 	if(not config.host or not config.port or not config.username or not config.password) then
-		outputDebugString('SMTP configuration is invalid!', 2)
+		Debug.warn('SMTP configuration is invalid!')
 		return false
 	end
 	
@@ -44,9 +44,9 @@ function Mail.__mt.__index:init()
 end
 
 function Mail.__mt.__index:send()
-	if(not self.to) then outputDebugString('Field "to" is not set', 2) return false end
-	if(not self.subject) then outputDebugString('Field "subject" is not set', 2) return false end
-	if(not self.body) then outputDebugString('Field "body" is not set', 2) return false end
+	if(not self.to) then Debug.warn('Field "to" is not set') return false end
+	if(not self.subject) then Debug.warn('Field "subject" is not set') return false end
+	if(not self.body) then Debug.warn('Field "body" is not set') return false end
 	
 	local serverNameFiltered = trimStr(getServerName():gsub('[^%w%s%p]', ''))
 	local params = {
@@ -58,7 +58,7 @@ function Mail.__mt.__index:send()
 	
 	if(not fetchRemote('http://ravin.tk/api/mta/sendmail.php?'..urlEncodeTbl(params), function(responseData, errno)
 		if(responseData == 'ERROR') then
-			outputDebugString('sendMail failed: '..errno, 1)
+			Debug.err('sendMail failed: '..errno)
 			if(self.callback) then
 				self.callback(false)
 			end
@@ -67,7 +67,7 @@ function Mail.__mt.__index:send()
 			local success = (status == 1)
 			
 			if(not result or not success) then
-				outputDebugString('sendMail failed: '..tostring(err))
+				Debug.err('sendMail failed: '..tostring(err))
 			end
 			
 			if(self.callback) then

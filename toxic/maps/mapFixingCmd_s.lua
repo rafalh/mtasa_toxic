@@ -66,7 +66,7 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 	local mapPath = map:getPath()
 	local metaFile = MetaFile(mapPath..'/meta.xml')
 	if(not metaFile:open()) then
-		outputDebugString('Failed to open '..mapPath..'/meta.xml', 2)
+		Debug.warn('Failed to open '..mapPath..'/meta.xml')
 		return false
 	end
 	
@@ -85,7 +85,7 @@ local function CheckMapSpawnpointsCount(map, player, opts)
 			if(curFileCnt) then
 				cnt = cnt + curFileCnt
 			else
-				outputDebugString('CountSpInMapFile failed for '..path, 2)
+				Debug.warn('CountSpInMapFile failed for '..path)
 			end
 		end
 	end

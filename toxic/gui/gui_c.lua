@@ -29,7 +29,7 @@ end
 function GUI.loadTemplates(path)
 	local node = xmlLoadFile(path)
 	if(not node) then
-		outputDebugString('xmlLoadFile '..path..' failed', 2)
+		Debug.warn('xmlLoadFile '..path..' failed')
 		return false
 	end
 	
@@ -49,7 +49,7 @@ end
 function GUI.getTemplate(tplID)
 	if(not GUI.templates) then
 		if(not GUI.loadTemplates('gui/gui.xml')) then
-			outputDebugString('Failed to load GUI', 1)
+			Debug.err('Failed to load GUI')
 			return false
 		end
 	end
@@ -217,7 +217,7 @@ function GUI.create(tpl, x, y, w, h, parent)
 	if(type(tpl) ~= 'table') then
 		tpl = GUI.getTemplate(tpl)
 		if(not tpl) then
-			outputDebugString('Unknown template ID '..tostring(tpl), 1)
+			Debug.err('Unknown template ID '..tostring(tpl))
 			return false
 		end
 	end

@@ -100,12 +100,12 @@ end
 
 function CsCheckNickname(name)
 	if(not Settings.censor or not Settings.censor_nicknames) then return false end
-	--outputDebugString('CsCheckNickname '..name, 3)
+	--Debug.info('CsCheckNickname '..name)
 	
 	local plainName = name:lower():gsub('#%x%x%x%x%x%x', '')
 	for i, item in ipairs(g_ForbWords) do
 		if(plainName:find(item.pattern)) then
-			--outputDebugString('Detected banned nickname: '..plainName, 3)
+			--Debug.info('Detected banned nickname: '..plainName)
 			return true
 		end
 	end
@@ -197,14 +197,14 @@ addPreInitFunc(CsInit)
 	local function TestEq(result, validResult)
 		if(result == validResult) then return end
 		local trace = DbgTraceBack(-1, 1, 1)
-		outputDebugString('Test failed: expected '..tostring(validResult)..', got '..tostring(result)..' in '..trace[1], 2)
+		Debug.warn('Test failed: expected '..tostring(validResult)..', got '..tostring(result)..' in '..trace[1])
 	end
 
 	local function TestTblEq(tbl, validTbl)
 		assert(type(tbl) == 'table' and type(validTbl) == 'table')
 		if(areTablesEqual(tbl, validTbl)) then return end
 		local trace = DbgTraceBack(-1, 1, 1)
-		outputDebugString('Test failed: expected '..table.dump(validTbl)..', got '..table.dump(tbl)..' in '..trace[1], 2)
+		Debug.warn('Test failed: expected '..table.dump(validTbl)..', got '..table.dump(tbl)..' in '..trace[1])
 	end
 
 	local prof = DbgPerf(5)

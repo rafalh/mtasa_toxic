@@ -114,7 +114,7 @@ end
 -- Called by RPC
 function PodiumStart(winners, n)
 	if(g_StartTicks) then
-		outputDebugString('Ignoring PodiumStart request', 2)
+		Debug.warn('Ignoring PodiumStart request')
 		return
 	end
 	

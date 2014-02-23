@@ -42,7 +42,7 @@ function initRoomMaps(room)
 		map = mapRes and Map(mapRes)
 	elseif(room.el ~= g_Root) then
 		if(g_RoomMgrRes:isReady()) then
-			outputDebugString(tostring(room.el), 3)
+			Debug.info(tostring(room.el))
 			local mapPath = g_RoomMgrRes:call('getRoomMap', room.el)
 			map = mapPath and Map(mapPath)
 		end
@@ -131,7 +131,7 @@ function getRandomMap()
 	end
 	
 	if(maps:getCount() == 0) then
-		outputDebugString('Failed to get random map!', 1)
+		Debug.err('Failed to get random map!')
 		return false
 	end
 	
@@ -301,7 +301,7 @@ local function handlePlayerTime(player, ms)
 	local default_speed = tonumber(map:getSetting('gamespeed')) or 1
 	local speed = getGameSpeed()
 	if(math.abs(speed - default_speed) > 0.001) then
-		outputDebugString('Invalid game speed (default: '..default_speed..', current: '..speed..')', 3)
+		Debug.info('Invalid game speed (default: '..default_speed..', current: '..speed..')')
 		return 0
 	end
 	
@@ -471,7 +471,7 @@ local function onChangeMapReq(mapResName)
 		local room = Player.fromEl(client).room
 		map:start(room)
 	else
-		outputDebugString('getResourceFromName failed', 2)
+		Debug.warn('getResourceFromName failed')
 	end
 end
 

@@ -59,7 +59,7 @@ end
 local function ChEnable()
 	if(g_CarHide) then return end
 	g_CarHide = true
-	--outputDebugString('CarHide enabled', 3)
+	--Debug.info('CarHide enabled')
 	
 	addEventHandler('onClientVehicleEnter', root, ChVehEnter)
 	for i, player in ipairs(getElementsByType('player')) do
@@ -76,7 +76,7 @@ end
 local function ChDisable()
 	if(not g_CarHide) then return end
 	g_CarHide = false
-	--outputDebugString('CarHide disabled', 3)
+	--Debug.info('CarHide disabled')
 	
 	ChUpdateAllPlayers()
 	
@@ -117,7 +117,7 @@ local function ChPulse()
 		local vehPos = Vector3(getElementPosition(localVeh))
 		if(vehPos:distFromSeg(camPos, camPos + 100*camDir) < 0.1) then
 			target = localVeh
-			--outputDebugString('TRIALS camera!', 3)
+			--Debug.info('TRIALS camera!')
 		end
 	end
 	
@@ -133,7 +133,7 @@ local function ChPulse()
 	
 	-- If spectator mode has been enabled/disabled or weapon has been given update all players
 	if(update) then
-		--outputDebugString('g_SpecMode '..tostring(g_SpecMode)..' g_HasWeapon '..tostring(g_HasWeapon), 3)
+		--Debug.info('g_SpecMode '..tostring(g_SpecMode)..' g_HasWeapon '..tostring(g_HasWeapon))
 		ChUpdateAllPlayers()
 	end
 end

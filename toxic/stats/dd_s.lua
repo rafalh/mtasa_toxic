@@ -27,28 +27,28 @@ local function onKillersList(killer, assist)
 	local map = room and getCurrentMap(room)
 	if(not victimPlayer or not map
 		or killerPlayer == victimPlayer or assistPlayer == victimPlayer) then
-		outputDebugString('Invalid args for onKillersList', 2)
+		Debug.warn('Invalid args for onKillersList')
 		return
 	end
 	
 	-- Check if game has ended already
 	if(not room.gameStarted) then return end
 	
-	--outputDebugString('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()), 3)
+	--Debug.info('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()))
 	
 	local respawn = map and map:getRespawn()
 	if(not respawn and victimPlayer:isAlive()) then
-		outputDebugString('Ignoring killer info - client alive: '..tostring(victimPlayer:getName()), 2)
+		Debug.warn('Ignoring killer info - client alive: '..tostring(victimPlayer:getName()))
 		return
 	end
 	
 	if(map.isRace or map:getType().name ~= 'DD') then
-		outputDebugString('Wrong map type: '..map:getType().name..' '..map:getName(), 2)
+		Debug.warn('Wrong map type: '..map:getType().name..' '..map:getName())
 		return
 	end
 	
 	if(victimPlayer.killed) then
-		outputDebugString('Player is not allowed to send killer info again', 2)
+		Debug.warn('Player is not allowed to send killer info again')
 		return
 	elseif(not respawn) then
 		victimPlayer.killed = true
@@ -172,7 +172,7 @@ local function onPlayerWasted()
 	
 	if(player.room.ddKilersDetection) then
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
-		--outputDebugString('onPlayerWasted '..player:getName(), 3)
+		--Debug.info('onPlayerWasted '..player:getName())
 	end
 end
 

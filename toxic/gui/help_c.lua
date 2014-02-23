@@ -120,7 +120,7 @@ local function HlpInit()
 		
 		addEventHandler('onClientGUITabSwitched', g_GuiParent, HlpTabShown)
 		local tabPanel = getElementParent(g_GuiParent)
-		if(not tabPanel) then outputDebugString('No tab panel found', 2)
+		if(not tabPanel) then Debug.warn('No tab panel found')
 		else guiGetSelectedTab(tabPanel) end
 		
 		if(guiGetSelectedTab(tabPanel) == g_GuiParent) then

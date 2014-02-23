@@ -18,7 +18,7 @@ end
 function GuiStringProvider.__mt.__index:load()
 	local node = xmlLoadFile(self.path)
 	if(not node) then
-		outputDebugString('xmlLoadFile '..path..' failed', 2)
+		Debug.warn('xmlLoadFile '..path..' failed')
 		return false
 	end
 	

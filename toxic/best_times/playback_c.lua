@@ -138,7 +138,7 @@ end
 function Playback.timerProc(id)
 	assert(false)
 	local self = Playback.map[id]
-	--outputDebugString('pos = '..self.pos..', rot = '..self.rot)
+	--Debug.info('pos = '..self.pos..', rot = '..self.rot)
 	
 	local msToNextFrame = self:update()
 	if(msToNextFrame) then
@@ -275,7 +275,7 @@ function Playback.create(data, title)
 	self.blip = createBlipAttachedTo(self.veh, 0, 1, 150, 150, 150, 50)
 	setElementParent(self.blip, self.veh)
 	
-	outputDebugString('Playback: frames = '..#data..', pos = ('..x..' '..y..' '..z..'), rot: ('..rx..' '..ry..' '..rz..')')
+	Debug.info('Playback: frames = '..#data..', pos = ('..x..' '..y..' '..z..'), rot: ('..rx..' '..ry..' '..rz..')')
 	
 	self.id = #Playback.map + 1
 	Playback.map[self.id] = self
@@ -292,7 +292,7 @@ end
 
 -- Used by RPC
 function Playback.stop()
-	--outputDebugString('Playback.stop', 3)
+	--Debug.info('Playback.stop')
 	if(g_Playback) then
 		g_Playback:destroy()
 		g_Playback = false
@@ -305,7 +305,7 @@ end
 
 -- Used by RPC
 function Playback.startAfterCountdown(recCoded, title)
-	--outputDebugString('Playback.startAfterCountdown', 3)
+	--Debug.info('Playback.startAfterCountdown')
 	if(g_Playback) then
 		g_Playback:destroy()
 	end

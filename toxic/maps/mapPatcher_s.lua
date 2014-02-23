@@ -126,12 +126,12 @@ function MusicPatch.preprocess(ctx)
 		end
 	end
 	
-	--outputDebugString('No music has been found in meta.xml', 3)
+	--Debug.info('No music has been found in meta.xml')
 	return false
 end
 
 function MusicPatch.fixClientScript(path, ctx)
-	--outputDebugString('Processing '..path, 3)
+	--Debug.info('Processing '..path)
 	
 	local abs_path = ctx.mapPath..'/'..path
 	local buf = fileGetContents(abs_path)
@@ -154,7 +154,7 @@ function MusicPatch.fixClientScript(path, ctx)
 			local isUrl = (path:sub(1, 7) == 'http://')
 			local isValidPath = isUrl or (ctx.files[path] or ctx.client_scripts[path])
 			if(not isValidPath or ctx.music_path) then
-				outputDebugString('Invalid music '..path..' in '..ctx.mapPath, 2)
+				Debug.warn('Invalid music '..path..' in '..ctx.mapPath)
 				return false
 			end
 			
@@ -201,7 +201,7 @@ function MusicPatch.fix(ctx)
 	end
 	
 	if(not ctx.music_path) then
-		--outputDebugString('No music has been found in scripts', 3)
+		--Debug.info('No music has been found in scripts')
 		return false
 	end
 	
@@ -263,7 +263,7 @@ function PumaMarkers2Patch.fix(ctx)
 	end
 	xmlNodeSetValue(ctx.sync_map_element_data, 'true')
 	
-	--outputDebugString('Fixing Puma Markers 2', 3)
+	--Debug.info('Fixing Puma Markers 2')
 	local script_node = ctx.client_scripts[ctx.puma_markers2]
 	assert(script_node)
 	xmlDestroyNode(script_node)
@@ -355,7 +355,7 @@ function MapPatcher.processMap(map)
 	local data = rows and rows[1]
 	if(data and data.patcherSeq >= MapPatcher.seq) then
 		-- Map has been patched already
-		--outputDebugString('Map has been patched already', 3)
+		--Debug.info('Map has been patched already', 3)
 		return false
 	end
 	

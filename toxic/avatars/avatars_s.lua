@@ -51,7 +51,7 @@ local function AvtSetReq(filename)
 	
 	local cost = filename and g_Avatars[filename]
 	if(not cost) then
-		outputDebugString('onSetAvatarReq failed', 2)
+		Debug.warn('onSetAvatarReq failed')
 		return
 	end
 	

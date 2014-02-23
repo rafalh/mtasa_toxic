@@ -134,7 +134,7 @@ CmdMgr.register{
 				msg = false
 			end
 			
-			--outputDebugString(accountName..' - '..tostring(account)..' '..tostring(isTempMod)..' '..tostring(isVip), 3)
+			--Debug.info(accountName..' - '..tostring(account)..' '..tostring(isTempMod)..' '..tostring(isVip))
 		end
 		
 		if(msg) then

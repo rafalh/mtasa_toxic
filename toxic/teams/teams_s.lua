@@ -156,7 +156,7 @@ local function updatePlayerTeam(player, name)
 	-- Create team if needed
 	local created = false
 	if(not isElement(teamInfo.el) and teamInfo.count >= Settings.min_team) then
-		--outputDebugString('Creating team '..teamInfo.name, 3)
+		--Debug.info('Creating team '..teamInfo.name)
 		created = createTeamFromInfo(teamInfo) and true
 	end
 	
@@ -179,7 +179,7 @@ end
 local function destroyEmptyTeams()
 	for i, team in ipairs(getElementsByType('team', g_ResRoot)) do
 		if(countPlayersInTeam(team) == 0) then -- in team there was only source player
-			outputDebugString('Destroying team '..getTeamName(team), 3)
+			Debug.info('Destroying team '..getTeamName(team))
 			destroyElement(team)
 		end
 	end
@@ -233,7 +233,7 @@ local function loadFromXML()
 		if(team.aclGroup or team.tag) then
 			table.insert(teams, team)
 		else
-			outputDebugString('Invalid team definition', 2)
+			Debug.warn('Invalid team definition')
 		end
 	end
 	xmlUnloadFile(node)

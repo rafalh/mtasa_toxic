@@ -24,7 +24,7 @@ function Settings.registerMetaSetting(attr)
 	end
 	
 	if(Settings.items[attr.name]) then
-		outputDebugString('Ignoring meta setting '..attr.name, 2)
+		Debug.warn('Ignoring meta setting '..attr.name)
 		return
 	end
 	
@@ -92,7 +92,7 @@ end
 
 function Settings.loadPrivate()
 	if(not DbIsReady()) then
-		outputDebugString('Database is not ready yet', 2)
+		Debug.warn('Database is not ready yet')
 		return false
 	end
 	
@@ -135,7 +135,7 @@ Settings.__mt.__index = function(self, key)
 	
 	local item = rawget(Settings, 'items')[key]
 	if(not item) then
-		outputDebugString('Unknown setting '..tostring(key), 2)
+		Debug.warn('Unknown setting '..tostring(key))
 		return nil
 	end
 	
@@ -149,7 +149,7 @@ Settings.__mt.__index = function(self, key)
 		item.value = item.validate(item.value, unpack(item.valArgs))
 	end
 	if(item.value == nil) then
-		outputDebugString('Invalid setting value: '..key, 2)
+		Debug.warn('Invalid setting value: '..key)
 		item.value = item.default
 	end
 	
@@ -159,7 +159,7 @@ end
 function Settings.__mt.__newindex(self, key, val)
 	local item = Settings.items[key]
 	if(not item) then
-		outputDebugString('Unknown setting '..tostring(key), 2)
+		Debug.warn('Unknown setting '..tostring(key))
 		return
 	end
 	
@@ -168,7 +168,7 @@ function Settings.__mt.__newindex(self, key, val)
 		newVal = item.validate(val, unpack(item.valArgs))
 	end
 	if(newVal == nil) then
-		outputDebugString('Invalid setting value '..tostring(newVal), 2)
+		Debug.warn('Invalid setting value '..tostring(newVal))
 		return
 	end
 	
@@ -211,7 +211,7 @@ function Settings.onChange(name, oldVal, newVal)
 	
 	local item = Settings.items[name]
 	if(not item or item.priv) then
-		outputDebugString('Unknown setting '..name, 2)
+		Debug.warn('Unknown setting '..name)
 		return
 	end
 	
@@ -221,7 +221,7 @@ function Settings.onChange(name, oldVal, newVal)
 	end
 	
 	if(newVal == nil) then
-		outputDebugString('Invalid setting value '..name, 2)
+		Debug.warn('Invalid setting value '..name)
 		cancelEvent()
 		return
 	end
@@ -243,7 +243,7 @@ function Settings.onChange(name, oldVal, newVal)
 
 	local dt = getTickCount() - startTicks
 	if(dt > 1) then
-		outputDebugString('Too slow '..dt, 2)
+		Debug.warn('Too slow '..dt)
 	end
 end
 

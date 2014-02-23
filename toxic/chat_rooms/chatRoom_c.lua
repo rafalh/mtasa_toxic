@@ -156,7 +156,7 @@ function ChatRoom.create(info)
 			self:updateAccess()
 		end)
 	end
-	--outputDebugString('[chatext] Created chat: '..self.id, 3)
+	--Debug.info('[chatext] Created chat: '..self.id)
 	return self
 end
 

@@ -133,7 +133,7 @@ local function init()
 	local tm = getRealTime()
 	if(tm.month == 11 and tm.monthday == 31) then
 		local sec = (23 - tm.hour)*3600 + (59-tm.minute)*60 + (60-tm.second) - 10
-		outputDebugString('New year in '..sec..' seconds', 3)
+		Debug.info('New year in '..sec..' seconds')
 		setTimer(startAnim, sec*1000, 1)
 	end
 end

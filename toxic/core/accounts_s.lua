@@ -13,14 +13,14 @@ local function onPlayerLogin(prevAccount, account, autoLogin)
 	if(not self) then return end
 	
 	if(isGuestAccount(account)) then
-		outputDebugString('onPlayerLogin: login to guest', 2)
+		Debug.warn('onPlayerLogin: login to guest')
 	elseif(not self.guest) then
-		outputDebugString('onPlayerLogin: no logout before login', 2)
+		Debug.warn('onPlayerLogin: no logout before login')
 	end
 	
 	if(not self:setAccount(account)) then
 		cancelEvent()
-		outputDebugString('Failed to set account for player', 1)
+		Debug.err('Failed to set account for player')
 		return
 	end
 	
@@ -53,7 +53,7 @@ local function onPlayerLogout()
 	if(not self) then return end
 	
 	if(self.guest) then
-		outputDebugString('onPlayerLogout: guest tried to logout', 2)
+		Debug.warn('onPlayerLogout: guest tried to logout')
 	end
 	
 	self:setAccount(false)

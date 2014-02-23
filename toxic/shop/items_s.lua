@@ -145,7 +145,7 @@ local function ShpOnOilHit ( veh )
 	local speed2 = vx^2 + vy^2 + vz^2
 	local dir = ( { 1, -1 } )[math.random ( 1, 2 )]
 	local turn_v = speed2 / 5 * dir * math.random ( 80, 120 ) / 100
-	--outputDebugString ( 'Oil hit: '..turn_v, 2 )
+	--Debug.warn('Oil hit: '..turn_v)
 	setVehicleTurnVelocity ( veh, 0, 0, turn_v )
 end
 
@@ -438,7 +438,7 @@ local function ShpBuyNextMap(mapResName)
 	local mapRes = getResourceFromName(mapResName)
 	local map = mapRes and Map(mapRes)
 	if(not map) then
-		outputDebugString('getResourceFromName failed', 2)
+		Debug.warn('getResourceFromName failed')
 		return
 	end
 	

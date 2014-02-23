@@ -23,7 +23,7 @@ function StringList.__mt.__index:loadFromFile(path)
 			table.insert(self.strList, str)
 			table.insert(self.typeList, strType)
 		else
-			outputDebugString('Invalid line '..i..' in MUI string list', 2)
+			Debug.warn('Invalid line '..i..' in MUI string list')
 			break
 		end
 	end

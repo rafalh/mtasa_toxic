@@ -8,7 +8,7 @@ end
 
 local function McSoundStream(success)
 	if(not success) then
-		outputDebugString('Failed to stream sound command', 2)
+		Debug.warn('Failed to stream sound command')
 		McSoundStopped()
 	end
 end

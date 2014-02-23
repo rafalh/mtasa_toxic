@@ -21,7 +21,7 @@ local function setupDatabase()
 	local ver = Settings.version
 	if(ver == 0) then
 		Settings.version = Updater.currentVer
-		outputDebugString('Version: '..ver, 2)
+		Debug.warn('Version: '..ver)
 	elseif(ver < currentVer) then
 		DbQuery('COMMIT')
 		DbQuery('BEGIN')
@@ -29,12 +29,12 @@ local function setupDatabase()
 			if(upd.ver > ver) then
 				local err = upd.func()
 				if(err) then
-					outputDebugString('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err), 1)
+					Debug.err('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err))
 					DbQuery('ROLLBACK')
 					DbQuery('BEGIN')
 					return false
 				else
-					outputDebugString('Database update ('..ver..' -> '..upd.ver..') succeeded!', 3)
+					Debug.info('Database update ('..ver..' -> '..upd.ver..') succeeded!')
 					ver = upd.ver
 					Settings.version = ver
 				end
@@ -48,7 +48,7 @@ end
 local function setupACL()
 	local acl = aclGet('Admin')
 	if(not acl) then
-		outputDebugString('Cannot find Admin ACL!', 1)
+		Debug.err('Cannot find Admin ACL!')
 		return false
 	end
 	
@@ -68,9 +68,9 @@ local function setupACL()
 				aclSetRight(acl, right, true)
 			end
 			aclSave()
-			outputDebugString('ACL has been updated', 3)
+			Debug.info('ACL has been updated')
 		else
-			outputDebugString('Resource does not have right to change ACL. Add custom rights manually...', 2)
+			Debug.warn('Resource does not have right to change ACL. Add custom rights manually...')
 		end
 	end
 	
@@ -176,7 +176,7 @@ local function initRountine()
 	end
 	
 	if(not Settings.cleanup_done) then
-		outputDebugString('Cleaning database!', 2)
+		Debug.warn('Cleaning database!')
 		DbQuery('UPDATE '..DbPrefix..'players SET online=0')
 	end
 	Settings.cleanup_done = false
@@ -217,14 +217,14 @@ local function initRountine()
 	end
 	
 	prof:cp('init2')
-	outputDebugString('rafalh script has started!', 3)
+	Debug.info('rafalh script has started!')
 end
 
 function continueCoRountine(notFirst)
 	while(getTickCount() - g_CoTicks < 2000 and coroutine.status(g_Co) ~= 'dead') do
 		local success, msg = coroutine.resume(g_Co)
 		if(not success) then
-			outputDebugString('Worker failed: '..msg, 2)
+			Debug.warn('Worker failed: '..msg)
 			if(not notFirst) then
 				cancelEvent()
 			end
@@ -234,9 +234,9 @@ function continueCoRountine(notFirst)
 	
 	if(coroutine.status(g_Co) ~= 'dead') then
 		if(not notFirst) then
-			outputDebugString('Please wait while script is initializing...', 3)
+			Debug.info('Please wait while script is initializing...')
 		else
-			outputDebugString('Still working... Please wait.', 3)
+			Debug.info('Still working... Please wait.')
 		end
 		
 		g_CoTicks = getTickCount()
@@ -283,7 +283,7 @@ addEventHandler('onResourceStart', g_ResRoot, init)
 -- Disable addEventHandler for loading
 _addEventHandler = addEventHandler
 function addEventHandler(...)
-	outputDebugString('addEventHandler is not recommended at startup! Use addInitFunc instead.', 2)
+	Debug.warn('addEventHandler is not recommended at startup! Use addInitFunc instead.')
 	DbgTraceBack()
 	return _addEventHandler(...)
 end

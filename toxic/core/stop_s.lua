@@ -10,7 +10,7 @@ local function onResourceStop()
 	end
 	
 	Settings.cleanup_done = true
-	outputDebugString('rafalh script has stopped!', 3)
+	Debug.info('rafalh script has stopped!')
 	
 	prof:cp('stop')
 end

@@ -137,7 +137,7 @@ end
 
 function StatsView.create(id, parent, x, y, w, h)
 	if(not id) then
-		outputDebugString('Wrong ID', 2)
+		Debug.warn('Wrong ID')
 		return false
 	end
 	

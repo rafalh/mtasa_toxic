@@ -79,7 +79,7 @@ end
 function getPlayerStats(playerId)
 	playerId = touint(playerId)
 	if(not playerId) then
-		outputDebugString('Wrong id', 2)
+		Debug.warn('Wrong id', 2)
 		return false
 	end
 	

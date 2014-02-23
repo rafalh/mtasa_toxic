@@ -33,7 +33,7 @@ local function SpInit()
 	bindKey(key, 'down', 'StatsPanel')
 	
 	-- Me: 270, RoadRunner: 225
-	--outputDebugString('Height def-normal '..GUI.getFontHeight('default-normal')..' def-small '..GUI.getFontHeight('default-small')..' def-bold-small '..GUI.getFontHeight('default-bold-small')..' clear-norm '..GUI.getFontHeight('clear-normal')..' sa-hdr '..GUI.getFontHeight('sa-header'), 3)
+	--Debug.info('Height def-normal '..GUI.getFontHeight('default-normal')..' def-small '..GUI.getFontHeight('default-small')..' def-bold-small '..GUI.getFontHeight('default-bold-small')..' clear-norm '..GUI.getFontHeight('clear-normal')..' sa-hdr '..GUI.getFontHeight('sa-header'))
 end
 
 local function onAccountChange()

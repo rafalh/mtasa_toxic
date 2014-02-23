@@ -111,7 +111,7 @@ local function MqOnAddReq(mapResName)
 	end
 	
 	if(not map) then
-		outputDebugString('getResourceFromName failed '..tostring(mapResName), 2)
+		Debug.warn('getResourceFromName failed '..tostring(mapResName))
 	elseif(not MqAdd(room, map, true, client)) then
 		outputMsg(client, Styles.red, "Map queue is full!")
 	end

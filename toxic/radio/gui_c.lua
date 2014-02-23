@@ -36,7 +36,7 @@ local function loadChannels()
 		
 		xmlUnloadFile(node)
 	else
-		outputDebugString('Failed to load radio channnels list', 2)
+		Debug.warn('Failed to load radio channnels list')
 	end
 	
 	table.sort(channels, function(ch1, ch2) return ch1.name < ch2.name end)
@@ -210,9 +210,9 @@ local function checkSounds()
 	
 	-- find long sounds
 	local found = false
-	--outputDebugString ( 'sounds '..#getElementsByType ( 'sound' )..':', 3 )
+	--Debug.info('sounds '..#getElementsByType ( 'sound' )..':')
 	for i, sound in ipairs(getElementsByType('sound')) do
-		--outputDebugString ( i..' '..getSoundLength ( sound )..' '..getSoundVolume ( sound ), 3 )
+		--Debug.info(i..' '..getSoundLength ( sound )..' '..getSoundVolume ( sound ))
 		local len = getSoundLength ( sound )
 		-- Note: streams has len == 0
 		if ( sound ~= g_Sound and ( len > 10 or len == 0) and getSoundVolume ( sound ) > 0 ) then

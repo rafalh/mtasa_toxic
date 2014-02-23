@@ -32,11 +32,11 @@ local function RcOnRecording(map_id, recording)
 	local pdata = Player.fromEl(client)
 	
 	if(map_id <= 0 or not pdata or type(recording) ~= 'table' or #recording <= 2 or not pdata.id) then
-		outputDebugString('Invalid parameters in RcOnRecording', 2)
+		Debug.warn('Invalid parameters in RcOnRecording')
 		return
 	end
 	
-	--outputDebugString('RcOnRecording', 3)
+	--Debug.info('RcOnRecording')
 	
 	if(Settings.recorder) then
 		local rows = DbQuery('SELECT player, rec FROM '..BestTimesTable..' WHERE map=? AND (rec IS NOT NULL OR player=?) ORDER BY time LIMIT $(MAX_RECORDINGS+1)', map_id, pdata.id)
@@ -52,7 +52,7 @@ local function RcOnRecording(map_id, recording)
 		
 		-- if player just get this besttime or there is fewer than 3 recordings
 		if(foundRow or #rows < $(MAX_RECORDINGS)) then
-			outputDebugString('Saving ghost trace (stage 2): '..pdata:getName(), 3)
+			Debug.info('Saving ghost trace (stage 2): '..pdata:getName())
 			local encoded = RcEncodeTrace(recording)
 			if(zlibCompress) then
 				encoded = zlibCompress(encoded)
@@ -63,7 +63,7 @@ local function RcOnRecording(map_id, recording)
 			else
 				DbQuery('INSERT INTO '..BlobsTable..' (data) VALUES('..blob..')')
 				local id = Database.getLastInsertID()
-				if(id == 0) then outputDebugString('last insert ID == 0', 2) end
+				if(id == 0) then Debug.warn('last insert ID == 0') end
 				DbQuery('UPDATE '..BestTimesTable..' SET rec=? WHERE map=? AND player=?', id, map_id, pdata.id)
 			end
 			
@@ -73,7 +73,7 @@ local function RcOnRecording(map_id, recording)
 				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', rowAfterTop.rec)
 			end
 		else
-			outputDebugString('Invalid player: '..pdata:getName(), 2)
+			Debug.warn('Invalid player: '..pdata:getName())
 		end
 	end
 	
@@ -85,7 +85,7 @@ end
 ---------------------------------
 
 function RcStartRecording(room, map_id)
-	--outputDebugString('Recording started...', 3)
+	--Debug.info('Recording started...')
 	local prof = DbgPerf()
 	local prof2 = DbgPerf(30)
 	
@@ -101,13 +101,13 @@ function RcStartRecording(room, map_id)
 	local row = rows and rows[1]
 	prof2:cp('RcStartRecording 2')
 	if(row and Settings.ghost) then
-		outputDebugString('Showing ghost', 3)
+		Debug.info('Showing ghost')
 		
 		local recCoded = row.data
 		if(zlibUncompress) then
 			recCoded = zlibUncompress(recCoded)
 		end
-		if(not recCoded) then outputDebugString('Failed to uncompress', 2) end
+		if(not recCoded) then Debug.warn('Failed to uncompress') end
 		prof2:cp('RcStartRecording 3')
 		
 		local rows2 = DbQuery('SELECT count(player) AS c FROM '..BestTimesTable..' WHERE map=? AND time<? LIMIT 1', map_id, row.time)
@@ -124,7 +124,7 @@ function RcStartRecording(room, map_id)
 end
 
 function RcStopRecording(room)
-	--outputDebugString('recording stoped', 3)
+	--Debug.info('recording stoped')
 	
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room) then
@@ -161,10 +161,10 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 		end
 		
 		if(found or #rows < $(MAX_RECORDINGS)) then -- if player just get this besttime or there is fewer than 3 recordings
-			outputDebugString('Saving ghost trace (stage 1): '..pdata:getName(), 3)
+			Debug.info('Saving ghost trace (stage 1): '..pdata:getName())
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), player, map_id)
 		else
-			--outputDebugString('Ghost trace won't be saved', 3)
+			--Debug.info('Ghost trace won't be saved')
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_RECORDING_REQUEST), player, map_id)
 		end
 	end
@@ -182,7 +182,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 		end
 		
 		if(foundRow or #rows < $(MAX_RECORDINGS)) then -- if player just get this besttime or there is fewer than 3 cp recordings
-			--outputDebugString('saving cp rec for '..pdata:getName(), 3)
+			--Debug.info('saving cp rec for '..pdata:getName())
 			local buf = ''
 			local prevTime = 0
 			for i, t in ipairs(pdata.cp_times) do
@@ -200,7 +200,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			else
 				DbQuery('INSERT INTO '..BlobsTable..' (data) VALUES('..blob..')')
 				local id = Database.getLastInsertID()
-				if(id == 0) then outputDebugString('last insert ID == 0', 2) end
+				if(id == 0) then Debug.warn('last insert ID == 0') end
 				DbQuery('UPDATE '..BestTimesTable..' SET cp_times=? WHERE map=? AND player=?', id, map_id, pdata.id)
 			end
 			

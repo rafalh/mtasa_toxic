@@ -111,7 +111,7 @@ function ShpBuyItem(item_id, player)
 	if(success == false) then
 		return false
 	elseif(success == nil) then
-		outputDebugString('Expected returned status ('..tostring(item_id)..')', 2)
+		Debug.warn('Expected returned status ('..tostring(item_id)..')')
 	end
 	
 	pdata.accountData:add('cash', -price)

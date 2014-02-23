@@ -49,7 +49,7 @@ function MsgBox.__mt.__index:recalcSize()
 	end
 	self.buttonsW = buttonsW
 	
-	--outputDebugString('textW '..textW..' rows '..textRows, 3)
+	--Debug.info('textW '..textW..' rows '..textRows)
 	local iconW = self.icon and (ICON_SIZE + 10) or 0
 	self.w = math.max(textW + iconW, buttonsW) + 20
 	self.h = textH + 70
@@ -79,7 +79,7 @@ function MsgBox.__mt.__index:show()
 		textX = textX + ICON_SIZE + 10
 	end
 	
-	--outputDebugString('text label width '..(self.w - textX - 10), 3)
+	--Debug.info('text label width '..(self.w - textX - 10))
 	self.textLabel = guiCreateLabel(textX, 25, self.w - textX - 20, self.h - 25 - 45, self.text, false, self.wnd)
 	guiLabelSetHorizontalAlign(self.textLabel, 'center', true)
 	guiLabelSetVerticalAlign(self.textLabel, 'center')
@@ -124,7 +124,7 @@ end
 
 #local TEST = false
 #if(TEST) then
-	outputDebugString('Enter /msgboxtest to test MsgBox', 2)
+	Debug.warn('Enter /msgboxtest to test MsgBox')
 	
 	addCommandHandler('msgboxtest', function(cmdName, n)
 		n = tonumber(n)

@@ -51,7 +51,7 @@ function getPlayerProfile(playerId)
 	-- Validate parameters
 	playerId = touint(playerId)
 	if(not playerId) then
-		outputDebugString('Wrong id', 2)
+		Debug.warn('Wrong id')
 		return false
 	end
 	

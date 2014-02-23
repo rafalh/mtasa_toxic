@@ -6,7 +6,7 @@ local g_GUI
 local function load()
 	local node = xmlLoadFile('conf/server_rules.xml')
 	if(not node) then
-		outputDebugString('Failed to load server_rules.xml', 2)
+		Debug.warn('Failed to load server_rules.xml')
 		return false
 	end
 	

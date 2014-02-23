@@ -23,7 +23,7 @@ addEventHandler('onPlayerStuntComplete', g_Root, function(stuntType, vehicle, ti
 		elseif ( stuntType == 'Stoppie' ) then
 			addcash = distance * 6
 		else
-			outputDebugString ( 'Unknown stunt type: '..tostring ( stuntType ), 2 )
+			Debug.warn('Unknown stunt type: '..tostring(stuntType ))
 		end
 		if(addcash) then
 			local pdata = Player.fromEl(source)

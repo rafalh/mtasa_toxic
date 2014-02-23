@@ -85,7 +85,7 @@ local function AchvSetActive(id)
 end
 
 local function AchvOnList(achvTbl)
-	--outputDebugString('AchvOnList', 3)
+	--Debug.info('AchvOnList')
 	
 	for i, achv in ipairs(g_Achievements) do
 		achv.active = false
@@ -122,7 +122,7 @@ function AchvActivate(name)
 	if(not g_MyId) then return end
 	
 	if(achv.active) then
-		--outputDebugString("Failed to activate client achievement "..name, 3)
+		--Debug.info('Failed to activate client achievement '..name)
 		return -- nothing to do
 	end
 	triggerServerEvent('main.onAchvActivate', g_ResRoot, achv.name)

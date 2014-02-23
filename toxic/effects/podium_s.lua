@@ -39,7 +39,7 @@ local function setWinner(playerEl, rank)
 	
 	-- Try to debug: Bad argument @ 'getElementModel' [Expected element at argument 1]
 	if(veh and not getElementModel(veh)) then
-		outputDebugString('Invalid vehicle: isElement '..tostring(isElement(veh))..', getElementType '..tostring(isElement(veh) and getElementType(veh)), 2)
+		Debug.warn('Invalid vehicle: isElement '..tostring(isElement(veh))..', getElementType '..tostring(isElement(veh) and getElementType(veh)))
 		veh = false
 	end
 	

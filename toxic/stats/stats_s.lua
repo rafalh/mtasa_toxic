@@ -209,7 +209,7 @@ function StPlayerWin(player)
 	local mapType = map and map:getType()
 	local winCounter = false
 	if(not mapType) then
-		outputDebugString('unknown map type', 2)
+		Debug.warn('unknown map type', 2)
 #if(RACE_STATS) then
 	elseif(room.isRace) then
 		winCounter = 'raceVictories'

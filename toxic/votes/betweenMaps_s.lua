@@ -10,7 +10,7 @@ addEvent ( 'onPollStarting' )
 --------------------------------
 
 local function onPollStarting ( poll )
-	--outputDebugString ( 'onPollStarting', 3 )
+	--Debug.info('onPollStarting')
 	local room = g_RootRoom
 	
 	--[[local nextMap = MqPop(room)
@@ -119,7 +119,7 @@ local function onPollStarting ( poll )
 		end
 		
 		if(#poll == 0) then -- this shouldnt happen
-			outputDebugString('No maps in votemap!', 2)
+			Debug.warn('No maps in votemap!')
 			startRandomMap(room)
 		end
 	--end

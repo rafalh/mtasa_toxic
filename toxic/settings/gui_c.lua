@@ -68,7 +68,7 @@ function SettingsPanel.initGui(panel)
 end
 
 function invalidateSettingsGui()
-	--outputDebugString('invalidateSettingsGui', 3)
+	--Debug.info('invalidateSettingsGui')
 	if(not g_Panel) then return end
 	
 	destroyElement(g_ScrollPane)
