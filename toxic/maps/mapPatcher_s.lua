@@ -146,8 +146,8 @@ function MusicPatch.fixClientScript(path, ctx)
 	
 	-- Remove music loader
 	local buf2 = buf
-	--if (buf2:match (g_TestPattern)) then
-	--	outputChatBox ('MATCHED')
+	--if(buf2:match(g_TestPattern)) then
+	--	outputChatBox('MATCHED')
 	--end
 	if(not ctx.music_path) then
 		local f = function(path, opt_code)
@@ -159,7 +159,7 @@ function MusicPatch.fixClientScript(path, ctx)
 			end
 			
 			ctx.music_path = path
-			return trimStr (opt_code or '')
+			return trimStr(opt_code or '')
 		end
 		buf2 = buf2:gsub(g_MusicPattern, f)
 		buf2 = buf2:gsub(g_MusicPattern2, f)
@@ -197,11 +197,11 @@ end
 function MusicPatch.fix(ctx)
 	ctx.music_path = false
 	for path, node in pairs(ctx.client_scripts) do
-		MusicPatch.fixClientScript (path, ctx)
+		MusicPatch.fixClientScript(path, ctx)
 	end
 	
 	if(not ctx.music_path) then
-		--outputDebugString ('No music has been found in scripts', 3)
+		--outputDebugString('No music has been found in scripts', 3)
 		return false
 	end
 	
@@ -259,14 +259,14 @@ function PumaMarkers2Patch.fix(ctx)
 	
 	-- Always sync map elements data for PumaMarkers
 	if(not ctx.sync_map_element_data) then
-		ctx.sync_map_element_data = xmlCreateChild (ctx.node, 'sync_map_element_data')
+		ctx.sync_map_element_data = xmlCreateChild(ctx.node, 'sync_map_element_data')
 	end
 	xmlNodeSetValue(ctx.sync_map_element_data, 'true')
 	
-	--outputDebugString ('Fixing Puma Markers 2', 3)
+	--outputDebugString('Fixing Puma Markers 2', 3)
 	local script_node = ctx.client_scripts[ctx.puma_markers2]
-	assert (script_node)
-	xmlDestroyNode (script_node)
+	assert(script_node)
+	xmlDestroyNode(script_node)
 	ctx.client_scripts[ctx.puma_markers2] = nil
 	local abs_path = ctx.mapPath..'/'..ctx.puma_markers2
 	fileDelete(abs_path)
@@ -302,12 +302,12 @@ function CloudsPatch.fix(ctx)
 	
 	for path, node in pairs(ctx.client_scripts) do
 		local abs_path = ctx.mapPath..'/'..path
-		local buf = fileGetContents (abs_path)
+		local buf = fileGetContents(abs_path)
 		if(buf) then
 			local n1, n2
 			buf, n1 = buf:gsub('SetClouds?Enabled', 'setCloudsEnabled')
 			buf, n2 = buf:gsub('setClouds?Enabled', 'setCloudsEnabled')
-			if (n1 + n2 > 0) then
+			if(n1 + n2 > 0) then
 				if(fileSetContents(abs_path, buf)) then
 					status = true
 				end

@@ -62,7 +62,7 @@ function findMap(str, removed)
 		for i, mapPath in ipairs(maps) do
 			local map = Map(mapPath)
 			if(removed ~= nil) then
-				local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+				local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
 				local isRemoved = (rows[1].removed ~= '')
 				if(isRemoved == removed) then
 					return map
@@ -81,26 +81,26 @@ function findMap(str, removed)
 		return false
 	end
 	
-	local strLower = str:lower ()
+	local strLower = str:lower()
 	local result = false
 	
 	for i, map in maps:ipairs() do
 		local map_name = getResourceInfo(map.res, 'name')
 		local matches = false
 		
-		if(getResourceName (map.res):lower () == strLower) then
+		if(getResourceName(map.res):lower() == strLower) then
 			matches = 2
 		elseif(map_name) then
-			map_name = map_name:lower ()
-			if (map_name == strLower) then
+			map_name = map_name:lower()
+			if(map_name == strLower) then
 				matches = 1
-			elseif(map_name:find (strLower, 1, true)) then
+			elseif(map_name:find(strLower, 1, true)) then
 				matches = 3
 			end
 		end
 		
 		if(matches and removed ~= nil) then
-			local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+			local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
 			if((rows[1].removed ~= '') ~= removed) then
 				matches = false
 			end
@@ -127,7 +127,7 @@ function getRandomMap()
 			break
 		end
 		maps:remove(i)
-		local i = math.random (1, maps:getCount())
+		local i = math.random(1, maps:getCount())
 	end
 	
 	if(maps:getCount() == 0) then
@@ -169,7 +169,7 @@ local function onMapStart(map, room)
 	local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
 	local map_name = map:getName()
 	
-	if (room.lastMap == map) then
+	if(room.lastMap == map) then
 		room.mapRepeats = room.mapRepeats + 1
 	else
 		room.lastMap = map
@@ -182,7 +182,7 @@ local function onMapStart(map, room)
 	
 	if(rows[1].removed ~= '') then
 		scriptMsg("Map %s is removed! Changing to random map.", map_name)
-		--cancelEvent () -- map resource is still running
+		--cancelEvent() -- map resource is still running
 		setMapTimer(startRandomMap, 500, 1, room)
 	else
 		room.isRace = #(getCurrentMapElements(room, 'checkpoint')) > 0
@@ -202,7 +202,7 @@ local function onMapStart(map, room)
 		if(not was_queued) then -- queue updates others_in_row when new map is added
 			local dbg_buf = 'Starting map type: '..mapType.name
 			for i, map_type2 in ipairs(g_MapTypes) do
-				if (map_type2 ~= mapType) then
+				if(map_type2 ~= mapType) then
 					map_type2.others_in_row = map_type2.others_in_row + 1
 					dbg_buf = dbg_buf..', '..map_type2.name..': '..map_type2.others_in_row..'('..tostring(map_type2.max_others_in_row)..')'
 				else
@@ -268,14 +268,14 @@ local function onMapStop(room)
 
 	local prof = DbgPerf()
 	
-	if (room.recording) then
+	if(room.recording) then
 		room.recording = false
 		RcStopRecording(room)
 	end
 	
 	GbFinishBets()
 	
-	if (g_OldVehicleWeapons) then
+	if(g_OldVehicleWeapons) then
 		set('*race.vehicleweapons', g_OldVehicleWeapons)
 		g_OldVehicleWeapons = nil
 	end
@@ -314,16 +314,16 @@ local function handlePlayerTime(player, ms)
 			{"New: %s", formatTimePeriod(ms / 1000)},
 		}
 		
-		if (n <= 3) then -- new toptime
+		if(n <= 3) then -- new toptime
 			local th = ({ '1st', '2nd', '3rd' })[n]
-			scriptMsg ("The %s top time: %s by %s!", th, formatTimePeriod (ms / 1000), getPlayerName(player))
+			scriptMsg("The %s top time: %s by %s!", th, formatTimePeriod(ms / 1000), getPlayerName(player))
 			
 			local award = 30000 / n
 			pdata.accountData:add('cash', award)
 			privMsg(player, "%s added to your cash! Total: %s.", formatMoney(award), formatMoney(pdata.accountData.cash))
 		end
 		
-		if (n <= 8) then
+		if(n <= 8) then
 			MiShow(pdata.room)
 		end
 	end
@@ -439,7 +439,7 @@ function getMapList()
 	prof2:cp('onMapListReq 2')
 	local rows = DbQuery('SELECT name, played, rates, rates_count FROM '..MapsTable)
 	prof2:cp('onMapListReq 3')
-	for i, data in ipairs (rows) do
+	for i, data in ipairs(rows) do
 		if(mapsList[data.name]) then
 			mapsList[data.name][3] = data.played
 			if(data.rates_count > 0) then
@@ -454,7 +454,7 @@ end
 RPC.allow('getMapList')
 
 local function onChangeMapReq(mapResName)
-	if (not hasObjectPermissionTo (client, 'command.setmap', false)) then return end
+	if(not hasObjectPermissionTo(client, 'command.setmap', false)) then return end
 	
 	local map = false
 	local mapRes = getResourceFromName(mapResName)
@@ -466,8 +466,8 @@ local function onChangeMapReq(mapResName)
 		end
 	end
 	
-	if (map) then
-		GbCancelBets ()
+	if(map) then
+		GbCancelBets()
 		local room = Player.fromEl(client).room
 		map:start(room)
 	else

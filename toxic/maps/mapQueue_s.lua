@@ -22,7 +22,7 @@ function MqAdd(room, map, display_msg, player)
 	local mapType = map:getType()
 	
 	for i, mapType2 in ipairs(g_MapTypes) do
-		if (mapType2 ~= mapType) then
+		if(mapType2 ~= mapType) then
 			mapType2.others_in_row = mapType2.others_in_row + 1
 		else
 			mapType2.others_in_row = 0
@@ -34,7 +34,7 @@ function MqAdd(room, map, display_msg, player)
 	end
 	
 	if(display_msg) then
-		if (player) then
+		if(player) then
 			if(type(player) ~= 'table') then
 				player = Player.fromEl(player)
 			end
@@ -56,8 +56,8 @@ function MqRemove(room, pos)
 	
 	local mapType = map:getType()
 	
-	for i, map_type2 in ipairs (g_MapTypes) do
-		if (map_type2 ~= mapType) then
+	for i, map_type2 in ipairs(g_MapTypes) do
+		if(map_type2 ~= mapType) then
 			map_type2.others_in_row = math.max(map_type2.others_in_row - 1, 0)
 		end
 	end
@@ -88,7 +88,7 @@ function MqGetMapPos(room, map)
 	if(not room.mapQueue) then return false end
 	
 	for i, map2 in ipairs(room.mapQueue) do
-		if (map2 == map) then
+		if(map2 == map) then
 			return i
 		end
 	end
@@ -96,7 +96,7 @@ function MqGetMapPos(room, map)
 end
 
 local function MqOnAddReq(mapResName)
-	if (not hasObjectPermissionTo(client, 'resource.'..g_ResName..'.nextmap', false)) then return end
+	if(not hasObjectPermissionTo(client, 'resource.'..g_ResName..'.nextmap', false)) then return end
 	
 	local room = Player.fromEl(client).room
 	local map = false
