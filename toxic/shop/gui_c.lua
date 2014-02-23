@@ -135,6 +135,17 @@ local function ShpSellClick()
 
 end
 
+function ShpUseItem(itemId)
+	local item = g_ShopItems[itemId]
+	if(not item) then return end
+	
+	if(item.onUse) then
+		item.onUse(g_Inventory[itemId])
+	else
+		triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
+	end
+end
+
 local function ShpUseClick()
 	local itemId = g_InventoryList:getActiveItem()
 	local item = itemId and g_ShopItems[itemId]
@@ -145,11 +156,7 @@ local function ShpUseClick()
 		return
 	end
 	
-	if(item.onUse) then
-		item.onUse(g_Inventory[itemId])
-	else
-		triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
-	end
+	ShpUseItem(itemId)
 end
 
 local function ShpUpdateShopList()

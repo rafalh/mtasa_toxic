@@ -37,21 +37,26 @@ PlayersTable:addColumns{
 	{'flips',        'TINYINT UNSIGNED', default = 0},
 	{'thunders',     'TINYINT UNSIGNED', default = 0},
 	{'smoke',        'TINYINT UNSIGNED', default = 0},
+	{'spikeStrips',  'TINYINT UNSIGNED', default = 0},
 }
 
-local function ShpGetInventoryRequest ()
+function ShpSyncInventory(player)
 	local inventory = {}
-	local pdata = Player.fromEl(client)
 	
 	for item_id, item in pairs(g_ShopItems) do
 		if(item.field) then
-			inventory[item_id] = pdata.accountData:get(item.field)
+			inventory[item_id] = player.accountData[item.field]
 		end
 	end
 	
-	local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', client)
+	local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', player.el)
 	
-	triggerClientInternalEvent(client, $(EV_CLIENT_INVENTORY), client, inventory, isVip)
+	triggerClientInternalEvent(player.el, $(EV_CLIENT_INVENTORY), player.el, inventory, isVip)
+end
+
+local function ShpGetInventoryRequest()
+	local player = Player.fromEl(client)
+	ShpSyncInventory(player)
 end
 
 local function ShpBuyShopItemRequest(item_id)
@@ -59,7 +64,8 @@ local function ShpBuyShopItemRequest(item_id)
 	if(not item) then return end
 	
 	if(ShpBuyItem(item_id, client)) then
-		ShpGetInventoryRequest()
+		local player = Player.fromEl(client)
+		ShpSyncInventory(player)
 	end
 end
 
@@ -72,7 +78,7 @@ local function ShpSellShopItemRequest(item_id)
 	
 	if(item.onSell(client, val)) then
 		pdata.accountData:add('cash', math.floor(item.cost / 2))
-		ShpGetInventoryRequest()
+		ShpSyncInventory(pdata)
 	end
 end
 
@@ -81,7 +87,8 @@ local function ShpUseShopItemRequest(item_id)
 	if(not item) then return end
 	
 	if(ShpUseItem(item_id, client)) then
-		ShpGetInventoryRequest ()
+		local player = Player.fromEl(client)
+		ShpSyncInventory(player)
 	end
 end
 
@@ -117,7 +124,7 @@ function ShpUseItem(item_id, player)
 	local item = g_ShopItems[item_id]
 	assert(item)
 	
-	if ( item.onUse ) then
+	if(item.onUse) then
 		local val = item.field and pdata.accountData:get(item.field)
 		
 		return item.onUse(player, val)

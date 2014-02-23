@@ -11,8 +11,8 @@
 	<script src="utils/common_c.lua" type="client" />
 	<script src="utils/outputChat_s.lua" type="server" />
 	<script src="utils/outputChat_c.lua" type="client" />
-	<script src="utils/vector2.lua" type="client" />
-	<script src="utils/vector3.lua" type="client" />
+	<script src="utils/vector2.lua" type="shared" />
+	<script src="utils/vector3.lua" type="shared" />
 	<script src="utils/quaternion.lua" type="client" />
 	<script src="utils/rect.lua" type="client" />
 	<script src="utils/anim_c.lua" type="client" />

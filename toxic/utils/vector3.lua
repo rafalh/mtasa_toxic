@@ -8,6 +8,10 @@ function Vector3.__mt.__index:len2()
 	return self[1]^2 + self[2]^2 + self[3]^2
 end
 
+function Vector3.__mt.__index:normalize()
+	return self / self:len()
+end
+
 function Vector3.__mt.__index:dist(vec)
 	return ((self[1] - vec[1])^2 + (self[2] - vec[2])^2 + (self[3] - vec[3])^2)^0.5
 end
@@ -81,4 +85,5 @@ end
 #local TEST = false
 #if(TEST) then
 	assert(((Vector3(1, 0, 0) + Vector3(0, 1, 0)) * 2) == Vector3(2, 2, 0))
+	assert(Vector3(0, 0, 5).normalize() == Vector3(0, 0, 1))
 #end

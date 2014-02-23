@@ -10,8 +10,8 @@
 
 g_ShopItems = {} -- name = { title, cost, description, onUse handler (if false this item can be only used), onInitButtons }
 
-addEvent ( 'onThunderEffect', true )
-addEvent ( 'onSetPlayerAlphaReq', true )
+addEvent('onThunderEffect', true)
+addEvent('onSetPlayerAlphaReq', true)
 addEvent('rafalh_onBuyNextMap', true)
 
 local g_JoinMsgWnd = false
@@ -158,6 +158,24 @@ g_ShopItems.smoke = {
 	img = 'shop/img/smoke.png',
 	dataToCount = function ( val ) return val > 0 and val end,
 	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+}
+
+g_ShopItems.spikeStrip = {
+	name = "Spike Strip",
+	cost = 200000,
+	descr = "Punctur tires of your enemies vehicles.",
+	img = 'shop/img/spikestrip.png',
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end, -- buy, sell, use
+	onUse = function(val)
+		local veh = getPedOccupiedVehicle(g_Me)
+		local x, y, z = getElementPosition(veh)
+		local rx, ry, rz = getElementRotation(veh, 'ZXY')
+		local mat = getElementMatrix(veh)
+		rz = rz + 90
+		z = getGroundPosition(x, y, z) + 0.1
+		RPC('ShpSpikeStrip', x, y, z, rx, ry, rz, mat):exec()
+	end
 }
 
 g_ShopItems.nextmap = {

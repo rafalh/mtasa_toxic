@@ -53,6 +53,7 @@ function initRoomMaps(room)
 	room.lastMap = map
 	room.mapRepeats = 1
 	room.isRace = map and #getCurrentMapElements(room, 'checkpoint') > 0
+	room.tempElements = {}
 end
 
 function findMap(str, removed)

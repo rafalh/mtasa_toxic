@@ -66,7 +66,7 @@ local function mergeMaps(mapDst, mapSrc)
 end
 
 Updater = {
-	currentVer = 167,
+	currentVer = 168,
 	list = {
 		{
 			ver = 149,
@@ -314,6 +314,14 @@ Updater = {
 				end
 				if(not DbQuerySync('UPDATE '..MapsTable..' SET rates=ROUND(rates/2, 0)')) then
 					return 'Failed to update maps table'
+				end
+			end
+		},
+		{
+			ver = 168,
+			func = function()
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN spikeStrips TINYINT DEFAULT 0')) then
+					return 'Failed to add spikeStrips column'
 				end
 			end
 		},

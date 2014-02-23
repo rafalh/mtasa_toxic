@@ -358,6 +358,29 @@ local SmokeItem = {
 
 ShpRegisterItem(SmokeItem)
 
+-- 2892 - long spike strip
+-- 2899 - short spike strip
+ShpRegisterItem{
+	id = 'spikeStrip',
+	cost = 200000,
+	field = 'spikeStrips',
+	onBuy = function(player)
+		AchvActivate(player, 'Buy a weapon')
+		return Player.fromEl(player).accountData:add('spikeStrips', 1)
+	end,
+	onUse = function(player, val)
+		if(val <= 0 or isPedDead(player)) then
+			return false
+		end
+		
+		RPC('ShpUseItem', spikeStrip):setClient(player):exec()
+		return false
+	end,
+	onSell = function(player, val)
+		return val > 0 and Player.fromEl(player).accountData:add('spikeStrips', -1)
+	end
+}
+
 local NextMapItem = {
 	id = 'nextmap',
 	cost = 20000,
@@ -414,7 +437,7 @@ local function ShpBuyNextMap(mapResName)
 	
 	local mapRes = getResourceFromName(mapResName)
 	local map = mapRes and Map(mapRes)
-	if ( not map ) then
+	if(not map) then
 		outputDebugString('getResourceFromName failed', 2)
 		return
 	end
@@ -460,6 +483,48 @@ local function ShpBuyNextMap(mapResName)
 		local delay = minDelayForMap - dt
 		privMsg(client, "Map %s have been recently played. Please wait %s...", mapName, formatTimePeriod(delay, 0))
 	end
+end
+
+RPC.allow('ShpSpikeStrip')
+function ShpSpikeStrip(x, y, z, rx, ry, rz, mat)
+	local player = Player.fromEl(client)
+	if(not player or player.accountData.spikeStrips <= 0) then return end
+	
+	local el = getPedOccupiedVehicle(player.el) or player.el
+	local vx, vy, vz = getElementVelocity(el)
+	local speed = (vx^2 + vy^2 + vz^2) ^ 0.5
+	local v = math.max(speed, 0.012)
+	local room = g_RootRoom
+	
+	local obj = createObject(2892, x, y, z, rx, ry, rz)
+	table.insert(room.tempElements, obj)
+	
+	local center = Vector3(x, y, z)
+	local rightDir = Vector3(mat[1][1], mat[1][2], mat[1][3]):normalize()
+	local fwDir = Vector3(mat[2][1], mat[2][2], mat[2][3]):normalize()
+	local bwLeft = center - rightDir*5 - fwDir
+	local bwRight = center + rightDir*5 - fwDir
+	local fwLeft = center - rightDir*5 + fwDir
+	local fwRight = center + rightDir*5 + fwDir
+	local col = createColPolygon(center[1], center[2], bwLeft[1], bwLeft[2], bwRight[1], bwRight[2], fwRight[1], fwRight[2], fwLeft[1], fwLeft[2])
+	local minZ, maxZ = z, z + 3
+	table.insert(room.tempElements, col)
+	
+	setTimer(function()
+		if(not isElement(obj)) then return end
+		
+		addEventHandler('onColShapeHit', col, function(el)
+			if(getElementType(el) ~= 'player') then return end
+			local x, y, z = getElementPosition(el)
+			if(z < minZ or z > maxZ) then return end
+			
+			local veh = getPedOccupiedVehicle(el)
+			setVehicleWheelStates(veh, 1, 1, 1, 1)
+		end)
+	end, math.max(60/v, 50), 1)
+	
+	player.accountData.spikeStrips = player.accountData.spikeStrips - 1
+	ShpSyncInventory(player)
 end
 
 ------------
