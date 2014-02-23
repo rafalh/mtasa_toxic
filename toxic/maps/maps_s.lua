@@ -209,7 +209,7 @@ local function onMapStart(map, room)
 					map_type2.others_in_row = 0
 				end
 			end
-			--DbgPrint('%s', dbg_buf)
+			--Debug.info(dbg_buf)
 		end
 		prof2:cp('onMapStart 4')
 		

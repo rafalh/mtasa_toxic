@@ -55,10 +55,6 @@ function addEventHandler(...)
 end
 
 if(DEBUG) then
-	function DbgPrint(fmt, ...)
-		Debug.info(fmt:format(...))
-	end
-	
 	function DbgDump(str, title)
 		local len = str:len()
 		local bytes = {str:byte(1, len)}
@@ -66,7 +62,7 @@ if(DEBUG) then
 		for i, byte in ipairs(bytes) do
 			buf = buf..(' %02X'):format(byte)
 		end
-		DbgPrint((title or 'dump')..':'..buf)
+		Debug.info((title or 'dump')..':'..buf)
 	end
 	
 	DbgPerf = Class('DbgPerf')
@@ -87,7 +83,7 @@ if(DEBUG) then
 			if(name:len() > 128) then
 				name = name:sub(1, 128)..'...'
 			end
-			DbgPrint('%s has taken %u ms', name, dt)
+			Debug.info(name..' has taken '..dt..' ms')
 		end
 		
 		self.ticks = getTickCount() -- get ticks again
@@ -129,7 +125,6 @@ else
 	local function DbgDummy()
 	end
 	
-	DbgPrint = DbgDummy
 	DbgDump = DbgDummy
 	DbgPerf = function() return {cp = DbgDummy} end
 end
