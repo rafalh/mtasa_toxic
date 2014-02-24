@@ -242,19 +242,19 @@ end
 
 function Player.fromId(id)
 	local pl = Player.idMap[id]
-	--if(not pl) then Debug.warn('Failed to find player by ID: '..tostring(id)) Debug.traceBack() end
+	--if(not pl) then Debug.warn('Failed to find player by ID: '..tostring(id)) Debug.printStackTrace() end
 	return pl
 end
 
 function Player.fromEl(el)
 	local pl = Player.elMap[el]
-	--if(not pl) then Debug.warn('Failed to find player by element: '..tostring(el)) Debug.traceBack() end
+	--if(not pl) then Debug.warn('Failed to find player by element: '..tostring(el)) Debug.printStackTrace() end
 	return pl
 end
 
 function Player.fromSerial(serial)
 	local pl = Player.serialMap[serial]
-	--if(not pl) then Debug.warn('Failed to find player by element: '..tostring(el)) Debug.traceBack() end
+	--if(not pl) then Debug.warn('Failed to find player by element: '..tostring(el)) Debug.printStackTrace() end
 	return pl
 end
 

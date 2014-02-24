@@ -23,31 +23,31 @@ function Debug.err(str)
 	Debug.print(str, 1)
 end
 
-function Debug.traceBack(lvl, len, offset)
-	local trace = debug.traceback()
-	trace = trace:gsub('\r', '')
+function Debug.getStackTrace(len, offset)
+	local trace = debug.traceback('', (offset or 0) + 2)
 	local lines = split(trace, '\n')
-	local start = 3 + (offset or 0)
-	local stop = #lines
-	if(len) then
-		stop = math.min(stop, start+len-1)
-	end
+	local start, stop = 2, 1 + (len or #lines - 1)
+	
 	local tbl = {}
 	for i = start, stop do
 		local line = trimStr(lines[i])
 		table.insert(tbl, line)
-		if(lvl ~= -1) then
-			outputDebugString(line, lvl or 2)
-		end
 	end
 	
 	return tbl
 end
 
+function Debug.printStackTrace(lvl, len, offset)
+	local trace = Debug.getStackTrace(len or false, (offset or 0) + 1)
+	for i, str in ipairs(trace) do
+		Debug.print(str, lvl or 2)
+	end
+end
+
 local _assert = assert
 function assert(val, str)
 	if(not val) then
-		Debug.traceBack()
+		Debug.printStackTrace(1, false, 1)
 		_assert(val, str)
 	end
 end
@@ -56,7 +56,8 @@ local _addEventHandler = addEventHandler
 function addEventHandler(...)
 	local success = _addEventHandler(...)
 	if(not success) then
-		Debug.warn(debug.traceback('addEventHandler failed', 2), 2)
+		Debug.warn('addEventHandler failed')
+		Debug.printStackTrace(2, false, 1)
 	end
 	return success
 end
@@ -103,7 +104,7 @@ if(DEBUG) then
 		local g_Handlers = {}
 		
 		function addEventHandler(eventName, attachedTo, handlerFunction, ...)
-			local trace = Debug.traceBack(-1, 1, 1)
+			local trace = Debug.getStackTrace(1, 1)
 			local func = function(...)
 				local prof = DbgPerf()
 				local cnt = repeatEventHandler[eventName] or 1
@@ -135,3 +136,19 @@ else
 	Debug.dump = DbgDummy
 	DbgPerf = function() return {cp = DbgDummy} end
 end
+
+#local TEST = false
+#if(TEST) then
+	function funcA()
+		Debug.printStackTrace(3)
+		
+		local trace = Debug.getStackTrace(2)
+		assert(#trace == 2)
+		assert(trace[1]:find('funcA', 1, true))
+		assert(trace[2]:find('funcB', 1, true))
+	end
+	function funcB()
+		funcA()
+	end
+	funcB()
+#end

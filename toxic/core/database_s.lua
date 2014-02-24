@@ -318,7 +318,7 @@ function Database.Drivers.SQLite:query(query, ...)
 	end
 	
 	Debug.warn('SQL query ('..query..') failed: '..errmsg)
-	Debug.traceBack()
+	Debug.printStackTrace(2)
 	return false
 end
 
@@ -330,7 +330,7 @@ function Database.Drivers.SQLite:exec(query, ...)
 	end
 	
 	Debug.warn('SQL exec failed: '..query)
-	Debug.traceBack()
+	Debug.printStackTrace(2)
 	return false
 end
 
@@ -413,7 +413,7 @@ function Database.Drivers.MySQL:query(query, ...)
 	end
 	
 	Debug.warn('SQL query ('..query..') failed: '..errmsg)
-	Debug.traceBack()
+	Debug.printStackTrace(2)
 	return false
 end
 
@@ -425,7 +425,7 @@ function Database.Drivers.MySQL:exec(query, ...)
 	end
 	
 	Debug.warn('SQL exec failed: '..query)
-	Debug.traceBack()
+	Debug.printStackTrace(2)
 	return false
 end
 
