@@ -9,7 +9,7 @@ addEvent ( 'onPollStarting' )
 -- Local function definitions --
 --------------------------------
 
-local function onPollStarting ( poll )
+local function onPollStarting(poll)
 	--Debug.info('onPollStarting')
 	local room = g_RootRoom
 	
@@ -31,23 +31,28 @@ local function onPollStarting ( poll )
 		local pollMapTypes = {}
 		
 		if(mapTypeVote) then
-			local forced_exist = false
+			-- Check if there is a forced map type
+			local forcedExist = false
 			for i, mapType in ipairs(g_MapTypes) do
 				local forced = mapType.max_others_in_row and mapType.others_in_row >= mapType.max_others_in_row
-				if(forced) then -- map is not allowed now
-					forced_exist = true
+				if(forced) then
+					-- At least one map type is forced
+					forcedExist = true
 					break
-				else
-					mapTypesCount = mapTypesCount + 1
 				end
 			end
-			if(forced_exist) then
-				mapTypesCount = 0
+			
+			if(not forcedExist) then
+				-- Count all map types (all are allowed)
+				mapTypesCount = #g_MapTypes
+			else
 				for i, mapType in ipairs(g_MapTypes) do
 					local forced = mapType.max_others_in_row and mapType.others_in_row >= mapType.max_others_in_row
-					if(not forced) then -- map is not allowed now
+					if(not forced) then
+						-- This map type is not allowed - ignore it in next steps
 						pollMapTypes[i] = true
 					else
+						-- This is one of forced map types
 						mapTypesCount = mapTypesCount + 1
 					end
 				end
@@ -62,59 +67,71 @@ local function onPollStarting ( poll )
 				local map = Map(opt[4])
 				local mapName = map:getName()
 				
-				if(map ~= getLastMap(room) and opt[1] == mapName) then
+				if(map ~= getLastMap(room) and opt[1] == mapName) then -- not 'Play again'
 					if((randomPlayAgainVote and map_i > 1) or (mapTypeVote and map_i > mapTypesCount)) then
+						-- There is already enough options in vote
 						table.remove(poll, i)
 					else
+						-- Process map from current item
 						if(mapTypeVote) then
-							local map_type = map:getType()
+							local mapType = map:getType()
 							
-							while((not map_type or pollMapTypes[map_type] or map:isForbidden(room)) and maps:getCount() > 0) do
+							-- Loop untill proper map is found
+							while((not mapType or pollMapTypes[mapType] or map:isForbidden(room)) and maps:getCount() > 0) do
 								map = maps:remove(math.random(1, maps:getCount()))
 								opt[4] = map.res
-								map_type = map:getType()
+								mapType = map:getType()
 							end
 							
-							pollMapTypes[map_type] = true
-							opt[1] = map_type.name
+							-- Mark map type as already added
+							pollMapTypes[mapType] = true
+							opt[1] = mapType.name
 						else
+							-- Loop untill proper map is found
 							while(map:isForbidden(room) and maps:getCount() > 0) do
 								map = maps:remove(math.random(1, maps:getCount()))
 								opt[4] = map.res
 							end
-							-- ignore case when maps:getCount() == 0
+							
 							if(randomPlayAgainVote) then
+								-- If this is 'Random, Play again' vote rename current option to Random
 								opt[1] = "Random"
 							elseif(showRatings) then
+								-- Get map rating
 								local map = Map(opt[4])
-								local map_id = map:getId()
-								local rows = DbQuery('SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
+								local mapId = map:getId()
+								local data = DbQuerySingle('SELECT rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
 								opt[1] = map:getName()
 								
-								if(rows[1].rates_count > 0) then
-									opt[1] = opt[1]..(' (%.2f)'):format(rows[1].rates / rows[1].rates_count)
+								-- If there are any votes display rating
+								if(data.rates_count > 0) then
+									opt[1] = opt[1]..(' (%.2f)'):format(data.rates / data.rates_count)
 								end
 							end
 						end
 						
-						poll[i] = opt
+						-- Go to the next map
 						i = i + 1
 						map_i = map_i + 1
 					end
 				else -- Play again
 					if(map:isForbidden(room)) then
+						-- Remove map from this vote
 						table.remove(poll, i)
 					else
+						-- Go to the next map
 						i = i + 1
 					end
 				end
 			else
+				-- It's not a map - ignore
 				i = i + 1
 			end
 		end
 		
 		if(#poll == 1) then
-			poll[2] = {poll[1][1], poll[1][2], poll[1][3], poll[1][4]} -- Note: lua handles tables by reference
+			-- If there is only one option duplicate it and as quickly as possible finish vote
+			poll[2] = table.copy(poll[1]) -- Note: lua handles tables by reference
 			poll.timeout = 0.06
 		end
 		
@@ -124,6 +141,7 @@ local function onPollStarting ( poll )
 		end
 	--end
 	
+	-- Poll has been modified
 	triggerEvent('onPollModified', g_Root, poll)
 end
 
