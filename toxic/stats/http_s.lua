@@ -25,30 +25,45 @@ function getPlayersStats(player, order, desc, limit, start, online)
 		return false
 	end
 	
-	-- Build query
-	local cond = {'serial<>\'0\''}
-	local player_id = touint(player)
-	if(player_id) then
-		table.insert(cond, 'player='..player_id)
+	-- Prepare conditions
+	local cond = {}
+	local playerId = touint(player)
+	if(playerId) then
+		table.insert(cond, 'player='..playerId)
 		limit = 1
 	elseif(player and player ~= '') then
 		table.insert(cond, 'namePlain LIKE '..DbStr('%'..tostring(player)..'%'))
 	end
 	if(online) then
-		table.insert(cond, 'online=1')
+		if(g_PlayersCount == 0) then
+			-- There is no online players
+			return {}, 0
+		end
+		
+		local idList = {}
+		for el, player in pairs(g_Players) do
+			table.insert(idList, player.id)
+		end
+		table.insert(cond, 'player IN ('..table.concat(idList, ',')..')')
 	end
 	
+	-- Not console
+	table.insert(cond, 'serial<>\'0\'')
+	
+	-- Prepare 'where' string
 	local where = ''
 	if(#cond > 0) then
 		where = ' WHERE '..table.concat(cond, ' AND ')
 	end
 	
-	local players_count
-	if(not player_id) then
-		local rows = DbQuery('SELECT COUNT(*) AS c FROM '..PlayersTable..where)
-		players_count = rows[1].c
+	-- Count players matching specified criteria
+	local playersCount
+	if(not playerId) then
+		local data = DbQuerySingle('SELECT COUNT(*) AS c FROM '..PlayersTable..where)
+		playersCount = data.c
 	end
 	
+	-- Build query
 	local query = 'SELECT '..FIELDS..' FROM '..PlayersTable..where
 	if(order) then
 		query = query..' ORDER BY '..tostring(order)..((desc and ' DESC') or '')
@@ -68,12 +83,12 @@ function getPlayersStats(player, order, desc, limit, start, online)
 			data.maxAchvCount = AchvGetCount()
 		end
 		
-		if(not players_count) then
-			players_count = #rows
+		if(not playersCount) then
+			playersCount = #rows
 		end
 	end
 	
-	return rows, players_count
+	return rows, playersCount
 end
 
 function getPlayerStats(playerId)
