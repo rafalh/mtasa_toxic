@@ -111,15 +111,15 @@ function Map.__mt.__index:isForbidden(room)
 		for i, mapType in ipairs(g_MapTypes) do
 			local curForced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
 			if(curForced) then
-				return "You can vote only for race map now! Allowed types: %s.", mapType.name
+				return "You can vote only for %s map now!", mapType.name
 			end
 		end
 	end
 	
 	local mapId = self:getId()
-	local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
+	local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
 	
-	if(rows[1].removed ~= '') then
+	if(data.removed ~= '') then
 		return "This map has been removed!"
 	end
 	

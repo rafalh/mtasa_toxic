@@ -21,7 +21,7 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	-- Validate parameters
 	limit = math.min(touint(limit, 20), 20)
 	start = touint(start)
-	if(order and not tostring(order):match ( '^[%w_/%*%+-]+$')) then -- check validity of arguments
+	if(order and not tostring(order):match('^[%w_/%*%+-]+$')) then -- check validity of arguments
 		return false
 	end
 	
@@ -62,8 +62,8 @@ function getPlayersStats(player, order, desc, limit, start, online)
 	-- Query database
 	local rows = DbQuery(query)
 	if(rows) then
-		for i, data in ipairs ( rows ) do
-			data.rank = StRankFromPoints ( data.points )
+		for i, data in ipairs(rows) do
+			data.rank = StRankFromPoints(data.points)
 			data.name = data.name:gsub('#%x%x%x%x%x%x', '')
 			data.maxAchvCount = AchvGetCount()
 		end

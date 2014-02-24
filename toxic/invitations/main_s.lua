@@ -1,15 +1,17 @@
+local INVITE_BONUS = 1000000
+
 PlayersTable:addColumns{
-	{'invitedby', 'INT UNSIGNED', default = 0},
+	{'invitedby', 'INT UNSIGNED', default = 0, null = true},
 }
 
-local function IvTimerProc ( player )
+local function IvTimerProc(player)
 	-- give award for player who invited
 	local pdata = Player.fromEl(player)
 	
 	local invitedby = pdata.accountData:get('invitedby')
 	if(invitedby > 0) then
 		pdata.accountData:set('invitedby', 0)
-		AccountData.create(invitedby):add('cash', 1000000)
+		AccountData.create(invitedby):add('cash', INVITE_BONUS)
 		
 		local invitedbyPlayer = Player.fromId(invitedby)
 		if(invitedbyPlayer) then

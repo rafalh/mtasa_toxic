@@ -125,7 +125,7 @@ function GbAddLotteryTickets(player, tickets_count)
 		return false
 	end
 	
-	if ( not g_LotteryPlayers[pdata.id] ) then
+	if(not g_LotteryPlayers[pdata.id]) then
 		g_LotteryPlayers[pdata.id] = 0
 	end
 	

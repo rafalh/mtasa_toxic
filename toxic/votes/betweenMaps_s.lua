@@ -32,7 +32,7 @@ local function onPollStarting ( poll )
 		
 		if(mapTypeVote) then
 			local forced_exist = false
-			for i, mapType in ipairs ( g_MapTypes ) do
+			for i, mapType in ipairs(g_MapTypes) do
 				local forced = mapType.max_others_in_row and mapType.others_in_row >= mapType.max_others_in_row
 				if(forced) then -- map is not allowed now
 					forced_exist = true
@@ -43,7 +43,7 @@ local function onPollStarting ( poll )
 			end
 			if(forced_exist) then
 				mapTypesCount = 0
-				for i, mapType in ipairs ( g_MapTypes ) do
+				for i, mapType in ipairs(g_MapTypes) do
 					local forced = mapType.max_others_in_row and mapType.others_in_row >= mapType.max_others_in_row
 					if(not forced) then -- map is not allowed now
 						pollMapTypes[i] = true
