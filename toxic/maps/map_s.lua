@@ -98,27 +98,31 @@ end
 function Map.__mt.__index:isForbidden(room)
 	assert(room)
 	
+	-- Check if map can be repeated
 	local max_map_rep = Settings.max_map_rep
 	if(self == getLastMap(room) and max_map_rep > 0 and room.mapRepeats >= max_map_rep) then
 		return "Map cannot be repeated!"
 	end
 	
-	local mapType = self:getType()
-	local forced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
-	
-	-- if it's not forced, let's check if there are other forced types
-	if(not forced) then
-		for i, mapType in ipairs(g_MapTypes) do
-			local curForced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
-			if(curForced) then
-				return "You can vote only for %s map now!", mapType.name
+	-- Check if other map type is forced
+	if(g_PlayersCount > 1) then
+		local mapType = self:getType()
+		local forced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
+		
+		-- if it's not forced, let's check if there are other forced types
+		if(not forced) then
+			for i, mapType in ipairs(g_MapTypes) do
+				local curForced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
+				if(curForced) then
+					return "You can vote only for %s map now!", mapType.name
+				end
 			end
 		end
 	end
 	
+	-- Check if this map has been removed
 	local mapId = self:getId()
 	local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
-	
 	if(data.removed ~= '') then
 		return "This map has been removed!"
 	end
