@@ -4,16 +4,23 @@ local PERF_DEBUG_EVENTS = false
 
 Debug = {}
 
+function Debug.print(str, lvl)
+	while(str ~= '') do
+		outputDebugString(str:sub(1, 511), lvl)
+		str = str:sub(512)
+	end
+end
+
 function Debug.info(str)
-	outputDebugString(str, 3)
+	Debug.print(str, 3)
 end
 
 function Debug.warn(str)
-	outputDebugString(str, 2)
+	Debug.print(str, 2)
 end
 
 function Debug.err(str)
-	outputDebugString(str, 1)
+	Debug.print(str, 1)
 end
 
 function Debug.traceBack(lvl, len, offset)

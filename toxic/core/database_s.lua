@@ -13,8 +13,8 @@ Database.Drivers = {}
 
 DbPrefix = ''
 
-function DbStr(str)
-	return '\''..g_Driver:escape(str)..'\''
+function Database.escape(str)
+	return g_Driver:escape(str)
 end
 
 function DbBlob(data)
@@ -58,7 +58,7 @@ function DbRecreateTable(tbl)
 	return true
 end
 
-function DbQuery(query, ...)
+function Database.query(query, ...)
 	if(not g_Driver) then return false end
 	local prof = DbgPerf(100)
 	local result
@@ -71,7 +71,7 @@ function DbQuery(query, ...)
 	return result
 end
 
-function DbQuerySync(query, ...)
+function Database.querySync(query, ...)
 	if(not g_Driver) then return false end
 	local prof = DbgPerf(100)
 	local result = g_Driver:query(query, ...)
@@ -79,12 +79,12 @@ function DbQuerySync(query, ...)
 	return result
 end
 
-function DbQuerySingle(query, ...)
+function Database.querySingle(query, ...)
 	local rows = DbQuery(query, ...)
 	return rows and rows[1]
 end
 
-function DbCount(tbl, whereCond, ...)
+function Database.queryCount(tbl, whereCond, ...)
 	local rows = DbQuery('SELECT COUNT(*) AS c FROM '..tbl..' WHERE '..whereCond, ...)
 	return rows and rows[1] and rows[1].c
 end
@@ -96,6 +96,15 @@ end
 function Database.getLastInsertID()
 	return g_Driver and g_Driver:getLastInsertID()
 end
+
+-- Legacy API
+function DbStr(...)
+	return '\''..Database.escape(...)..'\''
+end
+DbQuery = Database.query
+DbQuerySync = Database.querySync
+DbQuerySingle = Database.querySingle
+DbCount = Database.queryCount
 
 ----------------- Database.Table -----------------
 
@@ -183,10 +192,42 @@ function Database.Drivers._common:getColDef(col, constr)
 	return colDef
 end
 
+function Database.Drivers._common:getTblOptions()
+	return ''
+end
+
+function Database.Drivers._common:createTable(tbl)
+	-- Create table
+	local tblDef = self:getTblDef(tbl)
+	local tblOpts = self:getTblOptions(tbl)
+	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..tblDef..')'..tblOpts
+	--Debug.info(query)
+	if(not self:query(query)) then return false end
+	
+	-- Create not unique indexes
+	if(not self:createIndexes(tbl)) then return false end
+	
+	return true
+end
+
+function Database.Drivers._common:createIndexes(tbl)
+	for i, col in ipairs(tbl) do
+		if(col.index) then
+			query = 'CREATE INDEX IF NOT EXISTS '..DbPrefix..col[1]..' ON '..tbl..'('..table.concat(col.index, ', ')..')'
+			if(not self:query(query)) then return false end
+		end
+	end
+	
+	return true
+end
+
 ----------------- SQLite Driver -----------------
 
 Database.Drivers.SQLite = {}
 Database.Drivers.SQLite.getColDef = Database.Drivers._common.getColDef
+Database.Drivers.SQLite.getTblOptions = Database.Drivers._common.getTblOptions
+Database.Drivers.SQLite.createTable = Database.Drivers._common.createTable
+Database.Drivers.SQLite.createIndexes = Database.Drivers._common.createIndexes
 
 function Database.Drivers.SQLite:makeBackup()
 	-- remove backup if there is too many
@@ -276,7 +317,7 @@ function Database.Drivers.SQLite:query(query, ...)
 		return result
 	end
 	
-	Debug.warn('SQL query ('..query:sub(1, 100)..') failed: '..errmsg)
+	Debug.warn('SQL query ('..query..') failed: '..errmsg)
 	Debug.traceBack()
 	return false
 end
@@ -293,7 +334,7 @@ function Database.Drivers.SQLite:exec(query, ...)
 	return false
 end
 
-function Database.Drivers.SQLite:createTable(tbl)
+function Database.Drivers.SQLite:getTblDef(tbl)
 	local cols, constr, indexes = {}, {}, {}
 	for i, col in ipairs(tbl) do
 		if(col[2]) then -- normal column
@@ -302,31 +343,16 @@ function Database.Drivers.SQLite:createTable(tbl)
 				-- AUTO_INCREMENT is not needed for SQLite (and is called different)
 				colDef = col[1]..' INTEGER PRIMARY KEY NOT NULL'
 			else
+				-- Note: Foreign keys are supported by getColDef
 				colDef = self:getColDef(col, constr)
 			end
 			table.insert(cols, colDef)
-			
-			if(col.fk) then
-				table.insert(constr, 'FOREIGN KEY('..col[1]..') REFERENCES '..DbPrefix..col.fk[1]..'('..col.fk[2]..')')
-			end
 		elseif(col.unique) then -- unique constraint
 			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
-		elseif(col.index) then -- index descriptor
-			table.insert(indexes, col)
 		end
 	end
 	
-	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..
-		table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')..')'
-	--Debug.info(query, 3)
-	if(not self:query(query)) then return false end
-	
-	for i, col in ipairs(indexes) do
-		query = 'CREATE INDEX IF NOT EXISTS '..DbPrefix..col[1]..' ON '..tbl..'('..table.concat(col.index, ', ')..')'
-		if(not self:query(query)) then return false end
-	end
-	
-	return true
+	return table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')
 end
 
 function Database.Drivers.SQLite:insertDefault(tbl)
@@ -348,6 +374,8 @@ end
 
 Database.Drivers.MySQL = {}
 Database.Drivers.MySQL.getColDef = Database.Drivers._common.getColDef
+Database.Drivers.MySQL.createTable = Database.Drivers._common.createTable
+Database.Drivers.MySQL.createIndexes = Database.Drivers._common.createIndexes
 
 function Database.Drivers.MySQL:init()
 	if(not g_Config.host or not g_Config.dbname or not g_Config.username or not g_Config.password) then
@@ -384,7 +412,7 @@ function Database.Drivers.MySQL:query(query, ...)
 		return result
 	end
 	
-	Debug.warn('SQL query ('..query:sub(1, 100)..') failed: '..errmsg)
+	Debug.warn('SQL query ('..query..') failed: '..errmsg)
 	Debug.traceBack()
 	return false
 end
@@ -401,7 +429,7 @@ function Database.Drivers.MySQL:exec(query, ...)
 	return false
 end
 
-function Database.Drivers.MySQL:createTable(tbl)
+function Database.Drivers.MySQL:getTblDef(tbl)
 	local cols, constr, indexes = {}, {}, {}
 	for i, col in ipairs(tbl) do
 		if(col[2]) then -- normal column
@@ -409,30 +437,22 @@ function Database.Drivers.MySQL:createTable(tbl)
 			if(col.pk) then -- Primary Key
 				colDef = col[1]..' '..col[2]..' NOT NULL AUTO_INCREMENT PRIMARY KEY'
 			else
+				-- Note: Foreign keys are supported by getColDef
 				colDef = self:getColDef(col, constr)
 			end
 			table.insert(cols, colDef)
-			
-			if(col.fk) then
-				table.insert(constr, 'FOREIGN KEY('..col[1]..') REFERENCES '..DbPrefix..col.fk[1]..'('..col.fk[2]..')')
-			end
 		elseif(col.unique) then -- unique constraint
 			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
 		end
 	end
 	
-	local query = 'CREATE TABLE IF NOT EXISTS '..tbl..' ('..
-		table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')..')'
-	--Debug.info(query)
-	if(not self:query(query)) then return false end
-	
-	for i, col in ipairs(indexes) do
-		query = 'CREATE INDEX IF NOT EXISTS '..DbPrefix..col[1]..' ON '..tbl..'('..table.concat(col.index, ', ')..')'
-		if(not self:query(query)) then return false end
-	end
-	
-	return true
+	return table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')
 end
+
+function Database.Drivers.MySQL:getTblOptions(tbl)
+	return 'CHARACTER SET utf8'
+end
+
 
 function Database.Drivers.MySQL:insertDefault(tbl)
 	self:query('INSERT INTO '..self..' () VALUES ()')
