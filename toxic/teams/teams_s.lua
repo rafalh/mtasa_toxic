@@ -295,7 +295,7 @@ function updateItem(teamInfo)
 	return teamInfo
 end
 
-function delItem(id)
+function delItem(id, refund)
 	assert(id)
 	
 	-- Find team by ID
@@ -306,7 +306,7 @@ function delItem(id)
 	
 #if(SHOP_ITEM_TEAM) then
 	-- Unlink team from player
-	if(teamInfo.owner) then
+	if(teamInfo.owner and refund) then
 		local ownerPlayer = Player.fromId(teamInfo.owner)
 		local teamPrice = ShpGetItemPrice('team', ownerPlayer and ownerPlayer.el)
 		local accountData = AccountData.create(teamInfo.owner)

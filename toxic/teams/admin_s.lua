@@ -23,7 +23,7 @@ RPC.allow('Teams.updateItemRPC')
 function delItemRPC(id)
 	if(not g_Right:check(client)) then return false end
 	
-	local status, err = delItem(id)
+	local status, err = delItem(id, true)
 	if(not status) then
 		privMsg(client, err)
 	end
