@@ -14,7 +14,7 @@ Database.Drivers = {}
 DbPrefix = ''
 
 function Database.escape(str)
-	return g_Driver:escape(str)
+	return g_Driver and g_Driver:escape(str)
 end
 
 function DbBlob(data)
@@ -24,38 +24,6 @@ function DbBlob(data)
 		table.insert(tbl, ('%02x'):format(code))
 	end
 	return 'X\''..table.concat(tbl)..'\''
-end
-
-function DbRecreateTable(tbl)
-	--[[local fields = definition:gsub('([%w_]+)%s*[^,]+,', '%1,'):gsub(',[%s]*([%w_]+)%s+[^,]+', ',%1')
-	if(definition == fields) then -- there is no ','
-		fields = definition:gsub('([%w_]+)[^,]+', '%1')
-	end]]
-	
-	local fields = tbl:getColumnsList()
-	local fieldsStr = table.concat(fields, ',')
-	
-	if(not DbQuery('ALTER TABLE '..tbl..' RENAME TO __'..tbl)) then
-		return false
-	end
-	
-	local success = g_Driver:createTable(tbl)
-	if(not success) then
-		Debug.err('Failed to recreate '..tbl.name..' table')
-		DbQuery('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
-		return false
-	end
-	
-	if(not DbQuery('INSERT INTO '..tbl..' SELECT '..fieldsStr..' FROM __'..tbl)) then
-		Debug.err('Failed to copy rows when recreating '..tbl.name)
-		DbQuery('DROP TABLE '..tbl)
-		DbQuery('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
-		return false
-	end
-	
-	DbQuery('DROP TABLE __'..tbl)
-	
-	return true
 end
 
 function Database.query(query, ...)
@@ -97,6 +65,39 @@ function Database.getLastInsertID()
 	return g_Driver and g_Driver:getLastInsertID()
 end
 
+function Database.alterColumn(tbl, colName, colDef)
+	return g_Driver and g_Driver:alterColumn(tbl, colName, colDef)
+end
+
+function Database.recreateTable(tbl, tblDef)
+	if(not Database.query('ALTER TABLE '..tbl..' RENAME TO __'..tbl)) then
+		return false
+	end
+	
+	if(not tblDef) then
+		tblDef = g_Driver:getTblDef(tbl)
+	end
+	local tblOpts = g_Driver:getTblOptions(tbl)
+	local query = 'CREATE TABLE '..tbl..' ('..tblDef..')'..tblOpts
+	
+	if(not Database.query(query)) then
+		Debug.err('Failed to recreate '..tbl.name..' table')
+		Database.query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
+		return false
+	end
+	
+	if(not Database.query('INSERT INTO '..tbl..' SELECT * FROM __'..tbl)) then
+		Debug.err('Failed to copy rows when recreating '..tbl.name)
+		Database.query('DROP TABLE '..tbl)
+		Database.query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
+		return false
+	end
+	
+	Database.query('DROP TABLE __'..tbl)
+	
+	return true
+end
+
 -- Legacy API
 function DbStr(...)
 	return '\''..Database.escape(...)..'\''
@@ -105,6 +106,7 @@ DbQuery = Database.query
 DbQuerySync = Database.querySync
 DbQuerySingle = Database.querySingle
 DbCount = Database.queryCount
+DbRecreateTable = Database.recreateTable
 
 ----------------- Database.Table -----------------
 
@@ -334,18 +336,21 @@ function Database.Drivers.SQLite:exec(query, ...)
 	return false
 end
 
+function Database.Drivers.SQLite:getColDef(col, constr)
+	if(col.pk) then -- Primary Key
+		-- AUTO_INCREMENT is not needed for SQLite (and is called different)
+		return col[1]..' INTEGER PRIMARY KEY NOT NULL'
+	else
+		return Database.Drivers._common.getColDef(self, col, constr)
+	end
+end
+
 function Database.Drivers.SQLite:getTblDef(tbl)
 	local cols, constr, indexes = {}, {}, {}
 	for i, col in ipairs(tbl) do
 		if(col[2]) then -- normal column
-			local colDef
-			if(col.pk) then -- Primary Key
-				-- AUTO_INCREMENT is not needed for SQLite (and is called different)
-				colDef = col[1]..' INTEGER PRIMARY KEY NOT NULL'
-			else
-				-- Note: Foreign keys are supported by getColDef
-				colDef = self:getColDef(col, constr)
-			end
+			-- Note: Foreign keys are supported by getColDef
+			local colDef = self:getColDef(col, constr)
 			table.insert(cols, colDef)
 		elseif(col.unique) then -- unique constraint
 			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
@@ -370,10 +375,37 @@ function Database.Drivers.SQLite:optimize()
 	self:query('VACUUM')
 end
 
+function Database.Drivers.SQLite:verifySchema(tbl)
+	local rows = self:query('SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=?', tostring(tbl))
+	local realSql = rows and rows[1] and rows[1].sql
+	if(not realSql) then return false end
+	
+	local tblDef = self:getTblDef(tbl)
+	local validSql = 'CREATE TABLE '..tbl..' ('..tblDef..')'
+	if(realSql ~= validSql) then Debug.info('Valid schema '..validSql) end
+	return (realSql == validSql)
+end
+
+function Database.Drivers.SQLite:alterColumn(tbl, colInfo)
+	local rows = self:query('SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=?', tostring(tbl))
+	local sql = rows and rows[1] and rows[1].sql
+	if(not sql) then return false end
+	
+	local tblDef = sql:match('CREATE TABLE [%w_]+%s*(%b())')
+	if(tblDef) then tblDef = tblDef:sub(2, -2) end
+	
+	local constr = {}
+	local newTblDef = tblDef:gsub(colInfo[1]..'%s+[^,%)]+', self:getColDef(colInfo, constr))
+	if(#constr > 0) then Debug.warn('Constraint ignored in alterColumn') end
+	if(newTblDef == tblDef) then return false end
+	
+	Debug.info('alterColumn '..newTblDef)
+	return Database.recreateTable(tbl, newTblDef)
+end
+
 ----------------- MySQL Driver -----------------
 
 Database.Drivers.MySQL = {}
-Database.Drivers.MySQL.getColDef = Database.Drivers._common.getColDef
 Database.Drivers.MySQL.createTable = Database.Drivers._common.createTable
 Database.Drivers.MySQL.createIndexes = Database.Drivers._common.createIndexes
 
@@ -429,17 +461,20 @@ function Database.Drivers.MySQL:exec(query, ...)
 	return false
 end
 
+function Database.Drivers.MySQL:getColDef(col, constr)
+	if(col.pk) then -- Primary Key
+		return col[1]..' '..col[2]..' NOT NULL AUTO_INCREMENT PRIMARY KEY'
+	else
+		return Database.Drivers._common.getColDef(self, col, constr)
+	end
+end
+
 function Database.Drivers.MySQL:getTblDef(tbl)
 	local cols, constr, indexes = {}, {}, {}
 	for i, col in ipairs(tbl) do
 		if(col[2]) then -- normal column
-			local colDef
-			if(col.pk) then -- Primary Key
-				colDef = col[1]..' '..col[2]..' NOT NULL AUTO_INCREMENT PRIMARY KEY'
-			else
-				-- Note: Foreign keys are supported by getColDef
-				colDef = self:getColDef(col, constr)
-			end
+			-- Note: Foreign keys are supported by getColDef
+			local colDef = self:getColDef(col, constr)
 			table.insert(cols, colDef)
 		elseif(col.unique) then -- unique constraint
 			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
@@ -471,6 +506,18 @@ function Database.Drivers.MySQL:optimize()
 	self:query('OPTIMIZE TABLE '..table.concat(tableNames, ', '))
 end
 
+function Database.Drivers.MySQL:verifySchema(tbl)
+	Debug.warn('Not implemented!')
+	return true
+end
+
+function Database.Drivers.MySQL:alterColumn(tbl, colInfo)
+	local constr = {}
+	local colDef = self:getColDef(colInfo, constr)
+	if(#constr > 0) then Debug.warn('Constraint ignored in alterColumn') end
+	return self:query('ALTER TABLE '..tbl..' MODIFY '..colDef)
+end
+
 ----------------- MTA Internal Driver -----------------
 
 Database.Drivers.Internal = {}
@@ -485,6 +532,7 @@ Database.Drivers.Internal.createTable = Database.Drivers.SQLite.createTable
 Database.Drivers.Internal.insertDefault = Database.Drivers.SQLite.insertDefault
 Database.Drivers.Internal.getLastInsertID = Database.Drivers.SQLite.getLastInsertID
 Database.Drivers.Internal.optimize = Database.Drivers.SQLite.optimize
+Database.Drivers.Internal.verifySchema = Database.Drivers.SQLite.verifySchema
 
 ----------------- End -----------------
 
@@ -536,6 +584,9 @@ function DbInit()
 			Debug.err('Failed to create '..tbl.name..' table')
 			return false
 		else
+			if(not g_Driver:verifySchema(tbl)) then
+				Debug.warn(tbl..' schema is invalid!')
+			end
 			--Debug.info('Created '..tbl.name..' table')
 		end
 	end
