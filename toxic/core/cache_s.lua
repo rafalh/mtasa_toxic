@@ -3,17 +3,26 @@ namespace('Cache')
 local g_Items = {}
 
 function get(name)
-	-- Get item from cache table
-	return g_Items[name][1]
+	-- Find item in cache
+	local descr = g_Items[name]
+	if(not descr) then return end
+	
+	-- Update expiration time
+	local now = getRealTime().timestamp
+	descr[2] = now + descr[3]
+	
+	-- Return item value
+	return descr[1]
 end
 
 function set(name, val, sec)
-	-- Calculate time limit
+	-- Calculate expiration time
 	local now = getRealTime().timestamp
-	local limit = now + (sec or 60)
+	if(not sec) then sec = 60 end
+	local expires = now + sec
 	
 	-- Add item to the table
-	g_Items[name] = {val, limit}
+	g_Items[name] = {val, expires, sec}
 end
 
 function remove(name)
