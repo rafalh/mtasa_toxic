@@ -91,7 +91,7 @@ if(DEBUG) then
 			if(name:len() > 128) then
 				name = name:sub(1, 128)..'...'
 			end
-			Debug.info(name..' has taken '..dt..' ms')
+			Debug.info(name..' has taken '..math.floor(dt)..' ms')
 		end
 		
 		self.ticks = getTickCount() -- get ticks again
