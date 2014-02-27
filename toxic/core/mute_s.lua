@@ -1,9 +1,10 @@
 MutesTable = Database.Table{
 	name = 'mutes',
-	{'serial', 'VARCHAR(32)', unique = true},
+	{'serial', 'VARCHAR(32)'},
 	{'reason', 'VARCHAR(255)', default = ''},
 	{'timestamp', 'INT UNSIGNED'},
 	{'duration', 'INT UNSIGNED'},
+	{'mutes_idx', unique = {'serial'}},
 }
 
 local g_VoiceRes = Resource('voice')
