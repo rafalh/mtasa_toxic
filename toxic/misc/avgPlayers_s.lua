@@ -34,6 +34,6 @@ Settings.register
 Settings.register
 {
 	name = 'arit_avg_players_m',
-	type = 'DOUBLE',
+	type = 'INT UNSIGNED',
 	default = 0,
 }
