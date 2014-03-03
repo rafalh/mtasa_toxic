@@ -23,9 +23,7 @@ PlayersTable:addColumns{
 	{'bidlvl', 'SMALLINT UNSIGNED', default = 1},
 	{'mapBoughtTimestamp', 'INT UNSIGNED', default = 0},
 	{'joinmsg', 'VARCHAR(128)', default = false, null = true},
-#if(SHOP_ITEM_TEAM) then
 	{'ownedTeam', 'INT', default = false, null = true, fk = {'teams', 'id'}},
-#end
 	
 	{'health100',    'TINYINT UNSIGNED', default = 0},
 	{'selfdestr',    'TINYINT UNSIGNED', default = 0},
