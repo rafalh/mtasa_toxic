@@ -219,6 +219,10 @@ local function initRountine()
 	
 	prof:cp('init2')
 	Debug.info('rafalh script has started!')
+#if(TEST) then
+	Debug.warn('Script compiled with test support')
+#end
+
 end
 
 function continueCoRountine(notFirst)
