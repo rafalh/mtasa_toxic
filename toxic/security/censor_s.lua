@@ -172,57 +172,20 @@ addPreInitFunc(CsInit)
 
 #local TEST = false
 #if(TEST) then
-	local function areTablesEqual(tbl1, tbl2)
-		if(type(tbl1) ~= 'table' or type(tbl2) ~= 'table') then return false end
+	Test.register('censor', function()
+		Test.checkTblEq({CsPreprocessStr('AbC')}, {'abc', {1, 2, 3}})
+		Test.checkTblEq({CsPreprocessStr('abc d')}, {'abc d', {1, 2, 3, 4, 5}})
+		Test.checkTblEq({CsPreprocessStr('a bcd')}, {'a bcd', {1, 2, 3, 4, 5}})
+		Test.checkTblEq({CsPreprocessStr('a b')}, {'ab', {1, 3}})
+		Test.checkTblEq({CsPreprocessStr('abc d e')}, {'abc de', {1, 2, 3, 4, 5, 7}})
+		Test.checkTblEq({CsPreprocessStr('a b cde')}, {'ab cde', {1, 3, 4, 5, 6, 7}})
+		Test.checkTblEq({CsPreprocessStr('abc d e fg')}, {'abc de fg', {1, 2, 3, 4, 5, 7, 8, 9, 10}})
+		Test.checkTblEq({CsPreprocessStr('a b c')}, {'abc', {1, 3, 5}})
 		
-		for i, v in pairs(tbl1) do
-			if(type(tbl2[i]) == 'table' and type(v) == 'table') then
-				if(not areTablesEqual(tbl2[i], v)) then return false end
-			elseif(tbl2[i] ~= v) then
-				return false
-			end
-		end
+		Test.checkTblEq({CsPreprocessStr('#000000')}, {'', {}})
+		Test.checkTblEq({CsPreprocessStr('#000000#FFFFFF')}, {'', {}})
+		Test.checkTblEq({CsPreprocessStr('ab#000000cd')}, {'abcd', {1, 2, 10, 11}})
 		
-		for i, v in pairs(tbl2) do
-			if(type(tbl1[i]) == 'table' and type(v) == 'table') then
-				if(not areTablesEqual(tbl1[i], v)) then return false end
-			elseif(tbl1[i] ~= v) then
-				return false
-			end
-		end
-		
-		return true
-	end
-
-	local function TestEq(result, validResult)
-		if(result == validResult) then return end
-		local trace = Debug.getStackTrace(1, 1)
-		Debug.warn('Test failed: expected '..tostring(validResult)..', got '..tostring(result)..' in '..trace[1])
-	end
-
-	local function TestTblEq(tbl, validTbl)
-		assert(type(tbl) == 'table' and type(validTbl) == 'table')
-		if(areTablesEqual(tbl, validTbl)) then return end
-		local trace = Debug.getStackTrace(1, 1)
-		Debug.warn('Test failed: expected '..table.dump(validTbl)..', got '..table.dump(tbl)..' in '..trace[1])
-	end
-
-	local prof = DbgPerf(5)
-	
-	TestTblEq({CsPreprocessStr('AbC')}, {'abc', {1, 2, 3}})
-	TestTblEq({CsPreprocessStr('abc d')}, {'abc d', {1, 2, 3, 4, 5}})
-	TestTblEq({CsPreprocessStr('a bcd')}, {'a bcd', {1, 2, 3, 4, 5}})
-	TestTblEq({CsPreprocessStr('a b')}, {'ab', {1, 3}})
-	TestTblEq({CsPreprocessStr('abc d e')}, {'abc de', {1, 2, 3, 4, 5, 7}})
-	TestTblEq({CsPreprocessStr('a b cde')}, {'ab cde', {1, 3, 4, 5, 6, 7}})
-	TestTblEq({CsPreprocessStr('abc d e fg')}, {'abc de fg', {1, 2, 3, 4, 5, 7, 8, 9, 10}})
-	TestTblEq({CsPreprocessStr('a b c')}, {'abc', {1, 3, 5}})
-	
-	TestTblEq({CsPreprocessStr('#000000')}, {'', {}})
-	TestTblEq({CsPreprocessStr('#000000#FFFFFF')}, {'', {}})
-	TestTblEq({CsPreprocessStr('ab#000000cd')}, {'abcd', {1, 2, 10, 11}})
-	
-	TestTblEq({CsPreprocessStr('a b#000000 c d')}, {'abcd', {1, 3, 12, 14}})
-	
-	prof:cp('CsPreprocessStr test')
+		Test.checkTblEq({CsPreprocessStr('a b#000000 c d')}, {'abcd', {1, 3, 12, 14}})
+	end)
 #end

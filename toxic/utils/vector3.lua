@@ -84,6 +84,8 @@ end
 -- Simple test
 #local TEST = false
 #if(TEST) then
-	assert(((Vector3(1, 0, 0) + Vector3(0, 1, 0)) * 2) == Vector3(2, 2, 0))
-	assert(Vector3(0, 0, 5).normalize() == Vector3(0, 0, 1))
+	Test.register('Vector3', function()
+		Test.checkEq(((Vector3(1, 0, 0) + Vector3(0, 1, 0)) * 2), Vector3(2, 2, 0))
+		Test.checkEq(Vector3(0, 0, 5):normalize(), Vector3(0, 0, 1))
+	end)
 #end

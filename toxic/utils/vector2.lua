@@ -52,8 +52,10 @@ end
 -- Simple test
 #TEST = false
 #if(TEST) then
-	local vx = Vector2(1, 0)
-	local vy = Vector2(0, 1)
-	assert(((vx + vy) * 2) == Vector2(2, 2))
-	assert(tostring(vx) == '(1 0)')
+	Test.register('Vector2', function()
+		local vx = Vector2(1, 0)
+		local vy = Vector2(0, 1)
+		Test.checkEq(((vx + vy) * 2), Vector2(2, 2))
+		Test.checkEq(tostring(vx), '(1 0)')
+	end)
 #end

@@ -6,15 +6,17 @@ CmdMgr = {}
 CmdMgr.map = {}
 CmdMgr.list = {}
 
--- checks if table doesn't contain disallowed keys and values
-local function checkTbl(tbl, allowed)
-	for k, v in pairs(tbl) do
-		-- Note: allowed[k] == true allows any type
-		if(type(v) ~= allowed[k] and allowed[k] ~= true) then
-			return k
+#if(DEBUG) then
+	-- checks if table doesn't contain disallowed keys and values
+	local function checkTbl(tbl, allowed)
+		for k, v in pairs(tbl) do
+			-- Note: allowed[k] == true allows any type
+			if(type(v) ~= allowed[k] and allowed[k] ~= true) then
+				return k
+			end
 		end
 	end
-end
+#end
 
 function CmdMgr.register(info)
 
@@ -326,20 +328,22 @@ end)
 
 #local TEST = false
 #if(TEST) then
-	local args
-	
-	args = CmdMgr.parseLine('abc def ghi')
-	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def' and args[3] == 'ghi')
-	
-	args = CmdMgr.parseLine('abc "def ghi" jkl')
-	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def ghi' and args[3] == 'jkl')
-	
-	args = CmdMgr.parseLine('abc \'def ghi\' jkl')
-	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def ghi' and args[3] == 'jkl')
-	
-	args = CmdMgr.parseLine('abc "def\' \'ghi" jkl')
-	assert(#args == 3 and args[1] == 'abc' and args[2] == 'def\' \'ghi' and args[3] == 'jkl')
-	
-	args = CmdMgr.parseLine('abc "def ghi\\" jkl"')
-	assert(#args == 2 and args[1] == 'abc' and args[2] == 'def ghi" jkl')
+	Test.register('CmdMgr', function()
+		local args
+		
+		args = CmdMgr.parseLine('abc def ghi')
+		Test.checkTblEq(args, {'abc', 'def', 'ghi'})
+		
+		args = CmdMgr.parseLine('abc "def ghi" jkl')
+		Test.checkTblEq(args, {'abc', 'def ghi', 'jkl'})
+		
+		args = CmdMgr.parseLine('abc \'def ghi\' jkl')
+		Test.checkTblEq(args, {'abc', 'def ghi', 'jkl'})
+		
+		args = CmdMgr.parseLine('abc "def\' \'ghi" jkl')
+		Test.checkTblEq(args, {'abc', 'def\' \'ghi', 'jkl'})
+		
+		args = CmdMgr.parseLine('abc "def ghi\\" jkl"')
+		Test.checkTblEq(args, {'abc', 'def ghi" jkl'})
+	end)
 #end -- TEST

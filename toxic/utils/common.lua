@@ -2,6 +2,8 @@ g_Root = getRootElement()
 g_ResRoot = getResourceRootElement()
 g_Res = getThisResource()
 g_ResName = getResourceName(g_Res)
+g_ServerSide = triggerClientEvent and true
+g_ClientSide = triggerServerEvent and true
 
 function ifElse(condition, trueReturn, falseReturn)
 	if(condition) then

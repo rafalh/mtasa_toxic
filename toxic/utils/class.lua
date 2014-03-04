@@ -68,35 +68,37 @@ setmetatable(Class, mt)
 
 #local TEST = false
 #if(TEST) then
-	A = Class('A')
-	A.x = 1
-	A.y = 32
-	function A.__mt.__index:test() return 'A test' end
-	function A.__mt.__index:test2() return 'A test2' end
-	
-	B = Class('B', A)
-	B.y = 16
-	function B.__mt.__index:test() return 'B test' end
-	
-	assert(A.cls == Class)
-	assert(B.cls == Class)
-	assert(A.x == 1)
-	assert(A.y == 32)
-	assert(B.x == 1)
-	assert(B.y == 16)
-	
-	B.x = 2
-	assert(A.x == 1)
-	assert(B.x == 2)
-	
-	local objA = A()
-	local objB = B()
-	assert(tostring(objA) == 'A', tostring(objA))
-	assert(tostring(objB) == 'B', tostring(objB))
-	assert(objA.cls == A)
-	assert(objB.cls == B)
-	assert(objA:test() == 'A test')
-	assert(objA:test2() == 'A test2')
-	assert(objB:test() == 'B test')
-	assert(objB:test2() == 'A test2')
+	Test.register('Class', function()
+		A = Class('A')
+		A.x = 1
+		A.y = 32
+		function A.__mt.__index:test() return 'A test' end
+		function A.__mt.__index:test2() return 'A test2' end
+		
+		B = Class('B', A)
+		B.y = 16
+		function B.__mt.__index:test() return 'B test' end
+		
+		Test.checkEq(A.cls, Class)
+		Test.checkEq(B.cls, Class)
+		Test.checkEq(A.x, 1)
+		Test.checkEq(A.y, 32)
+		Test.checkEq(B.x, 1)
+		Test.checkEq(B.y, 16)
+		
+		B.x = 2
+		Test.checkEq(A.x, 1)
+		Test.checkEq(B.x, 2)
+		
+		local objA = A()
+		local objB = B()
+		Test.checkEq(tostring(objA), 'A', tostring(objA))
+		Test.checkEq(tostring(objB), 'B', tostring(objB))
+		Test.checkEq(objA.cls, A)
+		Test.checkEq(objB.cls, B)
+		Test.checkEq(objA:test(), 'A test')
+		Test.checkEq(objA:test2(), 'A test2')
+		Test.checkEq(objB:test(), 'B test')
+		Test.checkEq(objB:test2(), 'A test2')
+	end)
 #end

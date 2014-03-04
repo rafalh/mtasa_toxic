@@ -139,16 +139,18 @@ end
 
 #local TEST = false
 #if(TEST) then
-	function funcA()
-		Debug.printStackTrace(3)
-		
-		local trace = Debug.getStackTrace(2)
-		assert(#trace == 2)
-		assert(trace[1]:find('funcA', 1, true))
-		assert(trace[2]:find('funcB', 1, true))
-	end
-	function funcB()
-		funcA()
-	end
-	funcB()
+	Test.register('debug', function()
+		function funcA()
+			Debug.printStackTrace(3)
+			
+			local trace = Debug.getStackTrace(2)
+			Test.checkEq(#trace, 2)
+			Test.check(trace[1]:find('funcA', 1, true))
+			Test.check(trace[2]:find('funcB', 1, true))
+		end
+		function funcB()
+			funcA()
+		end
+		funcB()
+	end)
 #end
