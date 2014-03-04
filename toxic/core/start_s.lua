@@ -15,33 +15,9 @@ local function setupDatabase()
 		return false
 	end
 	
-	local currentVer = Updater.currentVer
-	local ver = Settings.version
-	if(ver == 0) then
-		Settings.version = Updater.currentVer
-		Debug.warn('Version: '..ver)
-	elseif(ver < currentVer) then
-		DbQuery('COMMIT')
-		DbQuery('BEGIN')
-		for i, upd in ipairs(Updater.list) do
-			if(upd.ver > ver) then
-				local status, err = pcall(upd.func)
-				if(err) then
-					Debug.err('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err))
-					DbQuery('ROLLBACK')
-					DbQuery('BEGIN')
-					return false
-				else
-					Debug.info('Database update ('..ver..' -> '..upd.ver..') succeeded!')
-					ver = upd.ver
-					Settings.version = ver
-				end
-			end
-		end
+	if(not Updater.run()) then
+		return false
 	end
-	
-	finishUpdate()
-	Database.verifyTables()
 	
 	return true
 end
