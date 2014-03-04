@@ -26,11 +26,11 @@ TeamsTable = Database.Table{
 	name = 'teams',
 	{'id', 'INT UNSIGNED', pk = true},
 	{'name', 'VARCHAR(255)'},
-	{'tag', 'VARCHAR(255)', default = ''},
-	{'aclGroup', 'VARCHAR(255)', default = ''},
-	{'color', 'VARCHAR(7)', default = ''},
+	{'tag', 'VARCHAR(255)', null = true},
+	{'aclGroup', 'VARCHAR(255)', null = true},
+	{'color', 'VARCHAR(7)', null = true},
 	{'priority', 'INT'},
-	{'lastUsage', 'INT UNSIGNED', default = 0},
+	{'lastUsage', 'INT UNSIGNED', default = false, null = true},
 	{'owner', 'INT', default = false, null = true, fk = {'players', 'player'}},
 }
 
@@ -59,10 +59,10 @@ local function findTeamForPlayer(player, name)
 	
 	-- Find team for specified player
 	for i, teamInfo in ipairs(g_List) do
-		if(teamInfo.aclGroup ~= '' and accName and isObjectInACLGroup('user.'..accName, aclGetGroup(teamInfo.aclGroup))) then
+		if(teamInfo.aclGroup and accName and isObjectInACLGroup('user.'..accName, aclGetGroup(teamInfo.aclGroup))) then
 			return teamInfo
 		end
-		if(teamInfo.tag ~= '' and clanTag == teamInfo.tag) then
+		if(teamInfo.tag and clanTag == teamInfo.tag) then
 			return teamInfo
 		end
 	end
@@ -227,9 +227,9 @@ local function loadFromXML()
 		
 		local team = {}
 		team.name = tostring(xmlNodeGetAttribute(subnode, 'name'))
-		team.tag = xmlNodeGetAttribute(subnode, 'clan') or ''
-		team.aclGroup = xmlNodeGetAttribute(subnode, 'acl_group') or ''
-		team.color = xmlNodeGetAttribute(subnode, 'color') or ''
+		team.tag = xmlNodeGetAttribute(subnode, 'clan')
+		team.aclGroup = xmlNodeGetAttribute(subnode, 'acl_group')
+		team.color = xmlNodeGetAttribute(subnode, 'color')
 		if(team.aclGroup or team.tag) then
 			table.insert(teams, team)
 		else
@@ -251,11 +251,11 @@ end
 RPC.allow('Teams.updateAllPlayers')
 
 function updateItem(teamInfo)
-	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
+	assert(teamInfo and teamInfo.name and (teamInfo.tag or teamInfo.aclGroup))
 	teamInfo.lastUsage = getRealTime().timestamp
-	teamInfo.owner = uint(teamInfo.owner)
+	teamInfo.owner = touint(teamInfo.owner)
 	
-	if(not getColorFromString(teamInfo.color)) then
+	if(teamInfo.color and not getColorFromString(teamInfo.color)) then
 		return false, 'Color is invalid'
 	end
 	
@@ -277,7 +277,7 @@ function updateItem(teamInfo)
 		end
 	else
 		-- Check only if this is not empty item
-		if(teamInfo.name ~= '' or teamInfo.tag ~= '' or teamInfo.aclGroup ~= '') then
+		if(teamInfo.name ~= '' or teamInfo.tag or teamInfo.aclGroup) then
 			local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
 			if(rows and rows[1]) then
 				return false, 'Such team already exists'

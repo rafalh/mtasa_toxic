@@ -25,6 +25,9 @@ local function acceptOwnedTeamGUI()
 		teamInfo.tag = guiGetText(g_TeamGUI.tag)
 		teamInfo.name = guiGetText(g_TeamGUI.name)
 		teamInfo.color = guiGetText(g_TeamGUI.color)
+		if(teamInfo.color:len() == 0) then
+			teamInfo.color = false
+		end
 		RPC('Teams.updateOwnedRPC', teamInfo):onResult(function(status, err)
 			if(status) then
 				closeOwnedTeamGUI()

@@ -14,7 +14,7 @@ ShpRegisterItem
 		if(val) then return false end
 		
 		local pdata = Player.fromEl(player)
-		local teamInfo, err = updateItem{name = pdata:getName(), tag = '', aclGroup = '', color = '#FFFFFF'}
+		local teamInfo, err = updateItem{name = pdata:getName(), tag = '', aclGroup = false, color = '#FFFFFF'}
 		if(not teamInfo) then
 			privMsg(pdata, err)
 			return false
@@ -49,7 +49,7 @@ function updateOwnedRPC(teamInfo)
 		end
 	end
 	
-	teamInfo.aclGroup = ''
+	teamInfo.aclGroup = false
 	teamInfo.owner = pdata.id
 	
 	local status, err = updateItem(teamInfo)

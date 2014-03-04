@@ -78,7 +78,7 @@ function finishUpdate()
 end
 
 Updater = {
-	currentVer = 170,
+	currentVer = 171,
 	list = {
 		{
 			ver = 149,
@@ -448,6 +448,33 @@ Updater = {
 				
 				if(Teams) then
 					if(not DbQuerySync('UPDATE '..Teams.TeamsTable..' SET owner=NULL WHERE owner=\'\'')) then
+						return 'Failed to update '..Teams.TeamsTable..' table'
+					end
+				end
+			end
+		},
+		{
+			ver = 171,
+			func = function()
+				if(Teams) then
+					if(not Database.alterColumns(Teams.TeamsTable, {
+						{'tag', 'VARCHAR(255)', null = true},
+						{'aclGroup', 'VARCHAR(255)', null = true},
+						{'color', 'VARCHAR(7)', null = true},
+						{'lastUsage', 'INT UNSIGNED', default = false, null = true},
+					})) then
+						return 'Failed to alter columns in '..Teams.TeamsTable
+					end
+					if(not DbQuerySync('UPDATE '..Teams.TeamsTable..' SET tag=NULL WHERE tag=\'\'')) then
+						return 'Failed to update '..Teams.TeamsTable..' table'
+					end
+					if(not DbQuerySync('UPDATE '..Teams.TeamsTable..' SET aclGroup=NULL WHERE aclGroup=\'\'')) then
+						return 'Failed to update '..Teams.TeamsTable..' table'
+					end
+					if(not DbQuerySync('UPDATE '..Teams.TeamsTable..' SET color=NULL WHERE color=\'\'')) then
+						return 'Failed to update '..Teams.TeamsTable..' table'
+					end
+					if(not DbQuerySync('UPDATE '..Teams.TeamsTable..' SET lastUsage=NULL WHERE lastUsage=0')) then
 						return 'Failed to update '..Teams.TeamsTable..' table'
 					end
 				end

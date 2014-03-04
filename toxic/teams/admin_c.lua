@@ -13,8 +13,8 @@ AdminPanel:addItem{
 }
 
 local function updateRow(row, teamInfo)
-	local tagOrGroup = teamInfo.tag == '' and teamInfo.aclGroup or teamInfo.tag
-	local typeStr = teamInfo.aclGroup == '' and "Tag" or "ACL"
+	local tagOrGroup = teamInfo.tag or teamInfo.aclGroup or ''
+	local typeStr = teamInfo.aclGroup and "ACL" or "Tag"
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo.name, false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.typeCol, typeStr, false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, tagOrGroup, false, false)
@@ -27,7 +27,7 @@ local function updateRow(row, teamInfo)
 	end
 	local lastUsageStr = ''
 	local now = getRealTime().timestamp
-	if(teamInfo.lastUsage > 0) then
+	if(teamInfo.lastUsage) then
 		local days = math.floor(now/(24*3600)) - math.floor(teamInfo.lastUsage/(24*3600))
 		if(days == 0) then
 			lastUsageStr = "today"
@@ -91,7 +91,7 @@ local function onAddClick()
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.tagCol, '', false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, '', false, false)
 	guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.lastUsageCol, '', false, false)
-	local teamInfo = {name = '', tag = '', aclGroup = '', color = '', lastUsage = 0}
+	local teamInfo = {name = '', tag = '', aclGroup = false, color = false, lastUsage = false}
 	guiGridListSetItemData(g_GUI.teamsList, row, g_GUI.nameCol, teamInfo, false, false)
 end
 
@@ -133,14 +133,14 @@ local function onEditAccepted()
 	if(g_GUI.clickedCol == g_GUI.nameCol) then
 		teamInfo.name = newText
 	elseif(g_GUI.clickedCol == g_GUI.tagCol) then
-		if(teamInfo.aclGroup == '') then
+		if(teamInfo.tag) then
 			teamInfo.tag = newText
 		else
 			teamInfo.aclGroup = newText
 		end
 	elseif(g_GUI.clickedCol == g_GUI.clrCol) then
 		local r, g, b = getColorFromString(newText)
-		teamInfo.color = r and newText or ''
+		teamInfo.color = r and newText
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
@@ -156,13 +156,13 @@ local function onTypeClick()
 	
 	local teamInfo = guiGridListGetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol)
 	
-	local tagOrGroup = teamInfo.tag == '' and teamInfo.aclGroup or teamInfo.tag
+	local tagOrGroup = teamInfo.tag or teamInfo.aclGroup 
 	if(row == 0) then -- tag
 		teamInfo.tag = tagOrGroup
-		teamInfo.aclGroup = ''
+		teamInfo.aclGroup = false
 	else
 		teamInfo.aclGroup = tagOrGroup
-		teamInfo.tag = ''
+		teamInfo.tag = false
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)
