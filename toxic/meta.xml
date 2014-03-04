@@ -43,6 +43,7 @@
 	<script src="settings/settings_c.lua" type="client" />
 	
 	<script src="commands/cmdMgr_s.lua" type="server" />
+	<script src="commands/cmdMgr_c.lua" type="client" />
 	<script src="core/room_s.lua" type="server" />
 	<script src="core/sync_s.lua" type="server" />
 	<script src="core/mute_s.lua" type="server" />

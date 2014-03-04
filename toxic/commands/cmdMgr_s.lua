@@ -84,11 +84,15 @@ function CmdMgr.exists(cmdName)
 	return CmdMgr.map[cmdName] and true
 end
 
+function CmdMgr.output(ctx, fmt, ...)
+	privMsg(ctx.player, fmt, ...)
+end
+
 function CmdMgr.prepareArgs(ctx, cmd, args)
 	local argsDesc = cmd.args or {}
 	
 	if(not cmd.varargs and #args > #argsDesc) then
-		privMsg(ctx.player, "Too many arguments given. Expected %u, got %u.", #argsDesc, #args)
+		CmdMgr.output(ctx, "Too many arguments given. Expected %u, got %u.", #argsDesc, #args)
 		return false
 	end
 	
@@ -101,31 +105,31 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 			if(argDesc.type == 'player') then
 				newArg = Player.find(arg)
 				if(not newArg) then
-					privMsg(ctx.player, "Player '%s' has not been found!", arg)
+					CmdMgr.output(ctx, "Player '%s' has not been found!", arg)
 					return false
 				end
 			elseif(argDesc.type == 'num') then
 				newArg = tonumber(arg)
 				if(not newArg) then
-					privMsg(ctx.player, "Expected number at argument #%u (%s).", i, argDesc[1])
+					CmdMgr.output(ctx, "Expected number at argument #%u (%s).", i, argDesc[1])
 					return false
 				elseif(argDesc.min and newArg < argDesc.min) then
-					privMsg(ctx.player, "Argument #%u (%s) must be greater than or equal to %d.", i, argDesc[1], argDesc.min)
+					CmdMgr.output(ctx, "Argument #%u (%s) must be greater than or equal to %d.", i, argDesc[1], argDesc.min)
 					return false
 				elseif(argDesc.max and newArg > argDesc.max) then
-					privMsg(ctx.player, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
+					CmdMgr.output(ctx, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
 					return false
 				end
 			elseif(argDesc.type == 'int') then
 				newArg = toint(arg)
 				if(not newArg) then
-					privMsg(ctx.player, "Expected integer at argument #%u (%s).", i, argDesc[1])
+					CmdMgr.output(ctx, "Expected integer at argument #%u (%s).", i, argDesc[1])
 					return false
 				elseif(argDesc.min and newArg < argDesc.min) then
-					privMsg(ctx.player, "Argument #%u (%s) must be greater than or equal to %d.", i, argDesc[1], argDesc.min)
+					CmdMgr.output(ctx, "Argument #%u (%s) must be greater than or equal to %d.", i, argDesc[1], argDesc.min)
 					return false
 				elseif(argDesc.max and newArg > argDesc.max) then
-					privMsg(ctx.player, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
+					CmdMgr.output(ctx, "Argument #%u (%s) must be less than or equal to %d.", i, argDesc[1], argDesc.max)
 					return false
 				end
 			elseif(argDesc.type == 'str') then
@@ -133,7 +137,7 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 			elseif(argDesc.type == 'bool') then
 				newArg = tobool(arg)
 				if(newArg == nil) then
-					privMsg(ctx.player, "Expected boolean value at argument #%u (%s).", i, argDesc[1])
+					CmdMgr.output(ctx, "Expected boolean value at argument #%u (%s).", i, argDesc[1])
 					return false
 				end
 			else
@@ -144,7 +148,7 @@ function CmdMgr.prepareArgs(ctx, cmd, args)
 		elseif(argDesc.defValFromCtx ~= nil and ctx[argDesc.defValFromCtx] ~= nil) then
 			newArg = ctx[argDesc.defValFromCtx]
 		else
-			privMsg(ctx.player, "Not enough arguments given. Expected argument #%u (%s).", i, argDesc[1])
+			CmdMgr.output(ctx, "Not enough arguments given. Expected argument #%u (%s).", i, argDesc[1])
 			return false
 		end
 		
@@ -198,7 +202,7 @@ function CmdMgr.invoke(ctx, cmd, ...)
 	if(not cmd) then return false end
 	
 	if(cmd.accessRight and not cmd.accessRight:check(ctx.player)) then
-		privMsg(ctx.player, "Access denied! You cannot use command '%s'.", cmd.name)
+		CmdMgr.output(ctx, "Access denied! You cannot use command '%s'.", cmd.name)
 		return false
 	end
 	
@@ -273,7 +277,7 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	
 	-- Check if player has access to this command
 	if(cmd.accessRight and not cmd.accessRight:check(ctx.player)) then
-		privMsg(ctx.player.el, "Access denied for \"%s\"!", ctx.cmdName)
+		CmdMgr.output(ctx, "Access denied for \"%s\"!", ctx.cmdName)
 		return
 	end
 	

@@ -53,15 +53,6 @@ local function onClientInit(accountId, settings, isNew, localeId)
 	g_Init = false
 end
 
-local function clearChat()
-	local chatLayout = getChatboxLayout()
-	for i = 1, chatLayout.chat_lines do
-		outputChatBox('')
-	end
-end
-
-addCommandHandler('clearchat', clearChat, false)
-
 ------------
 -- Events --
 ------------

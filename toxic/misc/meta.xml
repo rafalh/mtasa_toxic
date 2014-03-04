@@ -9,6 +9,7 @@
 	<script src="waterFix_c.lua" type="client" />
 	<script src="copyUrl_c.lua" type="client" />
 	<script src="serverRules_c.lua" type="client" />
+	<script src="clearChat_c.lua" type="client" />
 	
 	<config src="../conf/server_rules.xml" type="client" />
 </meta>
