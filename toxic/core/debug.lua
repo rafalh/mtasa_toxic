@@ -137,11 +137,10 @@ else
 	DbgPerf = function() return {cp = DbgDummy} end
 end
 
-#local TEST = false
 #if(TEST) then
 	Test.register('debug', function()
 		function funcA()
-			Debug.printStackTrace(3)
+			--Debug.printStackTrace(3)
 			
 			local trace = Debug.getStackTrace(2)
 			Test.checkEq(#trace, 2)

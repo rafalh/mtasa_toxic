@@ -170,7 +170,6 @@ end
 
 addPreInitFunc(CsInit)
 
-#local TEST = false
 #if(TEST) then
 	Test.register('censor', function()
 		Test.checkTblEq({CsPreprocessStr('AbC')}, {'abc', {1, 2, 3}})

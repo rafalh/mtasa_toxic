@@ -153,13 +153,11 @@ function PodiumStop()
 	g_Vehicles = {}
 end
 
-#local TEST = false
-#if(TEST) then
-
-setTimer(function()
-	if(Settings.debug) then
-		PodiumStart({'test', 'test2', 'test3'}, math.random(1, 6))
-	end
-end, 1000, 1)
-
-#end -- TEST
+#local PODIUM_TEST = false
+#if(PODIUM_TEST) then
+	setTimer(function()
+		if(Settings.debug) then
+			PodiumStart({'test', 'test2', 'test3'}, math.random(1, 6))
+		end
+	end, 1000, 1)
+#end -- PODIUM_TEST

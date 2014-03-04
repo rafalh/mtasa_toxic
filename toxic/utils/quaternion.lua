@@ -108,7 +108,6 @@ end
 Quaternion.IDENTITY = Quaternion(0, 0, 0, 1)
 
 -- Simple test
-#local TEST = false
 #if(TEST) then
 	Test.register('Quaternion', function()
 		Test.checkEq(Quaternion.IDENTITY*Quaternion.IDENTITY, Quaternion.IDENTITY)

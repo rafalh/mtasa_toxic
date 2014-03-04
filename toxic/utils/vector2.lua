@@ -50,7 +50,6 @@ function Vector2.__mt.__index:init(x, y)
 end
 
 -- Simple test
-#TEST = false
 #if(TEST) then
 	Test.register('Vector2', function()
 		local vx = Vector2(1, 0)

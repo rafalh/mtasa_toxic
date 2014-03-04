@@ -82,7 +82,6 @@ function Vector3.__mt.__index:init(x, y, z)
 end
 
 -- Simple test
-#local TEST = false
 #if(TEST) then
 	Test.register('Vector3', function()
 		Test.checkEq(((Vector3(1, 0, 0) + Vector3(0, 1, 0)) * 2), Vector3(2, 2, 0))

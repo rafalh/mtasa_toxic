@@ -326,7 +326,6 @@ addInitFunc(function()
 	addEventHandler('onConsole', g_Root, onConsole)
 end)
 
-#local TEST = false
 #if(TEST) then
 	Test.register('CmdMgr', function()
 		local args

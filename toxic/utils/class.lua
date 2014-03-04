@@ -66,7 +66,6 @@ function mt.__concat(a, b)
 end
 setmetatable(Class, mt)
 
-#local TEST = false
 #if(TEST) then
 	Test.register('Class', function()
 		A = Class('A')

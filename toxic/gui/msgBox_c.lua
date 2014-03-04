@@ -122,8 +122,8 @@ function MsgBox.showInfo(title, text)
 	MsgBox(title, text, 'info'):show()
 end
 
-#local TEST = false
-#if(TEST) then
+#local MSGBOX_TEST = false
+#if(MSGBOX_TEST) then
 	Debug.warn('Enter /msgboxtest to test MsgBox')
 	
 	addCommandHandler('msgboxtest', function(cmdName, n)
@@ -144,4 +144,4 @@ end
 		end
 		msgBox:show()
 	end, false)
-#end
+#end -- MSGBOX_TEST

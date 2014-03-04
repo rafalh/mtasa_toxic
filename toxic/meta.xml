@@ -4,15 +4,15 @@
 	
 	<min_mta_version client="1.3.3" server="1.3.3" /> <!-- for onClientSoundStopped -->
 	
-	<script src="utils/table.lua" type="shared" />
-	<script src="utils/class.lua" type="shared" />
 	<script src="utils/common.lua" type="shared" />
 	<script src="utils/common_s.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
 	
 	<script src="core/test.lua" type="shared" />
-	<script src="core/debug.lua" type="shared" />
 	
+	<script src="utils/table.lua" type="shared" />
+	<script src="utils/class.lua" type="shared" />
+	<script src="core/debug.lua" type="shared" />
 	<script src="utils/outputChat_s.lua" type="server" />
 	<script src="utils/outputChat_c.lua" type="client" />
 	<script src="utils/vector2.lua" type="shared" />
