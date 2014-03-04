@@ -13,9 +13,9 @@ MapsTable = Database.Table{
 	{'played', 'MEDIUMINT UNSIGNED', default = 0},
 	{'rates', 'MEDIUMINT UNSIGNED', default = 0},
 	{'rates_count', 'SMALLINT UNSIGNED', default = 0},
-	{'removed', 'VARCHAR(255)', default = ''},
-	{'played_timestamp', 'INT UNSIGNED', default = 0},
-	{'added_timestamp', 'INT UNSIGNED', default = 0},
+	{'removed', 'VARCHAR(255)', null = true},
+	{'played_timestamp', 'INT UNSIGNED', null = true},
+	{'added_timestamp', 'INT UNSIGNED', null = true},
 	{'maps_idx', unique = {'name'}},
 }
 
@@ -62,8 +62,8 @@ function findMap(str, removed)
 		for i, mapPath in ipairs(maps) do
 			local map = Map(mapPath)
 			if(removed ~= nil) then
-				local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
-				local isRemoved = (rows[1].removed ~= '')
+				local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+				local isRemoved = (data.removed and true)
 				if(isRemoved == removed) then
 					return map
 				end
@@ -100,8 +100,8 @@ function findMap(str, removed)
 		end
 		
 		if(matches and removed ~= nil) then
-			local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
-			if((rows[1].removed ~= '') ~= removed) then
+			local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+			if((data.removed and true) ~= removed) then
 				matches = false
 			end
 		end
@@ -122,8 +122,8 @@ function getRandomMap()
 	local map
 	while(maps:getCount() > 0) do
 		map = maps:get(i)
-		local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
-		if(rows[1].removed == '') then
+		local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
+		if(not data.removed) then
 			break
 		end
 		maps:remove(i)
@@ -166,7 +166,7 @@ local function onMapStart(map, room)
 	local prof2 = DbgPerf(30)
 	
 	local map_id = map:getId()
-	local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
+	local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
 	local map_name = map:getName()
 	
 	if(room.lastMap == map) then
@@ -180,7 +180,7 @@ local function onMapStart(map, room)
 	room.matchInfo = {}
 	prof2:cp('onMapStart 1')
 	
-	if(rows[1].removed ~= '') then
+	if(data.removed) then
 		scriptMsg("Map %s is removed! Changing to random map.", map_name)
 		--cancelEvent() -- map resource is still running
 		setMapTimer(startRandomMap, 500, 1, room)

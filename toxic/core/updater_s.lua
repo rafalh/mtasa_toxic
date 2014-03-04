@@ -78,7 +78,7 @@ function finishUpdate()
 end
 
 Updater = {
-	currentVer = 169,
+	currentVer = 170,
 	list = {
 		{
 			ver = 149,
@@ -375,6 +375,82 @@ Updater = {
 				requestTableRecreate(Teams.TeamsTable)
 				requestTableRecreate(SettingsTable)
 				requestTableRecreate(PlayersTable)
+			end
+		},
+		{
+			ver = 170,
+			func = function()
+				if(not DbQuerySync('UPDATE '..BestTimesTable..' SET timestamp=NULL WHERE timestamp=0')) then
+					return 'Failed to update '..BestTimesTable..' table'
+				end
+				
+				if(not Database.alterColumns(MapsTable, {
+					{'removed', 'VARCHAR(255)', null = true},
+					{'played_timestamp', 'INT UNSIGNED', null = true},
+					{'added_timestamp', 'INT UNSIGNED', null = true},
+				})) then
+					return 'Failed to alter columns in '..MapsTable
+				end
+				if(not DbQuerySync('UPDATE '..MapsTable..' SET removed=NULL WHERE removed=\'\'')) then
+					return 'Failed to update '..MapsTable..' table'
+				end
+				if(not DbQuerySync('UPDATE '..MapsTable..' SET played_timestamp=NULL WHERE played_timestamp=0')) then
+					return 'Failed to update '..MapsTable..' table'
+				end
+				if(not DbQuerySync('UPDATE '..MapsTable..' SET added_timestamp=NULL WHERE added_timestamp=0')) then
+					return 'Failed to update '..MapsTable..' table'
+				end
+				
+				if(not Database.alterColumns(MutesTable, {
+					{'reason', 'VARCHAR(255)', null = true},
+					{'duration', 'INT UNSIGNED', null = true},
+				})) then
+					return 'Failed to alter columns in '..MutesTable
+				end
+				if(not DbQuerySync('UPDATE '..MutesTable..' SET reason=NULL WHERE reason=\'\'')) then
+					return 'Failed to update '..MutesTable..' table'
+				end
+				if(not DbQuerySync('UPDATE '..MutesTable..' SET duration=NULL WHERE duration=0')) then
+					return 'Failed to update '..MutesTable..' table'
+				end
+				
+				if(not Database.alterColumns(PlayersTable, {
+					{'first_visit', 'INT UNSIGNED', default = false, null = true},
+					{'last_visit', 'INT UNSIGNED', default = false, null = true},
+					{'ip', 'VARCHAR(16)', default = false, null = true},
+					{'email', 'VARCHAR(128)', default = false, null = true},
+				})) then
+					return 'Failed to alter columns in '..PlayersTable
+				end
+				if(not DbQuerySync('UPDATE '..PlayersTable..' SET first_visit=NULL WHERE first_visit=0 OR first_visit=1278598053')) then
+					return 'Failed to update '..PlayersTable..' table'
+				end
+				if(not DbQuerySync('UPDATE '..PlayersTable..' SET last_visit=NULL WHERE last_visit=0')) then
+					return 'Failed to update '..PlayersTable..' table'
+				end
+				if(not DbQuerySync('UPDATE '..PlayersTable..' SET ip=NULL WHERE ip=\'\'')) then
+					return 'Failed to update '..PlayersTable..' table'
+				end
+				if(not DbQuerySync('UPDATE '..PlayersTable..' SET email=NULL WHERE email=\'\'')) then
+					return 'Failed to update '..PlayersTable..' table'
+				end
+				
+				if(WarningsTable) then
+					if(not Database.alterColumns(WarningsTable, {
+						{'duration', 'INT UNSIGNED', null = true},
+					})) then
+						return 'Failed to alter columns in '..WarningsTable
+					end
+					if(not DbQuerySync('UPDATE '..WarningsTable..' SET duration=NULL WHERE duration=0')) then
+						return 'Failed to update '..WarningsTable..' table'
+					end
+				end
+				
+				if(Teams) then
+					if(not DbQuerySync('UPDATE '..Teams.TeamsTable..' SET owner=NULL WHERE owner=\'\'')) then
+						return 'Failed to update '..Teams.TeamsTable..' table'
+					end
+				end
 			end
 		},
 	}

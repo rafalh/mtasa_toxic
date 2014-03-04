@@ -9,7 +9,7 @@ WarningsTable = Database.Table{
 	{'admin', 'INT UNSIGNED', fk = {'players', 'player'}},
 	{'reason', 'TEXT'},
 	{'timestamp', 'INT UNSIGNED'},
-	{'duration', 'INT UNSIGNED'},
+	{'duration', 'INT UNSIGNED', null = true},
 }
 
 local ListWarningsRight = AccessRight('warnings')
@@ -20,7 +20,7 @@ function warnPlayer(player, admin, reason, duration)
 	local now = getRealTime().timestamp
 	
 	-- Add warning to database
-	DbQuery('INSERT INTO '..WarningsTable..' (serial, admin, reason, timestamp, duration) VALUES(?, ?, ?, ?, ?)', player:getSerial(), admin.id, reason, now, duration or 0)
+	DbQuery('INSERT INTO '..WarningsTable..' (serial, admin, reason, timestamp, duration) VALUES(?, ?, ?, ?, ?)', player:getSerial(), admin.id, reason, now, duration)
 	outputServerLog('WARNINGS: '..admin:getName()..' added warning for '..player:getSerial())
 	
 	-- Check how many warnings player has

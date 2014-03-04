@@ -123,7 +123,7 @@ function Map.__mt.__index:isForbidden(room)
 	-- Check if this map has been removed
 	local mapId = self:getId()
 	local data = DbQuerySingle('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
-	if(data.removed ~= '') then
+	if(data.removed) then
 		return "This map has been removed!"
 	end
 	

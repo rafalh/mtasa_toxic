@@ -12,13 +12,13 @@ PlayersTable = Database.Table{
 	{'serial',         'VARCHAR(32)',        default = '', null = true},
 	{'account',        'VARCHAR(255)',       default = '', null = true},
 	{'time_here',      'INT UNSIGNED',       default = 0},
-	{'first_visit',    'INT UNSIGNED',       default = 0},
-	{'last_visit',     'INT UNSIGNED',       default = 0},
-	{'ip',             'VARCHAR(16)',        default = ''},
+	{'first_visit',    'INT UNSIGNED',       default = false, null = true},
+	{'last_visit',     'INT UNSIGNED',       default = false, null = true},
+	{'ip',             'VARCHAR(16)',        default = false, null = true},
 	{'name',           'VARCHAR(32)',        default = ''},
 	{'namePlain',      'VARCHAR(32)',        default = ''},
 	{'online',         'BOOL',               default = 0},
-	{'email',          'VARCHAR(128)',       default = '', null = true},
+	{'email',          'VARCHAR(128)',       default = false, null = true},
 	
 	{'players_idx', unique = {'account'}},
 }

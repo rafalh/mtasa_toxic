@@ -253,6 +253,7 @@ RPC.allow('Teams.updateAllPlayers')
 function updateItem(teamInfo)
 	assert(teamInfo and teamInfo.name and teamInfo.tag and teamInfo.aclGroup and teamInfo.color)
 	teamInfo.lastUsage = getRealTime().timestamp
+	teamInfo.owner = uint(teamInfo.owner)
 	
 	if(not getColorFromString(teamInfo.color)) then
 		return false, 'Color is invalid'
@@ -269,6 +270,7 @@ function updateItem(teamInfo)
 			teamCopy[k] = v
 		end
 		g_TeamFromName[teamCopy.name] = teamCopy
+		teamInfo = teamCopy
 		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=?, owner=? WHERE id=?',
 				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, teamInfo.id)) then
 			return false, 'Failed to modify team'

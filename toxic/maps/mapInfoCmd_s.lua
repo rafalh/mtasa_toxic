@@ -48,7 +48,7 @@ CmdMgr.register{
 			local rating = data.rates_count > 0 and(('%.1f'):format(data.rates / data.rates_count)) or 0
 			
 			scriptMsg("Map name: %s - Played: %u - Rating: %.1f (rated by %u players)%s",
-				map:getName(), data.played, rating, data.rates_count, data.removed ~= '' and ' - Removed: '..data.removed or '')
+				map:getName(), data.played, rating, data.rates_count, data.removed and ' - Removed: '..data.removed or '')
 		else
 			privMsg(ctx.player, "Cannot find map!")
 		end
@@ -120,7 +120,7 @@ CmdMgr.register{
 			stats.count = stats.count + 1
 			local map_id = map:getId()
 			if(maps_data[map_id]) then
-				if(maps_data[map_id].removed ~= '') then
+				if(maps_data[map_id].removed) then
 					stats.removed = stats.removed + 1
 				end
 				stats.rates = stats.rates + maps_data[map_id].rates
@@ -188,7 +188,7 @@ CmdMgr.register{
 				buf = buf..((buf ~= '' and ', ') or '')..mapName
 				local data = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
 				
-				if(data[1].removed ~= '') then
+				if(data[1].removed) then
 					buf = buf..' (removed)'
 				end
 				

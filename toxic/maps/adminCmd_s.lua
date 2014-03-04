@@ -40,7 +40,7 @@ CmdMgr.register{
 			return
 		end
 		
-		DbQuery('UPDATE '..MapsTable..' SET removed=\'\' WHERE map=?', map:getId())
+		DbQuery('UPDATE '..MapsTable..' SET removed=NULL WHERE map=?', map:getId())
 		outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map:getName(), ctx.player:getName(true))
 	end
 }
@@ -68,7 +68,7 @@ CmdMgr.register{
 			end
 			
 			local rows = DbQuery('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
-			if(rows[1].removed ~= '') then
+			if(rows[1].removed) then
 				privMsg(ctx.player, "%s has been removed!", map:getName())
 				return
 			end
@@ -86,7 +86,7 @@ CmdMgr.register{
 local function AddMapToQueue(room, map)
 	local map_id = map:getId()
 	local rows = DbQuery ('SELECT removed FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
-	if (rows[1].removed ~= '') then
+	if (rows[1].removed) then
 		local map_name = map:getName()
 		privMsg(source, "%s has been removed!", map_name)
 	elseif(not MqAdd(room, map, true, source)) then
