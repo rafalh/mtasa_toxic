@@ -316,8 +316,6 @@ function CmdMgr.getCommandsForHelp()
 	local player = Player.fromEl(client)
 	local commmands = CmdMgr.getAllowedCommands(player)
 	
-	table.sort(commmands, function(cmd1, cmd2) return cmd1.name < cmd2.name end)
-	
 	for i, cmd in ipairs(commmands) do
 		commmands[i] = {cmd.name, cmd.desc, cmd.cat or false, cmd.aliases or false}
 	end

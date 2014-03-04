@@ -27,8 +27,11 @@ local function HlpUpdateList()
 	end
 end
 
-local function HlpCmdList(commands)
-	g_Commands = commands
+local function HlpCmdList(serverCommands)
+	local clientCommands = CmdMgr.getCommandsForHelp()
+	local allCommands = table.merge(serverCommands, clientCommands)
+	table.sort(allCommands, function(cmd1, cmd2) return cmd1[1]:lower() < cmd2[1]:lower() end)
+	g_Commands = allCommands
 	HlpUpdateList()
 end
 
