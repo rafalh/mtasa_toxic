@@ -85,71 +85,8 @@ function Database.addConstraints(tbl, constrTbl)
 	return g_Driver and g_Driver:addConstraints(tbl, constrTbl)
 end
 
-function Database.splitTblDef(tblDef)
-	local ret = {}
-	local start, i = 1, 1
-	while(true) do
-		local j, ch = tblDef:match('()([,%(])', i)
-		if(not j) then j = tblDef:len() + 1 end
-		if(ch == '(') then
-			i = tblDef:match('%b()()', j)
-		else
-			table.insert(ret, tblDef:sub(start, j - 1))
-			if(ch) then
-				start = j + 1
-				i = start
-			else
-				break
-			end
-		end
-	end
-	return ret
-end
-
-function Database.getFieldsFromTblDef(tblDef)
-	local fields = {}
-	local temp = Database.splitTblDef(tblDef)
-	for i, colDef in ipairs(temp) do
-		local colName = colDef:match('^%s*([%w_]+)')
-		if(colName and colName ~= 'CONSTRAINT' and colName ~= 'PRIMARY' and colName ~= 'UNIQUE' and colName ~= 'CHECK' and colName ~= 'FOREIGN') then
-			table.insert(fields, colName)
-		end
-	end
-	return fields
-end
-
 function Database.recreateTable(tbl, tblDef)
-	if(not Database.query('ALTER TABLE '..tbl..' RENAME TO __'..tbl)) then
-		return false
-	end
-	
-	if(not tblDef) then
-		tblDef = g_Driver:getTblDef(tbl)
-	elseif(type(tblDef) == 'table') then
-		tblDef = g_Driver:getTblDef(tblDef)
-	end
-	local tblOpts = g_Driver:getTblOptions(tbl)
-	local query = 'CREATE TABLE '..tbl..' ('..tblDef..')'..tblOpts
-	
-	if(not Database.query(query)) then
-		Debug.err('Failed to recreate '..tbl.name..' table')
-		Database.query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
-		return false
-	end
-	
-	local fields = Database.getFieldsFromTblDef(tblDef)
-	local fieldsStr = table.concat(fields, ',')
-	
-	if(not Database.query('INSERT INTO '..tbl..' SELECT '..fieldsStr..' FROM __'..tbl)) then
-		Debug.err('Failed to copy rows when recreating '..tbl.name)
-		Database.query('DROP TABLE '..tbl)
-		Database.query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
-		return false
-	end
-	
-	Database.query('DROP TABLE __'..tbl)
-	
-	return true
+	return g_Driver and g_Driver:recreateTable(tbl, tblDef)
 end
 
 -- Legacy API
@@ -291,13 +228,76 @@ function Database.Drivers._common:createIndexes(tbl)
 	return true
 end
 
+function Database.Drivers._common:splitTblDef(tblDef)
+	local ret = {}
+	local start, i = 1, 1
+	while(true) do
+		local j, ch = tblDef:match('()([,%(])', i)
+		if(not j) then j = tblDef:len() + 1 end
+		if(ch == '(') then
+			i = tblDef:match('%b()()', j)
+		else
+			table.insert(ret, tblDef:sub(start, j - 1))
+			if(ch) then
+				start = j + 1
+				i = start
+			else
+				break
+			end
+		end
+	end
+	return ret
+end
+
+function Database.Drivers._common:getFieldsFromTblDef(tblDef)
+	local fields = {}
+	local temp = self:splitTblDef(tblDef)
+	for i, colDef in ipairs(temp) do
+		local colName = colDef:match('^%s*([%w_]+)')
+		if(colName and colName ~= 'CONSTRAINT' and colName ~= 'PRIMARY' and colName ~= 'UNIQUE' and colName ~= 'CHECK' and colName ~= 'FOREIGN') then
+			table.insert(fields, colName)
+		end
+	end
+	return fields
+end
+
+function Database.Drivers._common:recreateTable(tbl, tblDef)
+	if(not self:query('ALTER TABLE '..tbl..' RENAME TO __'..tbl)) then
+		return false
+	end
+	
+	if(not tblDef) then
+		tblDef = self:getTblDef(tbl)
+	elseif(type(tblDef) == 'table') then
+		tblDef = self:getTblDef(tblDef)
+	end
+	local tblOpts = self:getTblOptions(tbl)
+	local query = 'CREATE TABLE '..tbl..' ('..tblDef..')'..tblOpts
+	
+	if(not self:query(query)) then
+		Debug.err('Failed to recreate '..tbl.name..' table')
+		self:query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
+		return false
+	end
+	
+	local fields = self:getFieldsFromTblDef(tblDef)
+	local fieldsStr = table.concat(fields, ',')
+	
+	if(not self:query('INSERT INTO '..tbl..' SELECT '..fieldsStr..' FROM __'..tbl)) then
+		Debug.err('Failed to copy rows when recreating '..tbl.name)
+		self:query('DROP TABLE '..tbl)
+		self:query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
+		return false
+	end
+	
+	self:query('DROP TABLE __'..tbl)
+	
+	return true
+end
+
 ----------------- SQLite Driver -----------------
 
-Database.Drivers.SQLite = {}
-Database.Drivers.SQLite.getConstraints = Database.Drivers._common.getConstraints
-Database.Drivers.SQLite.getTblOptions = Database.Drivers._common.getTblOptions
-Database.Drivers.SQLite.createTable = Database.Drivers._common.createTable
-Database.Drivers.SQLite.createIndexes = Database.Drivers._common.createIndexes
+Database.Drivers.SQLite = table.copy(Database.Drivers._common)
 
 function Database.Drivers.SQLite:makeBackup()
 	-- remove backup if there is too many
@@ -450,12 +450,12 @@ function Database.Drivers.SQLite:verifySchema(tbl)
 	local validTblDef = self:getTblDef(tbl)
 	if(realTblDef == validTblDef) then return true end
 	
-	local realTbl = Database.splitTblDef(realTblDef)
+	local realTbl = self:splitTblDef(realTblDef)
 	for i, v in ipairs(realTbl) do
 		realTbl[i] = trimStr(v)
 	end
 	table.sort(realTbl)
-	local validTbl = Database.splitTblDef(validTblDef)
+	local validTbl = self:splitTblDef(validTblDef)
 	for i, v in ipairs(validTbl) do
 		validTbl[i] = trimStr(v)
 	end
@@ -555,10 +555,7 @@ end
 
 ----------------- MySQL Driver -----------------
 
-Database.Drivers.MySQL = {}
-Database.Drivers.SQLite.getConstraints = Database.Drivers._common.getConstraints
-Database.Drivers.MySQL.createTable = Database.Drivers._common.createTable
-Database.Drivers.MySQL.createIndexes = Database.Drivers._common.createIndexes
+Database.Drivers.MySQL = table.copy(Database.Drivers._common)
 
 function Database.Drivers.MySQL:init()
 	if(not g_Config.host or not g_Config.dbname or not g_Config.username or not g_Config.password) then
