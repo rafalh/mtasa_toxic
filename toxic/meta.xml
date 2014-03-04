@@ -9,6 +9,10 @@
 	<script src="utils/common.lua" type="shared" />
 	<script src="utils/common_s.lua" type="server" />
 	<script src="utils/common_c.lua" type="client" />
+	
+	<script src="core/test.lua" type="shared" />
+	<script src="core/debug.lua" type="shared" />
+	
 	<script src="utils/outputChat_s.lua" type="server" />
 	<script src="utils/outputChat_c.lua" type="client" />
 	<script src="utils/vector2.lua" type="shared" />
@@ -23,8 +27,6 @@
 	<script src="utils/rpc.lua" type="shared" />
 	<script src="utils/resource.lua" type="shared" />
 	<script src="utils/event.lua" type="server" />
-	
-	<script src="core/debug.lua" type="shared" />
 	
 	<script src="core/start_s.lua" type="server" />
 	<script src="core/settings_s.lua" type="server" />
