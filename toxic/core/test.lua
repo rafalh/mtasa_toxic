@@ -4,6 +4,11 @@ local g_Map = {}
 local g_FailCount = 0
 local g_ExecutedCount = 0
 
+local function outputMsg(msg)
+	outputServerLog('TEST: '..msg)
+	outputConsole(msg)
+end
+
 function register(name, func)
 	g_Map[name] = func
 end
@@ -13,28 +18,28 @@ function check(cond, descr, offset)
 	if(cond) then return end
 	
 	g_FailCount = g_FailCount + 1
-	local trace = Debug.getStackTrace(1, offset)
-	Debug.err('Test failed: '..(descr or tostring(cond))..' in '..trace[1])
+	local trace = Debug.getStackTrace(1, (offset or 0) + 1)
+	outputMsg('Test failed - '..(descr or tostring(cond))..' in '..trace[1])
 end
 
 function checkEq(val, validVal, descr)
-	check(val == validVal, 'expected '..validVal..', got '..val..(descr and ' '..descr or ''), 1)
+	check(val == validVal, 'expected '..tostring(validVal)..', got '..tostring(val)..(descr and ' '..descr or ''), 1)
 end
 
 function checkGt(val1, val2, descr)
-	check(val1 > val2, 'expected '..val1..' > '..val2..(descr and ' '..descr or ''), 1)
+	check(val1 > val2, 'expected '..tostring(val1)..' > '..tostring(val2)..(descr and ' '..descr or ''), 1)
 end
 
 function checkGte(val1, val2, descr)
-	check(val1 >= val2, 'expected '..val1..' >= '..val2..(descr and ' '..descr or ''), 1)
+	check(val1 >= val2, 'expected '..tostring(val1)..' >= '..tostring(val2)..(descr and ' '..descr or ''), 1)
 end
 
 function checkLt(val1, val2, descr)
-	check(val1 < val2, 'expected '..val1..' < '..val2..(descr and ' '..descr or ''), 1)
+	check(val1 < val2, 'expected '..tostring(val1)..' < '..tostring(val2)..(descr and ' '..descr or ''), 1)
 end
 
 function checkLte(val1, val2, descr)
-	check(val1 <= val2, 'expected '..val1..' <= '..val2..(descr and ' '..descr or ''), 1)
+	check(val1 <= val2, 'expected '..tostring(val1)..' <= '..tostring(val2)..(descr and ' '..descr or ''), 1)
 end
 
 function checkTblEq(tbl, validTbl, descr)
@@ -57,20 +62,21 @@ function run(name)
 		runInternal(name)
 	else
 		for name, f in pairs(g_Map) do
-			Debug.info('Starting test: '..name)
+			local msg = 
+			outputMsg('Starting test \''..name..'\'')
 			runInternal(name)
 		end
 	end
 	
-	Debug.info(g_ExecutedCount..' tests executed - '..g_FailCount..' tests failed')
+	outputMsg(g_ExecutedCount..' tests executed - '..g_FailCount..' tests failed')
 end
 
 if(g_ServerSide) then
-	addCommandHandler('txtests', function(player, cmd, testName)
+	addCommandHandler('tests', function(player, cmd, testName)
 		run(testName)
 	end, false, true)
 else
-	addCommandHandler('txtestc', function(cmd, testName)
+	addCommandHandler('testc', function(cmd, testName)
 		run(testName)
 	end, true)
 end
