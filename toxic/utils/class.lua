@@ -66,7 +66,7 @@ function mt.__concat(a, b)
 end
 setmetatable(Class, mt)
 
-#local TEST = true
+#local TEST = false
 #if(TEST) then
 	A = Class('A')
 	A.x = 1

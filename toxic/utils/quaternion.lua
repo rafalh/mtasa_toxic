@@ -108,7 +108,7 @@ end
 Quaternion.IDENTITY = Quaternion(0, 0, 0, 1)
 
 -- Simple test
-#TEST = true
+#local TEST = false
 #if(TEST) then
 	assert(Quaternion.IDENTITY*Quaternion.IDENTITY == Quaternion.IDENTITY)
 #end
