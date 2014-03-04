@@ -47,6 +47,9 @@ function run()
 		end
 	end
 	
+	-- Make backup before update
+	Database.makeBackup()
+	
 	-- Begin transaction
 	DbQuery('COMMIT')
 	DbQuery('BEGIN')

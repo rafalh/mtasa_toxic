@@ -89,6 +89,10 @@ function Database.recreateTable(tbl, tblDef)
 	return g_Driver and g_Driver:recreateTable(tbl, tblDef)
 end
 
+function Database.makeBackup()
+	return g_Driver and g_Driver.makeBackup and g_Driver:makeBackup()
+end
+
 -- Legacy API
 function DbStr(...)
 	return '\''..Database.escape(...)..'\''
