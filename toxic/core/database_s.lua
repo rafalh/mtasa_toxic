@@ -1,5 +1,5 @@
 -- Defines
-#local ALWAYS_WAIT = true
+#local ALWAYS_WAIT = false
 
 -- Globals
 local g_Connection, g_Ready, g_Driver = false, false, false
