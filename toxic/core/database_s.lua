@@ -65,8 +65,57 @@ function Database.getLastInsertID()
 	return g_Driver and g_Driver:getLastInsertID()
 end
 
-function Database.alterColumn(tbl, colName, colDef)
-	return g_Driver and g_Driver:alterColumn(tbl, colName, colDef)
+function Database.alterColumn(tbl, colInfo)
+	return g_Driver and g_Driver:alterColumns(tbl, {colInfo})
+end
+
+function Database.alterColumns(tbl, colInfoTbl)
+	return g_Driver and g_Driver:alterColumns(tbl, colInfoTbl)
+end
+
+function Database.dropColumns(tbl, colNames)
+	return g_Driver and g_Driver:dropColumns(tbl, colNames)
+end
+
+function Database.addConstraint(tbl, constr)
+	return g_Driver and g_Driver:addConstraints(tbl, {constr})
+end
+
+function Database.addConstraints(tbl, constrTbl)
+	return g_Driver and g_Driver:addConstraints(tbl, constrTbl)
+end
+
+function Database.splitTblDef(tblDef)
+	local ret = {}
+	local start, i = 1, 1
+	while(true) do
+		local j, ch = tblDef:match('()([,%(])', i)
+		if(not j) then j = tblDef:len() + 1 end
+		if(ch == '(') then
+			i = tblDef:match('%b()()', j)
+		else
+			table.insert(ret, tblDef:sub(start, j - 1))
+			if(ch) then
+				start = j + 1
+				i = start
+			else
+				break
+			end
+		end
+	end
+	return ret
+end
+
+function Database.getFieldsFromTblDef(tblDef)
+	local fields = {}
+	local temp = Database.splitTblDef(tblDef)
+	for i, colDef in ipairs(temp) do
+		local colName = colDef:match('^%s*([%w_]+)')
+		if(colName and colName ~= 'CONSTRAINT' and colName ~= 'PRIMARY' and colName ~= 'UNIQUE' and colName ~= 'CHECK' and colName ~= 'FOREIGN') then
+			table.insert(fields, colName)
+		end
+	end
+	return fields
 end
 
 function Database.recreateTable(tbl, tblDef)
@@ -76,6 +125,8 @@ function Database.recreateTable(tbl, tblDef)
 	
 	if(not tblDef) then
 		tblDef = g_Driver:getTblDef(tbl)
+	elseif(type(tblDef) == 'table') then
+		tblDef = g_Driver:getTblDef(tblDef)
 	end
 	local tblOpts = g_Driver:getTblOptions(tbl)
 	local query = 'CREATE TABLE '..tbl..' ('..tblDef..')'..tblOpts
@@ -86,7 +137,10 @@ function Database.recreateTable(tbl, tblDef)
 		return false
 	end
 	
-	if(not Database.query('INSERT INTO '..tbl..' SELECT * FROM __'..tbl)) then
+	local fields = Database.getFieldsFromTblDef(tblDef)
+	local fieldsStr = table.concat(fields, ',')
+	
+	if(not Database.query('INSERT INTO '..tbl..' SELECT '..fieldsStr..' FROM __'..tbl)) then
 		Debug.err('Failed to copy rows when recreating '..tbl.name)
 		Database.query('DROP TABLE '..tbl)
 		Database.query('ALTER TABLE __'..tbl..' RENAME TO '..tbl)
@@ -135,6 +189,10 @@ function Database.Table.__mt.__index:getColumnsList()
 	return ret
 end
 
+function Database.Table.__mt.__index:hasColumn(colName)
+	return self.colMap[colName] and true
+end
+
 function Database.Table:create(args)
 	assert(args.name)
 	
@@ -144,6 +202,7 @@ function Database.Table:create(args)
 	self:addColumns(args)
 	
 	table.insert(Database.tblList, self)
+	assert(not Database.tblMap[self.name], 'Table '..tostring(args.name)..' already exists')
 	Database.tblMap[self.name] = self
 	return self
 end
@@ -165,7 +224,23 @@ setmetatable(Database.Table, {__call = Database.Table.create})
 ----------------- Common Driver -----------------
 
 Database.Drivers._common = {}
-function Database.Drivers._common:getColDef(col, constr)
+
+function Database.Drivers._common:getConstraints(colInfo, constrTbl)
+	if(colInfo.fk) then
+		-- Check it here because when original table is defined foreign table can be not existant
+		assert(type(colInfo.fk) == 'table')
+		local foreignTbl = Database.tblMap[colInfo.fk[1]]
+		assert(foreignTbl and foreignTbl.colMap[colInfo.fk[2]])
+		table.insert(constrTbl, 'FOREIGN KEY('..colInfo[1]..') REFERENCES '..DbPrefix..colInfo.fk[1]..'('..colInfo.fk[2]..')')
+	end
+	
+	if(colInfo.unique) then -- unique constraint
+		assert(type(colInfo.unique) == 'table')
+		table.insert(constrTbl, 'UNIQUE('..table.concat(colInfo.unique, ', ')..')')
+	end
+end
+
+function Database.Drivers._common:getColDef(col)
 	local colDef = col[1]..' '..col[2]
 	if(not col.null) then
 		colDef = colDef..' NOT NULL'
@@ -182,13 +257,6 @@ function Database.Drivers._common:getColDef(col, constr)
 			defVal = tostring(defVal)
 		end
 		colDef = colDef..' DEFAULT '..defVal
-	end
-	
-	if(col.fk) then
-		-- Check it here because when original table is defined foreign table can be not existant
-		local foreignTbl = Database.tblMap[col.fk[1]]
-		assert(foreignTbl and foreignTbl.colMap[col.fk[2]])
-		table.insert(constr, 'FOREIGN KEY('..col[1]..') REFERENCES '..DbPrefix..col.fk[1]..'('..col.fk[2]..')')
 	end
 	
 	return colDef
@@ -226,7 +294,7 @@ end
 ----------------- SQLite Driver -----------------
 
 Database.Drivers.SQLite = {}
-Database.Drivers.SQLite.getColDef = Database.Drivers._common.getColDef
+Database.Drivers.SQLite.getConstraints = Database.Drivers._common.getConstraints
 Database.Drivers.SQLite.getTblOptions = Database.Drivers._common.getTblOptions
 Database.Drivers.SQLite.createTable = Database.Drivers._common.createTable
 Database.Drivers.SQLite.createIndexes = Database.Drivers._common.createIndexes
@@ -336,25 +404,25 @@ function Database.Drivers.SQLite:exec(query, ...)
 	return false
 end
 
-function Database.Drivers.SQLite:getColDef(col, constr)
+function Database.Drivers.SQLite:getColDef(col)
 	if(col.pk) then -- Primary Key
 		-- AUTO_INCREMENT is not needed for SQLite (and is called different)
 		return col[1]..' INTEGER PRIMARY KEY NOT NULL'
 	else
-		return Database.Drivers._common.getColDef(self, col, constr)
+		return Database.Drivers._common.getColDef(self, col)
 	end
 end
 
 function Database.Drivers.SQLite:getTblDef(tbl)
-	local cols, constr, indexes = {}, {}, {}
-	for i, col in ipairs(tbl) do
-		if(col[2]) then -- normal column
+	local cols, constr = {}, {}
+	for i, colInfo in ipairs(tbl) do
+		if(colInfo[2]) then -- normal column
 			-- Note: Foreign keys are supported by getColDef
-			local colDef = self:getColDef(col, constr)
+			local colDef = self:getColDef(colInfo)
 			table.insert(cols, colDef)
-		elseif(col.unique) then -- unique constraint
-			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
 		end
+		
+		self:getConstraints(colInfo, constr)
 	end
 	
 	return table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')
@@ -376,36 +444,119 @@ function Database.Drivers.SQLite:optimize()
 end
 
 function Database.Drivers.SQLite:verifySchema(tbl)
-	local rows = self:query('SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=?', tostring(tbl))
-	local realSql = rows and rows[1] and rows[1].sql
-	if(not realSql) then return false end
+	local realTblDef = self:getTblDefFromDB(tbl)
+	if(not realTblDef) then return false end
 	
-	local tblDef = self:getTblDef(tbl)
-	local validSql = 'CREATE TABLE '..tbl..' ('..tblDef..')'
-	if(realSql ~= validSql) then Debug.info('Valid schema '..validSql) end
-	return (realSql == validSql)
+	local validTblDef = self:getTblDef(tbl)
+	if(realTblDef == validTblDef) then return true end
+	
+	local realTbl = Database.splitTblDef(realTblDef)
+	for i, v in ipairs(realTbl) do
+		realTbl[i] = trimStr(v)
+	end
+	table.sort(realTbl)
+	local validTbl = Database.splitTblDef(validTblDef)
+	for i, v in ipairs(validTbl) do
+		validTbl[i] = trimStr(v)
+	end
+	table.sort(validTbl)
+	
+	local missing, additional = {}, {}
+	local realIdx, validIdx = 1, 1
+	while(realIdx < #realTbl or validIdx < #validTbl) do
+		local realCol = realTbl[realIdx]
+		local validCol = validTbl[validIdx]
+		if(realCol == validCol) then
+			realIdx = realIdx + 1
+			validIdx = validIdx + 1
+		elseif(not validCol or (realCol and realCol < validCol)) then
+			table.insert(additional, realCol)
+			realIdx = realIdx + 1
+		else
+			table.insert(missing, validCol)
+			validIdx = validIdx + 1
+		end
+	end
+	
+	if(#missing == 0 and #additional == 0) then return true end
+	
+	Debug.info('Table schema is not compatible for '..tbl)
+	if(#missing > 0) then
+		Debug.info('Missing: '..table.concat(missing, ', '))
+	end
+	if(#additional > 0) then
+		Debug.info('Additional: '..table.concat(additional, ', '))
+	end
+	return false
 end
 
-function Database.Drivers.SQLite:alterColumn(tbl, colInfo)
-	local rows = self:query('SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=?', tostring(tbl))
-	local sql = rows and rows[1] and rows[1].sql
-	if(not sql) then return false end
+function Database.Drivers.SQLite:getTblDefFromDB(tbl)
+	local tblDef = Cache.get('Database.tblDef.'..tbl)
+	if(not tblDef) then
+		local rows = self:query('SELECT sql FROM sqlite_master WHERE type=\'table\' AND name=?', tostring(tbl))
+		local sql = rows and rows[1] and rows[1].sql
+		if(not sql) then Debug.warn('Failed to get definition of '..tostring(tbl)..' from sqlite_master: '..tostring(rows)..' '..tostring(rows[1])) return false end
+		
+		tblDef = sql:match('CREATE TABLE [%w_]+%s*(%b())')
+		if(not tblDef) then Debug.warn('Failed to parse sql definition') return false end
+		
+		tblDef = tblDef:sub(2, -2)
+		Cache.set('Database.tblDef.'..tbl, tblDef, 60)
+	end
 	
-	local tblDef = sql:match('CREATE TABLE [%w_]+%s*(%b())')
-	if(tblDef) then tblDef = tblDef:sub(2, -2) end
+	return tblDef
+end
+
+function Database.Drivers.SQLite:alterColumns(tbl, colInfoTbl)
+	if(#colInfoTbl == 0) then return true end
 	
-	local constr = {}
-	local newTblDef = tblDef:gsub(colInfo[1]..'%s+[^,%)]+', self:getColDef(colInfo, constr))
-	if(#constr > 0) then Debug.warn('Constraint ignored in alterColumn') end
-	if(newTblDef == tblDef) then return false end
+	local tblDef = self:getTblDefFromDB(tbl)
+	if(not tblDef) then Debug.warn('getTblDefFromDB failed') return false end
 	
-	Debug.info('alterColumn '..newTblDef)
-	return Database.recreateTable(tbl, newTblDef)
+	for i, colInfo in ipairs(colInfoTbl) do
+		local matches
+		tblDef, matches = tblDef:gsub(colInfo[1]..'%s+[^,]+', self:getColDef(colInfo))
+		if(matches ~= 1) then Debug.warn('Cannot find '..colInfo[1]..' in alterColumns') return false end
+	end
+	
+	Cache.remove('Database.tblDef.'..tbl)
+	return Database.recreateTable(tbl, tblDef)
+end
+
+function Database.Drivers.SQLite:dropColumns(tbl, colNames)
+	if(#colNames == 0) then return true end
+	
+	local tblDef = self:getTblDefFromDB(tbl)
+	if(not tblDef) then Debug.warn('getTblDefFromDB failed') return false end
+	
+	for i, colName in ipairs(colNames) do
+		local matches
+		tblDef, matches = tblDef:gsub(colName..'%s+[^,]+,?', '')
+		if(matches ~= 1) then Debug.warn('Cannot find '..colName..' in dropColumns') return false end
+	end
+	
+	Cache.remove('Database.tblDef.'..tbl)
+	return Database.recreateTable(tbl, tblDef)
+end
+
+function Database.Drivers.SQLite:addConstraints(tbl, constrInfoTbl)
+	local tblDef = self:getTblDefFromDB(tbl)
+	if(not tblDef) then return false end
+	
+	local constrTbl = {}
+	for i, constrInfo in ipairs(constrInfoTbl) do
+		self:getConstraints(constrInfo, constrTbl)
+	end
+	
+	tblDef = tblDef..', '..table.concat(constrTbl, ', ')
+	Cache.remove('Database.tblDef.'..tbl)
+	return Database.recreateTable(tbl, tblDef)
 end
 
 ----------------- MySQL Driver -----------------
 
 Database.Drivers.MySQL = {}
+Database.Drivers.SQLite.getConstraints = Database.Drivers._common.getConstraints
 Database.Drivers.MySQL.createTable = Database.Drivers._common.createTable
 Database.Drivers.MySQL.createIndexes = Database.Drivers._common.createIndexes
 
@@ -461,24 +612,24 @@ function Database.Drivers.MySQL:exec(query, ...)
 	return false
 end
 
-function Database.Drivers.MySQL:getColDef(col, constr)
+function Database.Drivers.MySQL:getColDef(col)
 	if(col.pk) then -- Primary Key
 		return col[1]..' '..col[2]..' NOT NULL AUTO_INCREMENT PRIMARY KEY'
 	else
-		return Database.Drivers._common.getColDef(self, col, constr)
+		return Database.Drivers._common.getColDef(self, col)
 	end
 end
 
 function Database.Drivers.MySQL:getTblDef(tbl)
-	local cols, constr, indexes = {}, {}, {}
-	for i, col in ipairs(tbl) do
-		if(col[2]) then -- normal column
+	local cols, constr = {}, {}
+	for i, colInfo in ipairs(tbl) do
+		if(colInfo[2]) then -- normal column
 			-- Note: Foreign keys are supported by getColDef
-			local colDef = self:getColDef(col, constr)
+			local colDef = self:getColDef(colInfo)
 			table.insert(cols, colDef)
-		elseif(col.unique) then -- unique constraint
-			table.insert(constr, 'CONSTRAINT '..DbPrefix..col[1]..' UNIQUE('..table.concat(col.unique, ', ')..')')
 		end
+		
+		self:getConstraints(colInfo, constr)
 	end
 	
 	return table.concat(cols, ', ')..((#cols > 0 and #constr > 0) and ', ' or '')..table.concat(constr, ', ')
@@ -511,11 +662,35 @@ function Database.Drivers.MySQL:verifySchema(tbl)
 	return true
 end
 
-function Database.Drivers.MySQL:alterColumn(tbl, colInfo)
-	local constr = {}
-	local colDef = self:getColDef(colInfo, constr)
-	if(#constr > 0) then Debug.warn('Constraint ignored in alterColumn') end
-	return self:query('ALTER TABLE '..tbl..' MODIFY '..colDef)
+function Database.Drivers.MySQL:alterColumns(tbl, colInfoTbl)
+	for i, colInfo in ipairs(colInfoTbl) do
+		local colDef = self:getColDef(colInfo)
+		if(not self:query('ALTER TABLE '..tbl..' MODIFY COLUMN '..colDef)) then
+			return false
+		end
+	end
+	return true
+end
+
+function Database.Drivers.MySQL:dropColumns(tbl, colNames)
+	for i, colName in ipairs(colNames) do
+		if(not self:query('ALTER TABLE '..tbl..' DROP COLUMN '..colName)) then
+			return false
+		end
+	end
+	return true
+end
+
+function Database.Drivers.MySQL:addConstraints(tbl, constrInfoTbl)
+	local constrTbl = {}
+	for i, constrInfo in ipairs(constrInfoTbl) do
+		self:getConstraints(colInfo, constrTbl)
+	end
+	
+	for i, constr in ipairs(constrTbl) do
+		if(not self:query('ALTER TABLE '..tbl..' ADD CONSTRAINT '..constr)) then return false end
+	end
+	return true
 end
 
 ----------------- MTA Internal Driver -----------------
@@ -584,15 +759,22 @@ function DbInit()
 			Debug.err('Failed to create '..tbl.name..' table')
 			return false
 		else
-			if(not g_Driver:verifySchema(tbl)) then
-				Debug.warn(tbl..' schema is invalid!')
-			end
 			--Debug.info('Created '..tbl.name..' table')
 		end
 	end
 	
 	g_Ready = true
 	return true
+end
+
+function Database.verifyTables()
+	local status = true
+	for i, tbl in ipairs(Database.tblList) do
+		if(not g_Driver:verifySchema(tbl)) then
+			status = false
+		end
+	end
+	return status
 end
 
 function DbIsReady()

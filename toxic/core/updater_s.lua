@@ -65,8 +65,20 @@ local function mergeMaps(mapDst, mapSrc)
 	return true
 end
 
+local g_TablesToRecreate = {}
+
+local function requestTableRecreate(tbl)
+	table.insert(g_TablesToRecreate, tbl)
+end
+
+function finishUpdate()
+	for i, tbl in ipairs(g_TablesToRecreate) do
+		Database.recreateTable(tbl)
+	end
+end
+
 Updater = {
-	currentVer = 168,
+	currentVer = 169,
 	list = {
 		{
 			ver = 149,
@@ -112,7 +124,7 @@ Updater = {
 				if(not BestTimesTable) then return end
 				
 				DbQuerySync('UPDATE '..BestTimesTable..' SET timestamp=0 WHERE timestamp IS NULL')
-				if(not DbRecreateTable(BestTimesTable)) then
+				if(not Database.recreateTable(BestTimesTable)) then
 					return 'Failed to recreate best times table'
 				end
 			end
@@ -139,7 +151,7 @@ Updater = {
 				Settings.loadPrivate() -- for backupTimestamp
 #end
 				
-				if(not DbRecreateTable(PlayersTable)) then
+				if(not Database.recreateTable(PlayersTable)) then
 					return 'Failed to recreate players table'
 				end
 			end
@@ -255,7 +267,7 @@ Updater = {
 			ver = 163,
 			func = function()
 #if(TOP_TIMES) then
-				if(not DbRecreateTable(BestTimesTable)) then
+				if(not Database.recreateTable(BestTimesTable)) then
 					return 'Failed to recreate besttimes table'
 				end
 				
@@ -289,7 +301,7 @@ Updater = {
 		{
 			ver = 166,
 			func = function()
-				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN namePlain VARCHAR(32) DEFAULT \'\'')) then
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN namePlain VARCHAR(32) NOT NULL DEFAULT \'\'')) then
 					return 'Failed to add namePlain column'
 				end
 				if(not DbQuerySync('UPDATE '..PlayersTable..' SET namePlain=name')) then
@@ -320,9 +332,49 @@ Updater = {
 		{
 			ver = 168,
 			func = function()
-				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN spikeStrips TINYINT DEFAULT 0')) then
+				if(not DbQuerySync('ALTER TABLE '..PlayersTable..' ADD COLUMN spikeStrips TINYINT NOT NULL DEFAULT 0')) then
 					return 'Failed to add spikeStrips column'
 				end
+			end
+		},
+		{
+			ver = 169,
+			func = function()
+				if(not Database.alterColumn(BlobsTable, {'id', 'INT UNSIGNED', pk = true})) then
+					return 'Failed to alter id column in '..BlobsTable
+				end
+				if(not Database.addConstraint(MutesTable, {'mutes_idx', unique = {'serial'}})) then
+					return 'Failed to add constraint do '..MutesTable
+				end
+				if(not Database.alterColumn(BestTimesTable, {'timestamp', 'INT UNSIGNED', null = true})) then
+					return 'Failed to alter timestamp column in '..BestTimesTable
+				end
+				if(not Database.alterColumns(PlayersTable, {
+					{'invitedby', 'INT UNSIGNED', default = 0, null = true},
+					{'namePlain', 'VARCHAR(32)', default = ''},
+					{'serial', 'VARCHAR(32)', default = '', null = true},
+					{'account', 'VARCHAR(255)', default = '', null = true},
+					{'spikeStrips', 'TINYINT UNSIGNED', default = 0},
+					{'email', 'VARCHAR(128)', default = '', null = true},
+				})) then
+					return 'Failed to alter columns in '..PlayersTable
+				end
+				local colsToDrop = {'efectiveness', 'efectiveness_dd', 'efectiveness_dm', 'efectiveness_race'}
+				if(not PlayersTable:hasColumn('avatar')) then
+					table.insert(colsToDrop, 'avatar')
+				end
+				if(not Database.dropColumns(PlayersTable, colsToDrop)) then
+					return 'Failed to drop columns in '..PlayersTable
+				end
+				requestTableRecreate(SerialsTable)
+				requestTableRecreate(MapsTable)
+				requestTableRecreate(AliasesTable)
+				requestTableRecreate(BestTimesTable)
+				requestTableRecreate(RatesTable)
+				requestTableRecreate(ProfilesTable)
+				requestTableRecreate(Teams.TeamsTable)
+				requestTableRecreate(SettingsTable)
+				requestTableRecreate(PlayersTable)
 			end
 		},
 	}

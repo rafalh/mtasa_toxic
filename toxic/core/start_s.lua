@@ -15,8 +15,6 @@ local function setupDatabase()
 		return false
 	end
 	
-	Settings.createDbTbl()
-	
 	local currentVer = Updater.currentVer
 	local ver = Settings.version
 	if(ver == 0) then
@@ -27,7 +25,7 @@ local function setupDatabase()
 		DbQuery('BEGIN')
 		for i, upd in ipairs(Updater.list) do
 			if(upd.ver > ver) then
-				local err = upd.func()
+				local status, err = pcall(upd.func)
 				if(err) then
 					Debug.err('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err))
 					DbQuery('ROLLBACK')
@@ -41,6 +39,9 @@ local function setupDatabase()
 			end
 		end
 	end
+	
+	finishUpdate()
+	Database.verifyTables()
 	
 	return true
 end
