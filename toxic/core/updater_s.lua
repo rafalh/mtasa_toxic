@@ -65,7 +65,7 @@ function run()
 		end
 		
 		-- Update version in settings table
-		Settings.version = ver
+		Settings.version = upd.ver
 		
 		-- Commit changes
 		DbQuery('COMMIT')
