@@ -486,3 +486,36 @@ Updater.register{
 		end
 	end
 }
+
+Updater.register{
+	ver = 172,
+	func = function()
+		if(Database.getType() == 'sqlite') then
+			-- Disconnect from database to move it later
+			if(not Database.getDriver():disconnect()) then
+				return 'Failed to disconnect'
+			end
+			
+			-- Copy files to new location
+			if(not fileCopy('conf/db.sqlite', 'runtime/db.sqlite')) then
+				Database.getDriver():connect()
+				return 'Failed to copy db.sqlite'
+			end
+			if(fileExists('logs/remtoptime.log') and not fileCopy('logs/remtoptime.log', 'runtime/remtoptime.log')) then
+				Database.getDriver():connect()
+				return 'Failed to copy remtoptime.log'
+			end
+			
+			-- Remove old files
+			fileDelete('conf/db.sqlite')
+			if(fileExists('logs/remtoptime.log')) then
+				fileDelete('logs/remtoptime.log')
+			end
+			--fileDelete('logs')
+			
+			-- Reconnect to database
+			Database.getDriver().path = 'runtime/db.sqlite'
+			Database.getDriver():connect()
+		end
+	end
+}

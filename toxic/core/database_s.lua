@@ -2,9 +2,8 @@
 #local ALWAYS_WAIT = false
 
 -- Globals
-local g_Connection, g_Ready, g_Driver = false, false, false
+local g_Ready, g_Driver = false, false
 local g_Config = {}
-local SQLITE_DB_PATH = 'conf/db.sqlite'
 
 Database = {}
 Database.tblList = {}
@@ -91,6 +90,14 @@ end
 
 function Database.makeBackup()
 	return g_Driver and g_Driver.makeBackup and g_Driver:makeBackup()
+end
+
+function Database.getType()
+	return g_Config.type
+end
+
+function Database.getDriver()
+	return g_Driver
 end
 
 -- Legacy API
@@ -326,17 +333,17 @@ function Database.Drivers.SQLite:makeBackup()
 	end
 	
 	-- close connection to database
-	destroyElement(g_Connection)
+	self:disconnect()
 	
 	-- copy database file
-	if(not fileCopy(SQLITE_DB_PATH, 'backups/db1.sqlite')) then
+	if(not fileCopy(self.path, 'backups/db1.sqlite')) then
 		Debug.warn('Failed to copy file')
 	else
 		outputServerLog('Database backup created')
 	end
 	
 	-- reconnect
-	g_Connection = dbConnect('sqlite', SQLITE_DB_PATH)
+	self:connect()
 end
 
 local function Database_Drivers_SQLite_AutoBackup()
@@ -351,13 +358,26 @@ local function Database_Drivers_SQLite_AutoBackup()
 	Settings.backupTimestamp = now
 end
 
-function Database.Drivers.SQLite:init()
-	--fileCopy('backups/db1.sqlite', SQLITE_DB_PATH)
-	g_Connection = dbConnect('sqlite', SQLITE_DB_PATH)
-	if(not g_Connection) then
+function Database.Drivers.SQLite:connect()
+	self.conn = dbConnect('sqlite', self.path)
+	if(not self.conn) then
 		Debug.err('Failed to connect to SQLite database!')
 		return false
 	end
+	return true
+end
+
+function Database.Drivers.SQLite:disconnect()
+	if(not self.conn) then return false end
+	destroyElement(self.conn)
+	self.conn = false
+	return true
+end
+
+function Database.Drivers.SQLite:init()
+	self.path = fileExists('conf/db.sqlite') and 'conf/db.sqlite' or 'runtime/db.sqlite'
+	--fileCopy('backups/db1.sqlite', self.path)
+	if(not self:connect()) then return false end
 	
 	local backupsInt = touint(g_Config.backupInterval, 0) * 3600 * 24
 	if(backupsInt > 0) then
@@ -383,7 +403,7 @@ function Database.Drivers.SQLite:escape(str)
 end
 
 function Database.Drivers.SQLite:query(query, ...)
-	local qh = dbQuery(g_Connection, query, ...)
+	local qh = dbQuery(self.conn, query, ...)
 	assert(qh)
 	local result, numrows, errmsg = dbPoll(qh, -1)
 	
@@ -397,7 +417,7 @@ function Database.Drivers.SQLite:query(query, ...)
 end
 
 function Database.Drivers.SQLite:exec(query, ...)
-	result = dbExec(g_Connection, query, ...)
+	result = dbExec(self.conn, query, ...)
 	
 	if(result) then
 		return result
@@ -561,7 +581,7 @@ end
 
 Database.Drivers.MySQL = table.copy(Database.Drivers._common)
 
-function Database.Drivers.MySQL:init()
+function Database.Drivers.MySQL:connect()
 	if(not g_Config.host or not g_Config.dbname or not g_Config.username or not g_Config.password) then
 		Debug.err('Required setting for MySQL connection has not been found (host, dbname, username, password)', 1)
 		return false
@@ -572,15 +592,25 @@ function Database.Drivers.MySQL:init()
 		params = params..';port='..g_Config.port
 	end
 	
-	outputServerLog('MySQL support is experimental!', 3)
-	g_Connection = dbConnect('mysql', params, g_Config.username, g_Config.password)
-	if(not g_Connection) then
-		Debug.err('Failed to connect to MySQL database!')
-		Debug.info('Params: '..params..' '..g_Config.username..' '..('*'):rep(g_Config.password:len()))
+	Debug.warn('MySQL support is experimental!')
+	self.conn = dbConnect('mysql', params, g_Config.username, g_Config.password)
+	if(not self.conn) then
+		Debug.err('Failed to connect to MySQL database - '..params..' '..g_Config.username..' '..('*'):rep(g_Config.password:len()))
 		return false
 	end
 	
 	return true
+end
+
+function Database.Drivers.MySQL:disconnect()
+	if(not self.conn) then return false end
+	destroyElement(self.conn)
+	self.conn = false
+	return true
+end
+
+function Database.Drivers.MySQL:init()
+	return self:connect()
 end
 
 function Database.Drivers.MySQL:escape(str)
@@ -588,7 +618,7 @@ function Database.Drivers.MySQL:escape(str)
 end
 
 function Database.Drivers.MySQL:query(query, ...)
-	local qh = dbQuery(g_Connection, query, ...)
+	local qh = dbQuery(self.conn, query, ...)
 	assert(qh)
 	local result, numrows, errmsg = dbPoll(qh, -1)
 	
@@ -602,7 +632,7 @@ function Database.Drivers.MySQL:query(query, ...)
 end
 
 function Database.Drivers.MySQL:exec(query, ...)
-	local result = dbExec(g_Connection, query, ...)
+	local result = dbExec(self.conn, query, ...)
 	
 	if(result) then
 		return result
