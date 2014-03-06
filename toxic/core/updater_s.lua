@@ -1,6 +1,7 @@
 namespace('Updater')
 
 local g_List = {}
+local g_Queue = {}
 local g_TablesToRecreate = {}
 local g_MaxVer = 0
 
@@ -18,29 +19,30 @@ function run()
 	if(ver == 0) then
 		-- Version is not set in settings table - this is first run
 		Settings.version = g_MaxVer
+		g_List = {} -- destroy updates list
 		Debug.warn('Database version auto-detection: '..g_MaxVer)
 		return true
 	end
 	
 	-- Find needed updates
-	local queue = {}
 	for i, upd in ipairs(g_List) do
 		if(upd.ver > ver) then
-			table.insert(queue, upd)
+			table.insert(g_Queue, upd)
 		end
 	end
+	g_List = {} -- destroy updates list
 	
-	if(#queue == 0) then
+	if(#g_Queue == 0) then
 		-- Nothing to do
 		return true
 	end
 	
 	-- Sort updates
-	table.sort(queue, function(upd1, upd2) return upd1.ver < upd2.ver end)
+	table.sort(g_Queue, function(upd1, upd2) return upd1.ver < upd2.ver end)
 	
 	-- Check if there are all needed updates (no holes)
-	for i, upd in ipairs(queue) do
-		local prevVer = i > 1 and queue[i - 1].ver or ver
+	for i, upd in ipairs(g_Queue) do
+		local prevVer = i > 1 and g_Queue[i - 1].ver or ver
 		if(prevVer ~= upd.ver - 1) then
 			Debug.err('Update #'..(upd.ver - 1)..' is missing!')
 			return false
@@ -55,7 +57,9 @@ function run()
 	DbQuery('BEGIN')
 	
 	-- Start update
-	for i, upd in ipairs(queue) do
+	while(#g_Queue > 0) do
+		local upd = table.remove(g_Queue, 1)
+		
 		local status, err = pcall(upd.func)
 		if(err) then
 			Debug.err('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err))
