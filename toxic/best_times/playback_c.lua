@@ -186,13 +186,13 @@ function Playback.timerProc(id)
 	end
 end
 
-function Playback.__mt.__index:start()
+function Playback.__mt.__index:start(ms)
 	assert(not self.ticks)
 	
 	-- Setup object state
 	self.ticks = getTickCount()
-	self:setProgress(0)
-	assert(self.curFrameIdx == 1 and self.dt == 0)
+	self:setProgress(ms or 0)
+	assert(ms > 0 or (self.curFrameIdx == 1 and self.dt == 0))
 	
 	-- Update vehicle
 	self:setVisible(true)

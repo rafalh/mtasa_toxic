@@ -7,7 +7,7 @@ local g_TraceCoded, g_Title, g_StartTime
 function destroy()
 	--Debug.info('TopTimePlayback.destroy')
 	
-	g_TraceCoded, g_Title = false, false
+	g_TraceCoded, g_Title, g_StartTime = false, false, false
 	
 	if(g_Playback) then
 		g_Playback:destroy()
@@ -50,6 +50,27 @@ function init(traceCoded, title)
 	end
 end
 
+local function isEnabled()
+	if(g_Playback) then return true end
+	return false
+end
+
+local function setEnabled(en)
+	if(isEnabled() == en) then return end
+	
+	if(g_Playback) then
+		g_Playback:destroy()
+		g_Playback = false
+	else
+		local trace = RcDecodeTrace(g_TraceCoded)
+		g_Playback = Playback(trace, g_Title)
+		if(g_StartTime) then
+			local dt = getTickCount() - g_StartTime
+			g_Playback:start(dt)
+		end
+	end
+end
+
 Settings.register
 {
 	name = 'playback',
@@ -65,4 +86,19 @@ Settings.register
 	acceptGui = function(cb)
 		Settings.playback = guiCheckBoxGetSelected(cb)
 	end,
+	onChange = function(oldVal, newVal)
+		setEnabled(newVal)
+	end,
+}
+
+CmdMgr.register{
+	name = 'playback',
+	desc = "Toggles Top Time Playback in current race. To enable/disable it permanently change corresponding option in User Panel.",
+	func = function(ctx)
+		if(not g_TraceCoded) then
+			outputMsg(Styles.red, "There is no playback recorded on this map.")
+		else
+			setEnabled(not isEnabled())
+		end
+	end
 }
