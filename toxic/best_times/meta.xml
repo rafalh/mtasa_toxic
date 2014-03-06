@@ -9,6 +9,8 @@
 	<script src="rec_c.lua" type="client" />
 	<script src="playback_c.lua" type="client" />
 	<script src="coder.lua" type="shared" />
+	<script src="topTimePlayback_s.lua" type="server" />
+	<script src="topTimePlayback_c.lua" type="client" />
 	
 	<file src="race.png" />
 	

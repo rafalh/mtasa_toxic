@@ -226,12 +226,14 @@ local function onMapStart(map, room)
 		prof2:cp('onMapStart 5')
 		
 		-- start recording
-		local winning_veh = mapType and mapType.winning_veh
-		room.recording = (room.isRace or winning_veh) and RcStartRecording and Settings.recorder
-		if(room.isRace or winning_veh) then
-			if(room.recording) then
-				RcStartRecording(room, map_id)
-			end
+		local winningVeh = mapType and mapType.winning_veh
+		local hasRanking = room.isRace or winningVeh
+		room.recording = hasRanking and RcStartRecording and Settings.recorder
+		if(room.recording) then
+			RcStartRecording(room, map_id)
+		end
+		if(hasRanking and TopTimePlayback) then
+			TopTimePlayback.start(room, map_id)
 		end
 		prof2:cp('onMapStart 6')
 		
@@ -268,22 +270,32 @@ local function onMapStop(room)
 
 	local prof = DbgPerf()
 	
+	-- Stop recording and playback
 	if(room.recording) then
 		room.recording = false
 		RcStopRecording(room)
 	end
+	if(TopTimePlayback) then
+		TopTimePlayback.stop(room)
+	end
 	
-	GbFinishBets()
+	if(GbFinishBets) then
+		GbFinishBets()
+	end
 	
+	if(StMapStop) then
+		StMapStop(room)
+	end
+	
+	room.currentMap = false
+	
+	-- Set old vehicleweapons value in case it has been changed
 	if(g_OldVehicleWeapons) then
 		set('*race.vehicleweapons', g_OldVehicleWeapons)
 		g_OldVehicleWeapons = nil
 	end
 	
-	StMapStop(room)
-	
-	room.currentMap = false
-	
+	-- Destroy temporary objects
 	for i, el in ipairs(room.tempElements or {}) do
 		destroyElement(el)
 	end

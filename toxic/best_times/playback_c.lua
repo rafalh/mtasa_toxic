@@ -1,16 +1,15 @@
 local TITLE_COLOR = tocolor(196, 196, 196, 96)
 local VEH_ALPHA = 102
-local USE_INTERPOLATION = true
+local BLIP_SIZE = 1
+local BLIP_COLOR = {150, 150, 150, 50}
+#USE_INTERPOLATION = true
 #DEBUG = false
 
 #if(DEBUG) then
 	VEH_ALPHA = 0
 #end
 
-local g_Waiting, g_Playback
-
-Playback = {}
-Playback.__mt = {__index = {cls = Playback}}
+Playback = Class('Playback')
 Playback.count = 0
 Playback.map = {}
 
@@ -26,6 +25,7 @@ Playback.map = {}
 #RD_RZ = 7
 #RD_MODEL = 8
 
+-- Render title for each created playback
 function Playback.renderTitle()
 	local cx, cy, cz = getCameraMatrix()
 	for id, playback in pairs(Playback.map) do
@@ -42,6 +42,7 @@ function Playback.renderTitle()
 	end
 end
 
+-- Sums rot and dr scaled by a (normalize dr to [-180, 180] before)
 function Playback.calcAngle(rot, dr, a)
 	if(dr > 180) then
 		dr = dr - 360
@@ -85,32 +86,64 @@ function Playback.__mt.__index:loadNextFrame()
 	end
 end
 
+function Playback.__mt.__index:setProgress(ms)
+	self.curFrameIdx = 0
+	self.nextPos = false
+	self.pos = Vector3()
+	self.rot = Vector3()
+	self:loadNextFrame()
+	self.dt = 0
+	
+	self:addProgress(ms)
+	
+	if(self.ticks) then
+		self.ticks = getTickCount()
+	end
+end
+
+function Playback.__mt.__index:addProgress(ms)
+	self.dt = self.dt + ms
+	
+	while(true) do
+		local nextFrame = self.data[self.curFrameIdx + 1]
+		if(not nextFrame or self.dt < nextFrame[$(RD_TIME)]) then break end
+		self.dt = self.dt - nextFrame[$(RD_TIME)]
+		self:loadNextFrame()
+	end
+end
+
+function Playback.__mt.__index:setVisible(vis)
+	self.hidden = not vis
+	setElementAlpha(self.veh, vis and VEH_ALPHA or 0)
+	setBlipColor(self.blip, BLIP_COLOR[1], BLIP_COLOR[2], BLIP_COLOR[3], vis and BLIP_COLOR[4] or 0)
+end
+
 function Playback.__mt.__index:update()
 	local ticks = getTickCount()
 	local dt = (ticks - self.ticks)*self.speed
 	self.ticks = ticks
-	self.dt = self.dt + dt
 	
+	self:addProgress(dt)
+	
+	local frame = self.data[self.curFrameIdx]
 	local nextFrame = self.data[self.curFrameIdx + 1]
-	while(nextFrame and self.dt >= nextFrame[$(RD_TIME)]) do
-		self.dt = self.dt - nextFrame[$(RD_TIME)]
-		self:loadNextFrame()
-		nextFrame = self.data[self.curFrameIdx + 1]
-	end
 	
 	if(not nextFrame) then
 		-- Playback has finished
+		--Debug.info('Playback has finished')
 		return false
 	end
 	
-	local frame = self.data[self.curFrameIdx]
+	-- Calculate interpolation factor
+	local a = self.dt / nextFrame[$(RD_TIME)]
+	--assert(a >= 0 and a <= 1)
+	
+	-- Change model if needed
 	if(frame[$(RD_MODEL)]) then
 		setElementModel(self.veh, frame[$(RD_MODEL)])
 	end
 	
-	local a = self.dt / nextFrame[$(RD_TIME)]
-	--assert(a >= 0 and a <= 1)
-	
+	-- Update position and rotation
 	--[[local cp1 = self.pos
 	local cp2 = self.nextPos
 	local pos = bezierCurve(self.pos, self.nextPos, cp1, cp2, a)]]
@@ -121,16 +154,19 @@ function Playback.__mt.__index:update()
 	setElementPosition(self.veh, pos[1], pos[2], pos[3])
 	setElementRotation(self.veh, rx, ry, rz)
 	
+	-- Save temporary position for debugging purposes
 	self.curPos = pos
 	
-	if(not USE_INTERPOLATION) then
+	-- Update velocity if position interpolation is not used
+	#if(not USE_INTERPOLATION) then
 		local vx = frame[$(RD_X)]/100/frame[$(RD_TIME)]
 		local vy = frame[$(RD_Y)]/100/frame[$(RD_TIME)]
 		local vz = frame[$(RD_Z)]/100/frame[$(RD_TIME)]
 		setElementVelocity(self.veh, vx*20.7, vy*20.7, vz*20.7)
 		--setVehicleTurnVelocity(self.veh, vrx/10, vry/10, vrz/10)
-	end
+	#end
 	
+	-- Return time left to new frame
 	local msToNextFrame = nextFrame[$(RD_TIME)] - self.dt
 	return msToNextFrame
 end
@@ -150,50 +186,29 @@ function Playback.timerProc(id)
 	end
 end
 
-function Playback.__mt.__index:reset()
-	self.curFrameIdx = 0
-	self.nextPos = false
-	self.pos = Vector3()
-	self.rot = Vector3()
-	self:loadNextFrame()
-end
-
 function Playback.__mt.__index:start()
 	assert(not self.ticks)
 	
 	-- Setup object state
 	self.ticks = getTickCount()
-	self:reset()
+	self:setProgress(0)
+	assert(self.curFrameIdx == 1 and self.dt == 0)
 	
 	-- Update vehicle
-	setElementAlpha(self.veh, VEH_ALPHA)
-	self.hidden = false
-	if(not USE_INTERPOLATION) then
+	self:setVisible(true)
+	
+	#if(not USE_INTERPOLATION) then
 		Playback.timerProc(self.id)
-	end
+	#end
 end
 
 function Playback.__mt.__index:stop()
 	self.ticks = false
-	self.hidden = true
-	setElementAlpha(self.veh, 0)
+	self:setVisible(false)
 end
 
-function Playback.preRender()
-	if(g_Waiting) then
-		local veh = getPedOccupiedVehicle(g_Me)
-		if(veh and not isVehicleFrozen(veh)) then
-			assert(g_Playback)
-			g_Playback:start()
-			g_Waiting = false
-			
-			if(not USE_INTERPOLATION) then
-				removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
-			end
-		end
-	end
-	
-	if(USE_INTERPOLATION) then
+#if(USE_INTERPOLATION) then
+	function Playback.preRender()
 		for id, playback in pairs(Playback.map) do
 			if(playback.ticks) then
 				if(not playback:update()) then
@@ -202,9 +217,10 @@ function Playback.preRender()
 			end
 		end
 	end
-end
+#end
 
 #if(DEBUG) then
+	-- Render full playback trace
 	function Playback.__mt.__index:render()
 		local myPos = Vector3(getElementPosition(localPlayer))
 		local prevPos = false
@@ -231,25 +247,25 @@ function Playback.__mt.__index:destroy()
 	
 	destroyElement(self.blip)
 	destroyElement(self.veh)
-	--self.data = false
+	self.data = false
 	
 	Playback.map[self.id] = nil
 	Playback.count = Playback.count - 1
 	assert(Playback.count >= 0)
 	
-	if(USE_INTERPOLATION and Playback.count == 0) then
-		removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
-	end
-	
+	-- Remove event handlers if this is the last playback object
 	if(Playback.count == 0) then
 		removeEventHandler('onClientRender', g_Root, Playback.renderTitle)
+		
+		#if(USE_INTERPOLATION) then
+			removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
+		#end
 	end
 	
 	self.destroyed = true
 end
 
-function Playback.create(data, title)
-	local self = setmetatable({}, Playback.__mt)
+function Playback.__mt.__index:init(data, title)
 	self.data = data
 	self.title = title
 	self.speed = 1
@@ -264,15 +280,15 @@ function Playback.create(data, title)
 	
 	self.veh = createVehicle(firstFrame[$(RD_MODEL)], x, y, z, rx, ry, rz)
 	setElementAlpha(self.veh, VEH_ALPHA)
-	if(USE_INTERPOLATION) then
+	#if(USE_INTERPOLATION) then
 		setElementFrozen(self.veh, true)
-	else
+	#else
 		setVehicleGravity(self.veh, 0, 0, -0.1)
 		setElementCollisionsEnabled(self.veh, false)
 		setElementPosition(self.veh, x, y, z) -- reposition again after disabling collisions
-	end
+	#end
 	
-	self.blip = createBlipAttachedTo(self.veh, 0, 1, 150, 150, 150, 50)
+	self.blip = createBlipAttachedTo(self.veh, 0, BLIP_SIZE, unpack(BLIP_COLOR))
 	setElementParent(self.blip, self.veh)
 	
 	Debug.info('Playback: frames = '..#data..', pos = ('..x..' '..y..' '..z..'), rot: ('..rx..' '..ry..' '..rz..')')
@@ -280,46 +296,16 @@ function Playback.create(data, title)
 	self.id = #Playback.map + 1
 	Playback.map[self.id] = self
 	Playback.count = Playback.count + 1
+	
+	-- Add event handlers if this is the first playback object
 	if(Playback.count == 1) then
 		addEventHandler('onClientRender', g_Root, Playback.renderTitle)
-		if(USE_INTERPOLATION) then
+		#if(USE_INTERPOLATION) then
 			addEventHandler('onClientPreRender', g_Root, Playback.preRender)
-		end
+		#end
 	end
 	
 	return self
-end
-
--- Used by RPC
-function Playback.stop()
-	--Debug.info('Playback.stop')
-	if(g_Playback) then
-		g_Playback:destroy()
-		g_Playback = false
-	end
-	
-	if(g_Waiting) then
-		removeEventHandler('onClientPreRender', g_Root, Playback.preRender)
-	end
-end
-
--- Used by RPC
-function Playback.startAfterCountdown(recCoded, title)
-	--Debug.info('Playback.startAfterCountdown')
-	if(g_Playback) then
-		g_Playback:destroy()
-	end
-	
-	if(Settings.playback) then
-		local rec = RcDecodeTrace(recCoded)
-		
-		g_Playback = Playback.create(rec, title)
-		g_Waiting = true
-		
-		if(not USE_INTERPOLATION) then
-			addEventHandler('onClientPreRender', g_Root, Playback.preRender)
-		end
-	end
 end
 
 #if(DEBUG) then
@@ -331,7 +317,7 @@ end
 		rec:start()
 		setTimer(function()
 			outputChatBox('Recording finished ('..#rec.data..' frames)...')
-			local playback = Playback.create(rec.data, 'TEST')
+			local playback = Playback(rec.data, 'TEST')
 			rec:destroy()
 			playback.speed = 0.2
 			playback:start()
@@ -344,21 +330,3 @@ end
 		end, 5000, 1)
 	end)
 #end
-
-
-Settings.register
-{
-	name = 'playback',
-	default = true,
-	cast = tobool,
-	createGui = function(wnd, x, y, w, onChange)
-		local cb = guiCreateCheckBox(x, y, w, 20, "Top Time Playback", Settings.playback, false, wnd)
-		if(onChange) then
-			addEventHandler('onClientGUIClick', cb, onChange, false)
-		end
-		return 20, cb
-	end,
-	acceptGui = function(cb)
-		Settings.playback = guiCheckBoxGetSelected(cb)
-	end,
-}
