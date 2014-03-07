@@ -17,39 +17,51 @@ PlayersTable:addColumns{
 	{'toptimes_count', 'SMALLINT UNSIGNED', default = 0},
 }
 
-function addPlayerTime(player_id, map_id, time)
+local g_BestTimeCache = {}
+
+function addPlayerTime(playerId, mapId, time)
 	local prof = DbgPerf()
 	local wasInTop = false
 	local now = getRealTime().timestamp
 	
 	-- Save new time in database
-	local besttime = DbQuerySingle('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', player_id, map_id)
-	if(not besttime) then
-		DbQuery('INSERT INTO '..BestTimesTable..' (player, map, time, timestamp) VALUES(?, ?, ?, ?)', player_id, map_id, time, now)
-	elseif(besttime.time < time) then -- new time is worse
+	local personalTime = BtGetPersonalTop(mapId, playerId).time
+	if(not personalTime) then
+		DbQuery('INSERT INTO '..BestTimesTable..' (player, map, time, timestamp) VALUES(?, ?, ?, ?)', playerId, mapId, time, now)
+	elseif(personalTime < time) then -- new time is worse
 		return -1
 	else
-		local oldPos = DbCount(BestTimesTable, 'map=? AND time<=?', map_id, besttime.time)
+		local oldPos = BtGetPersonalTop(mapId, playerId, true).pos
 		wasInTop = (oldPos <= 3) -- were we in the top?
 		
-		DbQuery('UPDATE '..BestTimesTable..' SET time=?, timestamp=? WHERE player=? AND map=?', time, now, player_id, map_id)
+		DbQuery('UPDATE '..BestTimesTable..' SET time=?, timestamp=? WHERE player=? AND map=?', time, now, playerId, mapId)
 	end
 	
-	local newPos = DbCount(BestTimesTable, 'map=? AND time<=?', map_id, time)
+	-- Calculate new player position in Top Times
+	local newPos = DbCount(BestTimesTable, 'map=? AND time<=?', mapId, time)
+	
+	-- Update cache
+	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
+	cache[playerId] = {time = time, pos = newPos}
+	for pid, row in pairs(cache) do
+		if(row.pos and row.pos >= newPos) then
+			row.pos = row.pos + 1
+		end
+	end
 	
 	-- Check if player joined the Top
 	if(newPos <= 3 and not wasInTop) then
 		-- Increment Top Times count
-		AccountData.create(player_id):add('toptimes_count', 1)
+		AccountData.create(playerId):add('toptimes_count', 1)
 		
 		-- Find player which quit the top
-		local besttime4 = DbQuerySingle('SELECT player, rec, cp_times FROM '..BestTimesTable..' WHERE map=? ORDER BY time LIMIT 3,1', map_id)
+		local besttime4 = DbQuerySingle('SELECT player, rec, cp_times FROM '..BestTimesTable..' WHERE map=? ORDER BY time LIMIT 3,1', mapId)
 		if(besttime4) then
 			-- Decrement his Top Times count
 			AccountData.create(besttime4.player):add('toptimes_count', -1)
 			
 			-- Forget playback trace and CP times
-			DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL, cp_times=NULL WHERE player=? AND map=?', besttime4.player, map_id)
+			DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL, cp_times=NULL WHERE player=? AND map=?', besttime4.player, mapId)
 			if(besttime4.rec) then
 				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', besttime4.rec)
 			end
@@ -59,10 +71,14 @@ function addPlayerTime(player_id, map_id, time)
 		end
 	end
 	
-	-- Update Map Info if Top Times table changed
-	if(newPos <= 8) then
-		MiUpdateTops(map_id) -- invalidate cache
+	-- Update Tops Cache
+	local topsCache = Cache.get('BestTimes.m'..map:getId()..'.Tops')
+	if(topsCache and newPos <= #topsCache) then
+		Cache.remove('BestTimes.m'..map:getId()..'.Tops')
 	end
+	
+	-- Update Map Info
+	MiUpdateTops(mapId)
 	
 	prof:cp('addPlayerTime')
 	return newPos
@@ -91,6 +107,11 @@ function BtGetTops(map, count)
 	-- this takes long...
 	--local start = getTickCount()
 	--for i = 1, 100, 1 do
+	local cachedTops = Cache.get('BestTimes.m'..map:getId()..'.Tops')
+	if(cachedTops and #cachedTops >= count) then
+		return cachedTops
+	end
+	
 	local rows = DbQuery(
 		'SELECT bt.player, bt.time, p.name '..
 		'FROM '..BestTimesTable..' bt '..
@@ -100,47 +121,68 @@ function BtGetTops(map, count)
 	for i, data in ipairs(rows) do
 		data.time = formatTimePeriod(data.time / 1000)
 	end
+	
+	Cache.set('BestTimes.m'..map:getId()..'.Tops', rows, 300)
+	
 	--Debug.warn('Toptimes: '..(getTickCount()-start)..' ms')
 	return rows
 end
 
-function BtUpdatePlayerTops(playerTimes, map, players)
+function BtPreloadPersonalTops(mapId, playerIdList, needsPos)
+	local personalCache = Cache.get('BestTime.m'..mapId..'.Personal')
+	if(not personalCache) then
+		personalCache = {}
+		Cache.set('BestTime.m'..mapId..'.Personal', personalCache, 300)
+	end
+	
 	local idList = {}
-	for i, player in ipairs(players) do
-		local pdata = Player.fromEl(player)
-		if(pdata and playerTimes[player] == nil and pdata.id) then
-			playerTimes[player] = false
-			table.insert(idList, pdata.id)
+	for i, playerId in ipairs(playerIdList) do
+		if(personalCache[playerId] == nil or (needsPos and not personalCache[playerId].pos)) then
+			personalCache[playerId] = false
+			table.insert(idList, playerId)
 		end
 	end
 	
 	if(#idList > 0) then
-		local rows = DbQuery(
-			'SELECT bt1.player, bt1.time, ('..
-				'SELECT COUNT(*) FROM '..BestTimesTable..' bt2 '..
-				'WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos '..
-			'FROM '..BestTimesTable..' bt1 '..
-			'WHERE bt1.map=? AND bt1.player IN (??)', map:getId(), table.concat(idList, ','))
+		local rows
+		if(needsPos) then
+			rows = DbQuery(
+				'SELECT bt1.player, bt1.time, ('..
+					'SELECT COUNT(*) FROM '..BestTimesTable..' bt2 '..
+					'WHERE bt2.map=bt1.map AND bt2.time<=bt1.time) AS pos '..
+				'FROM '..BestTimesTable..' bt1 '..
+				'WHERE bt1.map=? AND bt1.player IN (??)', mapId, table.concat(idList, ','))
+		else
+			rows = DbQuery(
+				'SELECT player, time '..
+				'FROM '..BestTimesTable..' '..
+				'WHERE map=? AND player IN (??)', mapId, table.concat(idList, ','))
+		end
 		
 		for i, data in ipairs(rows) do
-			local player = Player.fromId(data.player)
-			assert(player)
-			data.time = formatTimePeriod(data.time / 1000)
-			playerTimes[player.el] = data
+			local playerId = data.player
+			data.player = nil
+			personalCache[playerId] = data
 		end
 	end
 end
 
+function BtGetPersonalTop(mapId, playerId, needsPos)
+	BtPreloadPersonalTops(mapId, {playerId}, needsPos)
+	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
+	return cache[playerId]
+end
+
 -- race_delay_indicator uses it
-function getTopTime(map_res, cp_times)
-	assert(map_res and cp_times)
-	local map = Map(map_res)
-	local map_id = map:getId()
+function getTopTime(mapRes, cp_times)
+	assert(mapRes and cp_times)
+	local map = Map(mapRes)
+	local mapId = map:getId()
 	
 	local rows
 	if(cp_times) then
-		rows = DbQuery('SELECT bt.time, b.data AS cp_times FROM '..BestTimesTable..' bt, '..BlobsTable..' b '..
-			'WHERE bt.map=? AND b.id=bt.cp_times ORDER BY bt.time LIMIT 1', map_id)
+		rows = DbQuery('SELECT bt.time, bt.player, b.data AS cp_times FROM '..BestTimesTable..' bt, '..BlobsTable..' b '..
+			'WHERE bt.map=? AND b.id=bt.cp_times ORDER BY bt.time LIMIT 1', mapId)
 		for i, row in ipairs(rows) do
 			assert(row.cp_times:len() > 0)
 			if(zlibUncompress) then
@@ -154,14 +196,13 @@ function getTopTime(map_res, cp_times)
 	end
 	
 	if(rows and rows[1]) then
-		local rows2 = DbQuery('SELECT count(player) AS c FROM '..BestTimesTable..' WHERE time<? AND map=?', rows[1].time, map_id)
-		rows[1].rank = rows2[1].c + 1
+		rows[1].rank = BtGetPersonalTop(mapId, rows[1].player, true).pos
 	end
 	
 	return rows
 end
 
-function BtPrintTimes(room, map_id)
+function BtPrintTimes(room, mapId)
 	-- Prepare list of player IDs in room
 	local idList = {}
 	for player, pdata in pairs(g_Players) do
@@ -171,19 +212,24 @@ function BtPrintTimes(room, map_id)
 	end
 	
 	-- Get personal times for all players in room
-	local rows = DbQuery('SELECT player, time FROM '..BestTimesTable..' WHERE map=? AND player IN (??)', map_id, table.concat(idList, ','))
-	for i, data in ipairs(rows) do
-		local pdata = Player.fromId(data.player)
-		local timeStr = formatTimePeriod(data.time / 1000)
-		
-		-- Display notification
-		if(pdata.addNotify) then
-			pdata:addNotify{
-				icon = 'best_times/race.png',
-				{"Your personal best time: %s", timeStr}
-			}
-		else
-			privMsg(pdata, "Your personal best time: %s", timeStr)
+	BtPreloadPersonalTops(mapId, idList)
+	
+	for player, pdata in pairs(g_Players) do
+		if(pdata.room == room and pdata.id) then
+			local timeMs = BtGetPersonalTop(mapId, pdata.id).time
+			if(timeMs) then
+				local timeStr = formatTimePeriod(timeMs / 1000)
+				
+				-- Display notification
+				if(pdata.addNotify) then
+					pdata:addNotify{
+						icon = 'best_times/race.png',
+						{"Your personal best time: %s", timeStr}
+					}
+				else
+					privMsg(pdata, "Your personal best time: %s", timeStr)
+				end
+			end
 		end
 	end
 end

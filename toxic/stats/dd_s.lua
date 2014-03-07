@@ -118,36 +118,103 @@ end
 #if(DD_TOPS) then
 
 function DdGetTops(map, count)
-	return DbQuery(
+	local cachedTops = Cache.get('Stats.m'..map:getId()..'.DdTops')
+	if(cachedTops and #cachedTops >= count) then
+		return cachedTops
+	end
+	
+	local rows = DbQuery(
 		'SELECT v.player, v.victCount, p.name '..
 		'FROM '..VictoriesTable..' v '..
 		'INNER JOIN '..PlayersTable..' p ON v.player=p.player '..
 		'WHERE v.map=? ORDER BY victCount DESC LIMIT ?', map:getId(), count)
+	
+	Cache.set('Stats.m'..map:getId()..'.DdTops', rows, 300)
+	return rows
 end
 
-function DdUpdatePlayerTops(playerTops, map, players)
+function DdPreloadPersonalTops(mapId, playerIdList, needsPos)
+	local personalCache = Cache.get('BestTime.m'..mapId..'.Personal')
+	if(not personalCache) then
+		personalCache = {}
+		Cache.set('BestTime.m'..mapId..'.Personal', personalCache, 300)
+	end
+	
 	local idList = {}
-	for i, player in ipairs(players) do
-		local pdata = Player.fromEl(player)
-		if(pdata and playerTops[player] == nil and pdata.id) then
-			playerTops[player] = false
-			table.insert(idList, pdata.id)
+	for i, playerId in ipairs(playerIdList) do
+		if(personalCache[playerId] == nil or (needsPos and not personalCache[playerId].pos)) then
+			personalCache[playerId] = false
+			table.insert(idList, playerId)
 		end
 	end
 	
-	local prof2 = DbgPerf(100)
 	if(#idList > 0) then
-		local rows = DbQuery(
-			'SELECT v1.player, v1.victCount, ('..
-				'SELECT COUNT(*) FROM '..VictoriesTable..' AS v2 '..
-				'WHERE v2.map=v1.map AND v2.victCount>=v1.victCount) AS pos '..
-			'FROM '..VictoriesTable..' v1 '..
-			'WHERE v1.map=? AND v1.player IN (??)', map:getId(), table.concat(idList, ','))
+		local rows
+		if(needsPos) then
+			rows = DbQuery(
+				'SELECT v1.player, v1.victCount, ('..
+					'SELECT COUNT(*) FROM '..VictoriesTable..' AS v2 '..
+					'WHERE v2.map=v1.map AND v2.victCount>=v1.victCount) AS pos '..
+				'FROM '..VictoriesTable..' v1 '..
+				'WHERE v1.map=? AND v1.player IN (??)', map:getId(), table.concat(idList, ','))
+		else
+			rows = DbQuery(
+				'SELECT player, victCount '..
+				'FROM '..VictoriesTable..' '..
+				'WHERE map=? AND player IN (??)', mapId, table.concat(idList, ','))
+		end
+		
 		for i, data in ipairs(rows) do
-			local player = Player.fromId(data.player)
-			playerTops[player.el] = data
+			local playerId = data.player
+			data.player = nil
+			personalCache[playerId] = data
 		end
 	end
+end
+
+function DdGetPersonalTop(mapId, playerId, needsPos)
+	DdPreloadPersonalTops(mapId, {playerId}, needsPos)
+	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
+	return cache[playerId]
+end
+
+
+
+function DdPreloadPersonalPosAndVictCount(mapId, playerIdList)
+	local personalCache = Cache.get('Stats.m'..mapId..'.DdTops')
+	if(not personalCache) then
+		personalCache = {}
+		Cache.set('Stats.m'..mapId..'.DdTops', personalCache, 300)
+	end
+	
+	local idList = {}
+	for i, playerId in ipairs(playerIdList) do
+		if(not personalCache[playerId] or not personalCache[playerId].pos) then
+			personalCache[playerId] = false
+			table.insert(idList, playerId)
+		end
+	end
+	
+	if(#idList > 0) then
+		
+		for i, data in ipairs(rows) do
+			personalCache[data.player] = {victCount = data.victCount, pos = data.pos}
+		end
+	end
+end
+
+function DdGetPersonalVictCount(mapId, playerId)
+	DdPreloadPersonalPosAndVictCount(mapId, {playerId})
+	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
+	local row = cache[playerId]
+	return row and row.victCount
+end
+
+function DdGetPersonalPos(mapId, playerId)
+	DdPreloadPersonalPosAndVictCount(mapId, {playerId})
+	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
+	local row = cache[playerId]
+	return row and row.pos
 end
 
 function DdAddVictory(player, map)

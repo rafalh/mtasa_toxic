@@ -131,10 +131,14 @@ local function MiGetSize()
 	return w, h
 end
 
+local function MiDestroyBuffer()
+	if(not g_Buffer) then return end
+	destroyElement(g_Buffer)
+	g_Buffer = false
+end
+
 local function MiUpdateBuffer()
-	if(g_Buffer) then
-		destroyElement(g_Buffer)
-	end
+	MiDestroyBuffer()
 	
 	local w, h = MiGetSize()
 	g_Buffer = dxCreateRenderTarget(w, h, true)
@@ -207,6 +211,10 @@ end
 
 -- Used by RPC
 function MiShow()
+	if(USE_RENDER_TARGET and not g_Buffer) then
+		MiUpdateBuffer()
+	end
+	
 	if(g_Visible) then return end
 	
 	g_Visible = true
@@ -229,17 +237,18 @@ local function MiToggle()
 end
 
 -- Used by RPC
-function MiSetMapInfo(mapInfo, topTimes, myBestTime, myRating)
+function MiSetMapInfo(mapInfo, topTimes)
 	g_Tops = topTimes or {}
 	g_MapInfo = mapInfo
-	g_MyBestTime = myBestTime and myBestTime.pos > #g_Tops and myBestTime
-	m_MyRating = myRating
 	
 	MiShortenTooLongNames()
-	
-	if(USE_RENDER_TARGET) then
-		MiUpdateBuffer()
-	end
+	MiDestroyBuffer()
+end
+
+function MiSetPersonalInfo(myBestTime, myRating)
+	g_MyBestTime = myBestTime and myBestTime.pos > #g_Tops and myBestTime
+	m_MyRating = myRating
+	MiDestroyBuffer()
 end
 
 local function MiInit()

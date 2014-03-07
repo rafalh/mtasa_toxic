@@ -1,5 +1,4 @@
-local g_MapInfo, g_Tops = false, false
-local g_PlayerTops = {}
+local g_MapInfo = false
 local g_PlayerRates = {}
 
 local function MiGetInfo(map)
@@ -40,20 +39,42 @@ function MiSendMapInfo(playerOrRoom)
 		g_MapInfo = MiGetInfo(map)
 	end
 	
-	local players = getElementsByType('player', playerOrRoom.el)
+	assert(not DdUpdatePlayerTops) -- FIXME
 	
+	local topTimes
 	if(g_MapInfo.type == 'DD' and DdGetTops) then
-		g_Tops = DdGetTops(map, 8)
-		DdUpdatePlayerTops(g_PlayerTops, map, players)
-	elseif(BtGetTops) then
-		g_Tops = BtGetTops(map, 8)
-		BtUpdatePlayerTops(g_PlayerTops, map, players)
+		topTimes = DdGetTops(map, 8)
+	else
+		topTimes = BtGetTops(map, 8)
+	end
+	RPC('MiSetMapInfo', g_MapInfo, topTimes):setClient(playerOrRoom.el):exec()
+	
+	local players = getElementsByType('player', playerOrRoom.el)
+	local idList = {}
+	for i, player in ipairs(players) do
+		local pdata = Player.fromEl(player)
+		if(pdata.id) then
+			table.insert(idList, pdata.id)
+		end
 	end
 	
+	BtPreloadPersonalTops(map:getId(), idList, true)
 	MiUpdateRates(map, players)
 	
 	for i, player in ipairs(players) do
-		RPC('MiSetMapInfo', g_MapInfo, g_Tops, g_PlayerTops[player], g_PlayerRates[player]):setClient(player):exec()
+		local pdata = Player.fromEl(player)
+		local personalTop
+		
+		if(BtGetPersonalTime) then
+			personalTop = {}
+			personalTop.time = BtGetPersonalTime(map:getId(), pdata.id)
+			personalTop.pos = BtGetPersonalPos(map:getId(), pdata.id)
+			if(not personalTop.time) then
+				personalTop = false
+			end
+		end
+		
+		RPC('MiSetPersonalInfo', personalTop, g_PlayerRates[player]):setClient(player):exec()
 	end
 	
 	if(show) then
@@ -73,22 +94,11 @@ function MiUpdateInfo()
 end
 
 function MiUpdateTops(map_id)
-	--[[for el, room in Room.pairs() do
-		local map = getCurrentMap(room)
-		if(map and map:getId() == map_id) then
-			room.tops = false
-			room.playerTimes = {}
-		end
-	end]]
-	g_Tops = false
-	g_PlayerTops = {}
 	MiSendMapInfo(g_RootRoom)
 end
 
 function MiDeleteCache()
 	g_MapInfo = false
-	g_Tops = false
-	g_PlayerTops = {}
 	g_PlayerRates = {}
 end
 
