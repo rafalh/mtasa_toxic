@@ -182,7 +182,7 @@ local function onPlayerWasted()
 	local map = player and getCurrentMap(player.room)
 	if(not map) then return end
 	
-	if(player.room.ddKilersDetection and player.room.gameStarted) then
+	if(player.room.ddKilersDetection and player.room.gameIsRunning) then
 		player.ddKillersAllowed = true
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
 		--Debug.info('onPlayerWasted '..player:getName())

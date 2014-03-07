@@ -429,9 +429,9 @@ end
 local function onRaceStateChange(state)
 	local room = g_RootRoom
 	if(state == 'Running') then
-		room.gameStarted = true
+		room.gameIsRunning = true
 	elseif(state == 'PostFinish') then
-		room.gameStarted = false
+		room.gameIsRunning = false
 	end
 end
 
