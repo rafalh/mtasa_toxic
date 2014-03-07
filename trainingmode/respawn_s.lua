@@ -97,6 +97,14 @@ local function TmRequestRespawn ( data )
 	setElementData( player, "overrideCollide.tm", 0, false )
 	setElementData( player, "overrideAlpha.tm", 0, false )
 	
+	-- Hide blip
+	for i, el in ipairs(getAttachedElements(player)) do
+		if(getElementType(el) == 'blip') then
+			local r, g, b = getBlipColor(el)
+			setBlipColor(el, r, g, b, 0)
+		end
+	end
+	
 	--local veh = createVehicle ( data.model, data.pos[1], data.pos[2], data.pos[3] )
 	TmLoadVehData ( veh, data )
 	setElementFrozen ( veh, true )
