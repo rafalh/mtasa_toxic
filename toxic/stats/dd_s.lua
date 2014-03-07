@@ -31,8 +31,12 @@ local function onKillersList(killer, assist)
 		return
 	end
 	
-	-- Check if game has ended already
-	if(not room.gameStarted) then return end
+	-- Check if killers info is allowed
+	if(not victimPlayer.ddKillersAllowed) then
+		Debug.warn('Player is not allowed to send killer info now')
+		return
+	end
+	victimPlayer.ddKillersAllowed = nil
 	
 	--Debug.info('KillersInfo '..victimPlayer:getName()..' '..tostring(victimPlayer:isAlive()))
 	
@@ -45,13 +49,6 @@ local function onKillersList(killer, assist)
 	if(map.isRace or map:getType().name ~= 'DD') then
 		Debug.warn('Wrong map type: '..map:getType().name..' '..map:getName())
 		return
-	end
-	
-	if(victimPlayer.killed) then
-		Debug.warn('Player is not allowed to send killer info again')
-		return
-	elseif(not respawn) then
-		victimPlayer.killed = true
 	end
 	
 	-- Check if there is any killer
@@ -97,7 +94,7 @@ end
 function DdMapStart(room)
 	local map = getCurrentMap(room)
 	local mapType = map and map:getType()
-	room.ddKilersDetection = (map and mapType.name == 'DD')
+	room.ddKilersDetection = (map and not map.isRace and mapType.name == 'DD')
 	if(room.ddKilersDetection) then
 		RPC('DdSetKillersDetectionEnabled', true):exec()
 	end
@@ -106,12 +103,12 @@ end
 function DdMapStop(room)
 	if(room.ddKilersDetection) then
 		RPC('DdSetKillersDetectionEnabled', false):exec()
-		room.ddKilersDetection = false
+		room.ddKilersDetection = nil
 	end
 	
 	for player, pdata in pairs(g_Players) do
 		pdata.currentMapKills = 0
-		pdata.killed = false
+		pdata.ddKillersAllowed = nil
 	end
 end
 
@@ -178,58 +175,6 @@ function DdGetPersonalTop(mapId, playerId, needsPos)
 	return cache[playerId]
 end
 
-
-
-function DdPreloadPersonalPosAndVictCount(mapId, playerIdList)
-	local personalCache = Cache.get('Stats.m'..mapId..'.DdTops')
-	if(not personalCache) then
-		personalCache = {}
-		Cache.set('Stats.m'..mapId..'.DdTops', personalCache, 300)
-	end
-	
-	local idList = {}
-	for i, playerId in ipairs(playerIdList) do
-		if(not personalCache[playerId] or not personalCache[playerId].pos) then
-			personalCache[playerId] = false
-			table.insert(idList, playerId)
-		end
-	end
-	
-	if(#idList > 0) then
-		
-		for i, data in ipairs(rows) do
-			personalCache[data.player] = {victCount = data.victCount, pos = data.pos}
-		end
-	end
-end
-
-function DdGetPersonalVictCount(mapId, playerId)
-	DdPreloadPersonalPosAndVictCount(mapId, {playerId})
-	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
-	local row = cache[playerId]
-	return row and row.victCount
-end
-
-function DdGetPersonalPos(mapId, playerId)
-	DdPreloadPersonalPosAndVictCount(mapId, {playerId})
-	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
-	local row = cache[playerId]
-	return row and row.pos
-end
-
-function DdAddVictory(player, map)
-	if(not player.id) then return end -- guest
-	local rows = DbQuery('SELECT victCount FROM '..VictoriesTable..' WHERE map=? AND player=?', map:getId(), player.id)
-	local victCount = rows and rows[1] and rows[1].victCount
-	if(victCount) then
-		DbQuery('UPDATE '..VictoriesTable..' SET victCount=victCount+1 WHERE map=? AND player=?', map:getId(), player.id)
-	else
-		DbQuery('INSERT INTO '..VictoriesTable..' (map, player, victCount) VALUES(?, ?, 1)', map:getId(), player.id)
-	end
-	
-	MiUpdateTops()
-end
-
 #end -- DD_TOPS
 
 local function onPlayerWasted()
@@ -238,6 +183,7 @@ local function onPlayerWasted()
 	if(not map) then return end
 	
 	if(player.room.ddKilersDetection) then
+		player.ddKillersAllowed = true
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
 		--Debug.info('onPlayerWasted '..player:getName())
 	end
