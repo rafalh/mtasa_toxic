@@ -22,47 +22,50 @@ function addPlayerTime(player_id, map_id, time)
 	local wasInTop = false
 	local now = getRealTime().timestamp
 	
-	local rows = DbQuery('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', player_id, map_id)
-	local besttime = rows and rows[1]
-	if(besttime) then
-		if(besttime.time < time) then -- new time is worse
-			return -1
-		else
-			local rows2 = DbQuery('SELECT count(player) AS c FROM '..BestTimesTable..' WHERE map=? AND time<?', map_id, besttime.time)
-			wasInTop = (rows2[1].c < 3) -- were we in the top?
-			
-			DbQuery('UPDATE '..BestTimesTable..' SET time=?, timestamp=? WHERE player=? AND map=?', time, now, player_id, map_id)
-		end
-	else
+	-- Save new time in database
+	local besttime = DbQuerySingle('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', player_id, map_id)
+	if(not besttime) then
 		DbQuery('INSERT INTO '..BestTimesTable..' (player, map, time, timestamp) VALUES(?, ?, ?, ?)', player_id, map_id, time, now)
+	elseif(besttime.time < time) then -- new time is worse
+		return -1
+	else
+		local oldPos = DbCount(BestTimesTable, 'map=? AND time<=?', map_id, besttime.time)
+		wasInTop = (oldPos <= 3) -- were we in the top?
+		
+		DbQuery('UPDATE '..BestTimesTable..' SET time=?, timestamp=? WHERE player=? AND map=?', time, now, player_id, map_id)
 	end
 	
-	local rows = DbQuery('SELECT count(player) AS c FROM '..BestTimesTable..' WHERE map=? AND time<=?', map_id, time)
-	local pos = rows[1].c
+	local newPos = DbCount(BestTimesTable, 'map=? AND time<=?', map_id, time)
 	
-	if(pos <= 8) then
-		if(pos <= 3 and not wasInTop) then -- player joined to the top
-			AccountData.create(player_id):add('toptimes_count', 1)
+	-- Check if player joined the Top
+	if(newPos <= 3 and not wasInTop) then
+		-- Increment Top Times count
+		AccountData.create(player_id):add('toptimes_count', 1)
+		
+		-- Find player which quit the top
+		local besttime4 = DbQuerySingle('SELECT player, rec, cp_times FROM '..BestTimesTable..' WHERE map=? ORDER BY time LIMIT 3,1', map_id)
+		if(besttime4) then
+			-- Decrement his Top Times count
+			AccountData.create(besttime4.player):add('toptimes_count', -1)
 			
-			local rows = DbQuery('SELECT player, rec, cp_times FROM '..BestTimesTable..' WHERE map=? ORDER BY time LIMIT 3,1', map_id)
-			local data = rows and rows[1]
-			if(data) then -- someone left the top
-				AccountData.create(data.player):add('toptimes_count', -1)
-				DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL, cp_times=NULL WHERE player=? AND map=?', data.player, map_id)
-				if(data.rec) then
-					DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', data.rec)
-				end
-				if(data.cp_times) then
-					DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', data.cp_times)
-				end
+			-- Forget playback trace and CP times
+			DbQuery('UPDATE '..BestTimesTable..' SET rec=NULL, cp_times=NULL WHERE player=? AND map=?', besttime4.player, map_id)
+			if(besttime4.rec) then
+				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', besttime4.rec)
+			end
+			if(besttime4.cp_times) then
+				DbQuery('DELETE FROM '..BlobsTable..' WHERE id=?', besttime4.cp_times)
 			end
 		end
-		
+	end
+	
+	-- Update Map Info if Top Times table changed
+	if(newPos <= 8) then
 		MiUpdateTops(map_id) -- invalidate cache
 	end
 	
 	prof:cp('addPlayerTime')
-	return pos
+	return newPos
 end
 
 function BtDeleteTimes(cond, ...)
