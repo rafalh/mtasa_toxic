@@ -111,7 +111,6 @@ function BtUpdatePlayerTops(playerTimes, map, players)
 		end
 	end
 	
-	local prof2 = DbgPerf(100)
 	if(#idList > 0) then
 		local rows = DbQuery(
 			'SELECT bt1.player, bt1.time, ('..
@@ -160,16 +159,28 @@ function getTopTime(map_res, cp_times)
 end
 
 function BtPrintTimes(room, map_id)
+	-- Prepare list of player IDs in room
+	local idList = {}
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room and pdata.id) then
-			local rows = DbQuery('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', pdata.id, map_id)
-			local data = rows and rows[1]
-			if(data) then
-				local timeStr = formatTimePeriod(data.time / 1000)
-				pdata:addNotify{
-					icon = 'best_times/race.png',
-					{"Your personal best time: %s", timeStr}}
-			end
+			table.insert(idList, pdata.id)
+		end
+	end
+	
+	-- Get personal times for all players in room
+	local rows = DbQuery('SELECT player, time FROM '..BestTimesTable..' WHERE map=? AND player IN (??)', map_id, table.concat(idList, ','))
+	for i, data in ipairs(rows) do
+		local pdata = Player.fromId(data.player)
+		local timeStr = formatTimePeriod(data.time / 1000)
+		
+		-- Display notification
+		if(pdata.addNotify) then
+			pdata:addNotify{
+				icon = 'best_times/race.png',
+				{"Your personal best time: %s", timeStr}
+			}
+		else
+			privMsg(pdata, "Your personal best time: %s", timeStr)
 		end
 	end
 end

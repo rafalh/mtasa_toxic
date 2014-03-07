@@ -192,7 +192,7 @@ function Playback.__mt.__index:start(ms)
 	-- Setup object state
 	self.ticks = getTickCount()
 	self:setProgress(ms or 0)
-	assert(ms > 0 or (self.curFrameIdx == 1 and self.dt == 0))
+	assert((ms and ms > 0) or (self.curFrameIdx == 1 and self.dt == 0))
 	
 	-- Update vehicle
 	self:setVisible(true)
