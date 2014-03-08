@@ -67,7 +67,9 @@ function MiSendMapInfo(playerOrRoom)
 		local pdata = Player.fromEl(player)
 		local personalTop
 		
-		if(g_MapInfo.type == 'DD' and DdGetPersonalTop) then
+		if(not pdata) then
+			personalTop = false
+		elseif(g_MapInfo.type == 'DD' and DdGetPersonalTop) then
 			personalTop = DdGetPersonalTop(map:getId(), pdata.id, true)
 		elseif(BtGetPersonalTop) then
 			personalTop = BtGetPersonalTop(map:getId(), pdata.id, true)
