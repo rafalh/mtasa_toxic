@@ -171,7 +171,8 @@ function BtGetPersonalTop(mapId, playerId, needsPos)
 	if(not playerId) then return false end
 	BtPreloadPersonalTops(mapId, {playerId}, needsPos)
 	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
-	return cache[playerId]
+	local info = cache[playerId]
+	return info and table.copy(info)
 end
 
 -- race_delay_indicator uses it
@@ -219,6 +220,7 @@ function BtPrintTimes(room, mapId)
 		if(pdata.room == room and pdata.id) then
 			local personalTop = BtGetPersonalTop(mapId, pdata.id)
 			if(personalTop) then
+				Debug.info(tostring(personalTop.time)..' '..type(personalTop.time))
 				local timeStr = formatTimePeriod(personalTop.time / 1000)
 				
 				-- Display notification

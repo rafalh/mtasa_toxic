@@ -75,6 +75,11 @@ function MiSendMapInfo(playerOrRoom)
 			personalTop = BtGetPersonalTop(map:getId(), pdata.id, true)
 		end
 		
+		-- Make time readable
+		if(personalTop) then
+			personalTop.time = formatTimePeriod(personalTop.time / 1000)
+		end
+		
 		RPC('MiSetPersonalInfo', personalTop, g_PlayerRates[player]):setClient(player):exec()
 	end
 	

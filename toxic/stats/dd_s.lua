@@ -170,7 +170,8 @@ function DdGetPersonalTop(mapId, playerId, needsPos)
 	if(not playerId) then return false end
 	DdPreloadPersonalTops(mapId, {playerId}, needsPos)
 	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
-	return cache[playerId]
+	local info = cache[playerId]
+	return info and table.copy(info)
 end
 
 #end -- DD_TOPS
