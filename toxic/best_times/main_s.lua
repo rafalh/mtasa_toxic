@@ -216,9 +216,9 @@ function BtPrintTimes(room, mapId)
 	
 	for player, pdata in pairs(g_Players) do
 		if(pdata.room == room and pdata.id) then
-			local timeMs = BtGetPersonalTop(mapId, pdata.id).time
-			if(timeMs) then
-				local timeStr = formatTimePeriod(timeMs / 1000)
+			local personalTop = BtGetPersonalTop(mapId, pdata.id)
+			if(personalTop) then
+				local timeStr = formatTimePeriod(personalTop.time / 1000)
 				
 				-- Display notification
 				if(pdata.addNotify) then

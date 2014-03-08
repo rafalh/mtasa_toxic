@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <meta>
-	<info type="misc" name="Toxic" author="rafalh" version="3.4.0" description="Rafalh Scripts System" />
+	<info type="misc" name="Toxic" author="rafalh" version="3.4.1" description="Rafalh Scripts System" />
 	
 	<min_mta_version client="1.3.3" server="1.3.3" /> <!-- for onClientSoundStopped -->
 	
