@@ -25,10 +25,10 @@ function addPlayerTime(playerId, mapId, time)
 	local now = getRealTime().timestamp
 	
 	-- Save new time in database
-	local personalTime = BtGetPersonalTop(mapId, playerId).time
-	if(not personalTime) then
+	local personalTop = BtGetPersonalTop(mapId, playerId)
+	if(not personalTop) then
 		DbQuery('INSERT INTO '..BestTimesTable..' (player, map, time, timestamp) VALUES(?, ?, ?, ?)', playerId, mapId, time, now)
-	elseif(personalTime < time) then -- new time is worse
+	elseif(personalTop.time < time) then -- new time is worse
 		return -1
 	else
 		local oldPos = BtGetPersonalTop(mapId, playerId, true).pos
@@ -44,7 +44,7 @@ function addPlayerTime(playerId, mapId, time)
 	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
 	cache[playerId] = {time = time, pos = newPos}
 	for pid, row in pairs(cache) do
-		if(row.pos and row.pos >= newPos) then
+		if(row and row.pos and row.pos >= newPos) then
 			row.pos = row.pos + 1
 		end
 	end

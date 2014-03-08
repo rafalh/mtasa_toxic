@@ -39,8 +39,6 @@ function MiSendMapInfo(playerOrRoom)
 		g_MapInfo = MiGetInfo(map)
 	end
 	
-	assert(not DdUpdatePlayerTops) -- FIXME
-	
 	local topTimes
 	if(g_MapInfo.type == 'DD' and DdGetTops) then
 		topTimes = DdGetTops(map, 8)
@@ -53,25 +51,26 @@ function MiSendMapInfo(playerOrRoom)
 	local idList = {}
 	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
-		if(pdata.id) then
+		if(pdata and pdata.id) then
 			table.insert(idList, pdata.id)
 		end
 	end
 	
-	BtPreloadPersonalTops(map:getId(), idList, true)
+	if(g_MapInfo.type == 'DD' and DdPreloadPersonalTops) then
+		DdPreloadPersonalTops(map:getId(), idList, true)
+	elseif(BtPreloadPersonalTops) then
+		BtPreloadPersonalTops(map:getId(), idList, true)
+	end
 	MiUpdateRates(map, players)
 	
 	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
 		local personalTop
 		
-		if(BtGetPersonalTime) then
-			personalTop = {}
-			personalTop.time = BtGetPersonalTime(map:getId(), pdata.id)
-			personalTop.pos = BtGetPersonalPos(map:getId(), pdata.id)
-			if(not personalTop.time) then
-				personalTop = false
-			end
+		if(g_MapInfo.type == 'DD' and DdGetPersonalTop) then
+			personalTop = DdGetPersonalTop(map:getId(), pdata.id, true)
+		elseif(BtGetPersonalTop) then
+			personalTop = BtGetPersonalTop(map:getId(), pdata.id, true)
 		end
 		
 		RPC('MiSetPersonalInfo', personalTop, g_PlayerRates[player]):setClient(player):exec()

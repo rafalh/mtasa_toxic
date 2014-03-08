@@ -42,7 +42,9 @@ function getPlayersStats(player, order, desc, limit, start, online)
 		
 		local idList = {}
 		for el, player in pairs(g_Players) do
-			table.insert(idList, player.id)
+			if(player.id) then
+				table.insert(idList, player.id)
+			end
 		end
 		table.insert(cond, 'player IN ('..table.concat(idList, ',')..')')
 	end

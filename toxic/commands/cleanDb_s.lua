@@ -35,8 +35,8 @@ local function RemoveUnknownPlayers(fix)
 	
 	local rowsCount = 0
 	local tables = { RatesTable, BestTimesTable, ProfilesTable }
-	for i, tblName in ipairs(tables) do
-		local rows = DbQuery ('SELECT player FROM '..tblName..' WHERE player NOT IN ('..idListStr..')')
+	for i, tbl in ipairs(tables) do
+		local rows = DbQuery ('SELECT player FROM '..tbl..' WHERE player NOT IN ('..idListStr..')')
 		if(rows and #rows > 0) then
 			local invalid = {}
 			for j, data in ipairs(rows) do
@@ -44,10 +44,10 @@ local function RemoveUnknownPlayers(fix)
 			end
 			
 			local invalidStr = table.concat(invalid, ', ')
-			privMsg(source, "Invalid player IDs in %s: %s", tblName, invalidStr)
+			privMsg(source, 'Invalid player IDs in %s: %s', tostring(tbl), invalidStr)
 			
 			if(fix) then
-				DbQuery('DELETE FROM '..tblName..' WHERE player IN ('..invalidStr..')')
+				DbQuery('DELETE FROM '..tbl..' WHERE player IN ('..invalidStr..')')
 			end
 			
 			rowsCount = rowsCount + #invalid
