@@ -34,7 +34,7 @@ local function RemoveUnknownPlayers(fix)
 	local idListStr = table.concat(idList, ',')
 	
 	local rowsCount = 0
-	local tables = { NamesTable, RatesTable, BestTimesTable, ProfilesTable }
+	local tables = { RatesTable, BestTimesTable, ProfilesTable }
 	for i, tblName in ipairs(tables) do
 		local rows = DbQuery ('SELECT player FROM '..tblName..' WHERE player NOT IN ('..idListStr..')')
 		if(rows and #rows > 0) then
@@ -91,11 +91,11 @@ local function RemoveTempPlayers(fix)
 		end
 		
 		local idListStr = table.concat(idList, ',')
-		DbQuery ('DELETE FROM '..PlayersTable..' WHERE player IN ('..idListStr..')')
-		DbQuery ('DELETE FROM '..NamesTable..' WHERE player IN ('..idListStr..')')
 		DbQuery ('DELETE FROM '..RatesTable..' WHERE player IN ('..idListStr..')')
 		DbQuery ('DELETE FROM '..BestTimesTable..' WHERE player IN ('..idListStr..')')
 		DbQuery ('DELETE FROM '..ProfilesTable..' WHERE player IN ('..idListStr..')')
+		DbQuery ('UPDATE '..Teams.TeamsTable..' SET owner=NULL WHERE owner IN ('..idListStr..')')
+		DbQuery ('DELETE FROM '..PlayersTable..' WHERE player IN ('..idListStr..')')
 	end
 	
 	privMsg(source, 'Temp players'..(fix and ' (fixed)' or '')..': %u/%u', tempPlayersCount, totalPlayersCount)

@@ -15,7 +15,7 @@ local function MiUpdateRates(map, players)
 	local idList = {}
 	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
-		if(g_PlayerRates[player] == nil and pdata) then
+		if(g_PlayerRates[player] == nil and pdata and pdata.id) then
 			table.insert(idList, pdata.id)
 			g_PlayerRates[player] = false
 		end

@@ -139,7 +139,7 @@ function DdPreloadPersonalTops(mapId, playerIdList, needsPos)
 	
 	local idList = {}
 	for i, playerId in ipairs(playerIdList) do
-		if(personalCache[playerId] == nil or (needsPos and not personalCache[playerId].pos)) then
+		if(personalCache[playerId] == nil or (needsPos and personalCache[playerId] and not personalCache[playerId].pos)) then
 			personalCache[playerId] = false
 			table.insert(idList, playerId)
 		end
