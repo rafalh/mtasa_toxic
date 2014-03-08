@@ -4,9 +4,6 @@
 -- Defines
 #POINTS_FOR_KILLS = true
 
--- Events
---addEvent('stats.onDDKillersList', true)
-
 #if(DD_TOPS) then
 VictoriesTable = Database.Table{
 	name = 'victories',
@@ -170,6 +167,7 @@ function DdPreloadPersonalTops(mapId, playerIdList, needsPos)
 end
 
 function DdGetPersonalTop(mapId, playerId, needsPos)
+	if(not playerId) then return false end
 	DdPreloadPersonalTops(mapId, {playerId}, needsPos)
 	local cache = Cache.get('Stats.m'..mapId..'.DdTops')
 	return cache[playerId]
@@ -190,6 +188,5 @@ local function onPlayerWasted()
 end
 
 addInitFunc(function()
-	--addEventHandler('stats.onDDKillersList', resourceRoot, onKillersList)
 	addEventHandler('onPlayerWasted', root, onPlayerWasted)
 end)

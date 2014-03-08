@@ -72,9 +72,9 @@ function addPlayerTime(playerId, mapId, time)
 	end
 	
 	-- Update Tops Cache
-	local topsCache = Cache.get('BestTimes.m'..map:getId()..'.Tops')
+	local topsCache = Cache.get('BestTimes.m'..mapId..'.Tops')
 	if(topsCache and newPos <= #topsCache) then
-		Cache.remove('BestTimes.m'..map:getId()..'.Tops')
+		Cache.remove('BestTimes.m'..mapId..'.Tops')
 	end
 	
 	-- Update Map Info
@@ -168,6 +168,7 @@ function BtPreloadPersonalTops(mapId, playerIdList, needsPos)
 end
 
 function BtGetPersonalTop(mapId, playerId, needsPos)
+	if(not playerId) then return false end
 	BtPreloadPersonalTops(mapId, {playerId}, needsPos)
 	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
 	return cache[playerId]
