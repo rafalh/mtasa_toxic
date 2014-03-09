@@ -21,7 +21,7 @@ local g_BestTimeCache = {}
 
 function addPlayerTime(playerId, mapId, time)
 	local prof = DbgPerf()
-	local wasInTop = false
+	local oldPos, wasInTop
 	local now = getRealTime().timestamp
 	
 	-- Save new time in database
@@ -31,7 +31,7 @@ function addPlayerTime(playerId, mapId, time)
 	elseif(personalTop.time < time) then -- new time is worse
 		return -1
 	else
-		local oldPos = BtGetPersonalTop(mapId, playerId, true).pos
+		oldPos = BtGetPersonalTop(mapId, playerId, true).pos
 		wasInTop = (oldPos <= 3) -- were we in the top?
 		
 		DbQuery('UPDATE '..BestTimesTable..' SET time=?, timestamp=? WHERE player=? AND map=?', time, now, playerId, mapId)
@@ -42,12 +42,12 @@ function addPlayerTime(playerId, mapId, time)
 	
 	-- Update cache
 	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
-	cache[playerId] = {time = time, pos = newPos}
 	for pid, row in pairs(cache) do
-		if(row and row.pos and row.pos >= newPos) then
+		if(row and row.pos and row.pos >= newPos and (not oldPos or row.pos < oldPos)) then
 			row.pos = row.pos + 1
 		end
 	end
+	cache[playerId] = {time = time, pos = newPos}
 	
 	-- Check if player joined the Top
 	if(newPos <= 3 and not wasInTop) then
@@ -162,6 +162,7 @@ function BtPreloadPersonalTops(mapId, playerIdList, needsPos)
 		for i, data in ipairs(rows) do
 			local playerId = data.player
 			data.player = nil
+			assert(personalCache[playerId] == false)
 			personalCache[playerId] = data
 		end
 	end
@@ -220,7 +221,6 @@ function BtPrintTimes(room, mapId)
 		if(pdata.room == room and pdata.id) then
 			local personalTop = BtGetPersonalTop(mapId, pdata.id)
 			if(personalTop) then
-				Debug.info(tostring(personalTop.time)..' '..type(personalTop.time))
 				local timeStr = formatTimePeriod(personalTop.time / 1000)
 				
 				-- Display notification
