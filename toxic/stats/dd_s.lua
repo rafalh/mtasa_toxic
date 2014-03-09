@@ -178,10 +178,12 @@ end
 
 local function onPlayerWasted()
 	local player = Player.fromEl(source)
-	local map = player and getCurrentMap(player.room)
-	if(not map) then return end
 	
-	if(player.room.ddKilersDetection and player.room.gameIsRunning) then
+	-- Check if killers detection is enabled
+	if(not player or not player.room.ddKilersDetection) then return end
+	
+	-- Check if Race State is valid
+	if(player.room.gameState == 'Running' or player.room.gameState == 'PostFinish') then
 		player.ddKillersAllowed = true
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
 		--Debug.info('onPlayerWasted '..player:getName())
