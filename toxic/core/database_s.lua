@@ -390,7 +390,7 @@ function Database.Drivers.SQLite:init()
 		desc = "Makes script database backup and saves in resource subdirectory",
 		accessRight = AccessRight('dbbackup'),
 		func = function(ctx)
-			Database.Drivers.SQLite.makeBackup()
+			Database.Drivers.SQLite:makeBackup()
 			privMsg(ctx.player, 'Backup saved!')
 		end
 	}
