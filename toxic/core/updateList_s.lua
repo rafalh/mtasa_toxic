@@ -25,18 +25,15 @@ local function mergeMaps(mapDst, mapSrc)
 	-- Best times
 	local rows = DbQuerySync('SELECT btS.player, btS.time AS timeSrc, btD.time AS timeDst FROM '..BestTimesTable..' btS, '..BestTimesTable..' btD WHERE btS.map=? AND btD.map=? AND btS.player=btD.player', mapSrc, mapDst)
 	local playersSrc, playersDst = {}, {}
-	local questionMarksSrc, questionMarksDst = {}, {}
 	
 	for i, data in ipairs(rows) do
 		local rows2
 		
 		if(data.timeSrc < data.timeDst) then -- src besttime is better
 			table.insert(playersDst, data.player)
-			table.insert(questionMarksDst, '?')
 			rows2 = DbQuerySync('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', mapDst, data.timeDst)
 		else -- dst besttime is better
 			table.insert(playersSrc, data.player)
-			table.insert(questionMarksSrc, '?')
 			rows2 = DbQuerySync('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', mapSrc, data.timeSrc)
 		end
 		
@@ -45,12 +42,10 @@ local function mergeMaps(mapDst, mapSrc)
 		end
 	end
 	if(#playersDst > 0) then
-		local questionMarksStr = table.concat(questionMarksDst, ',')
-		BtDeleteTimes('map=? AND player IN ('..questionMarksStr..')', mapDst, unpack(playersDst)) -- remove duplicates
+		BtDeleteTimes(mapDst, playersDst) -- remove duplicates
 	end
 	if(#playersSrc > 0) then
-		local questionMarksStr = table.concat(questionMarksSrc, ',')
-		BtDeleteTimes('map=? AND player IN ('..questionMarksStr..')', mapSrc, unpack(playersSrc)) -- remove duplicates
+		BtDeleteTimes(mapSrc, playersSrc) -- remove duplicates
 	end
 	DbQuerySync('UPDATE '..BestTimesTable..' SET map=? WHERE map=?', mapDst, mapSrc) -- set new best times map
 	

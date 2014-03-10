@@ -84,8 +84,26 @@ function addPlayerTime(playerId, mapId, time)
 	return newPos
 end
 
-function BtDeleteTimes(cond, ...)
-	local rows = DbQuery('SELECT rec, cp_times FROM '..BestTimesTable..' WHERE '..cond, ...)
+function BtDeleteTimes(mapIds, playerIds)
+	-- Allow non-table parameters
+	if(mapIds and type(mapIds) ~= 'table') then mapIds = {mapIds} end
+	if(playerIds and type(playerIds) ~= 'table') then playerIds = {playerIds} end
+	
+	-- Prepare condition string
+	local condTbl = {}
+	local condParams = {}
+	if(mapIds) then
+		condTbl[#condTbl + 1] = 'map IN (??)'
+		condParams[#condParams + 1] = table.concat(mapIds, ',')
+	end
+	if(playerIds) then
+		condTbl[#condTbl + 1] = 'player IN (??)'
+		condParams[#condParams + 1] = table.concat(playerIds, ',')
+	end
+	local cond = table.concat(condTbl, ' AND ')
+	
+	-- Collect blobs IDs
+	local rows = DbQuery('SELECT rec, cp_times FROM '..BestTimesTable..' WHERE '..cond, unpack(condParams))
 	local blobs = {}
 	for i, row in ipairs(rows) do
 		if(row.rec) then
@@ -96,10 +114,17 @@ function BtDeleteTimes(cond, ...)
 		end
 	end
 	
-	DbQuery('DELETE FROM '..BestTimesTable..' WHERE '..cond, ...)
+	-- Remove record from database
+	DbQuery('DELETE FROM '..BestTimesTable..' WHERE '..cond, unpack(condParams))
 	if(#blobs > 0) then
 		local blobsStr = table.concat(blobs, ',')
 		DbQuery('DELETE FROM '..BlobsTable..' WHERE id IN (??)', blobsStr)
+	end
+	
+	-- Clean cache
+	for i, mapId in ipairs(mapIds) do
+		Cache.remove('BestTimes.m'..mapId..'.Tops')
+		Cache.remove('BestTimes.m'..mapId..'.Personal')
 	end
 end
 

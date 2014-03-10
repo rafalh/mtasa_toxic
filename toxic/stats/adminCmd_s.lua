@@ -82,7 +82,7 @@ CmdMgr.register{
 		else
 			if(BtDeleteTimes) then
 				-- TODO: Fix toptimes_count for other players
-				BtDeleteTimes('player=?', player.id)
+				BtDeleteTimes(false, player.id)
 			end
 			
 			-- TODO: reset all stats

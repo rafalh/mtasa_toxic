@@ -92,7 +92,7 @@ local function RemoveTempPlayers(fix)
 		
 		local idListStr = table.concat(idList, ',')
 		DbQuery ('DELETE FROM '..RatesTable..' WHERE player IN ('..idListStr..')')
-		DbQuery ('DELETE FROM '..BestTimesTable..' WHERE player IN ('..idListStr..')')
+		BtDeleteTimes(false, idList)
 		DbQuery ('DELETE FROM '..ProfilesTable..' WHERE player IN ('..idListStr..')')
 		DbQuery ('UPDATE '..Teams.TeamsTable..' SET owner=NULL WHERE owner IN ('..idListStr..')')
 		DbQuery ('DELETE FROM '..PlayersTable..' WHERE player IN ('..idListStr..')')
@@ -114,8 +114,6 @@ local function RemoveUnknownMaps(fix)
 	end
 	
 	if(fix and #unkMaps > 0) then
-		local unkMapsStr = table.concat(unkMaps, ',')
-		
 		if(BestTimesTable) then
 			for i, mapId in ipairs(unkMaps) do
 				-- Decrement Top Times count
@@ -126,7 +124,7 @@ local function RemoveUnknownMaps(fix)
 				end
 			end
 			
-			DbQuery('DELETE FROM '..BestTimesTable..' WHERE map IN ('..unkMapsStr..')')
+			BtDeleteTimes(unkMaps, false)
 		end
 		
 		if(RatesTable) then

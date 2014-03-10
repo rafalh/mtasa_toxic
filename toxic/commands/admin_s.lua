@@ -306,17 +306,14 @@ local function mergeAccounts(destId, srcId)
 	if(BestTimesTable) then
 		local rows = DbQuery('SELECT bt1.map, bt1.time AS time1, bt2.time AS time2 FROM '..BestTimesTable..' bt1, '..BestTimesTable..' bt2 WHERE bt1.player=? AND bt2.player=? AND bt1.map=bt2.map', destId, srcId)
 		local mapsSrc, mapsDst = {}, {}
-		local questionMarksSrc, questionMarksDst = {}, {}
 		newData.toptimes_count = destAccountData.toptimes_count + srcData.toptimes_count
 		
 		for i, data in ipairs(rows) do
 			local delTime = math.max(data.time1, data.time2)
 			if(data.time1 > data.time2) then -- old besttime was better
 				table.insert(mapsDst, data.map)
-				table.insert(questionMarksDst, '?')
 			else -- new besttime is better
 				table.insert(mapsSrc, data.map)
-				table.insert(questionMarksSrc, '?')
 			end
 			
 			local rows = DbQuery('SELECT COUNT(player) AS pos FROM '..BestTimesTable..' WHERE map=? AND time<=?', data.map, delTime)
@@ -325,12 +322,10 @@ local function mergeAccounts(destId, srcId)
 			end
 		end
 		if(#mapsDst > 0) then
-			local questionMarksStr = table.concat(questionMarksDst, ',')
-			BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', destId, unpack(mapsDst)) -- remove duplicates
+			BtDeleteTimes(mapsDst, destId) -- remove duplicates
 		end
 		if(#mapsSrc > 0) then
-			local questionMarksStr = table.concat(questionMarksSrc, ',')
-			BtDeleteTimes('player=? AND map IN ('..questionMarksStr..')', srcId, unpack(mapsSrc)) -- remove duplicates
+			BtDeleteTimes(mapsSrc, srcId) -- remove duplicates
 		end
 		DbQuery('UPDATE '..BestTimesTable..' SET player=? WHERE player=?', destId, srcId) -- set new best times owner
 	end
@@ -432,7 +427,7 @@ CmdMgr.register{
 		DbQuery('DELETE FROM '..NamesTable..' WHERE player=?', playerId)
 		DbQuery('DELETE FROM '..RatesTable..' WHERE player=?', playerId) -- FIXME: maps.rates
 		if(BtDeleteTimes) then
-			BtDeleteTimes('player=?', playerId)
+			BtDeleteTimes(false, playerId)
 		end
 		DbQuery('DELETE FROM '..ProfilesTable..' WHERE player=?', playerId)
 		DbQuery('DELETE FROM '..PlayersTable..' WHERE player=?', playerId)
