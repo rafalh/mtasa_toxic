@@ -3,10 +3,16 @@ namespace('Test')
 local g_Map = {}
 local g_FailCount = 0
 local g_ExecutedCount = 0
+local g_Player
 
 local function outputMsg(msg)
-	outputServerLog('TEST: '..msg)
-	outputConsole(msg)
+	if(getElementType(g_Player) == 'console') then
+		outputServerLog('TEST: '..msg)
+	elseif(g_ServerSide) then
+		outputChatBox(msg, g_Player, 255, 255, 255)
+	else
+		outputChatBox(msg, 255, 255, 255)
+	end
 end
 
 function register(name, func)
@@ -56,13 +62,13 @@ local function runInternal(name)
 	prof:cp('test \''..name..'\'')
 end
 
-function run(name)
+function run(name, player)
 	g_FailCount, g_ExecutedCount = 0, 0
+	g_Player = player
 	if(name) then
 		runInternal(name)
 	else
 		for name, f in pairs(g_Map) do
-			local msg = 
 			outputMsg('Starting test \''..name..'\'')
 			runInternal(name)
 		end
@@ -73,10 +79,12 @@ end
 
 if(g_ServerSide) then
 	addCommandHandler('tests', function(player, cmd, testName)
-		run(testName)
+		if(isPlayerAdmin(player)) then
+			run(testName, player)
+		end
 	end, false, true)
 else
 	addCommandHandler('testc', function(cmd, testName)
-		run(testName)
+		run(testName, localPlayer)
 	end, true)
 end
