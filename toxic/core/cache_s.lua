@@ -5,7 +5,7 @@ local g_Items = {}
 function get(name)
 	-- Find item in cache
 	local descr = g_Items[name]
-	if(not descr) then return end
+	if(descr == nil) then return end
 	
 	-- Update expiration time
 	local now = getRealTime().timestamp
@@ -26,9 +26,11 @@ function set(name, val, sec)
 end
 
 function remove(name)
+	--Debug.info('Cache.remove \''..name..'\'')
+	
 	-- Find item in cache
 	local descr = g_Items[name]
-	if(not descr) then return end
+	if(descr == nil) then return end
 	
 	-- Destroy associated element
 	if(isElement(descr[1])) then

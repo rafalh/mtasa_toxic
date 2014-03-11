@@ -41,7 +41,7 @@ function addPlayerTime(playerId, mapId, time)
 	local newPos = DbCount(BestTimesTable, 'map=? AND time<=?', mapId, time)
 	
 	-- Update cache
-	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
+	local cache = Cache.get('BestTimes.m'..mapId..'.Personal')
 	for pid, row in pairs(cache) do
 		if(row and row.pos and row.pos >= newPos and (not oldPos or row.pos < oldPos)) then
 			row.pos = row.pos + 1
@@ -122,9 +122,13 @@ function BtDeleteTimes(mapIds, playerIds)
 	end
 	
 	-- Clean cache
-	for i, mapId in ipairs(mapIds) do
-		Cache.remove('BestTimes.m'..mapId..'.Tops')
-		Cache.remove('BestTimes.m'..mapId..'.Personal')
+	if(mapIds) then
+		for i, mapId in ipairs(mapIds) do
+			Cache.remove('BestTimes.m'..mapId..'.Tops')
+			Cache.remove('BestTimes.m'..mapId..'.Personal')
+		end
+	else
+		-- Ignore it for now...
 	end
 end
 
@@ -154,10 +158,10 @@ function BtGetTops(map, count)
 end
 
 function BtPreloadPersonalTops(mapId, playerIdList, needsPos)
-	local personalCache = Cache.get('BestTime.m'..mapId..'.Personal')
+	local personalCache = Cache.get('BestTimes.m'..mapId..'.Personal')
 	if(not personalCache) then
 		personalCache = {}
-		Cache.set('BestTime.m'..mapId..'.Personal', personalCache, 300)
+		Cache.set('BestTimes.m'..mapId..'.Personal', personalCache, 300)
 	end
 	
 	local idList = {}
@@ -196,7 +200,7 @@ end
 function BtGetPersonalTop(mapId, playerId, needsPos)
 	if(not playerId) then return false end
 	BtPreloadPersonalTops(mapId, {playerId}, needsPos)
-	local cache = Cache.get('BestTime.m'..mapId..'.Personal')
+	local cache = Cache.get('BestTimes.m'..mapId..'.Personal')
 	local info = cache[playerId]
 	return info and table.copy(info)
 end
@@ -261,3 +265,27 @@ function BtPrintTimes(room, mapId)
 		end
 	end
 end
+
+#if(TEST) then
+	Test.register('BestTime', function()
+		local map = Map(resource)
+		local testPlayer = Player.getConsole()
+		local n
+		
+		n = addPlayerTime(testPlayer.id, map:getId(), 10000)
+		Test.checkEq(n, 1)
+		
+		n = addPlayerTime(testPlayer.id, map:getId(), 11000)
+		Test.checkEq(n, -1)
+		
+		n = addPlayerTime(testPlayer.id, map:getId(), 9000)
+		Test.checkEq(n, 1)
+		
+		-- Cleanup
+		Test.check(Cache.get('BestTimes.m'..map:getId()..'.Personal'))
+		BtDeleteTimes(map:getId())
+		Test.check(not Cache.get('BestTimes.m'..map:getId()..'.Personal'))
+		Database.query('DELETE FROM '..MapsTable..' WHERE map=?', map:getId())
+		Map.idCache[map.res or map.path] = nil
+	end)
+#end
