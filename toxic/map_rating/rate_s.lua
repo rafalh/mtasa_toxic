@@ -139,7 +139,7 @@ addInitFunc(function()
 	addEventHandler('onPollStarting', g_Root, RtPoolStarting)
 end)
 
---#if(TEST) then
+#if(TEST) then
 	Test.register('MapRating', function()
 		local map = Map(resource)
 		local testPlayer = Player.getConsole()
@@ -159,4 +159,4 @@ end)
 		Cache.remove('MapRating.m'..map:getId()..'.Personal')
 		Map.idCache[map.res or map.path] = nil
 	end)
---#end
+#end

@@ -52,12 +52,14 @@ function CmdMgr.register(info)
 #end -- DEBUG
 
 	assert(info.name and info.func)
+	info.name = info.name:lower()
 	
 	assert(not CmdMgr.map[info.name], 'Command '..info.name..' already exists')
 	CmdMgr.map[info.name] = info
 	
 	if(info.aliases) then
 		for i, alias in ipairs(info.aliases) do
+			alias = alias:lower()
 			assert(not CmdMgr.map[alias], info.name)
 			CmdMgr.map[alias] = info
 		end
@@ -67,12 +69,14 @@ function CmdMgr.register(info)
 end
 
 function CmdMgr.unregister(cmdName)
+	cmdName = cmdName:lower()
 	local cmd = CmdMgr.map[cmdName]
 	assert(cmd)
 	
 	CmdMgr.map[cmdName] = nil
-	if(info.aliases) then
-		for i, alias in ipairs(info.aliases) do
+	if(cmd.aliases) then
+		for i, alias in ipairs(cmd.aliases) do
+			alias = alias:lower()
 			CmdMgr.map[alias] = nil
 		end
 	end
@@ -81,6 +85,7 @@ function CmdMgr.unregister(cmdName)
 end
 
 function CmdMgr.exists(cmdName)
+	cmdName = cmdName:lower()
 	return CmdMgr.map[cmdName] and true
 end
 
@@ -177,6 +182,7 @@ function CmdMgr.getAllowedCommands(player)
 end
 
 function CmdMgr.getUsage(cmdName)
+	cmdName = cmdName:lower()
 	local cmd = CmdMgr.map[cmdName]
 	if(not cmd) then return false end
 	
@@ -197,7 +203,8 @@ function CmdMgr.getUsage(cmdName)
 	return table.concat(ret, ' ')
 end
 
-function CmdMgr.invoke(ctx, cmd, ...)
+function CmdMgr.invoke(ctx, cmdName, ...)
+	cmdName = cmdName:lower()
 	local cmd = CmdMgr.map[cmdName]
 	if(not cmd) then return false end
 	
@@ -272,7 +279,7 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	
 	-- Find command in map
 	ctx.cmdName = table.remove(args, 1):sub(2)
-	local cmd = CmdMgr.map[ctx.cmdName]
+	local cmd = CmdMgr.map[ctx.cmdName:lower()]
 	if(not cmd) then return end
 	
 	-- Check if player has access to this command
@@ -346,5 +353,16 @@ end)
 		
 		args = CmdMgr.parseLine('abc "def ghi\\" jkl"')
 		Test.checkTblEq(args, {'abc', 'def ghi" jkl'})
+		
+		CmdMgr.register{
+			name = 'nonexistant',
+			func = function(ctx) end
+		}
+		local testPlayer = Player.getConsole()
+		Test.check(CmdMgr.invoke({player = testPlayer}, 'nonexistant'))
+		Test.check(CmdMgr.invoke({player = testPlayer}, 'noneXistaNt'))
+		Test.check(not CmdMgr.invoke({player = testPlayer}, 'nonexistant2'))
+		
+		CmdMgr.unregister('nonexistant')
 	end)
 #end -- TEST
