@@ -1,5 +1,4 @@
 local g_MapInfo = false
-local g_PlayerRates = {}
 
 local function MiGetInfo(map)
 	local info = DbQuerySingle('SELECT played, rates, rates_count FROM '..MapsTable..' WHERE map=? LIMIT 1', map:getId())
@@ -11,23 +10,6 @@ local function MiGetInfo(map)
 	return info
 end
 
-local function MiUpdateRates(map, players)
-	local idList = {}
-	for i, player in ipairs(players) do
-		local pdata = Player.fromEl(player)
-		if(g_PlayerRates[player] == nil and pdata and pdata.id) then
-			table.insert(idList, pdata.id)
-			g_PlayerRates[player] = false
-		end
-	end
-	
-	local rows = DbQuery('SELECT player, rate FROM '..RatesTable..' WHERE map=? AND player IN (??)', map:getId(), table.concat(idList, ','))
-	for i, data in ipairs(rows) do
-		local pdata = Player.fromId(data.player)
-		g_PlayerRates[pdata.el] = data.rate
-	end
-end
-
 function MiSendMapInfo(playerOrRoom)
 	local room = playerOrRoom.cls == Player and playerOrRoom.room or playerOrRoom
 	
@@ -35,18 +17,23 @@ function MiSendMapInfo(playerOrRoom)
 	local map = getCurrentMap(room)
 	if(not map) then return end
 	
+	-- Prepare map info
 	if(not g_MapInfo) then
 		g_MapInfo = MiGetInfo(map)
 	end
 	
+	-- Get Tops
 	local topTimes
 	if(g_MapInfo.type == 'DD' and DdGetTops) then
 		topTimes = DdGetTops(map, 8)
 	else
 		topTimes = BtGetTops(map, 8)
 	end
+	
+	-- Send Tops and map general info to all players
 	RPC('MiSetMapInfo', g_MapInfo, topTimes):setClient(playerOrRoom.el):exec()
 	
+	-- Prepare list of IDs
 	local players = getElementsByType('player', playerOrRoom.el)
 	local idList = {}
 	for i, player in ipairs(players) do
@@ -56,17 +43,19 @@ function MiSendMapInfo(playerOrRoom)
 		end
 	end
 	
+	-- Preload all needed information
 	if(g_MapInfo.type == 'DD' and DdPreloadPersonalTops) then
 		DdPreloadPersonalTops(map:getId(), idList, true)
 	elseif(BtPreloadPersonalTops) then
 		BtPreloadPersonalTops(map:getId(), idList, true)
 	end
-	MiUpdateRates(map, players)
+	RtPreloadPersonalMapRating(map:getId(), idList)
 	
 	for i, player in ipairs(players) do
 		local pdata = Player.fromEl(player)
-		local personalTop
+		local personalTop, personalRating
 		
+		-- Load personal Top
 		if(not pdata) then
 			personalTop = false
 		elseif(g_MapInfo.type == 'DD' and DdGetPersonalTop) then
@@ -76,11 +65,17 @@ function MiSendMapInfo(playerOrRoom)
 		end
 		
 		-- Make time readable
-		if(personalTop) then
+		if(personalTop and personalTop.time) then
 			personalTop.time = formatTimePeriod(personalTop.time / 1000)
 		end
 		
-		RPC('MiSetPersonalInfo', personalTop, g_PlayerRates[player]):setClient(player):exec()
+		-- Get player rating for current map
+		if(RtGetPersonalMapRating) then
+			personalRating = RtGetPersonalMapRating(map:getId(), pdata.id)
+		end
+		
+		-- Send personal Top and rating to owner
+		RPC('MiSetPersonalInfo', personalTop, personalRating):setClient(player):exec()
 	end
 	
 	if(show) then
@@ -105,7 +100,6 @@ end
 
 function MiDeleteCache()
 	g_MapInfo = false
-	g_PlayerRates = {}
 end
 
 addInitFunc(function()
