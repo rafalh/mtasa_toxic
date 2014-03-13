@@ -7,30 +7,30 @@ addEvent('trainingmode.onRespawnReq', true)
 addEvent('onRaceStateChanging')
 addEvent('onPlayerPickUpRacePickup')
 
-local function TmDoesMapSupportRespawn(map_res)
-	if(not map_res) then
-		map_res = exports.mapmanager:getRunningGamemodeMap()
+local function TmDoesMapSupportRespawn(mapRes)
+	if(not mapRes) then
+		mapRes = exports.mapmanager:getRunningGamemodeMap()
 	end
 	
-	if(not map_res) then
+	if(not mapRes) then
 		--outputDebugString('no map running', 3)
 		return false
 	end
 	
-	local map_root = getResourceRootElement(map_res)
-	if(#getElementsByType('checkpoint', map_root) > 0) then
+	local mapRoot = getResourceRootElement(mapRes)
+	if(#getElementsByType('checkpoint', mapRoot) > 0) then
 		--outputDebugString('race', 3)
 		return false
 	end
 	
-	local res_name = getResourceName(map_res)
-	local respawn = get(res_name..'.respawn') or get('race.respawnmode')
+	local mapResName = getResourceName(mapRes)
+	local respawn = get(mapResName..'.respawn') or get('race.respawnmode')
 	if(respawn ~= 'none') then
 		--outputDebugString('respawn', 3)
 		return false
 	end
 	
-	local map_name = getResourceInfo(map_res, 'name') or res_name
+	local map_name = getResourceInfo(mapRes, 'name') or mapResName
 	if(not map_name:lower():match('%[dm%]')) then
 		--outputDebugString('not dm', 3)
 		return false

@@ -63,7 +63,7 @@ end
 local function TmSaveVehData()
 	assert(g_TmEnabled)
 	
-	local veh = getPedOccupiedVehicle( g_Me)
+	local veh = getPedOccupiedVehicle(g_Me)
 	if(not veh) then return end
 	
 	local data = {}
@@ -72,14 +72,14 @@ local function TmSaveVehData()
 	data.pos = { getElementPosition(veh) }
 	data.rot = { getElementRotation(veh) }
 	data.vel = { getElementVelocity(veh) }
-	data.turn_vel = { getVehicleTurnVelocity(veh) }
+	data.turnVel = { getVehicleTurnVelocity(veh) }
 	data.grav = { getVehicleGravity(veh) }
 	data.health = getElementHealth(veh)
 	data.model = getElementModel(veh)
 	data.dimension = getElementDimension(veh)
 	data.fire = getControlState('vehicle_fire')
-	data.hovercars = isWorldSpecialPropertyEnabled('hovercars')
-	data.aircars = isWorldSpecialPropertyEnabled('aircars')
+	data.hoverCars = isWorldSpecialPropertyEnabled('hovercars')
+	data.airCars = isWorldSpecialPropertyEnabled('aircars')
 	
 	data.nitro = false
 	local upgrades = getVehicleUpgrades(veh)
@@ -90,9 +90,9 @@ local function TmSaveVehData()
 	end
 	
 	if(#g_VehData > 0) then
-		local prev_data = g_VehData[#g_VehData]
-		local dist = getDistanceBetweenPoints3D(data.pos[1], data.pos[2], data.pos[3], prev_data.pos[1], prev_data.pos[2], prev_data.pos[3])
-		if(dist < 1 and data.model == prev_data.model) then
+		local prevData = g_VehData[#g_VehData]
+		local dist = getDistanceBetweenPoints3D(data.pos[1], data.pos[2], data.pos[3], prevData.pos[1], prevData.pos[2], prevData.pos[3])
+		if(dist < 1 and data.model == prevData.model) then
 			--outputDebugString('AFK detected.', 3)
 			return
 		end
@@ -152,11 +152,11 @@ local function TmPlayerWasted()
 		g_SaveTimer = false
 		
 		if(#g_VehData > 1) then
-			local saved_delay = getTickCount() - g_SavedTicks
-			local respawned_delay = getTickCount() - g_RespawnedTicks
-			if(saved_delay <= 5000 or respawned_delay <= 5000) then
+			local savedDelay = getTickCount() - g_SavedTicks
+			local respawnedDelay = getTickCount() - g_RespawnedTicks
+			if(savedDelay <= 5000 or respawnedDelay <= 5000) then
 				table.remove(g_VehData)
-				saved_delay = 0
+				savedDelay = 0
 				--outputDebugString('Removed vehicle data num '..( #g_VehData + 1)..'.', 3)
 			end
 		end
@@ -175,13 +175,13 @@ local function TmUnfreeze2(data)
 	setElementPosition(veh, unpack(data.pos))
 	setElementRotation(veh, unpack(data.rot))
 	setElementVelocity(veh, unpack(data.vel))
-	setVehicleTurnVelocity(veh, unpack(data.turn_vel))
+	setVehicleTurnVelocity(veh, unpack(data.turnVel))
 	setVehicleGravity(veh, unpack(data.grav))
 	setElementDimension(veh, data.dimension)
 	setControlState('vehicle_fire', data.fire)
 	
-	setWorldSpecialPropertyEnabled('hovercars', data.hovercars)
-	setWorldSpecialPropertyEnabled('aircars', data.aircars)
+	setWorldSpecialPropertyEnabled('hovercars', data.hoverCars)
+	setWorldSpecialPropertyEnabled('aircars', data.airCars)
 end
 
 local function TmUnfreeze(data)
