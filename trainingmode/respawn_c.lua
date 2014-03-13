@@ -215,6 +215,7 @@ end
 
 local function TmInit()
 	setElementData(g_Me, 'respawn.playing', false, true)
+	triggerServerEvent('trainingmode.onPlayerReady', resourceRoot)
 end
 
 addEventHandler('onClientElementDataChange', g_Me, TmOnPlayerDataChange)

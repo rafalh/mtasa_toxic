@@ -4,6 +4,7 @@ local g_DangerousVeh = { [425] = true, [520] = true, [464] = true, [447] = true 
 
 addEvent('trainingmode.onStateChange', true)
 addEvent('trainingmode.onRespawnReq', true)
+addEvent('trainingmode.onPlayerReady', true)
 addEvent('onRaceStateChanging')
 addEvent('onPlayerPickUpRacePickup')
 
@@ -60,12 +61,25 @@ local function TmHideBlip(player)
 	end
 end
 
+--[[local function TmIsBlipHidden(player)
+	for i, el in ipairs(getAttachedElements(player)) do
+		if(getElementType(el) == 'blip') then
+			local r, g, b, a = getBlipColor(el)
+			if(a > 0) then return false end
+		end
+	end
+	return true
+end]]
+
 local function TmDelayedRespawn(player, data)
 	--outputDebugString('TmDelayedRespawn '..tostring(g_TmEnabled), 3)
 	if(g_TmEnabled and isElement(player)) then
 		-- Make sure everything is still ok
 		local veh = exports.race:getPlayerVehicle(player)
 		TmLoadVehData(veh, data)
+		
+		-- Hide blip again because Race gamemode shows it in 'setPlayerSpectating'
+		--if(not TmIsBlipHidden(player)) then outputDebugString('Blip not hidden!', 2) end
 		TmHideBlip(player)
 		
 		-- Unfreeze on client side
@@ -170,6 +184,13 @@ local function TmPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 	end
 end
 
+local function TmPlayerReady()
+	if(g_TmEnabled) then
+		triggerClientEvent('trainingmode.onStateChange', client, true)
+	end
+end
+
 addEventHandler('onRaceStateChanging', g_Root, TmRaceStateChanging)
 addEventHandler('onPlayerPickUpRacePickup', g_Root, TmPlayerPickUpRacePickup)
 addEventHandler('trainingmode.onRespawnReq', g_Root, TmRequestRespawn)
+addEventHandler('trainingmode.onPlayerReady', g_Root, TmPlayerReady)
