@@ -2,8 +2,8 @@ local g_TmEnabled = false
 local g_Root = getRootElement()
 local g_DangerousVeh = { [425] = true, [520] = true, [464] = true, [447] = true } -- hunter etc.
 
-addEvent('onClientTrainingMode', true)
-addEvent('onRequestRespawn', true)
+addEvent('trainingmode.onStateChange', true)
+addEvent('trainingmode.onRespawnReq', true)
 addEvent('onRaceStateChanging')
 addEvent('onPlayerPickUpRacePickup')
 
@@ -69,7 +69,7 @@ local function TmDelayedRespawn(player, data)
 		TmHideBlip(player)
 		
 		-- Unfreeze on client side
-		triggerClientEvent(player, 'onClientRequestUnfreeze', player, data)
+		triggerClientEvent(player, 'trainingmode.onUnfreezeReq', player, data)
 	end
 end
 
@@ -125,10 +125,10 @@ local function TmRaceStateChanging(newState, oldState)
 	if(newState == 'Running') then
 		g_TmEnabled = TmDoesMapSupportRespawn()
 		if(g_TmEnabled) then
-			triggerClientEvent('onClientTrainingMode', g_Root, true)
+			triggerClientEvent('trainingmode.onStateChange', g_Root, true)
 		end
 	elseif(g_TmEnabled) then
-		triggerClientEvent('onClientTrainingMode', g_Root, false)
+		triggerClientEvent('trainingmode.onStateChange', g_Root, false)
 		g_TmEnabled = false
 		
 		for i, player in ipairs(getElementsByType('player')) do
@@ -166,10 +166,10 @@ local function TmPlayerPickUpRacePickup(pickupID, pickupType, vehicleModel)
 		end
 		
 		-- Disable respawn
-		triggerClientEvent('onClientTrainingMode', g_Root, false)
+		triggerClientEvent('trainingmode.onStateChange', g_Root, false)
 	end
 end
 
 addEventHandler('onRaceStateChanging', g_Root, TmRaceStateChanging)
 addEventHandler('onPlayerPickUpRacePickup', g_Root, TmPlayerPickUpRacePickup)
-addEventHandler('onRequestRespawn', g_Root, TmRequestRespawn)
+addEventHandler('trainingmode.onRespawnReq', g_Root, TmRequestRespawn)

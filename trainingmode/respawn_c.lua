@@ -25,9 +25,9 @@ local g_RespawnedTicks = 0
 local g_TmEnabled = false
 local g_RespawnEnabled = false
 
-addEvent('onClientTrainingMode', true)
-addEvent('onClientRequestUnfreeze', true)
-addEvent('onRequestRespawn', true)
+addEvent('trainingmode.onStateChange', true)
+addEvent('trainingmode.onUnfreezeReq', true)
+addEvent('trainingmode.onRespawnReq', true)
 
 local TmRespawn -- TmEnableRespawn and TmDisableRespawn needs it
 
@@ -111,7 +111,7 @@ TmRespawn = function()
 	TmDisableRespawn()
 	
 	setElementData(g_Me, 'respawn.playing', true, true)
-	triggerServerEvent('onRequestRespawn', g_Me, g_VehData[#g_VehData])
+	triggerServerEvent('trainingmode.onRespawnReq', g_Me, g_VehData[#g_VehData])
 	g_RespawnedTicks = getTickCount()
 	
 	if(not g_SaveTimer) then
@@ -220,5 +220,5 @@ end
 addEventHandler('onClientElementDataChange', g_Me, TmOnPlayerDataChange)
 addEventHandler('onClientPlayerWasted', g_Me, TmPlayerWasted)
 addEventHandler('onClientResourceStart', g_ResRoot, TmInit)
-addEventHandler('onClientTrainingMode', g_Me, TmSetEnabled)
-addEventHandler('onClientRequestUnfreeze', g_Root, TmUnfreeze)
+addEventHandler('trainingmode.onStateChange', g_Me, TmSetEnabled)
+addEventHandler('trainingmode.onUnfreezeReq', g_Root, TmUnfreeze)
