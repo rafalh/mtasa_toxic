@@ -65,6 +65,8 @@ ShpRegisterItem{
 	descr = "Set message, which is displayed when you join.",
 	img = 'shop/img/joinmsg.png',
 	onUse = ShpOnJoinMsgUse,
+	useBtnText = "Change",
+	hideInItemsPanel = true,
 	dataToCount = function(val) return val and 1 end,
 	getAllowedAct = function(val) return not val, true, true end -- buy, sell, use
 }
@@ -316,7 +318,7 @@ local function ShpSetPlayerAlpha(value)
 		setElementAlpha(veh, value)
 		for i, el in ipairs(getAttachedElements(veh)) do
 			setElementAlpha(el, value)
-			if(getElementType(el) =='blip') then
+			if(getElementType(el) == 'blip') then
 				Debug.warn('blip2')
 				setBlipColor(el, 0, 0, 0, 0)
 			end

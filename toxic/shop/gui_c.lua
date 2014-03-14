@@ -38,6 +38,8 @@ local function ShpUpdateButtons(itemId)
 	guiSetEnabled(g_BuyButton, buy and g_Cash >= cost)
 	guiSetEnabled(g_SellButton, sell)
 	guiSetEnabled(g_UseButton, use)
+	
+	guiSetText(g_UseButton, item.useBtnText or "Use")
 end
 
 local function ShpDisableButtons()
@@ -327,7 +329,7 @@ local function ShpUpdateItemsWnd()
 	for item_id, item in pairs(g_ShopItems) do
 		local count = g_Inventory[item_id] and item.dataToCount(g_Inventory[item_id]) or 0
 		
-		if(count > 0) then
+		if(count > 0 and not item.hideInItemsPanel) then
 			local gui = { id = item_id }
 			
 			if(item.img) then
