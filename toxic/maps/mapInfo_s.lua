@@ -70,7 +70,7 @@ function MiSendMapInfo(playerOrRoom)
 		end
 		
 		-- Get player rating for current map
-		if(RtGetPersonalMapRating) then
+		if(RtGetPersonalMapRating and pdata) then
 			personalRating = RtGetPersonalMapRating(map:getId(), pdata.id)
 		end
 		

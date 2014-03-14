@@ -7,6 +7,7 @@
 	<script src="spectators_c.lua" type="client" />
 	<script src="tempMod_s.lua" type="server" />
 	<script src="waterFix_c.lua" type="client" />
+	<script src="antiBounce_c.lua" type="client" />
 	<script src="copyUrl_c.lua" type="client" />
 	<script src="serverRules_c.lua" type="client" />
 	<script src="clearChat_c.lua" type="client" />
