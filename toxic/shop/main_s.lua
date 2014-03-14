@@ -41,9 +41,9 @@ PlayersTable:addColumns{
 function ShpSyncInventory(player)
 	local inventory = {}
 	
-	for item_id, item in pairs(g_ShopItems) do
+	for itemId, item in pairs(g_ShopItems) do
 		if(item.field) then
-			inventory[item_id] = player.accountData[item.field]
+			inventory[itemId] = player.accountData[item.field]
 		end
 	end
 	
@@ -57,18 +57,18 @@ local function ShpGetInventoryRequest()
 	ShpSyncInventory(player)
 end
 
-local function ShpBuyShopItemRequest(item_id)
-	local item = item_id and g_ShopItems[item_id]
+local function ShpBuyShopItemRequest(itemId)
+	local item = itemId and g_ShopItems[itemId]
 	if(not item) then return end
 	
-	if(ShpBuyItem(item_id, client)) then
+	if(ShpBuyItem(itemId, client)) then
 		local player = Player.fromEl(client)
 		ShpSyncInventory(player)
 	end
 end
 
-local function ShpSellShopItemRequest(item_id)
-	local item = item_id and g_ShopItems[item_id]
+local function ShpSellShopItemRequest(itemId)
+	local item = itemId and g_ShopItems[itemId]
 	if(not item) then return end
 	
 	local pdata = Player.fromEl(client)
@@ -80,11 +80,11 @@ local function ShpSellShopItemRequest(item_id)
 	end
 end
 
-local function ShpUseShopItemRequest(item_id)
-	local item = item_id and g_ShopItems[item_id]
+local function ShpUseShopItemRequest(itemId)
+	local item = itemId and g_ShopItems[itemId]
 	if(not item) then return end
 	
-	if(ShpUseItem(item_id, client)) then
+	if(ShpUseItem(itemId, client)) then
 		local player = Player.fromEl(client)
 		ShpSyncInventory(player)
 	end
@@ -94,12 +94,19 @@ end
 -- Global function definitions --
 ---------------------------------
 
-function ShpBuyItem(item_id, player)
-	local item = g_ShopItems[item_id]
+function ShpBuyItem(itemId, player)
+	local item = g_ShopItems[itemId]
 	local pdata = Player.fromEl(player)
-	assert(item and item.onBuy)
+	assert(item and pdata)
 	
-	local price = ShpGetItemPrice(item_id, player)
+	if(item.clientSideBuy) then
+		RPC('ShpBuyItem', itemId):setClient(player):exec()
+		return true
+	end
+	
+	assert(item.onBuy)
+	
+	local price = ShpGetItemPrice(itemId, player)
 	if(pdata.accountData:get('cash') < price) then
 		return false
 	end
@@ -109,7 +116,7 @@ function ShpBuyItem(item_id, player)
 	if(success == false) then
 		return false
 	elseif(success == nil) then
-		Debug.warn('Expected returned status ('..tostring(item_id)..')')
+		Debug.warn('Expected returned status ('..tostring(itemId)..')')
 	end
 	
 	pdata.accountData:add('cash', -price)
@@ -117,9 +124,9 @@ function ShpBuyItem(item_id, player)
 	return price
 end
 
-function ShpUseItem(item_id, player)
+function ShpUseItem(itemId, player)
 	local pdata = Player.fromEl(player)
-	local item = g_ShopItems[item_id]
+	local item = g_ShopItems[itemId]
 	assert(item)
 	
 	if(item.onUse) then
@@ -131,8 +138,8 @@ function ShpUseItem(item_id, player)
 	return false
 end
 
-function ShpGetItemPrice(item_id, player)
-	local item = g_ShopItems[item_id]
+function ShpGetItemPrice(itemId, player)
+	local item = g_ShopItems[itemId]
 	local price = item.cost
 	if(player and not item.noDiscount) then
 		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', player)

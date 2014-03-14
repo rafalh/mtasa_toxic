@@ -12,7 +12,6 @@ local g_JoinMsgWnd = false
 
 addEvent('toxic.onThunderEffect', true)
 addEvent('toxic.onSetPlayerAlphaReq', true)
-addEvent('toxic.onBuyNextMap', true)
 
 local function ShpOnJoinMsgUse(v)
 	if(g_JoinMsgWnd) then
@@ -48,14 +47,6 @@ local function ShpOnJoinMsgUse(v)
 		g_JoinMsgWnd = false
 		showCursor(false)
 	end, false)
-end
-
-local function ShpBuyNextMap()
-	MlstDisplay("Choose the next map to buy", "Buy map", function(res_name)
-		if(res_name) then
-			triggerServerEvent('toxic.onBuyNextMapReq', g_Me, res_name)
-		end
-	end)
 end
 
 ShpRegisterItem{
@@ -205,7 +196,13 @@ ShpRegisterItem{
 	descr = "Add your favourite map to queue.",
 	img = 'shop/img/nextmap.png',
 	getAllowedAct = function(v) return true, false, false end, -- buy, sell, use
-	onBuy = ShpBuyNextMap,
+	onBuy = function()
+		MlstDisplay("Choose the next map to buy", "Buy map", function(res_name)
+			if(res_name) then
+				triggerServerEvent('toxic.onBuyNextMapReq', g_Me, res_name)
+			end
+		end)
+	end,
 }
 
 ShpRegisterItem{
@@ -335,4 +332,3 @@ end
 addInternalEventHandler($(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect)
 addEventHandler('toxic.onThunderEffect', g_Root, ShpThunderEffect.start)
 addEventHandler('toxic.onSetPlayerAlphaReq', g_Root, ShpSetPlayerAlpha)
-addEventHandler('toxic.onBuyNextMap', g_ResRoot, ShpBuyNextMap)

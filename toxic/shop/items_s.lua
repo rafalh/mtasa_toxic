@@ -344,6 +344,7 @@ ShpRegisterItem{
 		AchvActivate(player, 'Buy a weapon')
 		return Player.fromEl(player).accountData:add('spikeStrips', 1)
 	end,
+	clientSideUse = true,
 	onUse = function(player, val)
 		if(val <= 0 or isPedDead(player)) then
 			return false
@@ -360,10 +361,7 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'nextmap',
 	cost = 20000,
-	onBuy = function(player)
-		triggerClientEvent(player, 'toxic.onBuyNextMap', g_ResRoot)
-		return false
-	end
+	clientSideBuy = true,
 }
 
 ShpRegisterItem{

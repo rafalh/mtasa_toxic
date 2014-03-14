@@ -14,16 +14,16 @@ CmdMgr.register{
 		
 		if(g_ShopItems[item]) then
 			local cost = ShpBuyItem(item, ctx.player.el)
-			if(cost) then
-				scriptMsg("%s has bought %s for %s!", ctx.player:getName(), item, formatMoney (cost))
-			else
+			if(not cost) then
 				privMsg(ctx.player, "You cannot buy %s right now.", item)
+			elseif(type(cost) == 'number') then
+				scriptMsg("%s has bought %s for %s!", ctx.player:getName(), item, formatMoney(cost))
 			end
 		elseif(item == 'bidlevel') then
 			local bidlvl = ctx.player.accountData.bidlvl
 			local price = bidlvl * Settings.bidlvl_price
 			if(ctx.player.accountData.cash < price) then
-				privMsg(ctx.player, "You do not have enough cash! Bid-level costs %s.", formatMoney (price))
+				privMsg(ctx.player, "You do not have enough cash! Bid-level costs %s.", formatMoney(price))
 			else
 				ctx.player.accountData:set({cash = ctx.player.accountData.cash - price, bidlvl = bidlvl + 1})
 				local th = ({ 'nd', 'rd' })[bidlvl] or 'th' -- old value

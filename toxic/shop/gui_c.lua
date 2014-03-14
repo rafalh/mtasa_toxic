@@ -106,6 +106,30 @@ local function ShpOnInventoryListClick(itemId)
 	end
 end
 
+-- Used by RPC
+function ShpBuyItem(itemId)
+	local item = g_ShopItems[itemId]
+	if(not item) then return end
+	
+	if(item.onBuy) then
+		item.onBuy()
+	else
+		triggerServerInternalEvent($(EV_BUY_SHOP_ITEM_REQUEST), g_Me, itemId)
+	end
+end
+
+-- Used by RPC
+function ShpUseItem(itemId)
+	local item = g_ShopItems[itemId]
+	if(not item) then return end
+	
+	if(item.onUse) then
+		item.onUse(g_Inventory[itemId])
+	else
+		triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
+	end
+end
+
 local function ShpBuyClick()
 	local itemId = g_ShopList:getActiveItem()
 	local item = itemId and g_ShopItems[itemId]
@@ -116,11 +140,7 @@ local function ShpBuyClick()
 		return
 	end
 	
-	if(item.onBuy) then
-		item.onBuy()
-	else
-		triggerServerInternalEvent($(EV_BUY_SHOP_ITEM_REQUEST), g_Me, itemId)
-	end
+	ShpBuyItem(itemId)
 end
 
 local function ShpSellClick()
@@ -135,17 +155,6 @@ local function ShpSellClick()
 	
 	triggerServerInternalEvent($(EV_SELL_SHOP_ITEM_REQUEST), g_Me, itemId)
 
-end
-
-function ShpUseItem(itemId)
-	local item = g_ShopItems[itemId]
-	if(not item) then return end
-	
-	if(item.onUse) then
-		item.onUse(g_Inventory[itemId])
-	else
-		triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
-	end
 end
 
 function ShpRegisterItem(itemInfo)
