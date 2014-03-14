@@ -350,8 +350,8 @@ ShpRegisterItem{
 			return false
 		end
 		
-		RPC('ShpUseItem', spikeStrip):setClient(player):exec()
-		return false
+		RPC('ShpUseItem', 'spikestrip'):setClient(player):exec()
+		return true
 	end,
 	onSell = function(player, val)
 		return val > 0 and Player.fromEl(player).accountData:add('spikeStrips', -1)
