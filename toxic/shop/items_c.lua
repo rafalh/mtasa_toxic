@@ -178,7 +178,7 @@ ShpRegisterItem{
 }
 
 ShpRegisterItem{
-	id = 'spikeStrip',
+	id = 'spikestrip',
 	name = "Spike Strip",
 	cost = 200000,
 	descr = "Punctur tires of your enemies vehicles.",

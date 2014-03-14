@@ -147,7 +147,7 @@ function ShpUseItem(itemId)
 end
 
 function ShpRegisterItem(itemInfo)
-	assert(itemInfo and itemInfo.id)
+	assert(itemInfo and itemInfo.id and not g_ShopItems[itemInfo.id])
 	g_ShopItems[itemInfo.id] = itemInfo
 end
 

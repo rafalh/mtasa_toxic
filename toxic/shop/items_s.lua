@@ -337,7 +337,7 @@ ShpRegisterItem{
 -- 2892 - long spike strip
 -- 2899 - short spike strip
 ShpRegisterItem{
-	id = 'spikeStrip',
+	id = 'spikestrip',
 	cost = 200000,
 	field = 'spikeStrips',
 	onBuy = function(player)
