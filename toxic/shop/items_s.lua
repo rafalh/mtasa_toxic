@@ -5,7 +5,7 @@
 #include 'include/internal_events.lua'
 #include 'include/config.lua'
 
-addEvent('onBuyNextMapReq', true)
+addEvent('toxic.onBuyNextMapReq', true)
 
 local g_RaceRes = Resource('race')
 local g_VipRes = Resource('rafalh_vip')
@@ -225,10 +225,10 @@ local InvisibilityItem = {
 			return false
 		end
 		
-		addEvent('onSetPlayerAlphaReq', true)
+		addEvent('toxic.onSetPlayerAlphaReq', true)
 		for player2, pdata2 in pairs(g_Players) do
 			if(player2 ~= player) then
-				triggerClientEvent(player2, 'onSetPlayerAlphaReq', player, 0)
+				triggerClientEvent(player2, 'toxic.onSetPlayerAlphaReq', player, 0)
 			end
 		end
 		pdata.accountData:add('invisibility', -1)
@@ -317,8 +317,8 @@ local ThunderItem = {
 			return false
 		end
 		
-		addEvent('onThunderEffect', true)
-		triggerClientEvent(g_Root, 'onThunderEffect', player, bestplayer)
+		addEvent('toxic.onThunderEffect', true)
+		triggerClientEvent(g_Root, 'toxic.onThunderEffect', player, bestplayer)
 		Player.fromEl(player).accountData:add('thunders', -1)
 		return true
 	end,
@@ -385,7 +385,7 @@ local NextMapItem = {
 	id = 'nextmap',
 	cost = 20000,
 	onBuy = function(player)
-		triggerClientEvent(player, 'rafalh_onBuyNextMap', g_ResRoot)
+		triggerClientEvent(player, 'toxic.onBuyNextMap', g_ResRoot)
 		return false
 	end
 }
@@ -534,5 +534,5 @@ end
 addInitFunc(function()
 	addInternalEventHandler($(EV_SET_JOIN_MSG_REQUEST), ShpSetJoinMsgRequest)
 	addEventHandler('onGamemodeMapStop', g_Root, ShpMapStop)
-	addEventHandler('onBuyNextMapReq', g_Root, ShpBuyNextMap)
+	addEventHandler('toxic.onBuyNextMapReq', g_Root, ShpBuyNextMap)
 end)

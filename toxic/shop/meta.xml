@@ -4,9 +4,9 @@
 	
 	<script src="main_s.lua" type="server" />
 	<script src="cmd_s.lua" type="server" />
+	<script src="gui_c.lua" type="client" />
 	<script src="items_s.lua" type="server" />
 	<script src="items_c.lua" type="client" />
-	<script src="gui_c.lua" type="client" />
 	<file src="img/icon.png" />
 	<file src="img/coins.png" />
 	<file src="img/beer.png" />

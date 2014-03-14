@@ -8,13 +8,11 @@
 -- Local variables --
 ---------------------
 
-g_ShopItems = {} -- name = { title, cost, description, onUse handler (if false this item can be only used), onInitButtons }
-
-addEvent('onThunderEffect', true)
-addEvent('onSetPlayerAlphaReq', true)
-addEvent('rafalh_onBuyNextMap', true)
-
 local g_JoinMsgWnd = false
+
+addEvent('toxic.onThunderEffect', true)
+addEvent('toxic.onSetPlayerAlphaReq', true)
+addEvent('toxic.onBuyNextMap', true)
 
 local function ShpOnJoinMsgUse(v)
 	if(g_JoinMsgWnd) then
@@ -52,7 +50,16 @@ local function ShpOnJoinMsgUse(v)
 	end, false)
 end
 
-g_ShopItems.joinmsg = {
+local function ShpBuyNextMap()
+	MlstDisplay("Choose the next map to buy", "Buy map", function(res_name)
+		if(res_name) then
+			triggerServerEvent('toxic.onBuyNextMapReq', g_Me, res_name)
+		end
+	end)
+end
+
+ShpRegisterItem{
+	id = 'joinmsg',
 	name = "Join Message",
 	cost = 20000,
 	descr = "Set message, which is displayed when you join.",
@@ -62,7 +69,8 @@ g_ShopItems.joinmsg = {
 	getAllowedAct = function(val) return not val, true, true end -- buy, sell, use
 }
 
-g_ShopItems.health100 = {
+ShpRegisterItem{
+	id = 'health100',
 	name = "Repair",
 	cost = 100000,
 	descr = "Repair your vehicle when you want.",
@@ -71,7 +79,8 @@ g_ShopItems.health100 = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.flip = {
+ShpRegisterItem{
+	id = 'flip',
 	name = "Flip",
 	cost = 50000,
 	descr = "Flips your vehicle.",
@@ -88,7 +97,8 @@ g_ShopItems.flip = {
 	end
 }
 
-g_ShopItems.selfdestr = {
+ShpRegisterItem{
+	id = 'selfdestr',
 	name = "Self-destruction",
 	cost = 500000,
 	descr = "Make self-destruction and kill all players, which are near to your vehicle!",
@@ -97,7 +107,8 @@ g_ShopItems.selfdestr = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.mine = {
+ShpRegisterItem{
+	id = 'mine',
 	name = "Mine",
 	cost = 200000,
 	descr = "Place a mine under your car!",
@@ -106,7 +117,8 @@ g_ShopItems.mine = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.oil = {
+ShpRegisterItem{
+	id = 'oil',
 	name = "Oil",
 	cost = 100000,
 	descr = "Spill oil over road!",
@@ -115,7 +127,8 @@ g_ShopItems.oil = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.beer = {
+ShpRegisterItem{
+	id = 'beer',
 	name = "Beer",
 	cost = 2,
 	descr = "Are you angry with whole world? Get drunk!",
@@ -124,7 +137,8 @@ g_ShopItems.beer = {
 	getAllowedAct = function(val) return true, true, true end -- buy, sell, use
 }
 
-g_ShopItems.invisibility = {
+ShpRegisterItem{
+	id = 'invisibility',
 	name = "Invisibility",
 	cost = 300000,
 	descr = "Make your vehicle invisible...",
@@ -133,7 +147,8 @@ g_ShopItems.invisibility = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.godmode30 = {
+ShpRegisterItem{
+	id = 'godmode30',
 	name = "God Mode",
 	cost = 300000,
 	descr = "Make your vehicle indestructible for 60 seconds!",
@@ -142,7 +157,8 @@ g_ShopItems.godmode30 = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.thunder = {
+ShpRegisterItem{
+	id = 'thunder',
 	name = "Thunder",
 	cost = 200000,
 	descr = "Attack near player for few seconds",
@@ -151,7 +167,8 @@ g_ShopItems.thunder = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.smoke = {
+ShpRegisterItem{
+	id = 'smoke',
 	name = "Smoke",
 	cost = 100000,
 	descr = "Smoke behind your vehicle for 15 seconds.",
@@ -160,7 +177,8 @@ g_ShopItems.smoke = {
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
-g_ShopItems.spikeStrip = {
+ShpRegisterItem{
+	id = 'spikeStrip',
 	name = "Spike Strip",
 	cost = 200000,
 	descr = "Punctur tires of your enemies vehicles.",
@@ -178,22 +196,18 @@ g_ShopItems.spikeStrip = {
 	end
 }
 
-g_ShopItems.nextmap = {
+ShpRegisterItem{
+	id = 'nextmap',
 	name = "Next map",
 	cost = 20000,
 	descr = "Add your favourite map to queue.",
 	img = 'shop/img/nextmap.png',
 	getAllowedAct = function(v) return true, false, false end, -- buy, sell, use
-	onBuy = function()
-		MlstDisplay("Choose the next map to buy", "Buy map", function(res_name)
-			if(res_name) then
-				triggerServerEvent('onBuyNextMapReq', g_Me, res_name)
-			end
-		end)
-	end
+	onBuy = ShpBuyNextMap,
 }
 
-g_ShopItems.vip1w = {
+ShpRegisterItem{
+	id = 'vip1w',
 	name = "VIP rank",
 	cost = 2800000,
 	noDiscount = true,
@@ -317,6 +331,6 @@ end
 ------------
 
 addInternalEventHandler($(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect)
-addEventHandler('onThunderEffect', g_Root, ShpThunderEffect.start)
-addEventHandler('onSetPlayerAlphaReq', g_Root, ShpSetPlayerAlpha)
-addEventHandler('rafalh_onBuyNextMap', g_ResRoot, g_ShopItems.nextmap.onBuy)
+addEventHandler('toxic.onThunderEffect', g_Root, ShpThunderEffect.start)
+addEventHandler('toxic.onSetPlayerAlphaReq', g_Root, ShpSetPlayerAlpha)
+addEventHandler('toxic.onBuyNextMap', g_ResRoot, ShpBuyNextMap)

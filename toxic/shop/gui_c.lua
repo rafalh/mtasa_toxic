@@ -14,7 +14,7 @@ local g_SelectedItemId
 local g_ShopList, g_InventoryList
 local g_CashLabel, g_ItemIcon, g_ItemLabel, g_CostLabel, g_DescrMemo
 local g_BuyButton, g_SellButton, g_UseButton
-local g_Inventory = {}
+local g_Inventory, g_ShopItems = {}, {}
 local g_IsVip = false
 
 local ShopPanel = {
@@ -23,9 +23,9 @@ local ShopPanel = {
 	tooltip = "Buy improvements for your car or set next map",
 }
 
---------------------------------
--- Local function definitions --
---------------------------------
+--------------------------
+-- Function definitions --
+--------------------------
 
 local function ShpUpdateButtons(itemId)
 	local item = g_ShopItems[itemId]
@@ -144,6 +144,11 @@ function ShpUseItem(itemId)
 	else
 		triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, itemId)
 	end
+end
+
+function ShpRegisterItem(itemInfo)
+	assert(itemInfo and itemInfo.id)
+	g_ShopItems[itemInfo.id] = itemInfo
 end
 
 local function ShpUseClick()
