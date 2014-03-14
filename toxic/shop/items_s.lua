@@ -17,7 +17,7 @@ ShpRegisterItem{
 	onBuy = function(player, val)
 		return not val and Player.fromEl(player).accountData:set('joinmsg', '')
 	end,
-	onSell = function onSell(player, val)
+	onSell = function(player, val)
 		return val and Player.fromEl(player).accountData:set('joinmsg', nil)
 	end,
 }
@@ -41,7 +41,7 @@ ShpRegisterItem{
 	end,
 	onSell = function(player, val)
 		return val > 0 and Player.fromEl(player).accountData:add('health100', -1)
-	end
+	end,
 }
 
 ShpRegisterItem{
