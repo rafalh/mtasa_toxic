@@ -10,23 +10,19 @@ addEvent('toxic.onBuyNextMapReq', true)
 local g_RaceRes = Resource('race')
 local g_VipRes = Resource('rafalh_vip')
 
-local JoinMsgItem = {
+ShpRegisterItem{
 	id = 'joinmsg',
 	cost = 20000,
 	field = 'joinmsg',
+	onBuy = function(player, val)
+		return not val and Player.fromEl(player).accountData:set('joinmsg', '')
+	end,
+	onSell = function onSell(player, val)
+		return val and Player.fromEl(player).accountData:set('joinmsg', nil)
+	end,
 }
 
-function JoinMsgItem.onBuy(player, val)
-	return not val and Player.fromEl(player).accountData:set('joinmsg', '')
-end
-
-function JoinMsgItem.onSell(player, val)
-	return val and Player.fromEl(player).accountData:set('joinmsg', nil)
-end
-
-ShpRegisterItem(JoinMsgItem)
-
-local HealthItem = {
+ShpRegisterItem{
 	id = 'health100',
 	cost = 100000,
 	field = 'health100',
@@ -48,9 +44,7 @@ local HealthItem = {
 	end
 }
 
-ShpRegisterItem(HealthItem)
-
-local FlipItem = {
+ShpRegisterItem{
 	id = 'flip',
 	cost = 50000,
 	field = 'flips',
@@ -74,9 +68,7 @@ local FlipItem = {
 	end
 }
 
-ShpRegisterItem(FlipItem)
-
-local SelfDestrItem = {
+ShpRegisterItem{
 	id = 'selfdestr',
 	cost = 500000,
 	field = 'selfdestr',
@@ -103,9 +95,7 @@ local SelfDestrItem = {
 	end
 }
 
-ShpRegisterItem(SelfDestrItem)
-
-local MineItem = {
+ShpRegisterItem{
 	id = 'mine',
 	cost = 200000,
 	field = 'mines',
@@ -136,8 +126,6 @@ local MineItem = {
 	end
 }
 
-ShpRegisterItem(MineItem)
-
 local function ShpOnOilHit(veh)
 	if(getElementType(veh) ~= 'vehicle') then return end
 	
@@ -149,7 +137,7 @@ local function ShpOnOilHit(veh)
 	setVehicleTurnVelocity(veh, 0, 0, turn_v)
 end
 
-local OilItem = {
+ShpRegisterItem{
 	id = 'oil',
 	cost = 100000,
 	field = 'oil',
@@ -182,9 +170,7 @@ local OilItem = {
 	end
 }
 
-ShpRegisterItem(OilItem)
-
-local BeerItem = {
+ShpRegisterItem{
 	id = 'beer',
 	cost = 2,
 	field = 'beers',
@@ -205,9 +191,7 @@ local BeerItem = {
 	end
 }
 
-ShpRegisterItem(BeerItem)
-
-local InvisibilityItem = {
+ShpRegisterItem{
 	id = 'invisibility',
 	cost = 300000,
 	field = 'invisibility',
@@ -240,15 +224,13 @@ local InvisibilityItem = {
 	end
 }
 
-ShpRegisterItem(InvisibilityItem)
-
 local function ShpGodmodeVehicleDamage(loss)
 	if(loss > 0) then
 		fixVehicle(source)
 	end
 end
 
-local GodmodeItem = {
+ShpRegisterItem{
 	id = 'godmode30',
 	cost = 300000,
 	field = 'godmodes30',
@@ -277,9 +259,7 @@ local GodmodeItem = {
 	end
 }
 
-ShpRegisterItem(GodmodeItem)
-
-local ThunderItem = {
+ShpRegisterItem{
 	id = 'thunder',
 	cost = 200000,
 	field = 'thunders',
@@ -327,9 +307,7 @@ local ThunderItem = {
 	end
 }
 
-ShpRegisterItem(ThunderItem)
-
-local SmokeItem = {
+ShpRegisterItem{
 	id = 'smoke',
 	cost = 100000,
 	field = 'smoke',
@@ -356,8 +334,6 @@ local SmokeItem = {
 	end
 }
 
-ShpRegisterItem(SmokeItem)
-
 -- 2892 - long spike strip
 -- 2899 - short spike strip
 ShpRegisterItem{
@@ -381,7 +357,7 @@ ShpRegisterItem{
 	end
 }
 
-local NextMapItem = {
+ShpRegisterItem{
 	id = 'nextmap',
 	cost = 20000,
 	onBuy = function(player)
@@ -390,9 +366,7 @@ local NextMapItem = {
 	end
 }
 
-ShpRegisterItem(NextMapItem)
-
-local VipItem = {
+ShpRegisterItem{
 	id = 'vip1w',
 	cost = 2800000,
 	noDiscount = true,
@@ -404,8 +378,6 @@ local VipItem = {
 		return success
 	end
 }
-
-ShpRegisterItem(VipItem)
 
 --------------------------------
 -- Local function definitions --
@@ -449,9 +421,9 @@ local function ShpBuyNextMap(mapResName)
 		return
 	end
 	
-	local forb_reason, arg = map:isForbidden(room)
-	if(forb_reason) then
-		privMsg(client, forb_reason, arg)
+	local forbReason, arg = map:isForbidden(room)
+	if(forbReason) then
+		privMsg(client, forbReason, arg)
 		return
 	end
 	
@@ -463,11 +435,11 @@ local function ShpBuyNextMap(mapResName)
 		return
 	end
 	
-	local map_id = map:getId()
-	local rows = DbQuery('SELECT played_timestamp FROM '..MapsTable..' WHERE map=? LIMIT 1', map_id)
+	local mapId = map:getId()
+	local row = DbQuerySingle('SELECT played_timestamp FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
 	
 	local minDelayForMap = Settings.minBuyMapDelay
-	local dt = now - rows[1].played_timestamp
+	local dt = now - row.played_timestamp
 	if(dt > minDelayForMap) then
 		local pos = MqAdd(room, map)
 		if(pos) then
