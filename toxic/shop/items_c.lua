@@ -16,40 +16,40 @@ addEvent('rafalh_onBuyNextMap', true)
 
 local g_JoinMsgWnd = false
 
-local function ShpOnJoinMsgUse ( v )
-	if ( g_JoinMsgWnd ) then
-		guiBringToFront ( g_JoinMsgWnd )
+local function ShpOnJoinMsgUse(v)
+	if(g_JoinMsgWnd) then
+		guiBringToFront(g_JoinMsgWnd)
 		return
 	end
 	
 	local w, h = 250, 110
-	local x, y = ( g_ScreenSize[1] - w ) / 2, ( g_ScreenSize[2] - h ) / 2
-	g_JoinMsgWnd = guiCreateWindow ( x, y, w, h, "Join Message settings", false )
+	local x, y =(g_ScreenSize[1] - w) / 2,(g_ScreenSize[2] - h) / 2
+	g_JoinMsgWnd = guiCreateWindow(x, y, w, h, "Join Message settings", false)
 	
-	guiCreateLabel ( 10, 20, 220, 20, "New Join Message:", false, g_JoinMsgWnd )
-	local edit = guiCreateEdit ( 10, 40, 230, 20, v or '', false, g_JoinMsgWnd )
-	guiSetProperty ( edit, 'MaxTextLength', '128' )
+	guiCreateLabel(10, 20, 220, 20, "New Join Message:", false, g_JoinMsgWnd)
+	local edit = guiCreateEdit(10, 40, 230, 20, v or '', false, g_JoinMsgWnd)
+	guiSetProperty(edit, 'MaxTextLength', '128')
 	
-	showCursor ( true )
+	showCursor(true)
 	
-	local btn = guiCreateButton ( 70, 70, 50, 25, "OK", false, g_JoinMsgWnd )
-	addEventHandler ( 'onClientGUIClick', btn, function ()
-		if ( ShpGetInventory ( 'joinmsg' ) ) then
-			local msg = guiGetText ( edit )
-			ShpSetInventory ( 'joinmsg', msg )
-			triggerServerInternalEvent ( $(EV_SET_JOIN_MSG_REQUEST), g_Me, msg )
+	local btn = guiCreateButton(70, 70, 50, 25, "OK", false, g_JoinMsgWnd)
+	addEventHandler('onClientGUIClick', btn, function()
+		if(ShpGetInventory('joinmsg')) then
+			local msg = guiGetText(edit)
+			ShpSetInventory('joinmsg', msg)
+			triggerServerInternalEvent($(EV_SET_JOIN_MSG_REQUEST), g_Me, msg)
 		end
-		destroyElement ( getElementParent ( source ) )
+		destroyElement(getElementParent(source))
 		g_JoinMsgWnd = false
-		showCursor ( false )
-	end, false )
+		showCursor(false)
+	end, false)
 	
-	local btn = guiCreateButton ( 130, 70, 50, 25, "Cancel", false, g_JoinMsgWnd )
-	addEventHandler ( 'onClientGUIClick', btn, function ()
-		destroyElement ( getElementParent ( source ) )
+	local btn = guiCreateButton(130, 70, 50, 25, "Cancel", false, g_JoinMsgWnd)
+	addEventHandler('onClientGUIClick', btn, function()
+		destroyElement(getElementParent(source))
 		g_JoinMsgWnd = false
-		showCursor ( false )
-	end, false )
+		showCursor(false)
+	end, false)
 end
 
 g_ShopItems.joinmsg = {
@@ -58,8 +58,8 @@ g_ShopItems.joinmsg = {
 	descr = "Set message, which is displayed when you join.",
 	img = 'shop/img/joinmsg.png',
 	onUse = ShpOnJoinMsgUse,
-	dataToCount = function ( val ) return val and 1 end,
-	getAllowedAct = function ( val ) return not val, true, true end -- buy, sell, use
+	dataToCount = function(val) return val and 1 end,
+	getAllowedAct = function(val) return not val, true, true end -- buy, sell, use
 }
 
 g_ShopItems.health100 = {
@@ -67,8 +67,8 @@ g_ShopItems.health100 = {
 	cost = 100000,
 	descr = "Repair your vehicle when you want.",
 	img = 'shop/img/repair.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.flip = {
@@ -76,13 +76,13 @@ g_ShopItems.flip = {
 	cost = 50000,
 	descr = "Flips your vehicle.",
 	img = 'shop/img/flip.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val )
-		local veh = getPedOccupiedVehicle ( g_Me )
-		if ( veh ) then
-			local rx, ry, rz = getElementRotation ( veh )
-			--outputChatBox ( 'r: '..rx..' '..ry..' '..rz )
-			return true, true, not isPlayerDead ( g_Me ) and ( ( rx > 90 and rx < 270 ) or ( ry > 90 and ry < 270 ) ) -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val)
+		local veh = getPedOccupiedVehicle(g_Me)
+		if(veh) then
+			local rx, ry, rz = getElementRotation(veh)
+			--outputChatBox('r: '..rx..' '..ry..' '..rz)
+			return true, true, not isPlayerDead(g_Me) and(( rx > 90 and rx < 270) or(ry > 90 and ry < 270)) -- buy, sell, use
 		end
 		return true, true, false -- buy, sell, use
 	end
@@ -93,8 +93,8 @@ g_ShopItems.selfdestr = {
 	cost = 500000,
 	descr = "Make self-destruction and kill all players, which are near to your vehicle!",
 	img = 'shop/img/selfdestr.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.mine = {
@@ -102,8 +102,8 @@ g_ShopItems.mine = {
 	cost = 200000,
 	descr = "Place a mine under your car!",
 	img = 'shop/img/mine.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.oil = {
@@ -111,8 +111,8 @@ g_ShopItems.oil = {
 	cost = 100000,
 	descr = "Spill oil over road!",
 	img = 'shop/img/oil.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.beer = {
@@ -120,8 +120,8 @@ g_ShopItems.beer = {
 	cost = 2,
 	descr = "Are you angry with whole world? Get drunk!",
 	img = 'shop/img/beer.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, true end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, true end -- buy, sell, use
 }
 
 g_ShopItems.invisibility = {
@@ -129,8 +129,8 @@ g_ShopItems.invisibility = {
 	cost = 300000,
 	descr = "Make your vehicle invisible...",
 	img = 'shop/img/ghost.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.godmode30 = {
@@ -138,8 +138,8 @@ g_ShopItems.godmode30 = {
 	cost = 300000,
 	descr = "Make your vehicle indestructible for 60 seconds!",
 	img = 'shop/img/godmode.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.thunder = {
@@ -147,8 +147,8 @@ g_ShopItems.thunder = {
 	cost = 200000,
 	descr = "Attack near player for few seconds",
 	img = 'shop/img/thunder.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.smoke = {
@@ -156,8 +156,8 @@ g_ShopItems.smoke = {
 	cost = 100000,
 	descr = "Smoke behind your vehicle for 15 seconds.",
 	img = 'shop/img/smoke.png',
-	dataToCount = function ( val ) return val > 0 and val end,
-	getAllowedAct = function ( val ) return true, true, not isPlayerDead ( g_Me ) end -- buy, sell, use
+	dataToCount = function(val) return val > 0 and val end,
+	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use
 }
 
 g_ShopItems.spikeStrip = {
@@ -183,13 +183,13 @@ g_ShopItems.nextmap = {
 	cost = 20000,
 	descr = "Add your favourite map to queue.",
 	img = 'shop/img/nextmap.png',
-	getAllowedAct = function ( v ) return true, false, false end, -- buy, sell, use
-	onBuy = function ()
-		MlstDisplay ( "Choose the next map to buy", "Buy map", function ( res_name )
-			if ( res_name ) then
-				triggerServerEvent ( 'onBuyNextMapReq', g_Me, res_name )
+	getAllowedAct = function(v) return true, false, false end, -- buy, sell, use
+	onBuy = function()
+		MlstDisplay("Choose the next map to buy", "Buy map", function(res_name)
+			if(res_name) then
+				triggerServerEvent('onBuyNextMapReq', g_Me, res_name)
 			end
-		end )
+		end)
 	end
 }
 
@@ -199,7 +199,7 @@ g_ShopItems.vip1w = {
 	noDiscount = true,
 	descr = "VIP rank activation for 1 week.",
 	img = 'vip/enabled.png',
-	getAllowedAct = function ( v ) return true, false, false end -- buy, sell, use
+	getAllowedAct = function(v) return true, false, false end -- buy, sell, use
 }
 
 --------------------------------
@@ -210,47 +210,47 @@ local g_DrunkEffectLastAngle = 0
 local g_DrunkEffectStartTime = 0
 local g_DrunkEffectTimer = false
 
-local function ShpUpdateDrunkEffect ()
-	local veh = getCameraTarget ()
-	if ( veh and getElementType ( veh ) == 'vehicle' ) then
-		local a = ( getTickCount () - g_DrunkEffectStartTime ) / 1000
-		local x, y, z = getVehicleGravity ( veh )
-		--outputChatBox ( 'g: '..x..' '..y..' '..z )
-		setVehicleGravity ( veh, x - math.sin ( g_DrunkEffectLastAngle ) / 3 + math.sin ( a ) / 3, y - math.cos ( g_DrunkEffectLastAngle ) / 3 + math.cos ( a ) / 3, z )
+local function ShpUpdateDrunkEffect()
+	local veh = getCameraTarget()
+	if(veh and getElementType(veh) == 'vehicle') then
+		local a =(getTickCount() - g_DrunkEffectStartTime) / 1000
+		local x, y, z = getVehicleGravity(veh)
+		--outputChatBox('g: '..x..' '..y..' '..z)
+		setVehicleGravity(veh, x - math.sin(g_DrunkEffectLastAngle) / 3 + math.sin(a) / 3, y - math.cos(g_DrunkEffectLastAngle) / 3 + math.cos(a) / 3, z)
 		g_DrunkEffectLastAngle = a
 	end
 end
 
-local function ShpDrunkEffect ()
-	if ( g_DrunkEffectTimer ) then
-		resetTimer ( g_DrunkEffectTimer )
+local function ShpDrunkEffect()
+	if(g_DrunkEffectTimer) then
+		resetTimer(g_DrunkEffectTimer)
 	else
-		g_DrunkEffectStartTime = getTickCount ()
+		g_DrunkEffectStartTime = getTickCount()
 		g_DrunkEffectLastAngle = 0
-		local veh = getCameraTarget ()
-		if ( veh and getElementType ( veh ) == 'vehicle' ) then
-			local x, y, z = getVehicleGravity ( veh )
-			--outputChatBox ( 'g: '..x..' '..y..' '..z )
-			setVehicleGravity ( veh, x + math.sin ( 0 ) / 3, y + math.cos ( 0 ) / 3, z )
+		local veh = getCameraTarget()
+		if(veh and getElementType(veh) == 'vehicle') then
+			local x, y, z = getVehicleGravity(veh)
+			--outputChatBox('g: '..x..' '..y..' '..z)
+			setVehicleGravity(veh, x + math.sin(0) / 3, y + math.cos(0) / 3, z)
 		end
-		addEventHandler ( 'onClientPreRender', g_Root, ShpUpdateDrunkEffect, false )
+		addEventHandler('onClientPreRender', g_Root, ShpUpdateDrunkEffect, false)
 		
-		g_DrunkEffectTimer = setTimer ( function ()
+		g_DrunkEffectTimer = setTimer(function()
 			g_DrunkEffectTimer = false
-			removeEventHandler ( 'onClientPreRender', g_Root, ShpUpdateDrunkEffect )
-			local veh = getCameraTarget ()
-			if ( veh and getElementType ( veh ) == 'vehicle' ) then
-				local x, y, z = getVehicleGravity ( veh )
-				setVehicleGravity ( veh, x - math.sin ( g_DrunkEffectLastAngle ) / 3, y - math.cos ( g_DrunkEffectLastAngle ) / 3, z )
+			removeEventHandler('onClientPreRender', g_Root, ShpUpdateDrunkEffect)
+			local veh = getCameraTarget()
+			if(veh and getElementType(veh) == 'vehicle') then
+				local x, y, z = getVehicleGravity(veh)
+				setVehicleGravity(veh, x - math.sin(g_DrunkEffectLastAngle) / 3, y - math.cos(g_DrunkEffectLastAngle) / 3, z)
 			end
-		end, 20000, 1, target )
+		end, 20000, 1, target)
 	end
 end
 
 local ShpThunderEffect = {}
 ShpThunderEffect.active = false
 
-function ShpThunderEffect.onRender ()
+function ShpThunderEffect.onRender()
 	if(getTickCount() - ShpThunderEffect.ticks > 5000) then
 		removeEventHandler('onClientRender', g_Root, ShpThunderEffect.onRender)
 		ShpThunderEffect.active = false

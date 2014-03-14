@@ -27,23 +27,23 @@ local ShopPanel = {
 -- Local function definitions --
 --------------------------------
 
-local function ShpUpdateButtons ( itemId )
+local function ShpUpdateButtons(itemId)
 	local item = g_ShopItems[itemId]
-	local buy, sell, use = item.getAllowedAct ( g_Inventory[itemId] )
+	local buy, sell, use = item.getAllowedAct(g_Inventory[itemId])
 	local cost = item.cost
 	if(g_IsVip and not item.noDiscount) then
 		cost = math.ceil(cost * VIP_COST)
 	end
 	
-	guiSetEnabled ( g_BuyButton, buy and g_Cash >= cost )
-	guiSetEnabled ( g_SellButton, sell )
-	guiSetEnabled ( g_UseButton, use )
+	guiSetEnabled(g_BuyButton, buy and g_Cash >= cost)
+	guiSetEnabled(g_SellButton, sell)
+	guiSetEnabled(g_UseButton, use)
 end
 
-local function ShpDisableButtons ()
-	guiSetEnabled ( g_BuyButton, false )
-	guiSetEnabled ( g_SellButton, false )
-	guiSetEnabled ( g_UseButton, false )
+local function ShpDisableButtons()
+	guiSetEnabled(g_BuyButton, false)
+	guiSetEnabled(g_SellButton, false)
+	guiSetEnabled(g_UseButton, false)
 end
 
 local function ShpUpdateCostLabel(itemId)
@@ -67,7 +67,7 @@ local function ShpUpdateItemInfo(itemId, isInventory)
 	local item = g_ShopItems[itemId]
 	
 	if(item.img) then
-		guiStaticImageLoadImage ( g_ItemIcon, item.img )
+		guiStaticImageLoadImage(g_ItemIcon, item.img)
 		guiSetVisible(g_ItemIcon, true)
 	else
 		guiSetVisible(g_ItemIcon, false)
@@ -258,7 +258,7 @@ local function ShpOnSync(sync_tbl, name, arg, data)
 	end
 end
 
-local function ShpUpdateInventoryList ()
+local function ShpUpdateInventoryList()
 	if (not g_ShopList or not g_InventoryList) then return end
 	
 	local oldItemId = g_InventoryList:getActiveItem()
@@ -307,36 +307,36 @@ local g_ItemsWnd = false
 local g_ItemsGui = {}
 local g_ItemsWndTimer = false
 
-local function ShpUpdateItemsWnd ()
-	if ( not g_ItemsWnd ) then return end
+local function ShpUpdateItemsWnd()
+	if(not g_ItemsWnd) then return end
 	
-	for i, el in ipairs ( getElementChildren ( g_ItemsWnd ) ) do
-		destroyElement ( el )
+	for i, el in ipairs(getElementChildren(g_ItemsWnd)) do
+		destroyElement(el)
 	end
 	
 	-- set big size because static images outside of window are not loaded corectly
-	guiSetSize ( g_ItemsWnd, 2000, 100, false )
+	guiSetSize(g_ItemsWnd, 2000, 100, false)
 	
 	local x = 0
 	local i = 1
-	for item_id, item in pairs ( g_ShopItems ) do
-		local count = g_Inventory[item_id] and item.dataToCount ( g_Inventory[item_id] ) or 0
+	for item_id, item in pairs(g_ShopItems) do
+		local count = g_Inventory[item_id] and item.dataToCount(g_Inventory[item_id]) or 0
 		
-		if ( count > 0 ) then
+		if(count > 0) then
 			local gui = { id = item_id }
 			
-			if ( item.img ) then
-				gui.img = guiCreateStaticImage ( x + 20, 25, 50, 50, item.img, false, g_ItemsWnd )
-				assert ( gui.img )
-				gui.cnt = guiCreateLabel ( 0, 0, 50, 50, tostring ( count ), false, gui.img )
-				guiLabelSetHorizontalAlign ( gui.cnt, 'right' )
-				guiLabelSetVerticalAlign ( gui.cnt, 'bottom' )
-				guiSetFont ( gui.cnt, 'default-small' )
+			if(item.img) then
+				gui.img = guiCreateStaticImage(x + 20, 25, 50, 50, item.img, false, g_ItemsWnd)
+				assert(gui.img)
+				gui.cnt = guiCreateLabel(0, 0, 50, 50, tostring(count), false, gui.img)
+				guiLabelSetHorizontalAlign(gui.cnt, 'right')
+				guiLabelSetVerticalAlign(gui.cnt, 'bottom')
+				guiSetFont(gui.cnt, 'default-small')
 			end
 			
-			gui.label = guiCreateLabel ( x, 75, 90, 20, i..'. '..MuiGetMsg ( item.name ), false, g_ItemsWnd )
-			guiLabelSetHorizontalAlign ( gui.label, 'center' )
-			guiSetFont ( gui.label, 'default-bold-small' )
+			gui.label = guiCreateLabel(x, 75, 90, 20, i..'. '..MuiGetMsg(item.name), false, g_ItemsWnd)
+			guiLabelSetHorizontalAlign(gui.label, 'center')
+			guiSetFont(gui.label, 'default-bold-small')
 			
 			g_ItemsGui[item_id] = gui
 			g_ItemsGui[i] = gui
@@ -346,88 +346,88 @@ local function ShpUpdateItemsWnd ()
 		end
 	end
 	
-	if ( i == 1 ) then
-		local label = guiCreateLabel ( 0, 30, 300, 20, "You don't have any item!", false, g_ItemsWnd )
-		guiLabelSetHorizontalAlign ( label, 'center' )
+	if(i == 1) then
+		local label = guiCreateLabel(0, 30, 300, 20, "You don't have any item!", false, g_ItemsWnd)
+		guiLabelSetHorizontalAlign(label, 'center')
 		x = 300
 	end
 	
 	local w, h = math.max(x, 200), 100
-	local x, y = ( g_ScreenSize[1] - w ) / 2, g_ScreenSize[2] - h - 20
-	guiSetSize ( g_ItemsWnd, w, h, false )
-	guiSetPosition ( g_ItemsWnd, x, y, false )
-	local a = guiGetAlpha ( g_ItemsWnd )
-	guiSetAlpha ( g_ItemsWnd, a )
+	local x, y =(g_ScreenSize[1] - w) / 2, g_ScreenSize[2] - h - 20
+	guiSetSize(g_ItemsWnd, w, h, false)
+	guiSetPosition(g_ItemsWnd, x, y, false)
+	local a = guiGetAlpha(g_ItemsWnd)
+	guiSetAlpha(g_ItemsWnd, a)
 end
 
 local function ShpCreateItemsGui()
 	local w, h = 640, 100
-	local x, y = ( g_ScreenSize[1] - w ) / 2, g_ScreenSize[2] - h - 20
-	g_ItemsWnd = guiCreateWindow ( x, y, w, h, "User Items", false )
-	guiSetVisible ( g_ItemsWnd, false )
-	guiWindowSetSizable ( g_ItemsWnd, false )
+	local x, y =(g_ScreenSize[1] - w) / 2, g_ScreenSize[2] - h - 20
+	g_ItemsWnd = guiCreateWindow(x, y, w, h, "User Items", false)
+	guiSetVisible(g_ItemsWnd, false)
+	guiWindowSetSizable(g_ItemsWnd, false)
 	
-	ShpUpdateItemsWnd ()
+	ShpUpdateItemsWnd()
 end
 
-local function ShpOnItemKeyUp ( key )
-	local i = tonumber ( key )
+local function ShpOnItemKeyUp(key)
+	local i = tonumber(key)
 	local gui = g_ItemsGui[i]
-	if ( not gui ) then return end
+	if(not gui) then return end
 	
 	local item_id = gui.id
 	local item = g_ShopItems[item_id]
 	
-	if ( g_Inventory[item_id] ) then
+	if(g_Inventory[item_id]) then
 		--Debug.warn('Use '..item.name)
-		guiLabelSetColor ( gui.label, 0, 255, 0 )
-		setTimer ( function ( label )
-			if ( isElement ( label ) ) then
-				guiLabelSetColor ( label, 255, 255, 255 )
+		guiLabelSetColor(gui.label, 0, 255, 0)
+		setTimer(function(label)
+			if(isElement(label)) then
+				guiLabelSetColor(label, 255, 255, 255)
 			end
-		end, 1000, 1, gui.label )
+		end, 1000, 1, gui.label)
 		
-		if ( item.onUse ) then
-			item.onUse ( g_Inventory[item_id] )
+		if(item.onUse) then
+			item.onUse(g_Inventory[item_id])
 		else
-			triggerServerInternalEvent ( $(EV_USE_SHOP_ITEM_REQUEST), g_Me, item_id )
+			triggerServerInternalEvent($(EV_USE_SHOP_ITEM_REQUEST), g_Me, item_id)
 		end
 	end
 	
-	resetTimer ( g_ItemsWndTimer )
+	resetTimer(g_ItemsWndTimer)
 end
 
-local function ShpHideItems ()
-	GaFadeOut ( g_ItemsWnd, FADE_DELAY )
+local function ShpHideItems()
+	GaFadeOut(g_ItemsWnd, FADE_DELAY)
 	
-	if ( g_ItemsWndTimer ) then
-		killTimer ( g_ItemsWndTimer )
+	if(g_ItemsWndTimer) then
+		killTimer(g_ItemsWndTimer)
 		g_ItemsWndTimer = false
 	end
 	
 	for i = 1, 9, 1 do
-		unbindKey ( tostring ( i ), 'up', ShpOnItemKeyUp )
+		unbindKey(tostring(i), 'up', ShpOnItemKeyUp)
 	end
 end
 
-local function ShpShowItems ()
-	if ( not g_ItemsWnd ) then
-		ShpCreateItemsGui ()
+local function ShpShowItems()
+	if(not g_ItemsWnd) then
+		ShpCreateItemsGui()
 	end
 	
-	triggerServerInternalEvent ( $(EV_GET_INVENTORY_REQUEST), g_Me )
+	triggerServerInternalEvent($(EV_GET_INVENTORY_REQUEST), g_Me)
 	
-	GaFadeIn ( g_ItemsWnd, FADE_DELAY, PANEL_ALPHA )
-	if ( not g_ItemsWndTimer ) then
-		g_ItemsWndTimer = setTimer ( ShpHideItems, 5000, 1 )
+	GaFadeIn(g_ItemsWnd, FADE_DELAY, PANEL_ALPHA)
+	if(not g_ItemsWndTimer) then
+		g_ItemsWndTimer = setTimer(ShpHideItems, 5000, 1)
 	end
 	
 	for i = 1, 9, 1 do
-		assert ( bindKey ( tostring ( i ), 'up', ShpOnItemKeyUp ) )
+		assert(bindKey(tostring(i), 'up', ShpOnItemKeyUp))
 	end
 end
 
-function ShpToggleItems ()
+function ShpToggleItems()
 	if(not g_ItemsWnd or not guiGetVisible(g_ItemsWnd)) then
 		ShpShowItems()
 	else
