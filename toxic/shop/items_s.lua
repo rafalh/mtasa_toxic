@@ -435,9 +435,10 @@ local function ShpBuyNextMap(mapResName)
 	local mapId = map:getId()
 	local row = DbQuerySingle('SELECT played_timestamp FROM '..MapsTable..' WHERE map=? LIMIT 1', mapId)
 	
+	-- Note: played_timestamp can be NULL if map has not been played yet
 	local minDelayForMap = Settings.minBuyMapDelay
-	local dt = now - row.played_timestamp
-	if(dt > minDelayForMap) then
+	local dt = row.played_timestamp and (now - row.played_timestamp)
+	if(not dt or dt > minDelayForMap) then
 		local pos = MqAdd(room, map)
 		if(pos) then
 			outputMsg(room, Styles.maps, "%s has been bought by %s (%u. in map queue)!", mapName, pdata:getName(true), pos)
