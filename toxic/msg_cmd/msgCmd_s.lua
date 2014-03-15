@@ -13,7 +13,7 @@ local g_MediaRes = Resource('txmedia')
 --------------------------
 
 local function McHandleCommand(ctx, ...)
-	local msg = g_MsgCommands[ctx.cmdName]
+	local msg = g_MsgCommands[ctx.cmdName:lower()]
 	assert(msg)
 	local text = msg.text
 	local name = ctx.player:getName(true)

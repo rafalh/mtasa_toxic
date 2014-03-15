@@ -8,7 +8,7 @@ CmdMgr.register{
 		{'player', type = 'player'},
 	},
 	func = function(ctx, player)
-		local alias = (ctx.cmdName == 'alias')
+		local alias = (ctx.cmdName:lower() == 'alias')
 		if(alias) then
 			scriptMsg("Aliases for %s:", player:getName())
 		else

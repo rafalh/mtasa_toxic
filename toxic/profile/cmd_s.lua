@@ -3,7 +3,7 @@
 ----------------------------------
 
 local function CmdProfileGet(ctx, player)
-	local field = ctx.cmdName
+	local field = ctx.cmdName:lower()
 	
 	assert(g_ProfileFields[field])
 	
@@ -16,7 +16,7 @@ local function CmdProfileGet(ctx, player)
 end
 
 local function CmdProfileSet(ctx, value)
-	local field = ctx.cmdName:sub(4)
+	local field = ctx.cmdName:sub(4):lower()
 	if(ctx.player.id) then
 		local data = setPlayerProfile(ctx.player.id, {[field] = value})
 		if(data[field]) then
@@ -28,7 +28,7 @@ local function CmdProfileSet(ctx, value)
 end
 
 local function PfcInit()
-	for field, data in pairs (g_ProfileFields) do
+	for field, data in pairs(g_ProfileFields) do
 		CmdMgr.register{
 			name = field,
 			desc = 'Shows player '..data.longname,
