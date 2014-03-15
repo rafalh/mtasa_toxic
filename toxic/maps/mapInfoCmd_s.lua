@@ -221,7 +221,7 @@ CmdMgr.register{
 			end
 			queue = queue:sub(3)
 		else
-			queue = 'empty'
+			queue = MuiGetMsg("empty", ctx.player.el)
 		end
 		privMsg(ctx.player, "Next map queue: %s.", queue)
 	end

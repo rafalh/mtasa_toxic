@@ -48,7 +48,7 @@ local function initAboutPane(x, y, w, h, panel)
 		if(styleChanged or br or not subnode) then
 			local linesStr = table.concat(lines, '\n')
 			
-			local label = guiCreateLabel(x, y, 160, 15, linesStr, false, scrollPane)
+			local label = guiCreateLabel(x, y, 180, 15, linesStr, false, scrollPane)
 			
 			if(prevAttr.bold == 'true') then
 				guiSetFont(label, 'default-bold-small')
@@ -63,14 +63,14 @@ local function initAboutPane(x, y, w, h, panel)
 			
 			local fontH = guiLabelGetFontHeight(label)
 			local linesH = fontH*#lines
-			guiSetSize(label, 160, linesH, false)
+			guiSetSize(label, 180, linesH, false)
 			y = y + linesH
 			lines = {}
 		end
 		prevAttr = attr
 		
 		if(br) then
-			x = 160
+			x = x + 180
 			y = 15
 		elseif(text) then
 			table.insert(lines, text)

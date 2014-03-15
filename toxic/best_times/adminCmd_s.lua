@@ -45,7 +45,7 @@ CmdMgr.register{
 			(nextTops ~= '' and ' Next Top Times: '..nextTops:sub(3)..'.' or '')
 		outputServerLog('REMTOPTIME: '..logStr)
 		
-		local f = fileExists('logs/remtoptime.log') and fileOpen('logs/remtoptime.log') or fileCreate('logs/remtoptime.log')
+		local f = fileExists('runtime/remtoptime.log') and fileOpen('runtime/remtoptime.log') or fileCreate('runtime/remtoptime.log')
 		if(f) then
 			fileSetPos(f, fileGetSize(f)) -- append to file
 			

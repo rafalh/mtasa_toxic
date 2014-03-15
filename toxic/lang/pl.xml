@@ -26,8 +26,9 @@
     <msg id="Map %s played %u times.">Mapa %s grana %u razy.</msg>
     <msg id="Map %s is removed! Changing to random map.">Mapa %s jest usunięta! Zmienianie na losową mapę.</msg>
     <msg id="Cannot repeat the map for %uth time! Changing to random map.">Nie można powtórzyć mapy po raz %u! Zmienianie na losową mapę.</msg>
-    <msg id="Ghostmode enabled for %u seconds!">Ghostmode włączony na %u sekund!</msg>
-    <msg id="Ghostmode disabled!">Ghostmode wyłączony!</msg>
+    <msg id="Ghost Mode has been enabled!">Ghost Mode został włączony!</msg>
+	<msg id="Ghost Mode has been enabled for %u seconds!">Ghost Mode został włączony na %u sekund!</msg>
+    <msg id="Ghost Mode has been disabled!">Ghost Mode został wyłączony!</msg>
     <msg id="%s added to your cash! Total: %s.">%s dodano do twojej kasy! Łącznie: %s.</msg>
     <msg id="You earned %s points. Total: %s.">Zarobiłeś %s punktów. Łącznie: %s.</msg>
     <msg id="%s is the winner!">%s jest zwycięzcą!</msg>
@@ -118,12 +119,16 @@
     <msg id="Respawn is disabled.">Respawn jest wyłączony.</msg>
     <msg id="Found maps: %s.">Znaleziono mapy: %s.</msg>
     <msg id='Maps not found for &quot;%s&quot;.'>Żadne mapy nie zostały znalezione dla &quot;%s&quot;.</msg>
-    
+	<msg id="%s has new level: %s!">%s ma nowy level: %s!</msg>
+	<msg id="You have reached %u. level!">Osiągnąłeś %u. level!</msg>
+	
 	<msg id="%s has been added to next map queue (pos. %u.)!">%s został dodany do kolejki następnych map (na poz. %u.)!</msg>
     <msg id="%s started vote for next map: %s.">%s rozpoczął głosowanie nad następną mapą: %s.</msg>
     <msg id="Next map is already set.">Następna mapa jest już ustawiona!</msg>
     <msg id="%s has been added to next map queue (pos. %u.) by %s!">%s został dodany do kolejki następnych map (na poz. %u.) przez %s!</msg>
 	<msg id="%s has been bought by %s (%u. in map queue)!">%s została kupiona przez %s (%u. w kolejce map)!</msg>
+	<msg id="Next map queue: %s.">Kolejka następnych map: %s.</msg>
+	<msg id="empty">pusta</msg>
 	
 	<msg id="Map cannot be repeated!">Mapa nie może być powtórzona!</msg>
     <msg id="This map has been removed!">Ta mapa została usunięta!</msg>
@@ -135,7 +140,6 @@
     <msg id="No vote in progress!">Żadne głosowanie nie jest aktywne!</msg>
     <msg id="Aliases for %s:">Aliasy gracza %s:</msg>
 	<msg id="You cannot use sound commands so often!">Nie możesz tak często używać komend dźwiękowych!</msg>
-	
 	
 	<msg id="%s has %u/%u warnings.">%s ma %u/%u ostrzeżeń.</msg>
 	<msg id="You have been warned by %s and have now %u/%u warnings. Reason of new warning: %s">Zostałeś ostrzeżony przez %s i masz teraz %u/%u ostrzeżeń. Powód nowego ostrzeżenia: %s</msg>
