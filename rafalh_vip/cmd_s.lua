@@ -60,6 +60,29 @@ addCommandHandler('givevip', function(source, cmd, name, days)
 	end
 end, false, false)
 
+addCommandHandler('giveviptoaccount', function(source, cmd, accountName, days)
+	if(not hasObjectPermissionTo(source, 'resource.rafalh_vip.givevip', false)) then
+		outputChatBox("PM: Access is denied!", source, 255, 0, 0)
+		return
+	end
+	
+	local account = accountName and getAccount(accountName)
+	local days = math.floor(tonumber(days or 30))
+	
+	if(not account or not days) then
+		outputChatBox("PM: Usage: /giveviptoaccount <accountName> [<days>]", source, 255, 96, 96)
+		return
+	end
+	
+	local success, limit = VipAdd(account, days*24*3600)
+	if(success) then
+		local limitStr = limit and formatDateTime(limit) or 'N/A'
+		outputChatBox("PM: VIP rank successfully given to "..accountName.."! It will be valid untill "..limitStr, source, 255, 96, 96, true)
+	else
+		outputChatBox("PM: Failed to give VIP rank", source, 255, 96, 96)
+	end
+end, false, false)
+
 addCommandHandler('giveviptoall', function(source, cmd, days)
 	if(not hasObjectPermissionTo(source, 'resource.rafalh_vip.givevip', false)) then
 		outputChatBox("PM: Access is denied!", source, 255, 0, 0)
