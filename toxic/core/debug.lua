@@ -26,7 +26,7 @@ end
 function Debug.getStackTrace(len, offset)
 	local trace = debug.traceback('', (offset or 0) + 2)
 	local lines = split(trace, '\n')
-	local start, stop = 2, 1 + (len or #lines - 1)
+	local start, stop = 2, math.min(1 + (len or #lines - 1), #lines)
 	
 	local tbl = {}
 	for i = start, stop do

@@ -30,7 +30,7 @@ local function onKillersList(killer, assist)
 	
 	-- Check if killers info is allowed
 	if(not victimPlayer.ddKillersAllowed) then
-		Debug.warn('Player is not allowed to send killer info now')
+		Debug.warn('Player \''..tostring(victimPlayer:getName())..'\' is not allowed to send killer info now')
 		return
 	end
 	victimPlayer.ddKillersAllowed = nil
@@ -105,6 +105,9 @@ function DdMapStop(room)
 	
 	for player, pdata in pairs(g_Players) do
 		pdata.currentMapKills = 0
+		if(pdata.ddKillersAllowed) then
+			Debug.warn('Killers list not received from \''..pdata:getName()..'\'!')
+		end
 		pdata.ddKillersAllowed = nil
 	end
 end
@@ -184,6 +187,10 @@ local function onPlayerWasted()
 	
 	-- Check if Race State is valid
 	if(player.room.gameState == 'Running' or player.room.gameState == 'PostFinish') then
+		if(player.ddKillersAllowed) then
+			--Debug.warn('Previous killers list has not been received!')
+			return
+		end
 		player.ddKillersAllowed = true
 		RPC('DdGetKillers'):setClient(source):onResult(onKillersList):exec()
 		--Debug.info('onPlayerWasted '..player:getName())
