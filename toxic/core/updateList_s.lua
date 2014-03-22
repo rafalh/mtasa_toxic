@@ -514,3 +514,15 @@ Updater.register{
 		end
 	end
 }
+
+Updater.register{
+	ver = 173,
+	func = function()
+		if(not Teams) then return end
+		local rows = DbQuery('SELECT id FROM '..Teams.TeamsTable..' ORDER BY priority')
+		if(not rows) then return 'Failed to read teams table' end
+		for i, row in ipairs(rows) do
+			DbQuery('UPDATE '..Teams.TeamsTable..' SET priority=? WHERE id=?', i, row.id)
+		end
+	end
+}

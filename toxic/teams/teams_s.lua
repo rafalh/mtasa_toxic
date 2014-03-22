@@ -18,6 +18,7 @@ local g_Patterns = {
 	'^#?([^#][^#]?[^#]?[^#]?[^#]?[^#]?)#',
 	'^=([^=][^=]?[^=]?[^=]?[^=]?[^=]?)=',
 	'^>([^<][^<]?[^<]?[^<]?[^<]?[^<]?)<',
+	'^([^:][^:]?[^:]?[^:]?[^:]?[^:]?)://',
 }
 
 local g_NameToTeam = {}
@@ -32,6 +33,8 @@ TeamsTable = Database.Table{
 	{'priority', 'INT'},
 	{'lastUsage', 'INT UNSIGNED', default = false, null = true},
 	{'owner', 'INT', default = false, null = true, fk = {'players', 'player'}},
+	{'teams_idx', index = {'tag'}},
+	{'teams_idx2', index = {'aclGroup'}},
 }
 
 addEvent('onPlayerChangeTeam')
@@ -254,6 +257,7 @@ function updateItem(teamInfo)
 	assert(teamInfo and teamInfo.name and (teamInfo.tag or teamInfo.aclGroup))
 	teamInfo.lastUsage = getRealTime().timestamp
 	teamInfo.owner = touint(teamInfo.owner)
+	teamInfo.priority = nil
 	
 	if(teamInfo.color and not getColorFromString(teamInfo.color)) then
 		return false, 'Color is invalid'
@@ -289,6 +293,7 @@ function updateItem(teamInfo)
 			return false, 'Failed to insert team to database'
 		end
 		teamInfo.id = Database.getLastInsertID()
+		teamInfo.priority = #g_List + 1
 		g_TeamFromName[teamInfo.name] = teamInfo
 		g_TeamFromID[teamInfo.id] = teamInfo
 		table.insert(g_List, teamInfo)
@@ -321,12 +326,17 @@ function delItem(id, refund)
 	
 	-- Delete team
 	DbQuery('DELETE FROM '..TeamsTable..' WHERE id=?', teamInfo.id)
-	table.removeValue(g_List, teamInfo)
+	local idx = table.find(g_List, teamInfo)
+	table.remove(g_List, idx)
 	g_TeamFromName[teamInfo.name] = nil
 	g_TeamFromID[teamInfo.id] = nil
 	
 	-- Update priorities
 	DbQuery('UPDATE '..TeamsTable..' SET priority=priority-1 WHERE priority > ?', teamInfo.priority)
+	for i = idx, #g_List do
+		local teamInfo = g_List[i]
+		teamInfo.priority = teamInfo.priority - 1
+	end
 	
 	return true
 end
