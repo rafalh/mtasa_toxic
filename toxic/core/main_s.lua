@@ -84,8 +84,14 @@ local function onPlayerPMRequest(msg, recipient)
 		outputMsg(client, Styles.red, "pm: You are muted")
 	else
 		local playerName = getPlayerName(client):gsub('#%x%x%x%x%x%x', '')
-		outputMsg(recipient, Styles.pm, "PM from %s: %s", playerName, msg)
-		triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), client, msg)
+		local ignored = getElementData(recipient, 'ignored_players')
+		if(type(ignored) ~= 'table' or not ignored[playerName]) then
+			outputMsg(client, Styles.pm, "You have sent PM to %s: %s", playerName, msg)
+			outputMsg(recipient, Styles.pm, "PM from %s: %s", playerName, msg)
+			triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), client, msg)
+		else
+			outputMsg(client, Styles.red, "pm: You are being ignored by %s", playerName)
+		end
 	end
 end
 

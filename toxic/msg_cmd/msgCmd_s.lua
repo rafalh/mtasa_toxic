@@ -50,26 +50,39 @@ local function McHandleCommand(ctx, ...)
 	else -- console
 		r, g, b = 255, 128, 255
 	end
-	outputChatBox(name..': #FFFF00'..text, g_Root, r, g, b, true)
-	outputServerLog('MSGCMD: '..namePlain..': '..text)
 	
+	-- Does command has sound attached?
+	local soundUrl = false
 	if(msg.sound) then
 		local isVip = g_VipRes:isReady() and g_VipRes:call('isVip', ctx.player.el)
 		if(isVip) then
-			local servAddr = get('mapmusic.server_address')
-			local url =  'http://'..servAddr..'/'..g_MediaRes.name..'/sounds/'..msg.sound
-			--outputChatBox(url)
-			
 			local now = getRealTime().timestamp
 			local limit = Settings.soundCmdLimit
 			if(not ctx.player.lastSoundCmd or now - ctx.player.lastSoundCmd >= limit) then
 				ctx.player.lastSoundCmd = now
-				RPC('McPlaySound', url, ctx.player.el):exec()
+				local servAddr = get('mapmusic.server_address')
+				soundUrl =  'http://'..servAddr..'/'..g_MediaRes.name..'/sounds/'..msg.sound
 			else
 				outputMsg(ctx.player, Styles.red, "You cannot use sound commands so often!")
 			end
 		end
 	end
+	
+	-- Send chat message and optionally sound to all players
+	local recipients = getElementsByType('player')
+	for i, recipient in ipairs(recipients) do
+		local ignored = getElementData(recipient, 'ignored_players')
+		if(type(ignored) ~= 'table' or not ignored[namePlain]) then
+			outputChatBox(name..': #FFFF00'..text, recipient, r, g, b, true)
+			
+			if(soundUrl) then
+				RPC('McPlaySound', soundUrl, ctx.player.el):setClient(recipient):exec()
+			end
+		end
+	end
+	
+	-- Save message in server log
+	outputServerLog('MSGCMD: '..namePlain..': '..text)
 	
 	-- Check for spam
 	if(AsProcessMsg(ctx.player.el)) then

@@ -23,6 +23,7 @@ function ChatRoom:onPlayerMsg(player, msg)
 	
 	local recipients = self.info.getPlayers(player)
 	local playerName = getPlayerName(player)
+	local playerNamePlain = playerName:gsub('#%x%x%x%x%x%x', '')
 	local chatPrefix = self.info.chatPrefix
 	if(type(chatPrefix) == 'function') then chatPrefix = chatPrefix(player) end
 	local logPrefix = self.info.logPrefix
@@ -48,8 +49,12 @@ function ChatRoom:onPlayerMsg(player, msg)
 			r, g, b = 255, 0, 255
 		end
 		--local foundSender = false
+		
 		for i, recipient in ipairs(recipients) do
-			outputChatBox(str, recipient, r, g, b, true)
+			local ignored = getElementData(recipient, 'ignored_players')
+			if(type(ignored) ~= 'table' or not ignored[playerNamePlain]) then
+				outputChatBox(str, recipient, r, g, b, true)
+			end
 			--if(player == recipient) then foundSender = true end
 		end
 		--assert(foundSender)
