@@ -268,7 +268,7 @@ ShpRegisterItem{
 		return Player.fromEl(player).accountData:add('thunders', 1)
 	end,
 	onUse = function(player, val)
-		if(val <= 0) then
+		if(val <= 0 or isPedDead(player)) then
 			return false
 		end
 		
@@ -279,9 +279,9 @@ ShpRegisterItem{
 		local bestplayer, bestdist = nil, 20
 		local pos = { getElementPosition(player) }
 		for player2, pdata2 in pairs(g_Players) do
-			if(player2 ~= player) then
+			if(player2 ~= player and not isPedDead(player2)) then
 				local pos2 = { getElementPosition(player2) }
-				local dist = getDistanceBetweenPoints3D (pos[1], pos[2], pos[3], pos2[1], pos2[2], pos2[3])
+				local dist = getDistanceBetweenPoints3D(pos[1], pos[2], pos[3], pos2[1], pos2[2], pos2[3])
 				if(dist < bestdist) then
 					bestdist = dist
 					bestplayer = player2
