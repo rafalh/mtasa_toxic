@@ -41,7 +41,7 @@ function Vector2.__mt:__eq(vec)
 end
 
 function Vector2.__mt:__tostring()
-	return '('..tostring(self[1])..' '..tostring(self[2])..')'
+	return ('(%.2f %.2f)'):format(self[1], self[2])
 end
 
 function Vector2.__mt.__index:init(x, y)
@@ -55,6 +55,6 @@ end
 		local vx = Vector2(1, 0)
 		local vy = Vector2(0, 1)
 		Test.checkEq(((vx + vy) * 2), Vector2(2, 2))
-		Test.checkEq(tostring(vx), '(1 0)')
+		Test.checkEq(tostring(vx), '(1.00 0.00)')
 	end)
 #end

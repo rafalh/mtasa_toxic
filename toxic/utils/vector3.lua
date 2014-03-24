@@ -72,13 +72,23 @@ function Vector3.__mt:__eq(vec)
 end
 
 function Vector3.__mt:__tostring()
-	return '('..tostring(self[1])..' '..tostring(self[2])..' '..tostring(self[3])..')'
+	return ('(%.2f %.2f %.2f)'):format(self[1], self[2], self[3])
 end
 
 function Vector3.__mt.__index:init(x, y, z)
 	self[1] = x or 0
 	self[2] = y or 0
 	self[3] = z or 0
+end
+
+if(Test) then
+	function Test.checkCloseVector3(vec, validVec, eps, descr)
+		local diff = math.max(
+			math.abs(vec[1] - validVec[1]),
+			math.abs(vec[2] - validVec[2]),
+			math.abs(vec[3] - validVec[3]))
+		Test.check(diff < eps, 'expected '..tostring(validVec)..', got '..tostring(vec)..' (diff '..diff..')'..(descr and ' '..descr or ''), 1)
+	end
 end
 
 -- Simple test

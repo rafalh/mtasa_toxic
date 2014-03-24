@@ -32,6 +32,10 @@ function checkEq(val, validVal, descr)
 	check(val == validVal, 'expected '..tostring(validVal)..', got '..tostring(val)..(descr and ' '..descr or ''), 1)
 end
 
+function checkClose(val, validVal, eps, descr)
+	check(math.abs(val - validVal) < eps, 'expected '..tostring(validVal)..', got '..tostring(val)..(descr and ' '..descr or ''), 1)
+end
+
 function checkGt(val1, val2, descr)
 	check(val1 > val2, 'expected '..tostring(val1)..' > '..tostring(val2)..(descr and ' '..descr or ''), 1)
 end

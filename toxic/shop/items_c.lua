@@ -179,12 +179,21 @@ ShpRegisterItem{
 	dataToCount = function(val) return val > 0 and val end,
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end, -- buy, sell, use
 	onUse = function(val)
+		-- Get position of ground under vehicle
 		local veh = getPedOccupiedVehicle(g_Me)
 		local x, y, z = getElementPosition(veh)
-		local rx, ry, rz = getElementRotation(veh, 'ZXY')
-		local mat = getElementMatrix(veh)
-		rz = rz + 90
 		z = getGroundPosition(x, y, z) + 0.1
+		
+		-- Build quaternion from vehicle matrix
+		local mat = getElementMatrix(veh)
+		local q = Quaternion.fromMatrix(mat)
+		
+		-- Rotate 90 degrees around Up vector
+		q = Quaternion.fromRot(Vector3(unpack(mat[3])), math.pi/2) * q
+		local rx, ry, rz = q:toEuler()
+		rx, ry, rz = math.deg(rx), math.deg(ry), math.deg(rz)
+		
+		-- Create spike-strip
 		RPC('ShpSpikeStrip', x, y, z, rx, ry, rz, mat):exec()
 	end
 }

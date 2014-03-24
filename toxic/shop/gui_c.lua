@@ -329,6 +329,7 @@ local function ShpUpdateItemsWnd()
 	for i, el in ipairs(getElementChildren(g_ItemsWnd)) do
 		destroyElement(el)
 	end
+	g_ItemsGui = {}
 	
 	-- set big size because static images outside of window are not loaded corectly
 	guiSetSize(g_ItemsWnd, 2000, 100, false)

@@ -42,6 +42,12 @@ function tobool(val, def)
 	else return def end
 end
 
+function math.sign(val)
+	if(val > 0) then return 1
+	elseif(val < 0) then return -1
+	else return 0 end
+end
+
 function formatDate(timestamp)
 	local tm = getRealTime(timestamp)
 	return ('%d-%02d-%02d %d:%02d'):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute)
