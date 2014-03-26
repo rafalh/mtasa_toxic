@@ -1,3 +1,5 @@
+g_RemTopTimeLogger = Logger('remtoptime')
+
 CmdMgr.register{
 	name = 'remtoptime',
 	desc = "Removes specified Top Time on the current map",
@@ -44,17 +46,7 @@ CmdMgr.register{
 			' by '..accountData:get('name')..') on map '..map:getName()..'.'..
 			(nextTops ~= '' and ' Next Top Times: '..nextTops:sub(3)..'.' or '')
 		outputServerLog('REMTOPTIME: '..logStr)
-		
-		local f = fileExists('runtime/remtoptime.log') and fileOpen('runtime/remtoptime.log') or fileCreate('runtime/remtoptime.log')
-		if(f) then
-			fileSetPos(f, fileGetSize(f)) -- append to file
-			
-			local tm = getRealTime()
-			local timeStr = ('[%u.%02u.%u %u-%02u-%02u]'):format(tm.monthday, tm.month + 1, tm.year + 1900, tm.hour, tm.minute, tm.second)
-			fileWrite(f, timeStr..' '..logStr..'\n')
-			
-			fileClose(f)
-		end
+		g_RemTopTimeLogger:print(logStr)
 		
 		outputMsg(room.el, Styles.red, "%u. Top Time (%s by %s) has been removed by %s!",
 			num, formatTimePeriod(rows[num].time / 1000), accountData:get('name'), ctx.player:getName(true))
