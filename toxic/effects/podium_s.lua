@@ -12,6 +12,9 @@ addEvent('onPlayerWinDD')
 local function onRaceStateChange(state)
 	if(state == 'PostFinish') then
 		if(#g_Winners > 0) then
+			if(g_RaceRes:isReady()) then
+				triggerClientEvent('onClientCall_race', g_RaceRes:getRoot(), 'Spectate.stop', 'auto')
+			end
 			RPC('PodiumStart', g_Winners, math.random(1, LOC_COUNT)):exec()
 		end
 	elseif(state == 'LoadingMap') then

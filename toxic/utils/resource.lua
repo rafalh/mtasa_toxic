@@ -40,6 +40,10 @@ function Resource.__mt.__index:exists()
 	return self.res and true
 end
 
+function Resource.__mt.__index:getRoot()
+	return self.res and getResourceRootElement(self.res)
+end
+
 function Resource.__mt.__index:addReadyHandler(fn)
 	table.insert(self.readyHandlers, fn)
 end
