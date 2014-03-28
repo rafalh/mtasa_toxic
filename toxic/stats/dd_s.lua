@@ -24,7 +24,7 @@ local function onKillersList(killer, assist)
 	local map = room and getCurrentMap(room)
 	if(not victimPlayer or not map
 		or killerPlayer == victimPlayer or assistPlayer == victimPlayer) then
-		Debug.warn('Invalid args for onKillersList')
+		Debug.warn('Invalid args for onKillersList ('..tostring(victimPlayer and victimPlayer:getName())..' '..tostring(map)..')')
 		return
 	end
 	
@@ -197,6 +197,15 @@ local function onPlayerWasted()
 	end
 end
 
+local function onPlayerReady()
+	local player = Player.fromEl(client)
+	local room = player.room
+	if(room.ddKilersDetection) then
+		RPC('DdSetKillersDetectionEnabled', true):setClient(player.el):exec()
+	end
+end
+
 addInitFunc(function()
 	addEventHandler('onPlayerWasted', root, onPlayerWasted)
+	addEventHandler('main.onPlayerReady', g_ResRoot, onPlayerReady)
 end)

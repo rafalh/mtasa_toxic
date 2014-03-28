@@ -12,7 +12,7 @@ local function onDbgMsg(msg, lvl, file, line)
 	
 	local ticks = getTickCount()
 	if(g_LastMsgTicks1s and ticks - g_LastMsgTicks1s < 1000) then
-		if(g_LastMsgCounter1s >= 3) then return end
+		if(g_LastMsgCounter1s >= 10) then return end
 		g_LastMsgCounter1s = g_LastMsgCounter1s + 1
 	else
 		g_LastMsgTicks1s = ticks
@@ -20,7 +20,7 @@ local function onDbgMsg(msg, lvl, file, line)
 	end
 	
 	if(g_LastMsgTicks60s and ticks - g_LastMsgTicks60s < 60000) then
-		if(g_LastMsgCounter60s >= 15) then return end
+		if(g_LastMsgCounter60s >= 20) then return end
 		g_LastMsgCounter60s = g_LastMsgCounter60s + 1
 	else
 		g_LastMsgTicks60s = ticks

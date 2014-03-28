@@ -11,7 +11,7 @@ function addMsg(msg, lvl, file, line)
 	
 	local ticks = getTickCount()
 	if(player.clientDbgTicks and ticks - player.clientDbgTicks < 60000) then
-		if(player.clientDbgCounter > 15) then return end
+		if(player.clientDbgCounter > 20) then return end
 		player.clientDbgCounter = player.clientDbgCounter + 1
 	else
 		player.clientDbgTicks = ticks

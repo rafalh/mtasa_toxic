@@ -25,7 +25,7 @@ function start(room, map_id)
 	
 	RPC('TopTimePlayback.init', traceCoded, recTitle):setClient(room.el):exec()
 	room.topTimePlabackWaiting = true
-	room.topTimePlaback = true
+	room.topTimePlaback = {traceCoded, recTitle}
 	
 	prof:cp('TopTimePlayback.start')
 end
@@ -42,11 +42,24 @@ local function onRaceStateChange(stateName)
 		for el, room in Room.pairs() do
 			if(room.topTimePlabackWaiting) then
 				RPC('TopTimePlayback.start'):setClient(room.el):exec()
+				room.topTimePlabackWaiting = false
 			end
+		end
+	end
+end
+
+local function onPlayerReady()
+	local player = Player.fromEl(client)
+	local room = player.room
+	if(room.topTimePlaback) then
+		RPC('TopTimePlayback.init', room.topTimePlaback[1], room.topTimePlaback[2]):setClient(player.el):exec()
+		if(not room.topTimePlabackWaiting) then
+			RPC('TopTimePlayback.start'):setClient(player.el):exec()
 		end
 	end
 end
 
 addInitFunc(function()
 	addEventHandler('onRaceStateChanging', root, onRaceStateChange)
+	addEventHandler('main.onPlayerReady', g_ResRoot, onPlayerReady)
 end)

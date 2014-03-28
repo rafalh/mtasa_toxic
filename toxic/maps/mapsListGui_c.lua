@@ -19,6 +19,7 @@ local function MlstUpdateList(gui)
 		if(mapName:lower():find(pattern, 1, true) or mapAuthor:lower():find(pattern, 1, true)) then
 			local row = guiGridListAddRow(gui.list)
 			local played = data[3]
+			assert(data[4]) -- bad argument #1 to 'format' (number expected, got nil)
 			local rating = ('%.1f'):format(data[4])
 			guiGridListSetItemText(gui.list, row, 1, mapName, false, false)
 			guiGridListSetItemText(gui.list, row, 2, mapAuthor, false, false)
@@ -91,7 +92,7 @@ end
 function MlstDisplay(title, btn_name, callback)
 	if(not g_MapList) then
 		g_MapList = {}
-		RPC('getMapList'):onResult(MlstOnMapList):exec()
+		RPC('getMapListRPC'):onResult(MlstOnMapList):exec()
 	end
 	
 	local gui = { cb = callback }

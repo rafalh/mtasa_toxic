@@ -20,12 +20,14 @@ local g_Items = {}
 local g_Wnd, g_List
 local g_UserAvatarView, g_UserLabel, g_LogInOutBtn
 local g_CurrentItem = false
-local g_Hiding = false
+local g_Hidden = true
 local g_PanelH
 
 -- Functions
 
 local function UpHide()
+	if(g_Hidden) then return end
+	
 	--Debug.info('UpHide')
 	GaFadeOut(g_Wnd, FADE_DELAY)
 	
@@ -40,7 +42,7 @@ local function UpHide()
 	end
 	
 	showCursor(false)
-	g_Hiding = true
+	g_Hidden = true
 end
 
 local function onItemClick(i)
@@ -168,14 +170,22 @@ local function UpCreateGui()
 		addEventHandler('onClientGUIClick', link.el, ServerRules.display, false)
 	end
 	
-	local copyrightLabel = guiCreateLabel(10, h - 25, w - 100, 15, "Copyright (c) 2009-2014 by rafalh", false, g_Wnd)
+	local copyrightLabel = guiCreateLabel(10, h - 25, 230, 15, "Copyright (c) 2009-2014 by rafalh", false, g_Wnd)
 	guiLabelSetColor(copyrightLabel, 128, 128, 128)
+	
+	local verLabel = guiCreateLabel(250, h - 25, 100, 15, '', false, g_Wnd)
+	guiLabelSetColor(verLabel, 128, 128, 128)
+	RPC('getThisResourceVersion'):onResult(function(ver)
+		guiSetText(verLabel, MuiGetMsg("Version: %s"):format(ver))
+	end):exec()
 	
 	local btn = guiCreateButton(w - 70, h - 35, 60, 25, "Close", false, g_Wnd)
 	addEventHandler('onClientGUIClick', btn, UpHide, false)
 end
 
 local function UpShow()
+	if(not g_Hidden) then return end
+	
 	--Debug.info('UpShow')
 	if(not g_Wnd) then
 		UpCreateGui()
@@ -184,7 +194,7 @@ local function UpShow()
 	AchvActivate("Open User Panel")
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
 	showCursor(true)
-	g_Hiding = false
+	g_Hidden = false
 	
 	if(VIEW_W > 0) then
 		if(not g_CurrentItem) then
@@ -216,10 +226,10 @@ function UpRegister(item)
 end
 
 function UpToggle()
-	--Debug.info('UpToggle g_Hiding '..tostring(g_Hiding))
+	--Debug.info('UpToggle g_Hidden '..tostring(g_Hidden))
 	if((not g_Wnd or not guiGetVisible(g_Wnd)) and (not g_CurrentItem or VIEW_W > 0)) then
 		UpShow()
-	elseif(not g_Hiding) then
+	elseif(not g_Hidden) then
 		UpHide()
 	end
 end

@@ -436,7 +436,7 @@ local function onRaceStateChange(state)
 	end
 end
 
-function getMapList()
+function getMapListRPC()
 	local prof = DbgPerf()
 	local prof2 = DbgPerf(20)
 	
@@ -453,18 +453,20 @@ function getMapList()
 	local rows = DbQuery('SELECT name, played, rates, rates_count FROM '..MapsTable)
 	prof2:cp('onMapListReq 3')
 	for i, data in ipairs(rows) do
-		if(mapsList[data.name]) then
-			mapsList[data.name][3] = data.played
+		local mapInfo = mapsList[data.name]
+		if(mapInfo) then
+			mapInfo[3] = data.played
 			if(data.rates_count > 0) then
-				mapsList[data.name][4] = data.rates / data.rates_count
+				mapInfo[4] = data.rates / data.rates_count
 			end
+			assert(mapInfo[4])
 		end
 	end
 	prof2:cp('onMapListReq 4')
 	prof:cp('onMapListReq')
 	return mapsList
 end
-RPC.allow('getMapList')
+RPC.allow('getMapListRPC')
 
 local function onChangeMapReq(mapResName)
 	if(not hasObjectPermissionTo(client, 'command.setmap', false)) then return end
