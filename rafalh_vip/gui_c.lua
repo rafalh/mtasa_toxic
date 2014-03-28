@@ -228,7 +228,7 @@ function VipOpenSettingsWnd()
 		return
 	end
 	
-	local w = 410
+	local w = 420
 	local h = math.min(math.max(420, g_WidgetsCount*25, 120) + 125, g_ScrH)
 	local x, y =(g_ScrW - w) / 2,(g_ScrH - h) / 2
 	
@@ -351,7 +351,7 @@ function VipOpenSettingsWnd()
 	y = y + 65
 	
 	g_Gui.driver = guiCreateCheckBox(10, y, 300, 25, "Driver", g_Settings.driver, false, tab)
-	g_Gui.driver_id = guiCreateComboBox(10, y + 25, 150, 300, tostring(g_Settings.driver_id), false, tab)
+	g_Gui.driver_id = guiCreateComboBox(10, y + 25, 150, 130, tostring(g_Settings.driver_id), false, tab)
 	if(not g_Skins) then
 		VipLoadSkins()
 	end
@@ -480,7 +480,9 @@ function VipOpenSettingsWnd()
 	
 	guiCreateLabel(10, y + 5, w - 20, 20, "Avatar URL address:", false, tab)
 	g_Gui.avatar = guiCreateEdit(10, y + 25, w - 20, 25, g_Settings.avatar, false, tab)
-	y = y + 60
+	guiCreateLabel(10, y + 50, w - 20, 15, MuiGetMsg("Supported image formats: %s"):format('JPG, PNG, BMP, GIF ('..MuiGetMsg("static or animated")..')'), false, tab)
+	guiCreateLabel(10, y + 65, w - 20, 15, MuiGetMsg("Maximal size: %s"):format('64kB'), false, tab)
+	y = y + 100
 	
 	guiSetInputMode('no_binds_when_editing')
 	showCursor(true)

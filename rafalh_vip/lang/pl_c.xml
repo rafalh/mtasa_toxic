@@ -28,6 +28,9 @@
 	<msg id="Show clouds">Pokaż chmury</msg>
 	<msg id="Show my nametag">Pokaż mój nametag</msg>
 	<msg id="Avatar URL address:">Adres URL awatara:</msg>
+	<msg id="Supported image formats: %s">Obsługiwane obrazki: %s</msg>
+	<msg id="static or animated">statyczny lub animowany</msg>
+	<msg id="Maximal size: %s">Maksymalny rozmiar: %s</msg>
 	
 	<msg id="You are a VIP! Press &quot;g&quot; to access VIP settings.">Jesteś VIPem! Naciśnij &quot;g&quot; aby otworzyć ustawienia VIPów.</msg>
 	<msg pattern="Your VIP rank will be valid untill (%d+%.%d+%.%d+ %d+:%d+ GMT). %((%d+) days left%)">Ranga VIP będzie ważna do %1 (pozostało %2 dni)</msg>

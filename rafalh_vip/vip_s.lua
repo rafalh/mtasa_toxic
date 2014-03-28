@@ -81,6 +81,15 @@ local function VipUpdateVehicle(player, veh)
 	end
 end
 
+local function VipCheckAvatarFormat(data)
+	local data4b = data:sub(1, 4)
+	if(data4b:sub(1, 2) == 'BM') then return true end -- Bitmap
+	if(data4b:sub(1, 2) == '\255\216') then return true end -- JPEG (\xFF\xD8)
+	if(data4b:sub(1, 4) == '\137PNG') then return true end -- PNG (\x89PNG)
+	if(data4b:sub(1, 3) == 'GIF') then return true end -- GIF
+	return false
+end
+
 local function VipAvatarCallback(data, errno, player, reqID)
 	local pdata = g_Players[player]
 	if(not pdata) then return end
@@ -94,6 +103,8 @@ local function VipAvatarCallback(data, errno, player, reqID)
 	
 	if(data:len() > 1024 * 64) then
 		outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
+	elseif(not VipCheckAvatarFormat(data)) then
+		outputChatBox("Unknown avatar image format!", player, 255, 0, 0)
 	else
 		setElementData(player, "avatar", data)
 		local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
