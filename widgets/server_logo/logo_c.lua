@@ -54,7 +54,7 @@ g_WidgetCtrl[$(wg_show)] = function ( visible )
 	if ( g_Visible ) then
 		addEventHandler ( "onClientRender", g_Root, render )
 		
-		g_Textures.back = dxCreateTexture("back.jpg")
+		g_Textures.back = dxCreateTexture('back.png', 'argb', false, 'clamp')
 		g_Shader = dxCreateShader("logo.fx")
 		
 	elseif ( not visible ) then
@@ -110,7 +110,7 @@ end
 ----------
 
 local function init()
-	g_Textures.front = dxCreateTexture ( "logo.jpg" )
+	g_Textures.front = dxCreateTexture('logo.png', 'argb', false, 'clamp')
 	g_TexSize = {dxGetMaterialSize(g_Textures.front)}
 	
 	g_WidgetCtrl[$(wg_reset)] () -- set pos, size and image

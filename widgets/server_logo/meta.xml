@@ -3,8 +3,8 @@
 	
 	<script src="logo_c.lua" type="client" />
 	
-	<file src="logo.jpg" />
-	<file src="back.jpg" />
+	<file src="logo.png" />
+	<file src="back.png" />
 	
 	<file src="logo.fx" type="client" />
 	
