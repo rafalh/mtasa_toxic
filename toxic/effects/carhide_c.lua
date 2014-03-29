@@ -45,6 +45,7 @@ local function ChVehDestroy()
 end
 
 local function ChVehEnter(player)
+	--Debug.info('ChVehEnter '..tostring(player)..' '..tostring(source))
 	if(getElementType(player) ~= 'player') then return end
 	
 	if(not g_KnownVehicles[source]) then
@@ -64,7 +65,8 @@ local function ChEnable()
 	addEventHandler('onClientVehicleEnter', root, ChVehEnter)
 	for i, player in ipairs(getElementsByType('player')) do
 		local veh = getPedOccupiedVehicle(player)
-		if(veh) then
+		-- Note: more than one player can be sitting in one vehicle
+		if(veh and not g_KnownVehicles[veh]) then
 			g_KnownVehicles[veh] = true
 			addEventHandler('onClientElementDataChange', veh, ChVehDataChange, false)
 			addEventHandler('onClientElementDestroy', veh, ChVehDestroy, false)
