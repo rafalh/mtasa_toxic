@@ -61,7 +61,7 @@ local function setEnabled(en)
 	if(g_Playback) then
 		g_Playback:destroy()
 		g_Playback = false
-	else
+	elseif(g_TraceCoded) then
 		local trace = RcDecodeTrace(g_TraceCoded)
 		g_Playback = Playback(trace, g_Title)
 		if(g_StartTime) then

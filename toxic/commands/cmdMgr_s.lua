@@ -187,7 +187,7 @@ function CmdMgr.getUsage(cmdName)
 	if(not cmd) then return false end
 	
 	local ret = {}
-	for i, argDesc in ipairs(cmd.args) do
+	for i, argDesc in ipairs(cmd.args or {}) do
 		local opt = (argDesc.defVal ~= nil) or argDesc.defValFromCtx
 		if(opt) then
 			table.insert(ret, '['..argDesc[1]..']')
