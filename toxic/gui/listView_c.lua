@@ -152,7 +152,7 @@ function ListView:destroy(ignoreEl)
 	end
 end
 
-function ListView.create(pos, size, parent, itemSize, imgSize, style)
+function ListView.create(pos, size, parent, itemSize, imgSize, style, scrollBar)
 	local self = setmetatable({}, ListView.__mt)
 	self.el = guiCreateScrollPane(pos[1], pos[2], size[1], size[2], false, parent)
 	self.items = {}
@@ -161,7 +161,11 @@ function ListView.create(pos, size, parent, itemSize, imgSize, style)
 	self.style = style or ListView.style
 	self.itemSize = itemSize or {80, 80}
 	self.imgSize = imgSize or {32, 32}
+	if(scrollBar) then
+		size = {size[1] - 15, size[2]}
+	end
 	self.cols = math.floor(size[1] / self.itemSize[1])
+	guiScrollPaneSetScrollBars(self.el, false, scrollBar or false)
 	
 	addEventHandler('onClientElementDestroy', self.el, ListView.onElDestroy, false)
 	addEventHandler('onClientMouseEnter', self.el, ListView.onMouseEnter, true)

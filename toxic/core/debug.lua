@@ -5,6 +5,7 @@ local PERF_DEBUG_EVENTS = false
 Debug = {}
 
 function Debug.print(str, lvl)
+	str = tostring(str)
 	while(str ~= '') do
 		outputDebugString(str:sub(1, 511), lvl)
 		str = str:sub(512)
