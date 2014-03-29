@@ -15,6 +15,7 @@ Settings.register
 	createGui = function(wnd, x, y, w, onChange)
 		local label = FormattedLabel(x, y + 5, 190, 15, wnd, "Race Audio Volume: %u%%", Settings.raceVolume)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
+		guiSetProperty(bar, 'StepSize', '0.1')
 		setElementData(bar, 'tooltip', "Changes volume for Count Down, Checkpoints and Race Voice sounds")
 		guiScrollBarSetScrollPosition(bar, Settings.raceVolume)
 		if(onChange) then
@@ -41,6 +42,7 @@ Settings.register
 	createGui = function(wnd, x, y, w, onChange)
 		local label = FormattedLabel(x, y + 5, 190, 15, wnd, "Commands Volume: %u%%", Settings.cmdVolume)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
+		guiSetProperty(bar, 'StepSize', '0.1')
 		setElementData(bar, 'tooltip', "Changes volume for commands with sound")
 		guiScrollBarSetScrollPosition(bar, Settings.cmdVolume)
 		if(onChange) then
@@ -68,6 +70,7 @@ Settings.register
 	createGui = function(wnd, x, y, w, onChange)
 		local label = FormattedLabel(x, y + 5, 190, 15, wnd, "Map Music Volume: %u%%", Settings.musicVolume)
 		local bar = guiCreateScrollBar(x + 190, y + 2, w - 210, 22, true, false, wnd)
+		guiSetProperty(bar, 'StepSize', '0.1')
 		setElementData(bar, 'tooltip', "Changes volume for map music")
 		guiScrollBarSetScrollPosition(bar, Settings.musicVolume)
 		if(onChange) then

@@ -158,7 +158,7 @@ local function createGui(panel)
 	guiSetVisible(g_TurnOffBtn, g_Sound and true)
 	addEventHandler('onClientGUIClick', g_TurnOffBtn, onTurnOffClick, false)
 	
-	g_Channels = loadChannels ()
+	g_Channels = loadChannels()
 	
 	local listSize = {w - 20, h - 105}
 	if(UpNeedsBackBtn()) then
@@ -167,7 +167,7 @@ local function createGui(panel)
 		listSize[2] = listSize[2] - 35
 	end
 	
-	g_List = ListView.create({10, 100}, listSize, panel)
+	g_List = ListView.create({10, 100}, listSize, panel, nil, nil, nil, true)
 	g_List.onClickHandler = onChannelClick
 	
 	for i, ch in ipairs(g_Channels) do
