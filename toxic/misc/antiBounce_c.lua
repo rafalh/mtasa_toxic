@@ -1,4 +1,5 @@
-function onVehCol(hitElement)
+-- See: http://bugs.mtatoxic.tk/view.php?id=23
+--[[function onVehCol(hitElement)
 	if(hitElement ~= nil) then
 		if(getElementType(hitElement) ~= 'object') then 
 			return 
@@ -21,4 +22,4 @@ function onVehCol(hitElement)
 	end
 end
 
-addEventHandler('onClientVehicleCollision', g_Root, onVehCol)
+addEventHandler('onClientVehicleCollision', g_Root, onVehCol)]]
