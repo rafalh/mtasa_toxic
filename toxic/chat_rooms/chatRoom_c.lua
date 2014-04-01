@@ -71,6 +71,7 @@ function ChatRoom.render()
 	local self = ChatRoom.visibleRoom
 	assert(self)
 	
+	-- Check if ESC has been pressed in MTA before 1.3.4 (no support for ESC in onClientKey)
 	if(isMainMenuActive()) then
 		self:closeInput()
 		return
@@ -160,10 +161,21 @@ function ChatRoom.create(info)
 	return self
 end
 
+function ChatRoom.onKey(btn, keyDown)
+	-- Note: this works in MTA 1.3.4 and above
+	if(btn ~= 'escape' or not keyDown) then return end
+	
+	if(ChatRoom.visibleRoom) then
+		ChatRoom.visibleRoom:closeInput()
+		cancelEvent()
+	end
+end
+
 ------------
 -- Events --
 ------------
 
 addEventHandler('onClientResourceStart', resourceRoot, function()
 	guiSetInputMode('no_binds_when_editing')
+	addEventHandler('onClientKey', root, ChatRoom.onKey)
 end)
