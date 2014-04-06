@@ -66,14 +66,24 @@ function sayAsPlayer(text, playerEl)
 		end
 	end
 	
-	local r, g, b
+	local clr
 	if(not player.is_console) then
-		r, g, b = getPlayerNametagColor(player.el)
+		local r, g, b = getPlayerNametagColor(player.el)
+		clr = ('#%02X%02X%02X'):format(r, g, b)
 	else
-		r, g, b = 255, 128, 255 -- console
+		clr = '#FF80FF' -- console
 	end
-	local msg = getPlayerName(player.el)..': #FFFF00'..text
-	outputChatBox(msg, g_Root, r, g, b, true)
+	
+	local name = player:getName(true)
+	local namePlain = player:getName(false)
+	local msg = name..': #FFFF00'..text
+	
+	for el, recipient in pairs(g_Players) do
+		local ignored = getElementData(recipient.el, 'ignored_players')
+		if(type(ignored) ~= 'table' or not ignored[namePlain]) then
+			outputMsg(recipient, clr, '%s', msg)
+		end
+	end
 	outputServerLog('TSAY: '..msg:gsub('#%x%x%x%x%x%x', ''))
 	
 	if(punishment) then

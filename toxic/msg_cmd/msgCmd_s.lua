@@ -44,11 +44,12 @@ local function McHandleCommand(ctx, ...)
 	end)
 	
 	-- Output message
-	local r, g, b
+	local clr
 	if(not ctx.player.is_console) then
-		r, g, b = getPlayerNametagColor(ctx.player.el)
+		local r, g, b = getPlayerNametagColor(ctx.player.el)
+		clr = ('#%02X%02X%02X'):format(r, g, b)
 	else -- console
-		r, g, b = 255, 128, 255
+		clr = '#FF80FF'
 	end
 	
 	-- Does command has sound attached?
@@ -69,10 +70,11 @@ local function McHandleCommand(ctx, ...)
 	end
 	
 	-- Send chat message and optionally sound to all players
+	local chatMsg = name..': '..'#FFFF00'..text
 	for el, recipient in pairs(g_Players) do
 		local ignored = getElementData(recipient.el, 'ignored_players')
 		if(type(ignored) ~= 'table' or not ignored[namePlain]) then
-			outputChatBox(name..': #FFFF00'..text, recipient.el, r, g, b, true)
+			outputMsg(recipient, clr, '%s', chatMsg)
 			
 			if(soundUrl and recipient.sync) then
 				RPC('McPlaySound', soundUrl, ctx.player.el):setClient(recipient):exec()

@@ -42,18 +42,19 @@ function ChatRoom:onPlayerMsg(player, msg)
 		end
 		
 		local str = chatPrefix..playerName..': #EBDDB2'..msg
-		local r, g, b 
+		local clr
 		if(getElementType(player) == 'player') then
-			r, g, b = getPlayerNametagColor(player)
+			local r, g, b = getPlayerNametagColor(player)
+			clr = ('#%02X%02X%02X'):format(r, g, b)
 		else
-			r, g, b = 255, 0, 255
+			clr = '#FF00FF'
 		end
 		--local foundSender = false
 		
 		for i, recipient in ipairs(recipients) do
 			local ignored = getElementData(recipient, 'ignored_players')
 			if(type(ignored) ~= 'table' or not ignored[playerNamePlain]) then
-				outputChatBox(str, recipient, r, g, b, true)
+				outputMsg(recipient, clr, '%s', str)
 			end
 			--if(player == recipient) then foundSender = true end
 		end
@@ -65,9 +66,12 @@ function ChatRoom:onPlayerMsg(player, msg)
 		end
 	end
 	
-	local rafalhRes = getResourceFromName('toxic')
+	--[[local rafalhRes = getResourceFromName('toxic')
 	if(rafalhRes and getResourceState(rafalhRes) == 'running') then
 		call(rafalhRes, 'parseCommand', msg, player, recipients, chatPrefix)
+	end]]
+	if(parseCommand) then
+		parseCommand(msg, player, recipients, chatPrefix)
 	end
 end
 
