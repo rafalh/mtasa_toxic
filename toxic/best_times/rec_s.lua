@@ -89,7 +89,8 @@ function RcStartRecording(room, map_id)
 	local prof = DbgPerf()
 	
 	for player, pdata in pairs(g_Players) do
-		if(pdata.room == room) then
+		if(pdata.room == room and pdata.sync) then
+			assert(not pdata.recording)
 			pdata.recording = true
 			pdata.cp_times = Settings.cp_recorder and room.isRace and {}
 		end
@@ -119,6 +120,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 	if(not improvedBestTime) then
 		if(pdata.recording) then
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_RECORDING_REQUEST), player, map_id)
+			pdata.recording = nil
 		end
 		return
 	end
@@ -142,6 +144,8 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			--Debug.info('Ghost trace won't be saved')
 			triggerClientInternalEvent(player, $(EV_CLIENT_STOP_RECORDING_REQUEST), player, map_id)
 		end
+		
+		pdata.recording = nil
 	end
 	
 	if(pdata.cp_times) then
@@ -186,7 +190,7 @@ function RcFinishRecordingPlayer(player, time, map_id, improvedBestTime)
 			end
 		end
 		
-		pdata.cp_times = false -- dont allow to use this cp list in next map
+		pdata.cp_times = nil -- dont allow to use this cp list in next map
 	end
 	prof:cp('RcFinishRecordingPlayer')
 end

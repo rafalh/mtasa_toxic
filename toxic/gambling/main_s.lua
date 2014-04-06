@@ -107,7 +107,7 @@ function GbCancelLottery()
 	for id, tickets in pairs(g_LotteryPlayers) do
 		AccountData.create(id):add('cash', tickets)
 		local player = Player.fromId(id)
-		if(player) then
+		if(player and player.sync) then
 			player:addNotify{icon = 'gambling/dices.png',
 				{"Lottery is cancelled! You get your money (%s) back.", formatMoney(tickets)}}
 		end
@@ -271,7 +271,9 @@ end
 
 local function GbBetsPlacedTimer()
 	for el, player in pairs(g_Players) do
-		player:addNotify{icon = 'gambling/dices.png', {"No More Bets."}}
+		if(player.sync) then
+			player:addNotify{icon = 'gambling/dices.png', {"No More Bets."}}
+		end
 	end
 	g_BetsTimer = false
 end
@@ -282,7 +284,9 @@ function GbStartBets()
 	if(bet_time > 0 and g_PlayersCount >= bet_min_players) then
 		g_BetsTimer = setTimer(GbBetsPlacedTimer, bet_time * 1000, 1)
 		for el, player in pairs(g_Players) do
-			player:addNotify{icon = 'gambling/dices.png', {"Place Your Bets!"}}
+			if(player.sync) then
+				player:addNotify{icon = 'gambling/dices.png', {"Place Your Bets!"}}
+			end
 		end
 	end
 end

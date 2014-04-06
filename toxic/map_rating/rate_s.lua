@@ -74,7 +74,7 @@ local function RtTimerProc(room)
 	
 	local pidList = {}
 	for player, pdata in pairs(g_Players) do
-		if(pdata.id) then
+		if(pdata.id and pdata.sync) then
 			table.insert(pidList, pdata.id)
 		end
 	end

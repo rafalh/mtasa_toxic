@@ -19,15 +19,37 @@ function RPC.__mt.__index:exec()
 		g_WaitingRpc[self.id] = self
 	end
 	if(SERVER) then
-		return triggerClientEvent(self.client, 'main.onRpc', resourceRoot, self.id, self.fn, unpack(self.args))
+		if(type(self.clients) ~= 'table') then
+			assert(isElement(self.clients))
+			self.clients = getElementsByType('player', self.clients)
+		elseif(self.clients.el) then
+			self.clients = {self.clients}
+		end
+		
+		local readyClients = {}
+		for i, client in ipairs(self.clients) do
+			local pl = type(client) == 'table' and client or Player.fromEl(client)
+			if(pl and pl.sync) then
+				table.insert(readyClients, pl.el)
+			end
+		end
+		
+		return triggerClientEvent(readyClients, 'main.onRpc', resourceRoot, self.id, self.fn, unpack(self.args))
 	else
 		return triggerServerEvent('main.onRpc', resourceRoot, self.id, self.fn, unpack(self.args))
 	end
 end
 
 if(SERVER) then
-	function RPC.__mt.__index:setClient(cl)
-		self.client = cl
+	function RPC.__mt.__index:setClient(clients)
+		self.clients = clients
+		if(type(clients) ~= 'table' and getElementType(clients) == 'player') then
+			local pl = Player.fromEl(clients)
+			if(not pl or not pl.sync) then
+				Debug.warn('Client is not ready in RPC:setClient')
+				Debug.printStackTrace(2, 2, 1)
+			end
+		end
 		return self
 	end
 	
@@ -42,7 +64,7 @@ function RPC.__mt.__index:init(fnName, ...)
 	self.cbArgs = {}
 	self.id = false
 	if(SERVER) then
-		self.client = root
+		self.clients = root
 	end
 end
 

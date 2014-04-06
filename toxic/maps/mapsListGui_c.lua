@@ -133,15 +133,19 @@ function MlstDisplay(title, btn_name, callback)
 	return gui.wnd
 end
 
-local function MlstOnMapStart(map_info)
-	if(not g_MapList or type(map_info) ~= 'table') then return end
+local function MlstOnMapStart(mapInfo)
+	if(not g_MapList or type(mapInfo) ~= 'table') then return end
 	
-	if(not g_MapList[map_info.resname]) then
-		g_MapList[map_info.resname] = { '', 0, 0 }
+	local resName, mapName = mapInfo.resname, mapInfo.name
+	local mapAuthor = mapInfo.author or ''
+	
+	if(g_MapList[resName]) then
+		g_MapList[resName][1] = mapName
+		g_MapList[resName][2] = mapAuthor
+		g_MapList[resName][3] = g_MapList[resName][3] + 1
+	else
+		g_MapList[resName] = {mapName, mapAuthor, 1, 0}
 	end
-	
-	g_MapList[map_info.resname][1] = map_info.name
-	g_MapList[map_info.resname][3] = g_MapList[map_info.resname][3] + 1
 	
 	for wnd, gui in pairs(g_GuiList) do
 		MlstUpdateList(gui)

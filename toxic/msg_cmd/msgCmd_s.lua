@@ -69,13 +69,12 @@ local function McHandleCommand(ctx, ...)
 	end
 	
 	-- Send chat message and optionally sound to all players
-	local recipients = getElementsByType('player')
-	for i, recipient in ipairs(recipients) do
-		local ignored = getElementData(recipient, 'ignored_players')
+	for el, recipient in pairs(g_Players) do
+		local ignored = getElementData(recipient.el, 'ignored_players')
 		if(type(ignored) ~= 'table' or not ignored[namePlain]) then
-			outputChatBox(name..': #FFFF00'..text, recipient, r, g, b, true)
+			outputChatBox(name..': #FFFF00'..text, recipient.el, r, g, b, true)
 			
-			if(soundUrl) then
+			if(soundUrl and recipient.sync) then
 				RPC('McPlaySound', soundUrl, ctx.player.el):setClient(recipient):exec()
 			end
 		end

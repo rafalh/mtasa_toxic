@@ -75,7 +75,9 @@ function MiSendMapInfo(playerOrRoom)
 		end
 		
 		-- Send personal Top and rating to owner
-		RPC('MiSetPersonalInfo', personalTop, personalRating):setClient(player):exec()
+		if(pdata and pdata.sync) then
+			RPC('MiSetPersonalInfo', personalTop, personalRating):setClient(player):exec()
+		end
 	end
 	
 	if(show) then

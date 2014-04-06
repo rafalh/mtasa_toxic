@@ -247,7 +247,7 @@ function BtPrintTimes(room, mapId)
 	BtPreloadPersonalTops(mapId, idList)
 	
 	for player, pdata in pairs(g_Players) do
-		if(pdata.room == room and pdata.id) then
+		if(pdata.room == room and pdata.id and pdata.sync) then
 			local personalTop = BtGetPersonalTop(mapId, pdata.id)
 			if(personalTop) then
 				local timeStr = formatTimePeriod(personalTop.time / 1000)
