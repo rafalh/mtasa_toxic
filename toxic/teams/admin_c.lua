@@ -24,6 +24,8 @@ local function updateRow(row, teamInfo)
 		if(r) then
 			guiGridListSetItemColor(g_GUI.teamsList, row, g_GUI.clrCol, r, g, b)
 		end
+	else
+		guiGridListSetItemText(g_GUI.teamsList, row, g_GUI.clrCol, '', false, false)
 	end
 	local lastUsageStr = ''
 	local now = getRealTime().timestamp
@@ -140,7 +142,7 @@ local function onEditAccepted()
 		end
 	elseif(g_GUI.clickedCol == g_GUI.clrCol) then
 		local r, g, b = getColorFromString(newText)
-		teamInfo.color = r and newText
+		teamInfo.color = r and newText or false
 	end
 	
 	guiGridListSetItemData(g_GUI.teamsList, g_GUI.clickedRow, g_GUI.nameCol, teamInfo, false, false)

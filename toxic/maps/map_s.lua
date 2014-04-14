@@ -111,11 +111,15 @@ function Map.__mt.__index:isForbidden(room)
 		
 		-- if it's not forced, let's check if there are other forced types
 		if(not forced) then
+			local forcedList = {}
 			for i, mapType in ipairs(g_MapTypes) do
 				local curForced = mapType.max_others_in_row and (mapType.others_in_row >= mapType.max_others_in_row)
 				if(curForced) then
-					return "You can vote only for %s map now!", mapType.name
+					table.insert(forcedList, mapType.name)
 				end
+			end
+			if(#forcedList > 0) then
+				return "Only %s map can be played now!", table.concat(forcedList, ', ')
 			end
 		end
 	end

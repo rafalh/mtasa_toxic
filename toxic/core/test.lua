@@ -4,14 +4,15 @@ local g_Map = {}
 local g_FailCount = 0
 local g_ExecutedCount = 0
 local g_Player
+local g_OutputStyle = {'#FFFFFF', '#FFFFFF'}
 
-local function outputMsg(msg)
+local function print(msg)
 	if(getElementType(g_Player) == 'console') then
 		outputServerLog('TEST: '..msg)
 	elseif(g_ServerSide) then
-		outputChatBox(msg, g_Player, 255, 255, 255)
+		outputMsg(g_Player, g_OutputStyle, '%s', msg)
 	else
-		outputChatBox(msg, 255, 255, 255)
+		outputMsg(g_OutputStyle, '%s', msg)
 	end
 end
 
@@ -25,7 +26,7 @@ function check(cond, descr, offset)
 	
 	g_FailCount = g_FailCount + 1
 	local trace = Debug.getStackTrace(1, (offset or 0) + 1)
-	outputMsg('Test failed - '..(descr or tostring(cond))..' in '..trace[1])
+	print('Test failed - '..(descr or tostring(cond))..' in '..trace[1])
 end
 
 function checkEq(val, validVal, descr)
@@ -73,12 +74,12 @@ function run(name, player)
 		runInternal(name)
 	else
 		for name, f in pairs(g_Map) do
-			outputMsg('Starting test \''..name..'\'')
+			print('Starting test \''..name..'\'')
 			runInternal(name)
 		end
 	end
 	
-	outputMsg(g_ExecutedCount..' tests executed - '..g_FailCount..' tests failed')
+	print(g_ExecutedCount..' tests executed - '..g_FailCount..' tests failed')
 end
 
 if(g_ServerSide) then

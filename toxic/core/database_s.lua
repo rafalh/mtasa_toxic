@@ -25,15 +25,36 @@ function DbBlob(data)
 	return 'X\''..table.concat(tbl)..'\''
 end
 
+function Database.fixNullsInQuery(query, args)
+	local srcIdx, dstIdx = 1, 1
+	query = query:gsub('%?%??', function(m)
+		if(not args[srcIdx]) then
+			srcIdx = srcIdx + 1
+			return 'NULL'
+		else
+			args[dstIdx] = args[srcIdx]
+			srcIdx = srcIdx + 1
+			dstIdx = dstIdx + 1
+		end
+	end)
+	return query
+end
+
 function Database.query(query, ...)
 	if(not g_Driver) then return false end
 	local prof = DbgPerf(100)
+	
+	-- See MTA bug #8174
+	local args = {...}
+	query = Database.fixNullsInQuery(query, args)
+	
 	local result
 	if(query:sub(1, 6):upper() == 'SELECT' or $ALWAYS_WAIT) then
-		result = g_Driver:query(query, ...)
+		result = g_Driver:query(query, unpack(args))
 	else
-		result = g_Driver:exec(query, ...)
+		result = g_Driver:exec(query, unpack(args))
 	end
+	
 	prof:cp('SQL query %s', query:sub(1, 96))
 	return result
 end
@@ -165,6 +186,11 @@ function Database.Table.__mt.__concat(a, b)
 	else
 		return tostring(a)..DbPrefix..b.name
 	end
+end
+
+function Database.Table.__mt.__index:destroy()
+	Database.tblMap[self.name] = nil
+	table.removeValue(Database.tblList, self)
 end
 
 setmetatable(Database.Table, {__call = Database.Table.create})
@@ -818,3 +844,33 @@ Settings.register
 	type = 'INTEGER',
 	default = 0,
 }
+
+#if(TEST) then
+	Test.register('database', function()
+		local testTbl = Database.Table{
+			name = '_test',
+			{'id', 'INT UNSIGNED', pk = true},
+			{'name', 'VARCHAR(255)'},
+			{'nullable', 'VARCHAR(255)', null = true},
+			{'test_idx', index = {'name'}},
+		}
+		Test.check(g_Driver:createTable(testTbl))
+		
+		Test.check(Database.query('INSERT INTO '..testTbl..' (name, nullable) VALUES(?, ?)', 'Test row', false))
+		local id = Database.getLastInsertID()
+		Test.checkGt(id, 0)
+		local data = Database.querySingle('SELECT * FROM '..testTbl..' WHERE id=?', id)
+		--Test.checkTblEq(data, {id = id, name = 'Test row', nullable = '0'}) -- See bug #8174 - hackfixed in Database.query
+		
+		Test.check(Database.query('UPDATE '..testTbl..' SET nullable=?', nil))
+		local data = Database.querySingle('SELECT * FROM '..testTbl..' WHERE id=?', id)
+		--Test.checkTblEq(data, {id = id, name = 'Test row', nullable = ''}) -- See bug #8174 - hackfixed in Database.query
+		
+		Test.check(Database.query('UPDATE '..testTbl..' SET nullable=NULL'))
+		local data = Database.querySingle('SELECT * FROM '..testTbl..' WHERE id=?', id)
+		Test.checkTblEq(data, {id = id, name = 'Test row', nullable = false})
+		
+		Test.check(Database.query('DROP TABLE '..testTbl))
+		testTbl:destroy()
+	end)
+#end

@@ -9,8 +9,8 @@ local function IvTimerProc(player)
 	local pdata = Player.fromEl(player)
 	
 	local invitedby = pdata.accountData:get('invitedby')
-	if(invitedby > 0) then
-		pdata.accountData:set('invitedby', 0)
+	if(invitedby and invitedby > 0) then
+		pdata.accountData:set('invitedby', false)
 		AccountData.create(invitedby):add('cash', INVITE_BONUS)
 		
 		local invitedbyPlayer = Player.fromId(invitedby)

@@ -256,7 +256,7 @@ RPC.allow('Teams.updateAllPlayers')
 function updateItem(teamInfo)
 	assert(teamInfo and teamInfo.name and (teamInfo.tag or teamInfo.aclGroup))
 	teamInfo.lastUsage = getRealTime().timestamp
-	teamInfo.owner = touint(teamInfo.owner)
+	teamInfo.owner = touint(teamInfo.owner, false)
 	teamInfo.priority = nil
 	
 	if(teamInfo.color and not getColorFromString(teamInfo.color)) then
@@ -275,21 +275,28 @@ function updateItem(teamInfo)
 		end
 		g_TeamFromName[teamCopy.name] = teamCopy
 		teamInfo = teamCopy
-		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=?, owner=? WHERE id=?',
-				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, teamInfo.id)) then
+		
+		if(not DbQuery('UPDATE '..TeamsTable..' SET name=?, tag=?, aclGroup=?, color=?, owner=?, lastUsage=? WHERE id=?',
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, teamInfo.lastUsage, teamInfo.id)) then
 			return false, 'Failed to modify team'
+		end
+		
+		if(teamInfo.el) then
+			setTeamName(teamInfo.el, teamInfo.name)
+			local r, g, b = getColorFromString(teamInfo.color)
+			setTeamColor(teamInfo.el, r, g, b)
 		end
 	else
 		-- Check only if this is not empty item
 		if(teamInfo.name ~= '' or teamInfo.tag or teamInfo.aclGroup) then
-			local rows = DbQuery('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
-			if(rows and rows[1]) then
+			local row = DbQuerySingle('SELECT id FROM '..TeamsTable..' WHERE name=? AND tag=? AND aclGroup=?', teamInfo.name, teamInfo.tag, teamInfo.aclGroup)
+			if(row) then
 				return false, 'Such team already exists'
 			end
 		end
 		
-		if(not DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, owner, priority) VALUES(?, ?, ?, ?, ?, ?)',
-				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, #g_List + 1)) then
+		if(not DbQuery('INSERT INTO '..TeamsTable..' (name, tag, aclGroup, color, owner, priority, lastUsage) VALUES(?, ?, ?, ?, ?, ?, ?)',
+				teamInfo.name, teamInfo.tag, teamInfo.aclGroup, teamInfo.color, teamInfo.owner, #g_List + 1, teamInfo.lastUsage)) then
 			return false, 'Failed to insert team to database'
 		end
 		teamInfo.id = Database.getLastInsertID()

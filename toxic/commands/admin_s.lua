@@ -163,6 +163,7 @@ CmdMgr.register{
 CmdMgr.register{
 	name = 'killplayer',
 	desc = "Kills specified player",
+	aliases = {'killp'},
 	accessRight = AccessRight('command.slap', true),
 	args = {
 		{'player', type = 'player'},
@@ -460,6 +461,7 @@ CmdMgr.register{
 			for i, data in ipairs(rows) do
 				local tbl = {}
 				for k, v in pairs(data) do
+					if(not v) then v = 'NULL' end
 					table.insert(tbl, tostring(k)..'='..tostring(v))
 				end
 				local buf = i..'. '..table.concat(tbl, ', ')
