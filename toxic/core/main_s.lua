@@ -216,7 +216,6 @@ local function onPlayerChat(msg, msgType)
 		if(msgType ~= 1) then
 			outputChatBoxLong(prefix..playerName..': #EBDDB2'..msg, recipient, r, g, b, true)
 		else
-			Debug.info('me!')
 			outputChatBoxLong(msg, recipient, 255, 0, 255, false)
 		end
 		if(Settings.msgs_above_players) then

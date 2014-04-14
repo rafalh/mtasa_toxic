@@ -132,7 +132,7 @@ function outputChatBoxLong(msg, player, ...)
 	local pdata = Player.fromEl(player)
 	if(pdata and pdata.sync and msg:len() > 128) then -- fix long message being ignored
 		RPC('outputChatBox', msg, ...):setClient(player):exec()
-		Debug.info('outputChatBoxLong - long msg')
+		--Debug.info('outputChatBoxLong - long msg')
 		return true
 	else
 		return outputChatBox(msg, player, ...)
