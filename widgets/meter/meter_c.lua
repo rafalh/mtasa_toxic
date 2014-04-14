@@ -80,9 +80,23 @@ end
 
 local function renderMeter()
 	local veh = getCameraTarget()
-	if(not veh) then
+	local localVeh = getPedOccupiedVehicle(localPlayer)
+	if(not veh and localVeh) then
+		-- Check for trials camera
+		local cx, cy, cz, tx, ty, tz = getCameraMatrix()
+		local camPos = Vector3(cx, cy, cz)
+		local camDir = Vector3(tx - cx, ty - cy, tz - cz)
+		local vehPos = Vector3(getElementPosition(localVeh))
+		if(vehPos:distFromSeg(camPos, camPos + 100*camDir) < 0.1) then
+			veh = localVeh
+			--Debug.info('TRIALS camera!')
+		else
+			return
+		end
+	elseif(not veh) then
 		return
 	end
+	
 	if(getElementType(veh) == 'player') then
 		veh = getPedOccupiedVehicle(veh)
 	end
