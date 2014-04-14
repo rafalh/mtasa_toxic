@@ -154,7 +154,7 @@ ShpRegisterItem{
 	id = 'thunder',
 	name = "Thunder",
 	cost = 200000,
-	descr = "Attack near player for few seconds",
+	descr = "Attack nearest player with a thunder.",
 	img = 'shop/img/thunder.png',
 	dataToCount = function(val) return val > 0 and val end,
 	getAllowedAct = function(val) return true, true, not isPlayerDead(g_Me) end -- buy, sell, use

@@ -127,6 +127,21 @@
 	<msg id="VIP rank (1 week)">Ranga VIPa (1 tydzień)</msg>
 	<msg id="Spike Strip">Kolczatka</msg>
 	
+	<msg id="Set message, which is displayed when you join.">Ustaw wiadomość, która będzie wyświetlana podczas dołączenia do serwera.</msg>
+	<msg id="Repair your vehicle when you want.">Napraw swój pojazd kiedy chcesz.</msg>
+	<msg id="Flips your vehicle.">Obróć swój samochód.</msg>
+	<msg id="Make self-destruction and kill all players, which are near to your vehicle!">Dokonaj samozagłady i zniszcz wszystkich graczy w pobliżu!</msg>
+	<msg id="Place a mine under your car!">Podłóż minę pod swoim pojazdem!</msg>
+	<msg id="Spill oil over road!">Rozlej olej na drodze!</msg>
+	<msg id="Are you angry with whole world? Get drunk!">Jesteś wkurzony na cały świat. Zrelaksuj się przy piwku.</msg>
+	<msg id="Make your vehicle invisible...">Uczyń swój samochód niewidzialnym...</msg>
+	<msg id="Make your vehicle indestructible for 60 seconds!">Uczyń swój pojazd niezniszczalnym przez 60 sekund.</msg>
+	<msg id="Attack nearest player with a thunder.">Uderz piorunem najbliższego gracza.</msg>
+	<msg id="Smoke behind your vehicle for 15 seconds.">Dym za pojazdem przez 15 sekund.</msg>
+	<msg id="Punctur tires of your enemies vehicles.">Rozstaw kolczatkę i przebij opony wrogich pojazdów.</msg>
+	<msg id="Add your favourite map to queue.">Dodaj swoją ulubioną mapę do kolejki.</msg>
+	<msg id="VIP rank activation for 1 week.">Aktywacja rangi VIP na 1 tydzień.</msg>
+	
 	<msg id="Translator">Tłumacz</msg>
 	<msg id="From:">Z:</msg>
 	<msg id="To:">Na:</msg>
