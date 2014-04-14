@@ -440,31 +440,35 @@ function getMapListRPC()
 	local prof = DbgPerf()
 	local prof2 = DbgPerf(20)
 	
-	local mapsList = {}
+	local mapList = {}
 	local maps = getMapsList()
-	prof2:cp('onMapListReq 1')
+	prof2:cp('getMapListRPC 1')
 	for i, map in maps:ipairs() do
 		local mapResName = (map.res and getResourceName(map.res)) or map.path
 		local mapName = map:getName()
 		local mapAuthor = map:getInfo('author') or ''
-		mapsList[mapResName] = {mapName, mapAuthor, 0, 0}
+		mapList[mapResName] = {mapName, mapAuthor, 0, 0}
 	end
-	prof2:cp('onMapListReq 2')
-	local rows = DbQuery('SELECT name, played, rates, rates_count FROM '..MapsTable)
-	prof2:cp('onMapListReq 3')
+	prof2:cp('getMapListRPC 2')
+	local rows = DbQuery('SELECT name, played, rates, rates_count, removed FROM '..MapsTable)
+	prof2:cp('getMapListRPC 3')
 	for i, data in ipairs(rows) do
-		local mapInfo = mapsList[data.name]
+		local mapInfo = mapList[data.name]
 		if(mapInfo) then
-			mapInfo[3] = data.played
-			if(data.rates_count > 0) then
-				mapInfo[4] = data.rates / data.rates_count
+			if(data.removed) then
+				-- Don't return removed maps
+				mapList[data.name] = nil
+			else
+				mapInfo[3] = data.played
+				if(data.rates_count > 0) then
+					mapInfo[4] = data.rates / data.rates_count
+				end
 			end
-			assert(mapInfo[4])
 		end
 	end
-	prof2:cp('onMapListReq 4')
-	prof:cp('onMapListReq')
-	return mapsList
+	prof2:cp('getMapListRPC 4')
+	prof:cp('getMapListRPC')
+	return mapList
 end
 RPC.allow('getMapListRPC')
 
