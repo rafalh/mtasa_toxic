@@ -112,9 +112,14 @@ CmdMgr.register{
 			return
 		end
 		
-		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
-		if(player:mute(sec, reason)) then
-			outputMsg(g_Root, Styles.red, "%s has been muted by %s (%u seconds)!", player:getName(true), ctx.player:getName(true), sec)
+		if(reason:match('^%d')) then
+			privMsg(ctx.player, "Mute reason cannot begin with a digit!")
+			return
+		end
+		
+		local descr = 'Muted by '..ctx.player:getAccountName()..': '..reason
+		if(player:mute(sec, descr)) then
+			outputMsg(g_Root, Styles.red, "%s has been muted by %s for %u seconds! Reason: %s.", player:getName(true), ctx.player:getName(true), sec, reason)
 		end
 	end
 }
@@ -128,9 +133,14 @@ CmdMgr.register{
 		{'reason', type = 'str'},
 	},
 	func = function(ctx, player, reason, sec)
-		local reason = 'Muted by '..ctx.player:getAccountName()..': '..reason
-		if(player:mute(0, reason)) then
-			outputMsg(g_Root, Styles.red, "%s has been permanently muted by %s!", player:getName(true), ctx.player:getName(true))
+		if(reason:match('^%d')) then
+			privMsg(ctx.player, "Mute reason cannot begin with a digit!")
+			return
+		end
+		
+		local descr = 'Muted by '..ctx.player:getAccountName()..': '..reason
+		if(player:mute(0, descr)) then
+			outputMsg(g_Root, Styles.red, "%s has been permanently muted by %s! Reason: %s.", player:getName(true), ctx.player:getName(true), reason)
 		end
 	end
 }
