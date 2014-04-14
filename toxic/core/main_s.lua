@@ -214,9 +214,10 @@ local function onPlayerChat(msg, msgType)
 	local x, y, z = getElementPosition(player.el)
 	for i, recipient in ipairs(recipients) do
 		if(msgType ~= 1) then
-			outputChatBox(prefix..playerName..': #EBDDB2'..msg, recipient, r, g, b, true)
+			outputChatBoxLong(prefix..playerName..': #EBDDB2'..msg, recipient, r, g, b, true)
 		else
-			outputChatBox(msg, recipient, 255, 0, 255, false)
+			Debug.info('me!')
+			outputChatBoxLong(msg, recipient, 255, 0, 255, false)
 		end
 		if(Settings.msgs_above_players) then
 			local x2, y2, z2 = getElementPosition(recipient)

@@ -128,6 +128,17 @@ local function formatMsg(style, onlyCodes, fmt, ...)
 	return ret, r, g, b
 end
 
+function outputChatBoxLong(msg, player, ...)
+	local pdata = Player.fromEl(player)
+	if(pdata and pdata.sync and msg:len() > 128) then -- fix long message being ignored
+		RPC('outputChatBox', msg, ...):setClient(player):exec()
+		Debug.info('outputChatBoxLong - long msg')
+		return true
+	else
+		return outputChatBox(msg, player, ...)
+	end
+end
+
 function outputMsg(visibleTo, style, fmt, ...)
 	if(type(visibleTo) == 'table') then
 		visibleTo = visibleTo.el
@@ -171,11 +182,6 @@ function outputMsg(visibleTo, style, fmt, ...)
 			localeCache[locale] = {msg, r, g, b}
 		end
 		
-		local pdata = Player.fromEl(player)
-		if(pdata and pdata.sync and msg:len() > 128) then -- fix long message being ignored
-			RPC('outputChatBox', msg, r, g, b, true):setClient(player):exec()
-		else
-			outputChatBox(msg, player, r, g, b, true)
-		end
+		outputChatBoxLong(msg, player, r, g, b, true)
 	end
 end
