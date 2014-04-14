@@ -25,7 +25,7 @@ function openWarnPlayerWnd(player)
 	if(g_GUI) then return end
 	
 	g_GUI = GUI.create('warnPlayer')
-	guiSetText(g_GUI.name, getPlayerName(player))
+	guiSetText(g_GUI.name, getPlayerName(player):gsub('#%x%x%x%x%x%x', ''))
 	g_GUI.player = player
 	
 	addEventHandler('onClientGUIClick', g_GUI.ok, acceptWarnPlayerWnd, false)
@@ -59,7 +59,7 @@ function openWarningsWnd(player, warns)
 	if(g_GUI) then return end
 	
 	g_GUI = GUI.create('warningsList')
-	guiSetText(g_GUI.name, getPlayerName(player))
+	guiSetText(g_GUI.name, getPlayerName(player):gsub('#%x%x%x%x%x%x', ''))
 	if(Settings.max_warns > 0) then
 		guiSetText(g_GUI.count, ('%u/%u'):format(#warns, Settings.max_warns))
 	else
