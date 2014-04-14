@@ -46,7 +46,7 @@
     <msg id="none">brak</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Nie można znaleźć mapy &quot;%s&quot;!</msg>
     <msg id="Supported types: %s.">Obsługiwane typy: %s.</msg>
-    <msg id="%s has been muted by %s for %u seconds! Reason: %s.">%s został uciszony przez %s na %u sekund! Przyczyna: %s.</msg>
+    <msg id="%s has been muted by %s for %u seconds! Reason: %s.">%s został uciszony przez %s na %u sekund! Powód: %s.</msg>
     <msg id="%s has been muted by Script!">%s został uciszony automatycznie!</msg>
     <msg id="%s has been unmuted by Script!">%s odzyskał głos automatycznie!</msg>
 	<msg id="%s has been unmuted by %s!">%s odzyskał głos po interwencji %s!</msg>

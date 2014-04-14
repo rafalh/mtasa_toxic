@@ -18,6 +18,7 @@ Styles = {
 	gambling = {'#FFC000', '#FFE080'},
 	info = {'#FFC000', '#FFFFFF'},
 	pm = {'#FF6464', '#EEEEEE'},
+	pmSent = {'#D05050', '#CCCCCC'},
 }
 
 BlobsTable = Database.Table{
@@ -79,17 +80,20 @@ local function onPlayerJoin()
 	end
 end
 
-local function onPlayerPMRequest(msg, recipient)
-	if(isPlayerMuted(client)) then
-		outputMsg(client, Styles.red, "pm: You are muted")
+local function onPlayerPMRequest(msg, recipientEl)
+	local sender = Player.fromEl(client)
+	local recipient = Player.fromEl(recipientEl)
+	if(not sender or not recipient) then return end
+	
+	if(isPlayerMuted(sender.el)) then
+		outputMsg(sender, Styles.red, "pm: You are muted")
 	else
-		local senderName = getPlayerName(client):gsub('#%x%x%x%x%x%x', '')
-		local recipientName = getPlayerName(recipient):gsub('#%x%x%x%x%x%x', '')
-		local ignored = getElementData(recipient, 'ignored_players')
-		if(type(ignored) ~= 'table' or not ignored[senderName]) then
-			outputMsg(client, Styles.pm, "You have sent PM to %s: %s", recipientName, msg)
+		local senderName = sender:getName(true)
+		local recipientName = recipient:getName(true)
+		if(not recipient:isPlayerIgnored(sender)) then
+			outputMsg(sender, Styles.pmSent, "You have sent PM to %s: %s", recipientName, msg)
 			outputMsg(recipient, Styles.pm, "PM from %s: %s", senderName, msg)
-			triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_PM), client, msg)
+			triggerClientInternalEvent(recipient.el, $(EV_CLIENT_PLAYER_PM), client, msg)
 		else
 			outputMsg(client, Styles.red, "pm: You are being ignored by %s", recipientName)
 		end

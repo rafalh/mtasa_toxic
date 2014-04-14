@@ -88,6 +88,13 @@ function Player.__mt.__index:isAlive()
 	return (state == 'alive')
 end
 
+function Player.__mt.__index:isPlayerIgnored(anotherPlayer)
+	local ignored = getElementData(self.el, 'ignored_players')
+	if(not ignored) then return false end
+	
+	return ignored[anotherPlayer:getName()] and true
+end
+
 function Player.__mt.__index:disconnectFromAccount()
 	local now = getRealTime().timestamp
 	local timeSpent = now - self.loginTimestamp
