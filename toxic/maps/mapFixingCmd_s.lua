@@ -13,9 +13,10 @@ CmdMgr.register{
 	accessRight = AccessRight('fixmapscripts'),
 	args = {
 		{'mapName', type = 'str', defVal = false},
+		{'flags', type = 'str', defVal = false},
 	},
-	func = function(ctx, mapName)
-		if(mapName == 'all') then
+	func = function(ctx, mapName, flags)
+		if(mapName == 'all' or mapName == '*') then
 			if(g_FixMapScriptsWorker) then return end
 			
 			local maps = getMapsList()
@@ -34,8 +35,9 @@ CmdMgr.register{
 			g_FixMapScriptsWorker:start()
 		else
 			local room = ctx.player.room
+			local force = (flags == 'f')
 			local map = mapName and findMap(mapName) or getCurrentMap(room)
-			if(map and MapPatcher.processMap(map)) then
+			if(map and MapPatcher.processMap(map, force)) then
 				privMsg(ctx.player, "Fixed map scripts.")
 			else
 				privMsg(ctx.player, "Nothing to fix...")

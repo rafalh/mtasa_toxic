@@ -1,5 +1,5 @@
 MapPatcher = {}
-MapPatcher.seq = 1
+MapPatcher.seq = 3
 
 MapsTable:addColumns{
 	{'patcherSeq', 'SMALLINT', default = 0},
@@ -12,71 +12,43 @@ MapsTable:addColumns{
 local MusicPatch = {}
 
 local g_MusicPattern =
-	'function%s+startMusic%(%)%s+'..
-		'setRadioChannel%(0%)%s+'..
-		'song%s+=%s+playSound%("([^"]+)",true%)%s+'..
+	'function%s+[%w_]+%(%)%s*'..
+		'setRadioChannel%(0%)%s*'..
+		'song%s+=%s+playSound%("([^"]+)",true%)%s*'..
 		'(.*)'..
 	'end%s+'..
-	'function%s+makeRadioStayOff%(%)%s+'..
-		'setRadioChannel%(0%)%s+'..
-		'cancelEvent%(%)%s+'..
+	'function%s+[%w_]+%(%)%s*'..
+		'setRadioChannel%(0%)%s*'..
+		'cancelEvent%(%)%s*'..
 	'end%s+'..
-	'function%s+toggleSong%(%)%s+'..
+	'function%s+[%w_]+%(%)%s*'..
 		'if%s+not%s+songOff%s+then%s+'..
-			'setSoundVolume%(song,0%)%s+'..
+			'setSoundVolume%(song,0%)%s*'..
 			'songOff%s+=%s+true%s+'..
-			'removeEventHandler%("onClientPlayerRadioSwitch",getRootElement%(%),makeRadioStayOff%)%s+'..
+			'removeEventHandler%("onClientPlayerRadioSwitch",%s*getRootElement%(%),%s*[%w_]+%)%s*'..
 		'else%s+'..
-			'setSoundVolume%(song,1%)%s+'..
+			'setSoundVolume%(song,1%)%s*'..
 			'songOff%s+=%s+false%s+'..
-			'setRadioChannel%(0%)%s+'..
-			'addEventHandler%("onClientPlayerRadioSwitch",getRootElement%(%),makeRadioStayOff%)%s+'..
+			'setRadioChannel%(0%)%s*'..
+			'addEventHandler%("onClientPlayerRadioSwitch",%s*getRootElement%(%),%s*[%w_]+%)%s*'..
 		'end%s+'..
 	'end%s+'..
-	'addEventHandler%("onClientResourceStart",getResourceRootElement%(getThisResource%(%)%),startMusic%)%s+'..
-	'addEventHandler%("onClientPlayerRadioSwitch",getRootElement%(%),makeRadioStayOff%)%s+'..
-	'addEventHandler%("onClientPlayerVehicleEnter",getRootElement%(%),makeRadioStayOff%)%s+'..
-	'addCommandHandler%("[^"]+",toggleSong%)%s+'..
-	'bindKey%("[^"]+","down","[^"]+"%)'
+	'addEventHandler%(%s*"onClientResourceStart",%s*getResourceRootElement%(getThisResource%(%)%),[%w_]+%)%s*'..
+	'addEventHandler%(%s*"onClientPlayerRadioSwitch",%s*getRootElement%(%),%s*[%w_]+%)%s*'..
+	'addEventHandler%(%s*"onClientPlayerVehicleEnter",%s*getRootElement%(%),%s*[%w_]+%)%s*'..
+	'addCommandHandler%(%s*"[^"]+",%s*[%w_]+%)%s*'..
+	'bindKey%(%s*"[^"]+",%s*"down",%s*"[^"]+"%)'
 
 local g_MusicPattern2 =
 	'setRadioChannel%(0%)%s+'..
 	'song%s*=%s*playSound%("([^"]+)",%s*true%)%s+'..
-	'bindKey%("[^\"]+",%s*"down",%s+'..
-		'function%s*%(%)%s+'..
-			'setSoundPaused%(song,%s*not%s*isSoundPaused%(song%)%)%s+'..
-		'end%s+'..
+	'bindKey%("[^\"]+",%s*"down",%s*'..
+		'function%s*%(%)%s*'..
+			'setSoundPaused%(song,%s*not%s+isSoundPaused%(song%)%)%s*'..
+		'end%s*'..
 	'%)'
 
 local g_MusicPattern3 =
-	'function%s+mukkestart%(%)%s+'..
-		'setRadioChannel%(0%)%s+'..
-		'song%s+=%s+playSound%("([^"]+)",true%)%s+'..
-		'(.*)'..
-	'end%s+'..
-	'function%s+turnradiooff%(%)%s+'..
-		'setRadioChannel%(0%)%s+'..
-		'cancelEvent%(%)%s+'..
-	'end%s+'..
-	'function%s+toggleSong%(%)%s+'..
-		'if%s+not%s+songOff%s+then%s+'..
-			'setSoundVolume%(song,0%)%s+'..
-			'songOff%s+=%s+true%s+'..
-			'removeEventHandler%("onClientPlayerRadioSwitch",getRootElement%(%),turnradiooff%)%s+'..
-		'else%s+'..
-			'setSoundVolume%(song,1%)%s+'..
-			'songOff%s+=%s+false%s+'..
-			'setRadioChannel%(0%)%s+'..
-			'addEventHandler%("onClientPlayerRadioSwitch",getRootElement%(%),turnradiooff%)%s+'..
-		'end%s+'..
-	'end%s+'..
-	'addEventHandler%("onClientResourceStart",getResourceRootElement%(getThisResource%(%)%),mukkestart%)%s+'..
-	'addEventHandler%("onClientPlayerRadioSwitch",getRootElement%(%),turnradiooff%)%s+'..
-	'addEventHandler%("onClientPlayerVehicleEnter",getRootElement%(%),turnradiooff%)%s+'..
-	'addCommandHandler%("[^"]+",toggleSong%)%s+'..
-	'bindKey%("[^"]+","down","[^"]+"%)'
-
-local g_MusicPattern4 =
 	'local%s*MUSIC_PATH%s*=%s*"([^"]+)"%s*'..
 	'local%s*g_Root%s*=%s*getRootElement%s*%(%)%s*'..
 	'local%s*g_ResRoot%s*=%s*getResourceRootElement%s*%(%)%s*'..
@@ -118,10 +90,16 @@ local g_MusicPattern4 =
 	'addCommandHandler%s*%(%s*"music",%s*toggleMusic%s*%)%s*'..
 	'bindKey%s*%(%s*"m",%s*"down",%s*toggleMusic%s*%)'
 
+local g_MusicPattern4 =
+	'function%s+%w+%(%)%s+'..
+	'local sound%s*=%s*playSound%("([^"]+)",%s*true%)%s+'..
+	'end%s+'..
+	'addEventHandler%s*%(%s*"onClientResourceStart",%s*getResourceRootElement%(getThisResource%(%)%),%s*%w+%s*%)%s*'
+
 function MusicPatch.preprocess(ctx)
 	for path, node in pairs(ctx.files) do
 		local ext = path:match('%.(%w+)$')
-		if(ext == 'mp3') then
+		if(ext == 'mp3' or ext == 'ogg') then
 			return true
 		end
 	end
@@ -349,11 +327,11 @@ end
 
 local g_Patches = {MusicPatch, PumaMarkers2Patch, CloudsPatch, CsmPatch}
 
-function MapPatcher.processMap(map)
+function MapPatcher.processMap(map, force)
 	-- Check if map needs to be checked
 	local rows = DbQuery('SELECT patcherSeq FROM '..MapsTable..' WHERE map=?', map:getId())
 	local data = rows and rows[1]
-	if(data and data.patcherSeq >= MapPatcher.seq) then
+	if(data and data.patcherSeq >= MapPatcher.seq and not force) then
 		-- Map has been patched already
 		--Debug.info('Map has been patched already', 3)
 		return false
@@ -424,7 +402,11 @@ function MapPatcher.processMap(map)
 	ctx.metaFile:close()
 	
 	-- Set map as patched
+#if (true) then
 	DbQuery('UPDATE '..MapsTable..' SET patcherSeq=? WHERE map=?', MapPatcher.seq, map:getId())
+#else
+	Debug.warn('patcherSeq has not been updated!')
+#end
 	
 	return changed
 end

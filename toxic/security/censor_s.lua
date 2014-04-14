@@ -141,9 +141,11 @@ function CsPunish(player, punishment)
 end
 
 local function CsLoadWords()
+	-- Open censor configuration file
 	local node = xmlLoadFile('conf/censor.xml')
 	if(not node) then return false end
 	
+	-- Load all words
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local attr = xmlNodeGetAttributes(subnode)
 		local word = xmlNodeGetValue(subnode)
@@ -159,7 +161,15 @@ local function CsLoadWords()
 		table.insert(g_ForbWords, item)
 	end
 	
+	-- Unload file
 	xmlUnloadFile(node)
+	
+	-- Sort patterns from longest to shortest to fix problems with one pattern containing another
+	table.sort(g_ForbWords, function(a, b)
+		return a.pattern:len() > b.pattern:len()
+	end)
+	assert(g_ForbWords[1].pattern:len() >= g_ForbWords[#g_ForbWords-1].pattern:len())
+	
 	return true
 end
 

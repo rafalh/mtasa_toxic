@@ -66,7 +66,7 @@ local function onTranslateClick ()
 		local from = from_i > 0 and g_Langs[from_i] -- auto is supported
 		local to_i = guiComboBoxGetSelected ( g_ToLang )
 		local to = to_i > -1 and g_Langs[to_i + 1]
-		assert ( to )
+		assert ( to, tostring(to_i)..' '..(#g_Langs) )
 		local say = ( source == g_SayBtn )
 		
 		guiSetEnabled ( g_TranslateBtn, false )
