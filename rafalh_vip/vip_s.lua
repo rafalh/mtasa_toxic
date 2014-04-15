@@ -37,6 +37,41 @@ local function VipAutopilotFunc(player)
 	setTimer(setControlState, 50, 1, player, "accelerate", pdata.autopilot)
 end
 
+local g_PimpableVehicles
+local function VipPimpVehicle(veh)
+	if(not g_PimpableVehicles) then
+		local tmp = {
+			602, 496, 401, 518, 527, 589, 419, 533, 526, 474,
+			545, 517, 410, 600, 436, 580, 439, 549, 491,
+			445, 605, 507, 585, 587, 466, 592, 546, 551, 516,
+			467, 426, 547, 405, 409, 550, 566, 540, 421, 529,
+			536, 575, 534, 567, 535, 576, 412,
+			402, 542, 603, 475,
+			444, 556, 557, 495,
+			429, 541, 415, 480, 562, 565, 434,
+			411, 559, 561, 560, 506, 451, 558, 555, 477
+		}
+		g_PimpableVehicles = {}
+		for i, id in ipairs(tmp) do
+			g_PimpableVehicles[id] = true
+		end
+	end
+	
+	local model = getElementModel(veh)
+	if(not g_PimpableVehicles[model])then return end
+	
+	-- outputDebugString('Pimp vehicle!', 3)
+	for slot = 0, 16 do
+		if(slot ~= 11 and slot ~= 9 and slot ~= 8) then -- 11-Unknown, 9-Hydraulics, 8-Nitro
+			local upgrades = getVehicleCompatibleUpgrades(veh, slot)
+			if(#upgrades > 0) then
+				local upg = upgrades[math.random(#upgrades)]
+				addVehicleUpgrade(veh, upg)
+			end
+		end	
+	end
+end
+
 local function VipUpdateVehicle(player, veh)
 	local pdata = g_Players[player]
 	local settings = pdata and pdata.settings
@@ -70,6 +105,10 @@ local function VipUpdateVehicle(player, veh)
 			bindKey(player, "accelerate", "up", VipAutopilotFunc)
 		else
 			unbindKey(player, "accelerate", "up", VipAutopilotFunc)
+		end
+		
+		if(settings.autopimp) then
+			VipPimpVehicle(veh)
 		end
 	end
 	

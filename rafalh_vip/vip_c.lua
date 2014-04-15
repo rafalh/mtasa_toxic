@@ -19,6 +19,7 @@ g_Settings = {
 	forcevehlion = false,
 	paintjob = 0,
 	autopilot = false,
+	autopimp = false,
 	mynametag = false,
 	avatar = '',
 }
@@ -82,6 +83,8 @@ function VipLoadSettings()
 			g_Settings.paintjob = tonumber(val) or 0
 		elseif(name == 'autopilot') then
 			g_Settings.autopilot = (val == 'true')
+		elseif(name == 'autopimp') then
+			g_Settings.autopimp = (val == 'true')
 		elseif(name == 'mynametag') then
 			g_Settings.mynametag = (val == 'true')
 		elseif(name == 'avatar') then
@@ -174,6 +177,11 @@ function VipSaveSettings()
 	subnode = xmlCreateChild(node, 'autopilot')
 	if(subnode) then
 		xmlNodeSetValue(subnode, tostring(g_Settings.autopilot))
+	end
+	
+	subnode = xmlCreateChild(node, 'autopimp')
+	if(subnode) then
+		xmlNodeSetValue(subnode, tostring(g_Settings.autopimp))
 	end
 	
 	subnode = xmlCreateChild(node, 'mynametag')
