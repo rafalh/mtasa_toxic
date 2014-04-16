@@ -19,6 +19,9 @@
 	<msg id="Interval (sec.):">Interwał (sek.):</msg>
 	<msg id="Vehicle tuning">Tuning pojazdu</msg>
 	
+	<msg id="Wheels">Felgi</msg>
+	<msg id="Replace vehicle wheels">Podmień felgi samochodu</msg>
+	
 	<msg id="Ignore">Ignoruj</msg>
 	<msg id="Ignored players">Ignorowani gracze</msg>
 	<msg id="Players online">Gracze online</msg>

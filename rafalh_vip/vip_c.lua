@@ -22,6 +22,7 @@ g_Settings = {
 	autopimp = false,
 	mynametag = false,
 	avatar = '',
+	wheels = false,
 }
 g_IsVip, g_VipEnd = false, false
 local g_RainbowPlayers = {}
@@ -89,6 +90,8 @@ function VipLoadSettings()
 			g_Settings.mynametag = (val == 'true')
 		elseif(name == 'avatar') then
 			g_Settings.avatar = val
+		elseif(name == 'wheels') then
+			g_Settings.wheels = tonumber(val)
 		elseif(name == 'ignored') then
 			g_Settings.ignored[tostring(val)] = true
 		elseif(name == 'widget') then
@@ -192,6 +195,11 @@ function VipSaveSettings()
 	subnode = xmlCreateChild(node, 'avatar')
 	if(subnode) then
 		xmlNodeSetValue(subnode, tostring(g_Settings.avatar))
+	end
+	
+	subnode = xmlCreateChild(node, 'wheels')
+	if(subnode) then
+		xmlNodeSetValue(subnode, tostring(g_Settings.wheels))
 	end
 	
 	for name, _ in pairs(g_Settings.ignored) do

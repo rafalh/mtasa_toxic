@@ -110,6 +110,22 @@ local function VipUpdateVehicle(player, veh)
 		if(settings.autopimp) then
 			VipPimpVehicle(veh)
 		end
+		
+		if(settings.wheels and settings.wheels >= 1073 and settings.wheels <= 1098) then
+			if(getVehicleType(veh) == 'Automobile') then
+				if(not addVehicleUpgrade(veh, settings.wheels)) then
+					outputDebugString('[VIP] addVehicleUpgrade failed', 2)
+				else
+					--outputDebugString('[VIP] Wheels added', 3)
+				end
+			end
+		else
+			local upg = getVehicleUpgradeOnSlot(veh, 12)
+			if(upg) then
+				outputDebugString('[VIP] Wheels removed', 3)
+				removeVehicleUpgrade(veh, upg)
+			end
+		end
 	end
 	
 	if(settings.driver and tonumber(settings.driver_id)) then
@@ -249,13 +265,16 @@ end
 
 local function VipOnPlayerPickUpRacePickup()
 	local veh = getPedOccupiedVehicle(source)
+	local pdata = g_Players[source]
 	local settings = g_Players[source] and g_Players[source].settings
+	if(not pdata or not settings or not veh) then return end
 	
-	if(settings and settings.vehcolor and veh) then
-		local r1, g1, b1 = getColorFromString(settings.vehcolor1)
-		local r2, g2, b2 = getColorFromString(settings.vehcolor2)
-		setVehicleColor(veh, r1, g1, b1, r2, g2, b2)
-	end
+	-- Check if model has changed - vehiclechange pickup
+	local curModel = getElementModel(veh)
+	if(pdata.vehModel == curModel) then return end
+	pdata.vehModel = curModel
+	
+	VipUpdateVehicle(source, veh)
 end
 
 local function VipOnClientReady()

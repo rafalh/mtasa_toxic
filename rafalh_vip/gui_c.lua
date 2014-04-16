@@ -93,6 +93,8 @@ local function VipApplySettings()
 	
 	g_Settings.avatar = guiGetText(g_Gui.avatar)
 	
+	g_Settings.wheels = g_Gui.wheelsID
+	
 	g_Settings.ignored = g_Gui.ignored_players
 	
 	for res_name, wg_name in pairs(g_Widgets) do
@@ -438,6 +440,46 @@ function VipOpenSettingsWnd()
 	y = y + 30
 	
 	g_Gui.autopimp = guiCreateCheckBox(10, y, 300, 25, "Vehicle tuning", g_Settings.autopimp, false, tab)
+	
+	-- Wheels
+	tab = guiCreateTab("Wheels", tab_panel)
+	local y = 10
+	
+	g_Gui.wheels = guiCreateCheckBox(10, y, 300, 25, "Replace vehicle wheels", g_Settings.wheels and true or false, false, tab)
+	addEventHandler('onClientGUIClick', g_Gui.wheels, function()
+		if(not guiCheckBoxGetSelected(source)) then
+			g_Gui.wheelsID = false
+			for id, img in pairs(g_Gui.wheelsList) do
+				guiSetAlpha(img, 0.5)
+			end
+		end
+	end, false)
+	y = y + 25
+	
+	local wheels = {1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1096, 1097, 1098}
+	g_Gui.wheelsList = {}
+	g_Gui.wheelsID = g_Settings.wheels
+	for i, id in ipairs(wheels) do
+		local curX = 20 + ((i - 1) % 5) * 64
+		local curY = y + math.floor((i - 1) / 5) * 64
+		g_Gui.wheelsList[id] = guiCreateStaticImage(curX, curY, 64, 64, 'img/wheels/'..id..'.png', false, tab)
+		if(g_Settings.wheels ~= id) then
+			guiSetAlpha(g_Gui.wheelsList[id], 0.5)
+		end
+		
+		addEventHandler('onClientGUIClick', g_Gui.wheelsList[id], function()
+			guiCheckBoxSetSelected(g_Gui.wheels, true)
+			
+			for id, img in pairs(g_Gui.wheelsList) do
+				if(img == source) then
+					guiSetAlpha(img, 1)
+					g_Gui.wheelsID = id
+				else
+					guiSetAlpha(img, 0.5)
+				end
+			end
+		end, false)
+	end
 	
 	-- Ignore
 	tab = guiCreateTab("Ignore", tab_panel)

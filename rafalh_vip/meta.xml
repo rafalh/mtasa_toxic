@@ -10,6 +10,7 @@
 	<script src="neon_s.lua" type="server" />
 	<script src="mui_c.lua" type="client" />
 	<script src="promo_c.lua" type="client" />
+	<script src="wheels_c.lua" type="client" />
 	<!--script src="autopilot_c.lua" type="client" /-->
 	
 	<config src="lang/pl_c.xml" type="client" />
@@ -17,6 +18,43 @@
 	<file src="img/vip.png" />
 	<file src="img/noimg.png" />
 	<file src="img/nopreview.png" />
+	
+	<!-- Wheels Images -->
+	<file src="img/wheels/1073.png" type="client" />
+	<file src="img/wheels/1074.png" type="client" />
+	<file src="img/wheels/1075.png" type="client" />
+	<file src="img/wheels/1076.png" type="client" />
+	<file src="img/wheels/1077.png" type="client" />
+	<file src="img/wheels/1078.png" type="client" />
+	<file src="img/wheels/1079.png" type="client" />
+	<file src="img/wheels/1080.png" type="client" />
+	<file src="img/wheels/1081.png" type="client" />
+	<file src="img/wheels/1082.png" type="client" />
+	<file src="img/wheels/1083.png" type="client" />
+	<file src="img/wheels/1084.png" type="client" />
+	<file src="img/wheels/1085.png" type="client" />
+	<file src="img/wheels/1096.png" type="client" />
+	<file src="img/wheels/1097.png" type="client" />
+	<file src="img/wheels/1098.png" type="client" />
+	
+	<!-- Wheels Geometry and Textures -->
+	<file src="wheels/1073.dff" type="client" />
+	<file src="wheels/1074.dff" type="client" />
+	<file src="wheels/1075.dff" type="client" />
+	<file src="wheels/1076.dff" type="client" />
+	<file src="wheels/1077.dff" type="client" />
+	<file src="wheels/1078.dff" type="client" />
+	<file src="wheels/1079.dff" type="client" />
+	<file src="wheels/1080.dff" type="client" />
+	<file src="wheels/1081.dff" type="client" />
+	<file src="wheels/1082.dff" type="client" />
+	<file src="wheels/1083.dff" type="client" />
+	<file src="wheels/1084.dff" type="client" />
+	<file src="wheels/1085.dff" type="client" />
+	<file src="wheels/1096.dff" type="client" />
+	<file src="wheels/1097.dff" type="client" />
+	<file src="wheels/1098.dff" type="client" />
+	<file src="wheels/txd.txd" type="client" />
 	
 	<include resource="rafalh_shared" />
 	
