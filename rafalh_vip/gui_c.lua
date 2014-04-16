@@ -224,6 +224,42 @@ function VipCloseSettingsWnd()
 	g_Gui = nil
 end
 
+local function VipUpdateAvatarPreview()
+	local avatar = getElementData(localPlayer, 'avatar')
+	local imgPath
+	
+	if(not avatar) then
+		imgPath = 'img/noimg.png'
+	elseif(avatar:sub(1, 3) == 'GIF') then
+		imgPath = 'img/nopreview.png'
+	else
+		local file
+		if(fileExists('avatar')) then
+			file = fileOpen('avatar')
+		else
+			file = fileCreate('avatar')
+		end
+		if(file) then
+			fileWrite(file, avatar)
+			fileClose(file)
+			imgPath = 'avatar'
+		else
+			imgPath = 'img/nopreview.png'
+		end
+	end
+	
+	if(g_Gui) then
+		guiStaticImageLoadImage(g_Gui.avatarPreview, imgPath)
+	end
+end
+
+local function VipOnLocalPlayerDataChange(dataName)
+	if(dataName == 'avatar') then
+		--outputDebugString('Avatar changed!', 3)
+		VipUpdateAvatarPreview()
+	end
+end
+
 function VipOpenSettingsWnd()
 	if(g_Gui) then
 		guiBringToFront(g_Gui.wnd)
@@ -231,7 +267,7 @@ function VipOpenSettingsWnd()
 	end
 	
 	local w = 420
-	local h = math.min(math.max(450, g_WidgetsCount*25, 120) + 125, g_ScrH)
+	local h = math.min(math.max(450, g_WidgetsCount*25, 120) + 130, g_ScrH)
 	local x, y =(g_ScrW - w) / 2,(g_ScrH - h) / 2
 	
 	g_Gui = {}
@@ -257,14 +293,18 @@ function VipOpenSettingsWnd()
 		local label = guiCreateLabel(10, h - 55, w - 20, 20, "Your VIP rank has no timelimit.", false, g_Gui.wnd)
 		guiLabelSetColor(label, 0, 128, 0)
 	end
-	button = guiCreateButton(330, h - 30, 60, 20, "Cancel", false, g_Gui.wnd)
-	addEventHandler('onClientGUIClick', button, VipCloseSettingsWnd, false)
 	
-	button = guiCreateButton(260, h - 30, 60, 20, "OK", false, g_Gui.wnd)
+	button = guiCreateButton(w - 90*3, h - 35, 80, 25, "OK", false, g_Gui.wnd)
 	addEventHandler('onClientGUIClick', button, function()
 		VipApplySettings()
 		VipCloseSettingsWnd()
 	end, false)
+	
+	button = guiCreateButton(w - 90*2, h - 35, 80, 25, "Cancel", false, g_Gui.wnd)
+	addEventHandler('onClientGUIClick', button, VipCloseSettingsWnd, false)
+	
+	button = guiCreateButton(w - 90*1, h - 35, 80, 25, "Apply", false, g_Gui.wnd)
+	addEventHandler('onClientGUIClick', button, VipApplySettings, false)
 	
 	-- Vehicle
 	tab = guiCreateTab("Vehicle", tab_panel)
@@ -273,7 +313,7 @@ function VipOpenSettingsWnd()
 	g_Gui.neon = guiCreateCheckBox(10, y, 300, 25, "Neon under the car", g_Settings.neon, false, tab)
 	guiCreateLabel(10, y + 30, 40, 20, "Color:", false, tab)
 	g_Gui.neon_clr = guiCreateEdit(50, y + 25, 65, 25, g_Settings.neon_clr, false, tab)
-	button = guiCreateButton(120, y + 30, 60, 20, "Choose", false, tab)
+	button = guiCreateButton(120, y + 25, 60, 25, "Choose", false, tab)
 	addEventHandler('onClientGUIClick', button, function()
 		if(g_NeonColorWnd) then
 			guiBringToFront(g_NeonColorWnd)
@@ -293,7 +333,7 @@ function VipOpenSettingsWnd()
 	g_Gui.vehcolor = guiCreateCheckBox(10, y, 300, 25, "Car's color", g_Settings.vehcolor, false, tab)
 	guiCreateLabel(10, y + 30, 50, 20, "Color 1:", false, tab)
 	g_Gui.vehcolor1 = guiCreateEdit(60, y + 25, 65, 25, g_Settings.vehcolor1, false, tab)
-	button = guiCreateButton(130, y + 30, 60, 20, "Choose", false, tab)
+	button = guiCreateButton(130, y + 25, 60, 25, "Choose", false, tab)
 	addEventHandler('onClientGUIClick', button, function()
 		if(g_VehColor1Wnd) then
 			guiBringToFront(g_VehColor1Wnd)
@@ -310,7 +350,7 @@ function VipOpenSettingsWnd()
 	end, false)
 	guiCreateLabel(195, y + 30, 50, 20, "Color 2:", false, tab)
 	g_Gui.vehcolor2 = guiCreateEdit(245, y + 25, 65, 25, g_Settings.vehcolor2, false, tab)
-	button = guiCreateButton(315, y + 30, 60, 20, "Choose", false, tab)
+	button = guiCreateButton(315, y + 25, 60, 25, "Choose", false, tab)
 	addEventHandler('onClientGUIClick', button, function()
 		if(g_VehColor2Wnd) then
 			guiBringToFront(g_VehColor2Wnd)
@@ -335,7 +375,7 @@ function VipOpenSettingsWnd()
 	g_Gui.vehlicolor = guiCreateCheckBox(10, y, 300, 25, "Car's lights color", g_Settings.vehlicolor, false, tab)
 	guiCreateLabel(10, y + 30, 40, 20, "Color:", false, tab)
 	g_Gui.vehlicolor_clr = guiCreateEdit(50, y + 25, 80, 25, g_Settings.vehlicolor_clr, false, tab)
-	button = guiCreateButton(140, y + 30, 60, 20, "Choose", false, tab)
+	button = guiCreateButton(140, y + 25, 60, 25, "Choose", false, tab)
 	addEventHandler('onClientGUIClick', button, function()
 		if(g_VehLightsColorWnd) then
 			guiBringToFront(g_VehLightsColorWnd)
@@ -403,7 +443,7 @@ function VipOpenSettingsWnd()
 		guiGridListSetItemText(g_Gui.players_list, row, g_Gui.players_col, getPlayerName(player):gsub('#%x%x%x%x%x%x', ''), false, false)
 	end
 	
-	button = guiCreateButton(20 +(380 - 100)/2, 10, 60, 20, "Add", false, tab)
+	button = guiCreateButton(20 +(380 - 100)/2, 10, 60, 25, "Add", false, tab)
 	addEventHandler('onClientGUIClick', button, function()
 		local row, col = guiGridListGetSelectedItem(g_Gui.players_list)
 		local name = guiGridListGetItemText(g_Gui.players_list, row, col)
@@ -413,7 +453,7 @@ function VipOpenSettingsWnd()
 			guiGridListSetItemText(g_Gui.ignored_list, row, g_Gui.ignored_col, name, false, false)
 		end
 	end, false)
-	button = guiCreateButton(20 +(380 - 100)/2, 40, 60, 20, "Delete", false, tab)
+	button = guiCreateButton(20 +(380 - 100)/2, 45, 60, 25, "Delete", false, tab)
 	addEventHandler('onClientGUIClick', button, function()
 		local row, col = guiGridListGetSelectedItem(g_Gui.ignored_list)
 		local name = guiGridListGetItemText(g_Gui.ignored_list, row, col)
@@ -483,11 +523,15 @@ function VipOpenSettingsWnd()
 	g_Gui.mynametag = guiCreateCheckBox(10, y, w - 20, 25, "Show my nametag", g_Settings.mynametag, false, tab)
 	y = y + 30
 	
-	guiCreateLabel(10, y + 5, w - 20, 20, "Avatar URL address:", false, tab)
-	g_Gui.avatar = guiCreateEdit(10, y + 25, w - 20, 25, g_Settings.avatar, false, tab)
-	guiCreateLabel(10, y + 50, w - 20, 15, MuiGetMsg("Supported image formats: %s"):format('JPG, PNG, BMP, GIF ('..MuiGetMsg("static or animated")..')'), false, tab)
-	guiCreateLabel(10, y + 65, w - 20, 15, MuiGetMsg("Maximal size: %s"):format('64kB'), false, tab)
-	y = y + 100
+	local avLabel = guiCreateLabel(10, y + 5, w - 20, 15, "Avatar", false, tab)
+	guiSetFont(avLabel, 'default-bold-small')
+	g_Gui.avatarPreview = guiCreateStaticImage(10, y + 25, 64, 64, 'img/empty.png', false, tab)
+	guiCreateLabel(80, y + 25, w - 20, 15, "URL address:", false, tab)
+	g_Gui.avatar = guiCreateEdit(80, y + 40, w - 90, 25, g_Settings.avatar, false, tab)
+	guiCreateLabel(10, y + 90, w - 20, 15, MuiGetMsg("Supported image formats: %s"):format('JPG, PNG, BMP, GIF ('..MuiGetMsg("static or animated")..')'), false, tab)
+	guiCreateLabel(10, y + 105, w - 20, 15, MuiGetMsg("Maximal size: %s"):format('64kB'), false, tab)
+	
+	VipUpdateAvatarPreview()
 	
 	guiSetInputMode('no_binds_when_editing')
 	showCursor(true)
@@ -500,3 +544,5 @@ function VipToggleSettingsWnd()
 		VipOpenSettingsWnd()
 	end
 end
+
+addEventHandler('onClientElementDataChange', localPlayer, VipOnLocalPlayerDataChange)

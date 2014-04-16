@@ -1,6 +1,7 @@
 ﻿<strings>
-	<msg id="Cancel">Anuluj</msg>
 	<msg id="VIP Panel">Panel VIPa</msg>
+	<msg id="Cancel">Anuluj</msg>
+	<msg id="Apply">Zastosuj</msg>
 	
 	<msg id="Vehicle">Pojazd</msg>
 	<msg id="Choose">Wybierz</msg>
@@ -28,7 +29,7 @@
 	<msg id="Other">Inne</msg>
 	<msg id="Show clouds">Pokaż chmury</msg>
 	<msg id="Show my nametag">Pokaż mój nametag</msg>
-	<msg id="Avatar URL address:">Adres URL awatara:</msg>
+	<msg id="URL address:">Adres URL:</msg>
 	<msg id="Supported image formats: %s">Obsługiwane obrazki: %s</msg>
 	<msg id="static or animated">statyczny lub animowany</msg>
 	<msg id="Maximal size: %s">Maksymalny rozmiar: %s</msg>
