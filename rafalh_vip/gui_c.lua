@@ -6,6 +6,7 @@ local g_ScrW, g_ScrH = guiGetScreenSize()
 local g_Gui
 local g_NeonColorWnd, g_VehColorWnd, g_VehColor1Wnd, g_VehColor2Wnd, g_VehLightsColorWnd, g_NametagColorWnd
 local g_Skins = false
+local g_GifPreview
 
 -- Events declaration
 addEvent('onRafalhColorDlgClose')
@@ -224,33 +225,46 @@ function VipCloseSettingsWnd()
 	g_Gui = nil
 end
 
+local function fileSetContent(path, content)
+	local file
+	if(fileExists(path)) then
+		file = fileOpen(path)
+	else
+		file = fileCreate(path)
+	end
+	if(not file) then return false end
+	
+	fileWrite(file, content)
+	fileClose(file)
+	return true
+end
+
 local function VipUpdateAvatarPreview()
+	if(not g_Gui) then return end
+	
 	local avatar = getElementData(localPlayer, 'avatar')
-	local imgPath
+	local imgPath = 'img/nopreview.png'
 	
 	if(not avatar) then
 		imgPath = 'img/noimg.png'
 	elseif(avatar:sub(1, 3) == 'GIF') then
-		imgPath = 'img/nopreview.png'
-	else
-		local file
-		if(fileExists('avatar')) then
-			file = fileOpen('avatar')
-		else
-			file = fileCreate('avatar')
+		local sharedRes = getResourceFromName('rafalh_shared')
+		if(sharedRes) then
+			local gif = call(sharedRes, 'GifLoad', avatar, true, true)
+			local pixels = gif and call(sharedRes, 'GifGetFrame', gif, 1, 'jpeg')
+			if(gif) then
+				destroyElement(gif)
+			end
+			
+			if(pixels and fileSetContent('avatar', pixels)) then
+				imgPath = 'avatar'
+			end
 		end
-		if(file) then
-			fileWrite(file, avatar)
-			fileClose(file)
-			imgPath = 'avatar'
-		else
-			imgPath = 'img/nopreview.png'
-		end
+	elseif(fileSetContent('avatar', avatar)) then
+		imgPath = 'avatar'
 	end
 	
-	if(g_Gui) then
-		guiStaticImageLoadImage(g_Gui.avatarPreview, imgPath)
-	end
+	guiStaticImageLoadImage(g_Gui.avatarPreview, imgPath)
 end
 
 local function VipOnLocalPlayerDataChange(dataName)

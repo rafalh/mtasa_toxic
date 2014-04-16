@@ -23,4 +23,5 @@
 	<export function="GifLoad" type="client" />
 	<export function="GifRender" type="client" />
 	<export function="GifGetSize" type="client" />
+	<export function="GifGetFrame" type="client" />
 </meta>

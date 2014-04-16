@@ -37,6 +37,8 @@ local g_LoaderThread, g_LoaderTimer = false, false
 	end
 #end
 
+addEvent('onGifLoaded')
+
 local function GifInitStream(str)
 	return {str, 1}
 end
@@ -372,6 +374,8 @@ local function GifLoadInternal(gif, stream)
 			gif.time = gif.time + frame.delay
 			gif.frames[#gif.frames + 1] = frame
 			
+			if(gif.firstFrameOnly and #gif.frames == 1) then break end
+			
 			gc = DEF_GC -- reset Graphic Control
 # if(not DEBUG_PERF) then
 			coroutine.yield()
@@ -412,6 +416,7 @@ local function GifLoadInternal(gif, stream)
 	
 	gif.loaded = true
 	gif.stream = false
+	triggerEvent('onGifLoaded', gif.el)
 	DbgPerfCp('GIF loading', 1)
 end
 
@@ -470,7 +475,7 @@ local function GifWakeUpLoader(isTimer)
 	end
 end
 
-function GifLoad(str, isString)
+function GifLoad(str, isString, firstFrameOnly)
 	if(not getElementByID('TXC413b9d90')) then return false end
 	
 	if(not isString) then
@@ -503,14 +508,15 @@ function GifLoad(str, isString)
 	gif.res = sourceResource
 	gif.loaded = false
 	gif.stream = stream
+	gif.firstFrameOnly = firstFrameOnly
 	
-	local gifEl = createElement('gif')
-	g_GifMap[gifEl] = gif
-	addEventHandler('onElementDestroy', gifEl, GifOnDestroy)
+	gif.el = createElement('gif')
+	g_GifMap[gif.el] = gif
+	addEventHandler('onElementDestroy', gif.el, GifOnDestroy)
 	
 	GifWakeUpLoader()
 	
-	return gifEl
+	return gif.el
 end
 
 function GifRender(x, y, w, h, gifEl, ...)
@@ -537,6 +543,16 @@ end
 function GifGetSize(gifEl)
 	local gif = g_GifMap[gifEl]
 	return gif.w, gif.h
+end
+
+function GifGetFrame(gifEl, frameIdx, format, quality)
+	local gif = g_GifMap[gifEl]
+	local frame = gif.frames[frameIdx]
+	local pixels = dxGetTexturePixels(frame.tex, 0, 0, gif.w, gif.h)
+	if(format) then
+		pixels = dxConvertPixels(pixels, format, quality)
+	end
+	return pixels
 end
 
 local function GifOnResStop(res)
