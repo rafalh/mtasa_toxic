@@ -6,7 +6,7 @@ local g_ScrW, g_ScrH = guiGetScreenSize()
 local g_Gui
 local g_NeonColorWnd, g_VehColorWnd, g_VehColor1Wnd, g_VehColor2Wnd, g_VehLightsColorWnd, g_NametagColorWnd
 local g_Skins = false
-local g_GifPreview
+local g_AvatarPreviewPath = false
 
 -- Events declaration
 addEvent('onRafalhColorDlgClose')
@@ -240,8 +240,6 @@ local function fileSetContent(path, content)
 end
 
 local function VipUpdateAvatarPreview()
-	if(not g_Gui) then return end
-	
 	local avatar = getElementData(localPlayer, 'avatar')
 	local imgPath = 'img/nopreview.png'
 	
@@ -251,7 +249,7 @@ local function VipUpdateAvatarPreview()
 		local sharedRes = getResourceFromName('rafalh_shared')
 		if(sharedRes) then
 			local gif = call(sharedRes, 'GifLoad', avatar, true, true)
-			local pixels = gif and call(sharedRes, 'GifGetFrame', gif, 1, 'jpeg')
+			local pixels = gif and call(sharedRes, 'GifGetFrame', gif, 1, 'png')
 			if(gif) then
 				destroyElement(gif)
 			end
@@ -264,13 +262,21 @@ local function VipUpdateAvatarPreview()
 		imgPath = 'avatar'
 	end
 	
-	guiStaticImageLoadImage(g_Gui.avatarPreview, imgPath)
+	g_AvatarPreviewPath = imgPath
+	
+	if(g_Gui and g_Gui.avatarPreview) then
+		guiStaticImageLoadImage(g_Gui.avatarPreview, imgPath)
+	end
 end
 
 local function VipOnLocalPlayerDataChange(dataName)
 	if(dataName == 'avatar') then
 		--outputDebugString('Avatar changed!', 3)
-		VipUpdateAvatarPreview()
+		if(g_Gui) then
+			VipUpdateAvatarPreview()
+		else
+			g_AvatarPreviewPath = false
+		end
 	end
 end
 
@@ -537,15 +543,16 @@ function VipOpenSettingsWnd()
 	g_Gui.mynametag = guiCreateCheckBox(10, y, w - 20, 25, "Show my nametag", g_Settings.mynametag, false, tab)
 	y = y + 30
 	
+	if(not g_AvatarPreviewPath) then
+		VipUpdateAvatarPreview()
+	end
 	local avLabel = guiCreateLabel(10, y + 5, w - 20, 15, "Avatar", false, tab)
 	guiSetFont(avLabel, 'default-bold-small')
-	g_Gui.avatarPreview = guiCreateStaticImage(10, y + 25, 64, 64, 'img/empty.png', false, tab)
+	g_Gui.avatarPreview = guiCreateStaticImage(10, y + 25, 64, 64, g_AvatarPreviewPath or 'img/nopreview.png', false, tab)
 	guiCreateLabel(80, y + 25, w - 20, 15, "URL address:", false, tab)
 	g_Gui.avatar = guiCreateEdit(80, y + 40, w - 90, 25, g_Settings.avatar, false, tab)
 	guiCreateLabel(10, y + 90, w - 20, 15, MuiGetMsg("Supported image formats: %s"):format('JPG, PNG, BMP, GIF ('..MuiGetMsg("static or animated")..')'), false, tab)
 	guiCreateLabel(10, y + 105, w - 20, 15, MuiGetMsg("Maximal size: %s"):format('64kB'), false, tab)
-	
-	VipUpdateAvatarPreview()
 	
 	guiSetInputMode('no_binds_when_editing')
 	showCursor(true)
