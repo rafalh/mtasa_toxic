@@ -514,7 +514,12 @@ function GifLoad(str, isString, firstFrameOnly)
 	g_GifMap[gif.el] = gif
 	addEventHandler('onElementDestroy', gif.el, GifOnDestroy)
 	
-	GifWakeUpLoader()
+	if(firstFrameOnly) then
+		-- Do it synchronous
+		GifLoadInternal(gif, gif.stream)
+	else
+		GifWakeUpLoader()
+	end
 	
 	return gif.el
 end
