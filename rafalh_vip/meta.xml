@@ -5,6 +5,7 @@
 	<script src="vip_c.lua" type="client" />
 	<script src="access_s.lua" type="server" />
 	<script src="utils_s.lua" type="server" />
+	<script src="utils.lua" type="shared" />
 	<script src="cmd_s.lua" type="server" />
 	<script src="gui_c.lua" type="client" />
 	<script src="neon_s.lua" type="server" />

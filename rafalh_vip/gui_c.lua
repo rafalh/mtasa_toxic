@@ -100,8 +100,6 @@ local function VipApplySettings()
 		assert(g_Settings.driver_id)
 	end
 	
-	g_Settings.autopimp = guiCheckBoxGetSelected(g_Gui.autopimp)
-	
 	g_Settings.clouds = guiCheckBoxGetSelected(g_Gui.clouds)
 	
 	g_Settings.blur = guiCheckBoxGetSelected(g_Gui.blur)
@@ -317,7 +315,7 @@ function VipOpenSettingsWnd()
 	end
 	
 	local w = 420
-	local h = math.min(math.max(450, g_WidgetsCount*25, 120) + 130, g_ScrH)
+	local h = math.min(math.max(430, g_WidgetsCount*25, 120) + 130, g_ScrH)
 	local x, y =(g_ScrW - w) / 2,(g_ScrH - h) / 2
 	
 	g_Gui = {}
@@ -466,8 +464,6 @@ function VipOpenSettingsWnd()
 	
 	g_Gui.autopilot = guiCreateCheckBox(10, y, 300, 25, "Autopilot", g_Settings.autopilot, false, tab)
 	y = y + 30
-	
-	g_Gui.autopimp = guiCreateCheckBox(10, y, 300, 25, "Vehicle tuning", g_Settings.autopimp, false, tab)
 	
 	-- Vehicle Upgrades
 	tab = guiCreateTab("Tuning", tab_panel)

@@ -19,7 +19,6 @@ g_Settings = {
 	forcevehlion = false,
 	paintjob = 0,
 	autopilot = false,
-	autopimp = false,
 	mynametag = false,
 	avatar = '',
 	vehupgrades = {},
@@ -43,18 +42,6 @@ addEvent('vip.onPlayerInfo', true)
 --------------------------------
 -- Local function definitions --
 --------------------------------
-
-local function VipGetVehicleUpgradeSlot(upg)
-	local slotNameToID = {
-		['Hood']           = 0,  ['Vent']          = 1,  ['Spoiler']      = 2,  ['Sideskirt']   = 3,
-		['Front Bullbars'] = 4,  ['Rear Bullbars'] = 5,  ['Headlights']   = 6,  ['Roof']        = 7,
-		['Nitro']          = 8,  ['Hydraulics']    = 9,  ['Stereo']       = 10, ['Unknown']     = 11,
-		['Wheels']         = 12, ['Exhaust']       = 13, ['Front Bumper'] = 14, ['Rear Bumper'] = 15,
-		['Misc']           = 16,
-	}
-	local slotName = getVehicleUpgradeSlotName(upg)
-	return slotNameToID[slotName]
-end
 
 function VipLoadSettings()
 	-- Mark settings as loaded even if file does not exist
@@ -96,8 +83,6 @@ function VipLoadSettings()
 			g_Settings.paintjob = tonumber(val) or 0
 		elseif(name == 'autopilot') then
 			g_Settings.autopilot = (val == 'true')
-		elseif(name == 'autopimp') then
-			g_Settings.autopimp = (val == 'true')
 		elseif(name == 'mynametag') then
 			g_Settings.mynametag = (val == 'true')
 		elseif(name == 'avatar') then
@@ -196,11 +181,6 @@ function VipSaveSettings()
 	subnode = xmlCreateChild(node, 'autopilot')
 	if(subnode) then
 		xmlNodeSetValue(subnode, tostring(g_Settings.autopilot))
-	end
-	
-	subnode = xmlCreateChild(node, 'autopimp')
-	if(subnode) then
-		xmlNodeSetValue(subnode, tostring(g_Settings.autopimp))
 	end
 	
 	subnode = xmlCreateChild(node, 'mynametag')
