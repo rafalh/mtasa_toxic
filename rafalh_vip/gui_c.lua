@@ -315,7 +315,7 @@ function VipOpenSettingsWnd()
 	end
 	
 	local w = 420
-	local h = math.min(math.max(430, g_WidgetsCount*25, 120) + 130, g_ScrH)
+	local h = math.min(math.max(415, g_WidgetsCount*25, 120) + 130, g_ScrH)
 	local x, y =(g_ScrW - w) / 2,(g_ScrH - h) / 2
 	
 	g_Gui = {}
@@ -467,14 +467,15 @@ function VipOpenSettingsWnd()
 	
 	-- Vehicle Upgrades
 	tab = guiCreateTab("Tuning", tab_panel)
-	local y = 10
+	local x, y = 0, 0
+	local scrollPane = guiCreateScrollPane(10, 15, w - 40, h - 130, false, tab)
 	
 	-- Wheels
 	g_Gui.wheelsID = g_Settings.vehupgrades[12]
-	g_Gui.wheels = guiCreateCheckBox(10, y, 300, 25, "Replace vehicle wheels", g_Gui.wheelsID and true or false, false, tab)
+	g_Gui.wheels = guiCreateCheckBox(x, y, 300, 25, "Replace vehicle wheels", g_Gui.wheelsID and true or false, false, scrollPane)
 	addEventHandler('onClientGUIClick', g_Gui.wheels, function()
 		if(not guiCheckBoxGetSelected(source)) then
-			g_Gui.vehupgrades[12] = nil
+			g_Gui.wheelsID = nil
 			for id, img in pairs(g_Gui.wheelsList) do
 				guiSetAlpha(img, 0.5)
 			end
@@ -485,11 +486,11 @@ function VipOpenSettingsWnd()
 	local wheels = {1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1096, 1097, 1098}
 	g_Gui.wheelsList = {}
 	for i, id in ipairs(wheels) do
-		local curX = 20 + ((i - 1) % 5) * 64
+		local curX = x + 10 + ((i - 1) % 5) * 64
 		local curY = y + math.floor((i - 1) / 5) * 64
-		g_Gui.wheelsList[id] = guiCreateStaticImage(curX, curY, 64, 64, 'img/wheels/'..id..'.png', false, tab)
+		g_Gui.wheelsList[id] = guiCreateStaticImage(curX, curY, 64, 64, 'img/wheels/'..id..'.png', false, scrollPane)
 		if(g_Gui.wheelsID ~= id) then
-			guiSetAlpha(g_Gui.wheelsList[id], 0.5)
+			guiSetAlpha(g_Gui.wheelsList[id], 0.4)
 		end
 		
 		addEventHandler('onClientGUIClick', g_Gui.wheelsList[id], function()
@@ -500,7 +501,7 @@ function VipOpenSettingsWnd()
 					guiSetAlpha(img, 1)
 					g_Gui.wheelsID = id
 				else
-					guiSetAlpha(img, 0.5)
+					guiSetAlpha(img, 0.4)
 				end
 			end
 		end, false)
@@ -513,6 +514,7 @@ function VipOpenSettingsWnd()
 	if(not g_UpgradeNames) then
 		VipLoadUpgradeNames()
 	end
+	
 	local localVeh = getPedOccupiedVehicle(localPlayer)
 	for slot = 0, 16 do
 		-- 11-Unknown, 8-Nitro, 12-Wheels
@@ -520,8 +522,8 @@ function VipOpenSettingsWnd()
 		local compUpgrades = localVeh and not ignoreSlot and getVehicleCompatibleUpgrades(localVeh, slot)
 		if(compUpgrades and #compUpgrades > 0) then
 			local slotName = getVehicleUpgradeSlotName(slot)
-			local label = guiCreateLabel(10, y + 5, 100, 15, slotName..' ('..#compUpgrades..'):', false, tab)
-			g_Gui.upgComboBox[slot] = guiCreateComboBox(110, y, 150, 130, '', false, tab)
+			local label = guiCreateLabel(x, y + 5, 100, 15, slotName..' ('..#compUpgrades..'):', false, scrollPane)
+			g_Gui.upgComboBox[slot] = guiCreateComboBox(x + 100, y, 150, 130, '', false, scrollPane)
 			g_Gui.upgComboBoxItems[slot] = compUpgrades
 			guiComboBoxAddItem(g_Gui.upgComboBox[slot], '') -- no upgrade
 			local sel = 0

@@ -17,9 +17,7 @@
 	<msg id="Color 1:">Kolor 1:</msg>
 	<msg id="Color 2:">Kolor 2:</msg>
 	<msg id="Interval (sec.):">Interwał (sek.):</msg>
-	<msg id="Vehicle tuning">Tuning pojazdu</msg>
 	
-	<msg id="Wheels">Felgi</msg>
 	<msg id="Replace vehicle wheels">Podmień felgi samochodu</msg>
 	
 	<msg id="Ignore">Ignoruj</msg>

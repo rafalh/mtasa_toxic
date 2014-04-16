@@ -53,6 +53,9 @@ local function VipUpdateVehicle(player, veh)
 	if(not settings) then return end
 	
 	if(veh) then
+		-- Used later in VipOnPlayerPickUpRacePickup to detect vehicle change
+		pdata.vehModel = getElementModel(veh)
+		
 		if(settings.vehcolor) then
 			local r1, g1, b1 = getColorFromString(settings.vehcolor1)
 			local r2, g2, b2 = getColorFromString(settings.vehcolor2)
@@ -82,8 +85,11 @@ local function VipUpdateVehicle(player, veh)
 			unbindKey(player, "accelerate", "up", VipAutopilotFunc)
 		end
 		
+		local ignoreWheelsUpgrade = {[444] = true, [556] = true, [557] = true}
 		for slot, upg in pairs(settings.vehupgrades) do
-			addVehicleUpgrade(veh, upg)
+			if(slot ~= 12 or not ignoreWheelsUpgrade[pdata.vehModel]) then
+				addVehicleUpgrade(veh, upg)
+			end
 		end
 		
 		--[[if(settings.wheels and settings.wheels >= 1073 and settings.wheels <= 1098) then
@@ -101,9 +107,6 @@ local function VipUpdateVehicle(player, veh)
 				removeVehicleUpgrade(veh, upg)
 			end
 		end]]
-		
-		-- Used later in VipOnPlayerPickUpRacePickup to detect vehicle change
-		pdata.vehModel = getElementModel(veh)
 	end
 	
 	if(settings.driver and tonumber(settings.driver_id)) then
