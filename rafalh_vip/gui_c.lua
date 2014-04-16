@@ -5,7 +5,7 @@
 local g_ScrW, g_ScrH = guiGetScreenSize()
 local g_Gui
 local g_NeonColorWnd, g_VehColorWnd, g_VehColor1Wnd, g_VehColor2Wnd, g_VehLightsColorWnd, g_NametagColorWnd
-local g_Skins = false
+local g_Skins, g_UpgradeNames = false, false
 local g_AvatarPreviewPath = false
 
 -- Events declaration
@@ -42,6 +42,29 @@ local function VipLoadSkins()
 	table.sort(g_Skins, function(skin1, skin2)
 		return skin1.name < skin2.name
 	end)
+end
+
+local function VipLoadUpgradeNames()
+	local node = xmlLoadFile(':admin/conf/upgrades.xml')
+	if(not node) then
+		outputDebugString('Failed to load vehicle upgrades for VIP panel', 2)
+		return
+	end
+	
+	g_UpgradeNames = {}
+	
+	local loaded = {}
+	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
+		if(xmlNodeGetName(subnode) == 'upgrade') then
+			local id = tonumber(xmlNodeGetAttribute(subnode, 'id'))
+			local name = xmlNodeGetAttribute(subnode, 'name')
+			if(id and name) then
+				g_UpgradeNames[id] = name
+			end
+		end
+	end
+	
+	xmlUnloadFile(node)
 end
 
 local function VipApplySettings()
@@ -93,7 +116,12 @@ local function VipApplySettings()
 	
 	g_Settings.avatar = guiGetText(g_Gui.avatar)
 	
-	g_Settings.wheels = g_Gui.wheelsID
+	g_Settings.vehupgrades[12] = g_Gui.wheelsID
+	for slot, cb in pairs(g_Gui.upgComboBox) do
+		local sel = guiComboBoxGetSelected(cb)
+		local upg = g_Gui.upgComboBoxItems[slot][sel] -- Note: 0 -> nil
+		g_Settings.vehupgrades[slot] = upg
+	end
 	
 	g_Settings.ignored = g_Gui.ignored_players
 	
@@ -441,14 +469,16 @@ function VipOpenSettingsWnd()
 	
 	g_Gui.autopimp = guiCreateCheckBox(10, y, 300, 25, "Vehicle tuning", g_Settings.autopimp, false, tab)
 	
-	-- Wheels
-	tab = guiCreateTab("Wheels", tab_panel)
+	-- Vehicle Upgrades
+	tab = guiCreateTab("Tuning", tab_panel)
 	local y = 10
 	
-	g_Gui.wheels = guiCreateCheckBox(10, y, 300, 25, "Replace vehicle wheels", g_Settings.wheels and true or false, false, tab)
+	-- Wheels
+	g_Gui.wheelsID = g_Settings.vehupgrades[12]
+	g_Gui.wheels = guiCreateCheckBox(10, y, 300, 25, "Replace vehicle wheels", g_Gui.wheelsID and true or false, false, tab)
 	addEventHandler('onClientGUIClick', g_Gui.wheels, function()
 		if(not guiCheckBoxGetSelected(source)) then
-			g_Gui.wheelsID = false
+			g_Gui.vehupgrades[12] = nil
 			for id, img in pairs(g_Gui.wheelsList) do
 				guiSetAlpha(img, 0.5)
 			end
@@ -458,12 +488,11 @@ function VipOpenSettingsWnd()
 	
 	local wheels = {1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1096, 1097, 1098}
 	g_Gui.wheelsList = {}
-	g_Gui.wheelsID = g_Settings.wheels
 	for i, id in ipairs(wheels) do
 		local curX = 20 + ((i - 1) % 5) * 64
 		local curY = y + math.floor((i - 1) / 5) * 64
 		g_Gui.wheelsList[id] = guiCreateStaticImage(curX, curY, 64, 64, 'img/wheels/'..id..'.png', false, tab)
-		if(g_Settings.wheels ~= id) then
+		if(g_Gui.wheelsID ~= id) then
 			guiSetAlpha(g_Gui.wheelsList[id], 0.5)
 		end
 		
@@ -479,6 +508,36 @@ function VipOpenSettingsWnd()
 				end
 			end
 		end, false)
+	end
+	y = y + math.ceil(#wheels / 5) * 64 + 10
+	
+	-- Other upgrades
+	g_Gui.upgComboBox = {}
+	g_Gui.upgComboBoxItems = {}
+	if(not g_UpgradeNames) then
+		VipLoadUpgradeNames()
+	end
+	local localVeh = getPedOccupiedVehicle(localPlayer)
+	for slot = 0, 16 do
+		-- 11-Unknown, 8-Nitro, 12-Wheels
+		local ignoreSlot = (slot == 11 or slot == 8 or slot == 12)
+		local compUpgrades = localVeh and not ignoreSlot and getVehicleCompatibleUpgrades(localVeh, slot)
+		if(compUpgrades and #compUpgrades > 0) then
+			local slotName = getVehicleUpgradeSlotName(slot)
+			local label = guiCreateLabel(10, y + 5, 100, 15, slotName..' ('..#compUpgrades..'):', false, tab)
+			g_Gui.upgComboBox[slot] = guiCreateComboBox(110, y, 150, 130, '', false, tab)
+			g_Gui.upgComboBoxItems[slot] = compUpgrades
+			guiComboBoxAddItem(g_Gui.upgComboBox[slot], '') -- no upgrade
+			local sel = 0
+			for i, upg in ipairs(compUpgrades) do
+				local id = guiComboBoxAddItem(g_Gui.upgComboBox[slot], g_UpgradeNames[upg] or tostring(upg))
+				if(g_Settings.vehupgrades[slot] == upg) then
+					sel = id
+				end
+			end
+			guiComboBoxSetSelected(g_Gui.upgComboBox[slot], sel)
+			y = y + 25
+		end
 	end
 	
 	-- Ignore

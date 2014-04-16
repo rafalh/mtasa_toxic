@@ -62,7 +62,8 @@ local function VipPimpVehicle(veh)
 	
 	-- outputDebugString('Pimp vehicle!', 3)
 	for slot = 0, 16 do
-		if(slot ~= 11 and slot ~= 9 and slot ~= 8) then -- 11-Unknown, 9-Hydraulics, 8-Nitro
+		-- 11-Unknown, 9-Hydraulics, 8-Nitro, 12-Wheels
+		if(slot ~= 11 and slot ~= 9 and slot ~= 8 and slot ~= 12) then
 			local upgrades = getVehicleCompatibleUpgrades(veh, slot)
 			if(#upgrades > 0) then
 				local upg = upgrades[math.random(#upgrades)]
@@ -70,6 +71,28 @@ local function VipPimpVehicle(veh)
 			end
 		end	
 	end
+end
+
+local function VipGetVehicleUpgradeSlot(upg)
+	local slotNameToID = {
+		['Hood']           = 0,  ['Vent']          = 1,  ['Spoiler']      = 2,  ['Sideskirt']   = 3,
+		['Front Bullbars'] = 4,  ['Rear Bullbars'] = 5,  ['Headlights']   = 6,  ['Roof']        = 7,
+		['Nitro']          = 8,  ['Hydraulics']    = 9,  ['Stereo']       = 10, ['Unknown']     = 11,
+		['Wheels']         = 12, ['Exhaust']       = 13, ['Front Bumper'] = 14, ['Rear Bumper'] = 15,
+		['Misc']           = 16,
+	}
+	local slotName = getVehicleUpgradeSlotName(upg)
+	return slotNameToID[slotName]
+end
+
+local function VipFixUpgradesList(upgrades)
+	for slot, upg in pairs(upgrades) do
+		-- 11-Unknown, 8-Nitro
+		if(not slot and slot == 11 or slot == 8 or slot ~= VipGetVehicleUpgradeSlot(upg)) then
+			upgrades[slot] = nil
+		end
+	end
+	return upgrades
 end
 
 local function VipUpdateVehicle(player, veh)
@@ -111,21 +134,28 @@ local function VipUpdateVehicle(player, veh)
 			VipPimpVehicle(veh)
 		end
 		
-		if(settings.wheels and settings.wheels >= 1073 and settings.wheels <= 1098) then
+		for slot, upg in pairs(settings.vehupgrades) do
+			addVehicleUpgrade(veh, upg)
+		end
+		
+		--[[if(settings.wheels and settings.wheels >= 1073 and settings.wheels <= 1098) then
 			if(getVehicleType(veh) == 'Automobile') then
 				if(not addVehicleUpgrade(veh, settings.wheels)) then
-					outputDebugString('[VIP] addVehicleUpgrade failed', 2)
+					outputDebugString('addVehicleUpgrade failed', 2)
 				else
-					--outputDebugString('[VIP] Wheels added', 3)
+					--outputDebugString('Wheels added', 3)
 				end
 			end
 		else
 			local upg = getVehicleUpgradeOnSlot(veh, 12)
 			if(upg) then
-				outputDebugString('[VIP] Wheels removed', 3)
+				--outputDebugString('Wheels removed', 3)
 				removeVehicleUpgrade(veh, upg)
 			end
-		end
+		end]]
+		
+		-- Used later in VipOnPlayerPickUpRacePickup to detect vehicle change
+		pdata.vehModel = getElementModel(veh)
 	end
 	
 	if(settings.driver and tonumber(settings.driver_id)) then
@@ -272,7 +302,6 @@ local function VipOnPlayerPickUpRacePickup()
 	-- Check if model has changed - vehiclechange pickup
 	local curModel = getElementModel(veh)
 	if(pdata.vehModel == curModel) then return end
-	pdata.vehModel = curModel
 	
 	VipUpdateVehicle(source, veh)
 end
@@ -307,6 +336,8 @@ local function VipOnPlayerSettings(settings)
 	
 	local oldSettings = pdata.settings
 	pdata.settings = settings
+	pdata.settings.vehupgrades = VipFixUpgradesList(pdata.settings.vehupgrades)
+	
 	local veh = getPedOccupiedVehicle(client)
 	VipApplySettings(client, veh, oldSettings)
 end

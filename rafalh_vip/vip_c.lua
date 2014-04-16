@@ -22,7 +22,7 @@ g_Settings = {
 	autopimp = false,
 	mynametag = false,
 	avatar = '',
-	wheels = false,
+	vehupgrades = {},
 }
 g_IsVip, g_VipEnd = false, false
 local g_RainbowPlayers = {}
@@ -43,6 +43,18 @@ addEvent('vip.onPlayerInfo', true)
 --------------------------------
 -- Local function definitions --
 --------------------------------
+
+local function VipGetVehicleUpgradeSlot(upg)
+	local slotNameToID = {
+		['Hood']           = 0,  ['Vent']          = 1,  ['Spoiler']      = 2,  ['Sideskirt']   = 3,
+		['Front Bullbars'] = 4,  ['Rear Bullbars'] = 5,  ['Headlights']   = 6,  ['Roof']        = 7,
+		['Nitro']          = 8,  ['Hydraulics']    = 9,  ['Stereo']       = 10, ['Unknown']     = 11,
+		['Wheels']         = 12, ['Exhaust']       = 13, ['Front Bumper'] = 14, ['Rear Bumper'] = 15,
+		['Misc']           = 16,
+	}
+	local slotName = getVehicleUpgradeSlotName(upg)
+	return slotNameToID[slotName]
+end
 
 function VipLoadSettings()
 	-- Mark settings as loaded even if file does not exist
@@ -90,8 +102,12 @@ function VipLoadSettings()
 			g_Settings.mynametag = (val == 'true')
 		elseif(name == 'avatar') then
 			g_Settings.avatar = val
-		elseif(name == 'wheels') then
-			g_Settings.wheels = tonumber(val)
+		elseif(name == 'vehupgrade') then
+			local upg = tonumber(val)
+			if(upg) then
+				local slot = VipGetVehicleUpgradeSlot(upg)
+				g_Settings.vehupgrades[slot] = upg
+			end
 		elseif(name == 'ignored') then
 			g_Settings.ignored[tostring(val)] = true
 		elseif(name == 'widget') then
@@ -197,9 +213,11 @@ function VipSaveSettings()
 		xmlNodeSetValue(subnode, tostring(g_Settings.avatar))
 	end
 	
-	subnode = xmlCreateChild(node, 'wheels')
-	if(subnode) then
-		xmlNodeSetValue(subnode, tostring(g_Settings.wheels))
+	for slot, upg in pairs(g_Settings.vehupgrades) do
+		subnode = xmlCreateChild(node, 'vehupgrade')
+		if(subnode) then
+			xmlNodeSetValue(subnode, tostring(upg))
+		end
 	end
 	
 	for name, _ in pairs(g_Settings.ignored) do
@@ -226,7 +244,7 @@ function VipSaveSettings()
 			end
 		end
 	end
-		
+	
 	xmlSaveFile(node)
 	xmlUnloadFile(node)
 end
