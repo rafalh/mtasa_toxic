@@ -85,9 +85,9 @@ local function VipUpdateVehicle(player, veh)
 			unbindKey(player, "accelerate", "up", VipAutopilotFunc)
 		end
 		
-		local ignoreWheelsUpgrade = {[444] = true, [556] = true, [557] = true}
+		local ignoreHydraulicsUpgrade = {[444] = true, [556] = true, [557] = true}
 		for slot, upg in pairs(settings.vehupgrades) do
-			if(slot ~= 12 or not ignoreWheelsUpgrade[pdata.vehModel]) then
+			if(slot ~= 9 or not ignoreHydraulicsUpgrade[pdata.vehModel]) then
 				addVehicleUpgrade(veh, upg)
 			end
 		end
