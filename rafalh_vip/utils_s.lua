@@ -32,3 +32,26 @@ function urlEncode(str)
 		return ('%%%02X'):format(ch:byte())
 	end):gsub(' ', '+')
 end
+
+function table.compare(tbl1, tbl2, deep)
+	if(type(tbl1) ~= 'table' or type(tbl2) ~= 'table') then return false end
+	
+	for i, v in pairs(tbl1) do
+		if(deep and type(tbl2[i]) == 'table' and type(v) == 'table') then
+			if(not table.compare(tbl2[i], v, deep)) then return false end
+		elseif(tbl2[i] ~= v) then
+			return false
+		end
+	end
+	
+	for i, v in pairs(tbl2) do
+		if(deep and type(tbl1[i]) == 'table' and type(v) == 'table') then
+			if(not table.compare(tbl1[i], v, deep)) then return false end
+		elseif(tbl1[i] ~= v) then
+			return false
+		end
+	end
+	
+	return true
+end
+

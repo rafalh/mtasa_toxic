@@ -193,6 +193,14 @@ local function VipApplySettings(player, veh, oldSettings)
 	end
 	
 	setElementData(player, "ignored_players", settings.ignored, false)
+	
+	if(veh and oldSettings and not table.compare(settings.vehupgrades, oldSettings.vehupgrades)) then
+		for slot, upg in pairs(oldSettings.vehupgrades) do
+			if(not settings.vehupgrades[slot]) then
+				removeVehicleUpgrade(veh, upg)
+			end
+		end
+	end
 end
 
 local function VipOnPlayerQuit()
