@@ -2,7 +2,7 @@ local g_LastUrl = false
 
 local function onChatMsg(text)
 	text = text:gsub('#%x%x%x%x%x%x', '')
-	local url = text:match('http://[^%s]+') or text:match('https://[^%s]+')
+	local url = text:match('https?://[^%s]+') or text:match('www%.[^%s]+')
 	if(url) then
 		g_LastUrl = url
 	end

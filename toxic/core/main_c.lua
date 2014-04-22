@@ -25,7 +25,7 @@ local function init(res)
 end
 
 local function onPlayerQuit(reason)
-	local nick = getPlayerName(source):gsub('#%x%x%x%x%x%x', '')
+	local nick = getPlayerName(source)
 	
 	if(reason == 'Kicked') then outputMsg(Styles.joinQuit, "* %s has been kicked from the game.", nick)
 	elseif(reason == 'Banned') then outputMsg(Styles.joinQuit, "* %s has been banned from the game.", nick)

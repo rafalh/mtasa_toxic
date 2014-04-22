@@ -65,7 +65,10 @@ local function onPlayerJoin()
 	
 	local player = Player.create(source) -- name can change here
 	player.new = true
-	
+end
+
+local function onPlayerJoin2()
+	local player = Player.fromEl(source)
 	local countryName
 	if(g_Countries[player.country]) then
 		countryName = g_Countries[player.country]
@@ -73,10 +76,11 @@ local function onPlayerJoin()
 		countryName = player.country
 	end
 	
+	local nickname = player:getName(true)
 	if(countryName) then
-		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game (%s).", player:getName(true), countryName)
+		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game (%s).", nickname, countryName)
 	else
-		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", player:getName(true))
+		outputMsg(g_Root, Styles.joinQuit, "* %s has joined the game.", nickname)
 	end
 end
 
@@ -132,18 +136,18 @@ local function onPlayerChangeNick(oldNick, newNick)
 	end
 	
 	-- Note: getPlayerName returns old nick
-	local fullNick = newNick
 	local r, g, b = getPlayerNametagColor(pdata.el)
+	local nametagClr = ''
 	if(r ~= 255 or g ~= 255 or b ~= 255) then
-		fullNick = ('#%02X%02X%02X'):format(r, g, b)..fullNick
+		nametagClr = ('#%02X%02X%02X'):format(r, g, b)
 	end
 	
 	pdata.accountData:set{
-		name = fullNick,
+		name = nametagClr..newNick,
 		namePlain = newNickPlain,
 	}
 	if(not onlyColorChanged) then
-		outputMsg(g_Root, Styles.joinQuit, "* %s is now known as %s.", oldNickPlain, newNickPlain)
+		outputMsg(g_Root, Styles.joinQuit, "* %s is now known as %s.", nametagClr..oldNick, nametagClr..newNick)
 	end
 end
 
@@ -294,7 +298,8 @@ end
 ------------
 
 addInitFunc(function()
-	addEventHandler('onPlayerJoin', g_Root, onPlayerJoin)
+	addEventHandler('onPlayerJoin', g_Root, onPlayerJoin, true, 'high')
+	addEventHandler('onPlayerJoin', g_Root, onPlayerJoin2, true, 'low')
 	addEventHandler('onPlayerPrivateMessage', g_Root, onPlayerPrivateMessage)
 	Event('onPlayerChangeNick'):addFilter(onPlayerChangeNickFilter)
 	Event('onPlayerChangeNick'):addHandler(onPlayerChangeNick)
