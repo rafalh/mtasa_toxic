@@ -1,4 +1,5 @@
-GUI = {}
+namespace('GUI')
+
 GUI.__mt = {__index = {}}
 GUI.templates = false
 GUI.wndToObj = {}
@@ -241,54 +242,4 @@ function GUI.create(tpl, x, y, w, h, parent)
 	
 	GUI.wndToObj[self.wnd] = self
 	return self
-end
-
-function GUI.prepareTempLabel(font)
-	if(not GUI.tempLabel) then
-		GUI.tempLabel = guiCreateLabel(0, 0, 0, 0, '', false)
-		if(not GUI.tempLabel) then return false end
-		guiSetVisible(GUI.tempLabel, false)
-	end
-	if(not guiSetFont(GUI.tempLabel, font or 'default-normal')) then return false end
-	return true
-end
-
-function GUI.getTextWidth(text, font)
-	if(not GUI.prepareTempLabel(font)) then return false end
-	if(not guiSetText(GUI.tempLabel, text)) then return false end
-	return guiLabelGetTextExtent(GUI.tempLabel)
-end
-
-function GUI.getFontHeight(font)
-	if(not font or font == 'default-normal') then return 15 end -- HACK
-	if(not GUI.prepareTempLabel(font)) then return false end
-	return guiLabelGetFontHeight(GUI.tempLabel)
-end
-
-function GUI.wordWrap(str, maxW, font)
-	local tbl = {}
-	
-	while(str:len() > 0) do
-		local c = str:len()
-		local sub
-		
-		while(true) do
-			sub = str:sub(1, c)
-			local w = GUI.getTextWidth(sub, font)
-			if(w < maxW) then break end
-			
-			local subRev = sub:reverse()
-			local idxRev = subRev:find(' ', 1, true)
-			local newC = c - idxRev
-			if(newC == 0) then break end
-			
-			c = newC
-		end
-		
-		assert(sub:len() > 0)
-		table.insert(tbl, sub)
-		str = str:sub(1 + c + 1)
-	end
-	
-	return tbl
 end

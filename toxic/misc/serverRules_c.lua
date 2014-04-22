@@ -47,6 +47,9 @@ function display()
 	local ruleW = guiGetSize(g_GUI.rules, false)
 	local font = guiGetFont(g_GUI.rules)
 	
+	guiSetProperty(g_GUI.scrollPane, 'VertStepSize', '0.1')
+	GUI.scrollPaneAddMouseWheelSupport(g_GUI.scrollPane)
+	
 	local rules = g_Rules[Settings.locale] or g_Rules[false]
 	local rulesTbl, numbersTbl = {}, {}
 	for i, rule in ipairs(rules) do

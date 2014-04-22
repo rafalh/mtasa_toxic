@@ -167,13 +167,12 @@ function ListView.create(pos, size, parent, itemSize, imgSize, style, scrollBar)
 	end
 	self.cols = math.floor(size[1] / self.itemSize[1])
 	
-	guiSetProperty(self.el, 'VertStepSize', '0.1')
+	GUI.scrollPaneAddMouseWheelSupport(self.el)
 	
 	addEventHandler('onClientElementDestroy', self.el, ListView.onElDestroy, false)
 	addEventHandler('onClientMouseEnter', self.el, ListView.onMouseEnter, true)
 	addEventHandler('onClientMouseLeave', self.el, ListView.onMouseLeave, true)
 	addEventHandler('onClientGUIClick', self.el, ListView.onMouseClick, true)
-	addEventHandler('onClientMouseWheel', self.el, ListView.onMouseWheel, true)
 	
 	ListView.elMap[self.el] = self
 	return self
@@ -229,13 +228,4 @@ function ListView.onMouseClick()
 			self.onClickHandler(item.id)
 		end
 	end
-end
-
-function ListView.onMouseWheel(upOrDown)
-	local self, item = ListView.getItemFromElement(source)
-	if(not self) then return end -- if mouse wheel is used over the scrollPane it is handled properly
-	
-	local pos = guiScrollPaneGetVerticalScrollPosition(self.el)
-	pos = pos - upOrDown * 10
-	guiScrollPaneSetVerticalScrollPosition(self.el, pos)
 end

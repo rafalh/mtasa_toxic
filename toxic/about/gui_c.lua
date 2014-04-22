@@ -16,6 +16,7 @@ local AboutPanel = {
 
 local function initAboutPane(x, y, w, h, panel)
 	local scrollPane = guiCreateScrollPane(x, y, w, h, false, panel)
+	GUI.scrollPaneAddMouseWheelSupport(scrollPane)
 	
 	local node = xmlLoadFile('conf/about.xml')
 	if(not node) then return false end

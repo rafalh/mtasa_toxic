@@ -152,4 +152,5 @@ function namespace(name)
 		_G[name] = env
 	end
 	setfenv(2, env)
+	return env
 end

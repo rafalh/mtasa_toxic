@@ -32,16 +32,9 @@ function SettingsPanel.onSaveClick()
 	g_Save = true
 end
 
-function SettingsPanel.onMouseWheel(upOrDown)
-	local pos = guiScrollPaneGetVerticalScrollPosition(g_ScrollPane)
-	pos = pos - upOrDown * 10
-	guiScrollPaneSetVerticalScrollPosition(g_ScrollPane, pos)
-end
-
 function SettingsPanel.createScrollPane(x, y, w, h, panel)
 	g_ScrollPane = guiCreateScrollPane(x, y, w, h, false, panel)
-	guiSetProperty(g_ScrollPane, 'VertStepSize', '0.1')
-	addEventHandler('onClientMouseWheel', g_ScrollPane, SettingsPanel.onMouseWheel, true)
+	GUI.scrollPaneAddMouseWheelSupport(g_ScrollPane)
 	
 	local y = 0
 	for key, item in ipairs(Settings.localSorted) do
