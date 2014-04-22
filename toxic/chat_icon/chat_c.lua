@@ -90,6 +90,8 @@ local function onRender()
 end
 
 local function onPlayerChat(message)
+	assert(message)
+	
 	-- Check if messages has not been disabled
 	if(not Settings.msgAboveCar) then return end
 	

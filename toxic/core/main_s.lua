@@ -171,16 +171,17 @@ local function onPlayerChat(msg, msgType)
 		return
 	end
 	
+	local msgCensored, msgCensoredPlain = msg, msgPlain
 	local punishment = false
 	if(CsProcessMsg) then
-		msg, punishment = CsProcessMsg(msg)
-		if(not msg) then
+		msgCensored, punishment = CsProcessMsg(msg)
+		if(not msgCensored) then
 			-- Message has been blocked
 			CsPunish(player, punishment)
 			cancelEvent()
 			return
 		else
-			msgPlain = msg:gsub('#%x%x%x%x%x%x', '')
+			msgCensoredPlain = msgCensored:gsub('#%x%x%x%x%x%x', '')
 		end
 	end
 	
@@ -217,15 +218,25 @@ local function onPlayerChat(msg, msgType)
 	-- Send message and show it above sender for recipients
 	local x, y, z = getElementPosition(player.el)
 	for i, recipient in ipairs(recipients) do
-		if(msgType ~= 1) then
-			outputChatBoxLong(prefix..playerName..': #EBDDB2'..msg, recipient, r, g, b, true)
+		local recipientPlayer = Player.fromEl(recipient)
+		
+		-- Decide whether use censored message or not
+		local msg2, msgPlain2
+		if(not recipientPlayer or recipientPlayer.clientSettings.censorClient) then
+			msg2, msgPlain2 = msgCensored, msgCensoredPlain
 		else
-			outputChatBoxLong(msg, recipient, 255, 0, 255, false)
+			msg2, msgPlain2 = msg, msgPlain
+		end
+		
+		if(msgType ~= 1) then
+			outputChatBoxLong(prefix..playerName..': #EBDDB2'..msg2, recipient, r, g, b, true)
+		else
+			outputChatBoxLong(msg2, recipient, 255, 0, 255, false)
 		end
 		if(Settings.msgs_above_players) then
 			local x2, y2, z2 = getElementPosition(recipient)
-			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and Player.fromEl(recipient)) then
-				triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_CHAT), player.el, msgPlain)
+			if(getDistanceBetweenPoints3D(x, y, z, x2, y2, z2) < 100 and recipientPlayer) then
+				triggerClientInternalEvent(recipient, $(EV_CLIENT_PLAYER_CHAT), player.el, msgPlain2)
 			end
 		end
 	end
@@ -250,9 +261,11 @@ local function onPlayerChat(msg, msgType)
 	--end
 end
 
-local function onPlayerReady(localeId)
+local function onPlayerReady(clientSharedSettings)
 	local pdata = Player.fromEl(client)
+	pdata.clientSettings = clientSharedSettings
 	
+	local localeId = pdata.clientSettings.locale
 	if(not LocaleList.exists(localeId)) then
 		localeId = pdata.country and pdata.country:lower()
 		if(not LocaleList.exists(localeId)) then
@@ -260,6 +273,7 @@ local function onPlayerReady(localeId)
 		end
 	end
 	
+	pdata.clientSettings.locale = localeId
 	pdata:setLocale(localeId) -- set locale
 	
 	local globalSettings = Settings.getClient()

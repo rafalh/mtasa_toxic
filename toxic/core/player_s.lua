@@ -212,6 +212,7 @@ function Player.create(el)
 	self.timers = {}
 	self.cp_times = false
 	self.acl = AccessList()
+	self.clientSettings = {}
 	
 	-- get player room
 	local roomEl = g_Root

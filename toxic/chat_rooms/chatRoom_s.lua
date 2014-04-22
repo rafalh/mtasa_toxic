@@ -31,30 +31,38 @@ function ChatRoom:onPlayerMsg(player, msg)
 	
 	if(utfSub(msg, 1, 1) ~= '/') then
 		local pdata = Player.fromEl(player)
+		local msgCensored = msg
 		local punishment = false
 		if(CsProcessMsg) then
-			msg, punishment = CsProcessMsg(msg)
-			if(not msg) then
+			msgCensored, punishment = CsProcessMsg(msg)
+			if(not msgCensored) then
 				-- Message has been blocked
 				CsPunish(pdata, punishment)
 				return
 			end
 		end
 		
-		local str = chatPrefix..playerName..': #EBDDB2'..msg
-		local clr
+		local r, g, b
 		if(getElementType(player) == 'player') then
-			local r, g, b = getPlayerNametagColor(player)
-			clr = ('#%02X%02X%02X'):format(r, g, b)
+			r, g, b = getPlayerNametagColor(player)
 		else
-			clr = '#FF00FF'
+			r, g, b = 255, 0, 255
 		end
 		--local foundSender = false
 		
 		for i, recipient in ipairs(recipients) do
-			local ignored = getElementData(recipient, 'ignored_players')
-			if(type(ignored) ~= 'table' or not ignored[playerNamePlain]) then
-				outputMsg(recipient, clr, '%s', str)
+			local recipientPlayer = Player.fromEl(recipient)
+			
+			-- Decide whether use censored message or not
+			local msg2
+			if(not recipientPlayer or recipientPlayer.clientSettings.censorClient) then
+				msg2 = msgCensored
+			else
+				msg2 = msg
+			end
+			
+			if(not recipientPlayer or not recipientPlayer:isPlayerIgnored(pdata)) then
+				outputChatBoxLong(chatPrefix..playerName..': #EBDDB2'..msg2, recipient, r, g, b, true)
 			end
 			--if(player == recipient) then foundSender = true end
 		end

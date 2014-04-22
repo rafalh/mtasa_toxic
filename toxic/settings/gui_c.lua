@@ -40,8 +40,10 @@ function SettingsPanel.createScrollPane(x, y, w, h, panel)
 	for key, item in ipairs(Settings.localSorted) do
 		if(item.createGui) then
 			local h, gui = item.createGui(g_ScrollPane, 0, y, w, not $(SAVE_BTN) and SettingsPanel.onSaveClick)
-			g_SettingGui[item.name] = gui
-			y = y + h
+			if(h and gui) then
+				g_SettingGui[item.name] = gui
+				y = y + h
+			end
 		end
 	end
 end

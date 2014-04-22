@@ -14,6 +14,7 @@ Settings.register
 	default = 'en',
 	priority = 0,
 	cast = tostring,
+	shared = true,
 	onChange = function(oldVal, newVal)
 		if(not g_Init) then
 			triggerServerEvent('main.onSetLocaleReq', g_ResRoot, newVal)

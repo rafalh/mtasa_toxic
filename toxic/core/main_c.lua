@@ -21,7 +21,8 @@ local function init(res)
 	guiSetInputMode('no_binds_when_editing')
 	Settings.load()
 	
-	triggerServerEvent('main.onPlayerReady', g_ResRoot, Settings.locale)
+	local sharedSettings = Settings.getShared()
+	triggerServerEvent('main.onPlayerReady', g_ResRoot, sharedSettings)
 end
 
 local function onPlayerQuit(reason)

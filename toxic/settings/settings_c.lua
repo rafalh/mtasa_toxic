@@ -25,6 +25,15 @@ function Settings.setGlobal(data)
 	rawset(Settings, 'globalMap', data)
 end
 
+function Settings.getShared()
+	local ret = {}
+	local localSorted = rawget(Settings, 'localSorted')
+	for i, item in ipairs(localSorted) do
+		ret[item.name] = item.value
+	end
+	return ret
+end
+
 Settings.__mt.__index = function(self, key)
 	local v = rawget(self, key)
 	if(v) then return v end
@@ -59,6 +68,10 @@ function Settings.__mt.__newindex(self, key, val)
 			item.value = val
 			if(item.onChange) then
 				item.onChange(oldVal, val)
+			end
+			if(item.shared and not g_Init) then
+				RPC('Settings.clientSettingChanged', item.name, val):exec()
+				--Debug.info('clientSettingChanged [C] '..tostring(item.name)..' '..tostring(val))
 			end
 		end
 	end
