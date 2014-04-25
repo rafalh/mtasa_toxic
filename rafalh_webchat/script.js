@@ -14,7 +14,7 @@ function js_updateChat()
 				if(id > last_msg)
 				{
 					last_msg = id;
-				
+					
 					var row = document.createElement("tr");
 					
 					var buf = msgs[i][1].toString().htmlEntities();

@@ -1,5 +1,5 @@
 <meta>
-	<info name="rafalh webchat" version="1.0" author="rafalh" type="misc" description="Web chat made by rafalh" />
+	<info name="Toxic Web Chat" version="1.1" author="rafalh" type="misc" showInResourceBrowser="true" description="Web chat made by rafalh" />
 	
 	<include resource="ajax" />
 	
