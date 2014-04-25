@@ -49,20 +49,20 @@ end
 -- Global function definitions --
 ---------------------------------
 
-function findPlayer ( str )
-	if ( not str ) then
+function findPlayer(str)
+	if(not str) then
 		return false
 	end
 	
-	local player = getPlayerFromName ( str )
-	if ( player ) then
+	local player = getPlayerFromName(str)
+	if(player) then
 		return player
 	end
 	
-	local str_lower = str:lower ()
-	for i, player in ipairs ( getElementsByType ( 'player' ) ) do
-		local name = getPlayerName ( player ):gsub ( '#%x%x%x%x%x%x', '' ):lower ()
-		if ( name:find ( str_lower, 1, true ) ) then
+	local str_lower = str:lower()
+	for i, player in ipairs(getElementsByType('player')) do
+		local name = getPlayerName(player):gsub('#%x%x%x%x%x%x', ''):lower()
+		if(name:find(str_lower, 1, true)) then
 			return player
 		end
 	end
@@ -70,26 +70,26 @@ function findPlayer ( str )
 	return false
 end
 
-function addInternalEventHandler ( eventtype, handler )
-	assert ( eventtype )
-	if ( not g_InternalEventHandlers[eventtype] ) then
+function addInternalEventHandler(eventtype, handler)
+	assert(eventtype)
+	if(not g_InternalEventHandlers[eventtype]) then
 		g_InternalEventHandlers[eventtype] = {}
 	end
-	table.insert ( g_InternalEventHandlers[eventtype], handler )
+	table.insert(g_InternalEventHandlers[eventtype], handler)
 end
 
-function triggerServerInternalEvent ( eventtype, source, ... )
-	assert ( eventtype )
+function triggerServerInternalEvent(eventtype, source, ...)
+	assert(eventtype)
 	-- Note: unpack must be last arg
-	triggerServerEvent ( 'onEvent_'..g_ThisResName, source, eventtype, unpack ( { ... } ) )
+	triggerServerEvent('onEvent_'..g_ThisResName, source, eventtype, unpack({ ... }))
 end
 
-function triggerInternalEvent ( eventtype, source, ... )
-	assert ( eventtype )
+function triggerInternalEvent(eventtype, source, ...)
+	assert(eventtype)
 	
-	if ( g_InternalEventHandlers[eventtype] ) then
-		for i, handler in ipairs ( g_InternalEventHandlers[eventtype] ) do
-			handler ( ... )
+	if(g_InternalEventHandlers[eventtype]) then
+		for i, handler in ipairs(g_InternalEventHandlers[eventtype]) do
+			handler(...)
 		end
 	end
 end

@@ -1,14 +1,14 @@
 g_ScriptMsgState = { recipients = { g_Root }, prefix = '', color = false }
 local g_WebChatRes
 
-function divChatStr ( str )
+function divChatStr(str)
 	local tbl = {}
 	
-	while ( str:len () > 0 ) do
-		local t = str:sub ( 1, 128 ):reverse ():find ( ' ' )
-		local part = str:sub ( 1, ( t and ( 129 - t ) ) or 128 )
-		table.insert ( tbl, part )
-		str = str:sub ( part:len () + 1 )
+	while(str:len() > 0) do
+		local t = str:sub(1, 128):reverse():find(' ')
+		local part = str:sub(1, (t and ( 129 - t)) or 128)
+		table.insert(tbl, part)
+		str = str:sub(part:len() + 1)
 	end
 	
 	return tbl
@@ -35,10 +35,10 @@ end
 function scriptMsg(fmt, ...)
 	assert(type(fmt) == 'string')
 	
-	if ( g_ScriptMsgState.recipients[1] == g_Root ) then -- everybody is a recipient
-		local part = g_ScriptMsgState.prefix..fmt:format ( ... ):gsub ( '#%x%x%x%x%x%x', '' ):sub ( 1, 128 )
+	if(g_ScriptMsgState.recipients[1] == g_Root) then -- everybody is a recipient
+		local part = g_ScriptMsgState.prefix..fmt:format(...):gsub('#%x%x%x%x%x%x', ''):sub (1, 128)
 		
-		--outputServerLog ( part )
+		--outputServerLog(part)
 		
 		local webChatRes = Resource('rafalh_webchat')
 		if(webChatRes:isReady()) then
@@ -47,30 +47,30 @@ function scriptMsg(fmt, ...)
 	end
 	
 	local recipients = {}
-	for i, element in ipairs ( g_ScriptMsgState.recipients ) do
-		for i, player in ipairs ( getElementsByType ( 'player', element ) ) do
-			table.insert ( recipients, player )
+	for i, element in ipairs(g_ScriptMsgState.recipients ) do
+		for i, player in ipairs(getElementsByType('player', element)) do
+			table.insert(recipients, player )
 		end
-		for i, console in ipairs ( getElementsByType ( 'console', element ) ) do
-			table.insert ( recipients, console )
+		for i, console in ipairs(getElementsByType('console', element)) do
+			table.insert(recipients, console)
 		end
 	end
 	
 	local r, g, b = 255, 196, 128
-	if ( g_ScriptMsgState.color ) then
-		r, g, b = getColorFromString ( g_ScriptMsgState.color )
+	if(g_ScriptMsgState.color) then
+		r, g, b = getColorFromString(g_ScriptMsgState.color)
 	end
 	
-	for i, player in ipairs ( recipients ) do
-		local msg = g_ScriptMsgState.prefix..MuiGetMsg ( fmt, player ):format ( ... ):gsub ( '#%x%x%x%x%x%x', '' )
-		local parts = divChatStr ( msg )
-		local is_console = getElementType ( player ) == 'console'
+	for i, player in ipairs(recipients) do
+		local msg = g_ScriptMsgState.prefix..MuiGetMsg(fmt, player):format(...):gsub('#%x%x%x%x%x%x', '')
+		local parts = divChatStr(msg)
+		local is_console = getElementType(player) == 'console'
 		
-		for i, part in ipairs ( parts ) do
-			if ( is_console ) then
-				outputServerLog ( part )
+		for i, part in ipairs(parts) do
+			if(is_console) then
+				outputServerLog(part)
 			else
-				outputChatBox ( part, player, r, g, b, false )
+				outputChatBox(part, player, r, g, b, false)
 			end
 		end
 	end
