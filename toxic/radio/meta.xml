@@ -5,7 +5,8 @@
 	<script src="gui_c.lua" type="client" />
 	<script src="admin_s.lua" type="server" />
 	
-	<html src="admin.html" />
+	<html src="tpl/index.html" raw="true" />
+	<html src="tpl/edit.html" raw="true" />
 	
 	<file src="img/icon.png" />
 	<file src="img/volume.png" />

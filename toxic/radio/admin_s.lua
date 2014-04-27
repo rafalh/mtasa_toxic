@@ -54,25 +54,8 @@ end
 
 local function handleIndexPage(request, response)
 	response:beginPage(g_ResName..' - Radio Channels')
-	response:write(
-		'<h1>Radio Channels</h1>'..
-		'<div style="margin-bottom: 5px"><a href="'..Http.url('/radio/edit')..'">Add new channel</a></div>'..
-		'<table><tr><th>#</th><th>Name</th><th>URL</th><th>Image</th><th>Operations</th></tr>')
 	local channels = loadChannels()
-	for i, ch in ipairs(channels) do
-		response:write('<tr><td>'..i..'.</td><td>'..htmlSpecialChars(ch.name)..'</td>')
-		response:write('<td><a href="'..htmlSpecialChars(ch.url)..'">'..htmlSpecialChars(ch.url)..'</a></td>')
-		if(ch.img) then
-			response:write('<td><img src="/txmedia/img/'..htmlSpecialChars(ch.img)..'" style="height:16px"> '..htmlSpecialChars(ch.img)..'</td>')
-		else
-			response:write('<td>-</td>')
-		end
-		response:write('<td>'..
-			'<a href="'..Http.url('/radio/edit', {id = ch.url})..'">Edit</a> '..
-			'<a onclick="return confirm(\'Are you sure?\')" href="'..Http.url('/radio/delete', {id = ch.url})..'">Delete</a>'..
-			'</td></tr>')
-	end
-	response:write('</table>')
+	response:writeTpl('radio/tpl/index.html', {channels = channels})
 	response:endPage()
 end
 
@@ -114,15 +97,7 @@ local function handleEditPage(request, response)
 	end
 	
 	response:beginPage(g_ResName..' - '..(edit and 'Edit' or 'Create')..' Radio Channel')
-	response:write(
-		'<h1>'..(edit and 'Edit' or 'Create')..' Channel</h1>'..
-		(err and '<div class="error">'..err..'</div>' or '')..
-		'<form method="post"><table>'..
-		'<tr><td>Name:</td><td><input type="text" name="name" value="'..htmlSpecialChars(ch.name)..'" style="width:400px" /></td></tr>'..
-		'<tr><td>URL:</td><td><input type="text" name="url" value="'..htmlSpecialChars(ch.url)..'" style="width:400px" /></td></tr>'..
-		'<tr><td>Image:</td><td><input type="text" name="img" value="'..htmlSpecialChars(ch.img or '')..'" style="width:400px" /></td></tr>'..
-		'<tr><td colspan="2"><input type="submit" name="save" value="Save" /> <input type="submit" name="cancel" value="Cancel" /></td></tr>'..
-		'</table></form>')
+	response:writeTpl('radio/tpl/edit.html', {edit = edit, err = err, ch = ch})
 	response:endPage()
 end
 

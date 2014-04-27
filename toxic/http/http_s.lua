@@ -98,6 +98,28 @@ function Response.__mt.__index:beginPage(title)
 	'</head><body>')
 end
 
+function Response.__mt.__index:writeTpl(path, params)
+	local f = Cache.get('Http.Teplates.'..path)
+	if(not f) then
+		local tpl = fileGetContents(path)
+		if(not tpl) then return end
+		
+		tpl = tpl:gsub('<%*%s*=(.-)%*>', ']]) response:write(%1) response:write([['):gsub('<%*(.-)%*>', ']]) %1 response:write([[')
+		tpl = 'return function(response, params) response:write([['..tpl..']]) end'
+		--fileSetContents('parsed_tpl.lua', tpl)
+		f, err = loadstring(tpl)
+		f = f and f()
+		if(not f) then
+			Debug.err('Failed to load template: '..tostring(err))
+			return false
+		end
+		
+		Cache.set('Http.Teplates.'..path, f, 300)
+	end
+	
+	f(self, params)
+end
+
 function Response.__mt.__index:endPage()
 	self:write('</body></html>')
 end

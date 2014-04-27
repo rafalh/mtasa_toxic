@@ -1,0 +1,27 @@
+<h1>Radio Channels</h1>
+<div style="margin-bottom: 5px"><a href="<*= Http.url('/radio/edit') *>">Add new channel</a></div>
+<table>
+	<tr>
+		<th>#</th>
+		<th>Name</th>
+		<th>URL</th>
+		<th>Image</th>
+		<th>Operations</th>
+	</tr>
+	<* for i, ch in ipairs(params.channels) do *>
+	<tr>
+		<td><*= i *></td>
+		<td><*= htmlSpecialChars(ch.name) *></td>
+		<td><a href="<*= htmlSpecialChars(ch.url) *>"><*= htmlSpecialChars(ch.url) *></a></td>
+		<* if(ch.img) then *>
+		<td><img src="/txmedia/img/<*= htmlSpecialChars(ch.img) *>" style="height:16px"> <*= htmlSpecialChars(ch.img) *></td>
+		<* else *>
+		<td>-</td>
+		<* end *>
+		<td>
+			<a href="<*= Http.url('/radio/edit', {id = ch.url}) *>">Edit</a> 
+			<a onclick="return confirm('Are you sure?')" href="<*= Http.url('/radio/delete', {id = ch.url}) *>">Delete</a>
+		</td>
+	</tr>
+	<* end *>
+</table>

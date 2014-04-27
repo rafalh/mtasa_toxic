@@ -1,0 +1,23 @@
+<h1><*= (params.edit and 'Edit' or 'Create') *> Channel</h1>
+<* if(params.err) then *>
+<div class="error"><*= params.err *></div>
+<* end *>
+<form method="post">
+<table>
+	<tr>
+		<td>Name:</td>
+		<td><input type="text" name="name" value="<*= htmlSpecialChars(params.ch.name) *>" style="width:400px" /></td>
+	</tr>
+	<tr>
+		<td>URL:</td>
+		<td><input type="text" name="url" value="<*= htmlSpecialChars(params.ch.url) *>" style="width:400px" /></td>
+	</tr>
+	<tr>
+		<td>Image:</td>
+		<td><input type="text" name="img" value="<*= htmlSpecialChars(params.ch.img or '') *>" style="width:400px" /></td>
+	</tr>
+	<tr>
+		<td colspan="2"><input type="submit" name="save" value="Save" /> <input type="submit" name="cancel" value="Cancel" /></td>
+	</tr>
+</table>
+</form>
