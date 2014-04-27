@@ -139,6 +139,19 @@ function urlEncodeTbl(tbl)
 	return table.concat(tmp, '&')
 end
 
+function urlDecode(str)
+	assert(str)
+	return tostring(str):gsub('%+', ' '):gsub('%%(%x%x)', function(num)
+		return string.char(tonumber('0x'..num))
+	end)
+end
+
+function htmlSpecialChars(str)
+	return str:gsub('[&"\'<>]', {
+		['&'] = '&amp;', ['"'] = '&quot;', ['\''] = '&#039;',
+		['<'] = '&lt;', ['>'] = '&gt;'})
+end
+
 function addInternalEventHandler(eventtype, handler)
 	assert(eventtype and handler)
 	if(not g_InternalEventHandlers[eventtype]) then

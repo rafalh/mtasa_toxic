@@ -267,7 +267,11 @@ end
 function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	-- Prepare context
 	local ctx = {}
-	ctx.player = Player.fromEl(sender)
+	if(isElement(sender)) then
+		ctx.player = Player.fromEl(sender)
+	elseif(type(sender) == 'userdata') then -- probably account
+		
+	end
 	if(not ctx.player) then return end
 	
 	-- First check if this is a valid command

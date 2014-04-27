@@ -1,0 +1,12 @@
+<* 
+	local request = {hdrs = requestHeaders, params = form, cookies = cookies, ip = hostname, url = url}
+	local response = exports.toxic:HttpHandleRequest(request)
+	httpWrite(response.data)
+	for k, v in pairs(response.hdrs) do
+		httpSetResponseHeader(k, v)
+	end
+	for k, v in pairs(response.cookies) do
+		httpSetResponseCookie(k, v)
+	end
+	httpSetResponseCode(response.status)
+*>

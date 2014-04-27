@@ -117,20 +117,6 @@ function isPedDead(player)
 	return _isPedDead(player)
 end
 
-function trimStr(str)
-	str = str:gsub('^%s+', '')
-	str = str:gsub('%s+$', '')
-	return str
-end
-
-function upperCaseWords(str)
-	return str:gsub('^(%w)', function(letter)
-		return letter:upper()
-	end):gsub('(%s)(%w)', function(space, letter)
-		return space..letter:upper()
-	end)
-end
-
 function isNativeFunction(func)
 	local info = debug.getinfo(func, 'S')
 	return info.what == 'C'

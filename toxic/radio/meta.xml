@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <meta>
-	<info name="Radio" author="rafalh" />
+	<info name="Radio" author="rafalh" pages="../http/index.html?path=/radio/admin|Radio channels" />
 	
 	<script src="gui_c.lua" type="client" />
+	<script src="admin_s.lua" type="server" />
+	
+	<html src="admin.html" />
 	
 	<file src="img/icon.png" />
 	<file src="img/volume.png" />

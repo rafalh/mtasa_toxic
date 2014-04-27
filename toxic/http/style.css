@@ -1,0 +1,29 @@
+a, a:visited {
+	color: #00F;
+}
+a:hover {
+	color: #F00;
+}
+
+h1 {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+table { 
+	border-spacing:0; 
+	border-collapse:collapse;   
+}
+th {
+	background-color: #DDD;
+}
+td, th {
+	border: 2px solid #BBB;
+}
+td {
+	background-color: #EEE;
+}
+
+.error {
+	color: #F00;
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="HTTP Common Files" author="rafalh" />
+	
+	<script src="http_s.lua" type="server" />
+	<html src="style.css" raw="true" />
+	<html src="index.html" />
+	
+	<export function="HttpHandleRequest" http="true" />
+</meta>
