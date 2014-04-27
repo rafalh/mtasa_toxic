@@ -10,7 +10,7 @@
 	</tr>
 	<* for i, ch in ipairs(params.channels) do *>
 	<tr>
-		<td><*= i *></td>
+		<td><*= i *>.</td>
 		<td><*= htmlSpecialChars(ch.name) *></td>
 		<td><a href="<*= htmlSpecialChars(ch.url) *>"><*= htmlSpecialChars(ch.url) *></a></td>
 		<* if(ch.img) then *>

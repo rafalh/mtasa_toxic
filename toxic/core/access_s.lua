@@ -20,11 +20,18 @@ function AccessRight.__mt.__index:init(name, absolute)
 end
 
 function AccessRight.__mt.__index:check(player)
-	if(type(player) ~= 'table') then
+	local acl
+	if(isElement(player)) then
 		player = Player.fromEl(player)
-		assert(player)
+	elseif(type(player) == 'userdata') then -- account
+		local fullName = self:getFullName()
+		local obj = 'user.'..getAccountName(player)
+		return hasObjectPermissionTo(obj, fullName, false)
 	end
-	return player.acl:check(self)
+	
+	acl = player and player.acl
+	assert(acl)
+	return acl:check(self)
 end
 
 function AccessRight.__mt.__index:getFullName()

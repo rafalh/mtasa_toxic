@@ -2,7 +2,9 @@
 function HttpHandleRequest(req)
 	if(type(req) ~= 'table' or not req.hdrs or not req.params or not req.cookies or not req.ip or not req.url) then return end
 	
-	req.account = user
+	if(user) then
+		req.account = user
+	end
 	
 	-- Note: MTA doesn't url-decode anything
 	req.url = urlDecode(req.url)
@@ -28,8 +30,8 @@ namespace('Http')
 
 local g_Routes = {}
 
-function addRoute(path, handler)
-	g_Routes[path] = handler
+function addRoute(path, handler, right)
+	g_Routes[path] = {handler, right}
 end
 
 function handleReq(req)
@@ -40,12 +42,16 @@ function handleReq(req)
 		path = req.params.path
 	end
 	
-	local handler = g_Routes[path]
-	if(handler) then
-		handler(req, response)
-	else
+	local route = g_Routes[path]
+	if(not route) then
 		response:write('Invalid route: '..tostring(path)..'!')
 		response.status = 404
+	elseif(route[2] and not route[2]:check(req.account)) then
+		response:write('Access denied for '..tostring(getAccountName(req.account))..'!')
+		response:setHeader('WWW-Authenticate', 'Basic realm="Enter Toxic username and password"')
+		response.status = 401
+	else
+		route[1](req, response)
 	end
 	
 	response:finish()

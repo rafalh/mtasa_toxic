@@ -1,5 +1,7 @@
 --namespace('Radio')
 
+local g_Right = AccessRight('RadioChannels')
+
 local function loadChannels()
 	local channels = Cache.get('Radio.Channels')
 	if(channels) then return channels end
@@ -118,7 +120,7 @@ local function handleDeletePage(request, response)
 end
 
 addInitFunc(function()
-	Http.addRoute('/radio/admin', handleIndexPage)
-	Http.addRoute('/radio/edit', handleEditPage)
-	Http.addRoute('/radio/delete', handleDeletePage)
+	Http.addRoute('/radio/admin', handleIndexPage, g_Right)
+	Http.addRoute('/radio/edit', handleEditPage, g_Right)
+	Http.addRoute('/radio/delete', handleDeletePage, g_Right)
 end)

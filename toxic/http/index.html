@@ -1,5 +1,5 @@
 <* 
-	local request = {hdrs = requestHeaders, params = form, cookies = cookies, ip = hostname, url = url}
+	local request = {hdrs = requestHeaders, params = form, cookies = cookies, ip = hostname, url = url, account = user}
 	local response = exports.toxic:HttpHandleRequest(request)
 	httpWrite(response.data)
 	for k, v in pairs(response.hdrs) do

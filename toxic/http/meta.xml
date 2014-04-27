@@ -6,5 +6,5 @@
 	<html src="style.css" raw="true" />
 	<html src="index.html" />
 	
-	<export function="HttpHandleRequest" http="true" />
+	<export function="HttpHandleRequest" />
 </meta>
