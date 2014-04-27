@@ -35,7 +35,7 @@ function remove(name)
 	-- Destroy associated element
 	if(isElement(descr[1])) then
 		destroyElement(descr[1])
-	elseif(descr[1].destroy) then
+	elseif(type(descr[1]) == 'table' and descr[1].destroy) then
 		descr[1]:destroy()
 	end
 	
