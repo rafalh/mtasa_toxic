@@ -173,7 +173,7 @@ local function UpCreateGui()
 	local copyrightLabel = guiCreateLabel(10, h - 25, 230, 15, "Copyright (c) 2009-2014 by rafalh", false, g_Wnd)
 	guiLabelSetColor(copyrightLabel, 128, 128, 128)
 	
-	local verLabel = guiCreateLabel(250, h - 25, 100, 15, '', false, g_Wnd)
+	local verLabel = guiCreateLabel(250, h - 25, 150, 15, '', false, g_Wnd)
 	guiLabelSetColor(verLabel, 128, 128, 128)
 	RPC('getThisResourceVersion'):onResult(function(ver)
 		guiSetText(verLabel, MuiGetMsg("Version: %s"):format(ver))
