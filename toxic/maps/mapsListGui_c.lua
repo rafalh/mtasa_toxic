@@ -17,7 +17,7 @@ local function MlstUpdateList(gui)
 	local sortDir = guiGetProperty(gui.list, 'SortDirection')
 	guiSetProperty(gui.list, 'SortDirection', 'None')
 	
-	local pattern = guiGetText(gui.search_edit):lower()
+	local pattern = guiGetText(gui.searchEdit):lower()
 	
 	for resName, data in pairs(g_MapList) do
 		local mapName, mapAuthor = data[1], data[2]
@@ -27,12 +27,11 @@ local function MlstUpdateList(gui)
 			assert(data[4]) -- bad argument #1 to 'format' (number expected, got nil)
 			local rating = ('%.1f'):format(data[4])
 			
-			local status = guiGridListSetItemText(gui.list, row, 1, mapName, false, false)
-			status = status and guiGridListSetItemText(gui.list, row, 2, mapAuthor, false, false)
-			status = status and guiGridListSetItemText(gui.list, row, 3, played, false, true)
-			status = status and guiGridListSetItemText(gui.list, row, 4, rating, false, true)
-			status = status and guiGridListSetItemData(gui.list, row, 1, resName)
-			assert(status)
+			guiGridListSetItemText(gui.list, row, 1, mapName, false, false)
+			guiGridListSetItemText(gui.list, row, 2, mapAuthor, false, false)
+			guiGridListSetItemText(gui.list, row, 3, played, false, true)
+			guiGridListSetItemText(gui.list, row, 4, rating, false, true)
+			guiGridListSetItemData(gui.list, row, 1, resName)
 		end
 	end
 	
@@ -62,8 +61,8 @@ local function MlstClose()
 	local gui = g_GuiList[wnd]
 	assert(gui)
 	
-	destroyElement(wnd)
 	gui.cb(false)
+	gui:destroy()
 	
 	showCursor(false)
 end
@@ -89,8 +88,8 @@ local function MlstAccept()
 	local row = guiGridListGetSelectedItem(gui.list)
 	if(row ~= -1 ) then
 		local data = guiGridListGetItemData(gui.list, row, 1)
-		destroyElement(gui.wnd)
 		gui.cb(data)
+		gui:destroy()
 		
 		showCursor(false)
 	end
@@ -100,45 +99,35 @@ local function MlstOnElementDestroy()
 	g_GuiList[source] = nil
 end
 
-function MlstDisplay(title, btn_name, callback)
+function MlstDisplay(title, btnName, callback)
 	if(not g_MapList) then
 		g_MapList = {}
 		RPC('getMapListRPC'):onResult(MlstOnMapList):exec()
 	end
 	
-	local gui = { cb = callback }
+	local gui = GUI.create('mapsList')
+	gui.cb = callback
 	
-	local w, h = 480, 400
-	local x, y = (g_ScreenSize[1] - w) / 2,(g_ScreenSize[2] - h) / 2
-	gui.wnd = guiCreateWindow(x, y, w, h, title, false)
-	addEventHandler('onClientGUISize', gui.wnd, MlstResize, false)
+	guiSetText(gui.wnd, title)
+	guiSetText(gui.titleLabel, title)
+	
 	addEventHandler('onClientElementDestroy', gui.wnd, MlstOnElementDestroy, false)
-	
-	guiCreateLabel(10, 20, w - 20, 15, title, false, gui.wnd)
-	
-	guiCreateLabel(10, 40, 50, 15, "Search:", false, gui.wnd)
-	gui.search_edit = guiCreateEdit(60, 40, 150, 20, '', false, gui.wnd)
-	addEventHandler( 'onClientGUIChanged', gui.search_edit, MlstOnPatternChange, false)
-	
-	gui.list = guiCreateGridList(10, 70, w - 20, h - 70 - 45, false, gui.wnd)
-	guiGridListAddColumn(gui.list, "Map name", 0.5)
-	guiGridListAddColumn(gui.list, "Author", 0.2)
-	guiGridListAddColumn(gui.list, "Played", 0.1)
-	guiGridListAddColumn(gui.list, "Map rating", 0.1)
+	addEventHandler('onClientGUIChanged', gui.searchEdit, MlstOnPatternChange, false)
 	addEventHandler('onClientGUIDoubleClick', gui.list, MlstAccept, false)
-	MlstUpdateList(gui)
 	
-	if(btn_name) then
-		gui.accept_btn = guiCreateButton(w - 200, h - 25 - 10, 100, 25, btn_name, false, gui.wnd)
-		addEventHandler('onClientGUIClick', gui.accept_btn, MlstAccept, false)
+	if(btnName) then
+		guiSetText(gui.acceptBtn, btnName)
+		addEventHandler('onClientGUIClick', gui.acceptBtn, MlstAccept, false)
+	else
+		guiSetVisible(gui.acceptBtn, false)
 	end
 	
-	local close_btn_name = accept_btn and 'Cancel' or 'Close'
-	gui.close_btn = guiCreateButton(w - 80 - 10, h - 25 - 10, 80, 25, close_btn_name, false, gui.wnd)
-	addEventHandler('onClientGUIClick', gui.close_btn, MlstClose, false)
+	addEventHandler('onClientGUIClick', gui.closeBtn, MlstClose, false)
+	
+	MlstUpdateList(gui)
 	
 	g_GuiList[gui.wnd] = gui
-	guiBringToFront(gui.search_edit)
+	guiBringToFront(gui.searchEdit)
 	showCursor(true)
 	
 	return gui.wnd

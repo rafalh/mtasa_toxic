@@ -237,10 +237,13 @@
 	<msg id="Add to queue">Dodaj do kolejki</msg>
 	<msg id="Buy map">Kup mapę</msg>
 	<msg id="Map name">Nazwa mapy</msg>
+	<msg id="Author">Autor</msg>
 	<msg id="Played">Grana</msg>
 	<msg id="Map rating">Ocena mapy</msg>
 	<msg id="Select your candidate for next map">Wybierz swoją propozycję następnej mapy</msg>
 	<msg id="Choose the next map to buy">Wybierz mapę, którą chcesz kupić</msg>
+	<msg id="Change current map">Zmień aktywną mapę</msg>
+	<msg id="Change map">Zmień mapę</msg>
 	
 	<msg id="Player profile">Profil gracza</msg>
 	<msg id="Information">Informacje</msg>
