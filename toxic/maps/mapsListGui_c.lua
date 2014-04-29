@@ -10,7 +10,12 @@ local g_GuiList = {}
 local g_MapList = false
 
 local function MlstUpdateList(gui)
+	local prof = DbgPerf()
 	guiGridListClear(gui.list)
+	
+	-- Disable sorting temporary (it breaks row identifiers and makes update much slower)
+	local sortDir = guiGetProperty(gui.list, 'SortDirection')
+	guiSetProperty(gui.list, 'SortDirection', 'None')
 	
 	local pattern = guiGetText(gui.search_edit):lower()
 	
@@ -21,13 +26,19 @@ local function MlstUpdateList(gui)
 			local played = data[3]
 			assert(data[4]) -- bad argument #1 to 'format' (number expected, got nil)
 			local rating = ('%.1f'):format(data[4])
-			guiGridListSetItemText(gui.list, row, 1, mapName, false, false)
-			guiGridListSetItemText(gui.list, row, 2, mapAuthor, false, false)
-			guiGridListSetItemText(gui.list, row, 3, played, false, true)
-			guiGridListSetItemText(gui.list, row, 4, rating, false, true)
-			guiGridListSetItemData(gui.list, row, 1, resName)
+			
+			local status = guiGridListSetItemText(gui.list, row, 1, mapName, false, false)
+			status = status and guiGridListSetItemText(gui.list, row, 2, mapAuthor, false, false)
+			status = status and guiGridListSetItemText(gui.list, row, 3, played, false, true)
+			status = status and guiGridListSetItemText(gui.list, row, 4, rating, false, true)
+			status = status and guiGridListSetItemData(gui.list, row, 1, resName)
+			assert(status)
 		end
 	end
+	
+	-- Reenable sorting
+	guiSetProperty(gui.list, 'SortDirection', sortDir)
+	prof:cp('MlstUpdateList')
 end
 
 local function MlstOnMapList(mapList)
