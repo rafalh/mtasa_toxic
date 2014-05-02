@@ -82,6 +82,29 @@ function MetaFile.__mt.__index:setInfo(attr, value)
 	return success
 end
 
+function MetaFile.__mt.__index:addClientFile(filename)
+	if(not self.node and not self:open()) then return false end
+	
+	local subnode = xmlCreateChild(self.node, 'file')
+	if(not subnode) then return false end
+	
+	return xmlNodeSetAttribute(subnode, 'src', filename)
+end
+
+function MetaFile.__mt.__index:removeFile(filename)
+	if(not self.node and not self:open()) then return false end
+	
+	for i, subnode in ipairs(xmlNodeGetChildren(self.node)) do
+		local tag = xmlNodeGetName(subnode)
+		if(tag == 'file' or tag == 'script' or tag == 'html') then
+			local src = xmlNodeGetAttribute(subnode, 'src')
+			if(src == filename) then
+				xmlDestroyNode(subnode)
+			end
+		end
+	end
+end
+
 function MetaFile.__mt.__index:open()
 	if(self.node) then self:close() end
 	self.node = xmlLoadFile(self.path)

@@ -95,12 +95,14 @@ function Response.__mt.__index:redirect(path, params)
 	self:setHeader('Location', url(path, params))
 end
 
-function Response.__mt.__index:beginPage(title)
+function Response.__mt.__index:beginPage(title, head)
 	self:setHeader('Content-Type', 'text/html; charset=utf-8')
 	self:write(
 	'<html><head>'..
 		'<title>'..title..'</title>'..
 		'<link rel="stylesheet" type="text/css" href="/'..g_ResName..'/http/style.css" />'..
+		'<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>'..
+		(head or '')..
 	'</head><body>')
 end
 

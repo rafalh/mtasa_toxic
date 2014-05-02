@@ -3,7 +3,8 @@
 <div class="error"><*= params.err *></div>
 <* end *>
 <form method="post">
-<table>
+<input type="hidden" name="save" value="1" />
+<table class="form-tbl">
 	<tr>
 		<td>Name:</td>
 		<td><input type="text" name="name" value="<*= htmlSpecialChars(params.ch.name) *>" style="width:400px" /></td>
@@ -14,10 +15,13 @@
 	</tr>
 	<tr>
 		<td>Image:</td>
-		<td><input type="text" name="img" value="<*= htmlSpecialChars(params.ch.img or '') *>" style="width:400px" /></td>
+		<td>
+			<input type="text" name="img" value="<*= htmlSpecialChars(params.ch.img or '') *>" style="width:400px" /><br />
+			<input type="file" id="imgUpload" style="width:400px" />
+		</td>
 	</tr>
 	<tr>
-		<td colspan="2"><input type="submit" name="save" value="Save" /> <input type="submit" name="cancel" value="Cancel" /></td>
+		<td colspan="2"><input type="submit" value="Save" /> <input type="button" value="Cancel" onclick="window.history.back()" /></td>
 	</tr>
 </table>
 </form>

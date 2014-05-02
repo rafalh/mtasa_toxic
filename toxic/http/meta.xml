@@ -4,6 +4,7 @@
 	
 	<script src="http_s.lua" type="server" />
 	<html src="style.css" raw="true" />
+	<html src="fileUpload.js" raw="true" />
 	<html src="index.html" />
 	
 	<export function="HttpHandleRequest" />

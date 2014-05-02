@@ -29,6 +29,7 @@
 	<script src="utils/rpc.lua" type="shared" />
 	<script src="utils/resource.lua" type="shared" />
 	<script src="utils/event.lua" type="server" />
+	<script src="utils/metaFile_s.lua" type="server" />
 	
 	<script src="core/start_s.lua" type="server" />
 	<script src="core/settings_s.lua" type="server" />

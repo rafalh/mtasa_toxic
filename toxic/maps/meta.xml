@@ -7,7 +7,6 @@
 	<script src="map_s.lua" type="server" />
 	<script src="mapList_s.lua" type="server" />
 	<script src="mapQueue_s.lua" type="server" />
-	<script src="metaFile_s.lua" type="server" />
 	<script src="adminCmd_s.lua" type="server" />
 	<script src="mapOptionsCmd_s.lua" type="server" />
 	<script src="mapFixingCmd_s.lua" type="server" />
