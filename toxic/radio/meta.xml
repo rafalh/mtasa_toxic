@@ -2,8 +2,9 @@
 <meta>
 	<info name="Radio" author="rafalh" pages="../http/index.html?path=/radio/admin|Radio channels" />
 	
-	<script src="gui_c.lua" type="client" />
+	<script src="channels_s.lua" type="server" />
 	<script src="admin_s.lua" type="server" />
+	<script src="gui_c.lua" type="client" />
 	
 	<html src="tpl/index.html" raw="true" />
 	<html src="tpl/edit.html" raw="true" />
@@ -12,5 +13,5 @@
 	<file src="img/volume.png" />
 	<file src="img/muted.png" />
 	
-	<config src="../conf/radio.xml" type="client" />
+	<config src="../conf/radio.xml" />
 </meta>

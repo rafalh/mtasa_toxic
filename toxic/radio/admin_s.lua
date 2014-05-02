@@ -1,62 +1,10 @@
---namespace('Radio')
+namespace('Radio')
 
 local g_Right = AccessRight('RadioChannels')
 
-local function loadChannels()
-	local channels = Cache.get('Radio.Channels')
-	if(channels) then return channels end
-	
-	channels = {}
-	local node, i = xmlLoadFile('conf/radio.xml'), 0
-	if(node) then
-		while(true) do
-			local subnode = xmlFindChild(node, 'channel', i)
-			if(not subnode) then break end
-			i = i + 1
-			
-			local ch = {}
-			ch.name = xmlNodeGetAttribute(subnode, 'name')
-			ch.img = xmlNodeGetAttribute(subnode, 'img')
-			ch.url = xmlNodeGetValue(subnode)
-			assert(ch.name and ch.url)
-			
-			table.insert(channels, ch)
-		end
-		
-		xmlUnloadFile(node)
-	else
-		Debug.warn('Failed to load radio channnels list')
-	end
-	
-	table.sort(channels, function(ch1, ch2) return ch1.name:lower() < ch2.name:lower() end)
-	Cache.set('Radio.Channels', channels, 300)
-	
-	return channels
-end
-
-local function saveChannels(channels)
-	local node = xmlCreateFile('conf/radio.xml', 'channels')
-	if(not node) then return false end
-	
-	table.sort(channels, function(ch1, ch2) return ch1.name:lower() < ch2.name:lower() end)
-	Cache.set('Radio.Channels', channels, 300)
-	
-	for i, ch in ipairs(channels) do
-		local subnode = xmlCreateChild(node, 'channel')
-		xmlNodeSetValue(subnode, ch.url)
-		xmlNodeSetAttribute(subnode, 'name', ch.name)
-		if(ch.img) then
-			xmlNodeSetAttribute(subnode, 'img', ch.img)
-		end
-	end
-	
-	xmlSaveFile(node)
-	xmlUnloadFile(node)
-end
-
 local function handleIndexPage(request, response)
 	response:beginPage(g_ResName..' - Radio Channels')
-	local channels = loadChannels()
+	local channels = getChannels()
 	response:writeTpl('radio/tpl/index.html', {channels = channels})
 	response:endPage()
 end
@@ -86,7 +34,7 @@ end
 local function handleEditPage(request, response)
 	local ch = false
 	local edit = request.params.id and true
-	local channels = loadChannels()
+	local channels = getChannels()
 	for i, ch2 in ipairs(channels) do
 		if(ch2.url == request.params.id) then
 			ch = ch2
@@ -150,7 +98,7 @@ local function handleEditPage(request, response)
 				
 				meta:addClientFile(filename)
 				metaChanged = true
-				Debug.info('uploaded file '..uploadedImg.name..' size '..uploadedImg.content:len()..' saved in '..path)
+				--Debug.info('uploaded file '..uploadedImg.name..' size '..uploadedImg.content:len()..' saved in '..path)
 			end
 			
 			if(metaChanged) then
@@ -172,7 +120,7 @@ end
 
 local function handleDeletePage(request, response)
 	local found = false
-	local channels = loadChannels()
+	local channels = getChannels()
 	for i, ch2 in ipairs(channels) do
 		if(ch2.url == request.params.id) then
 			found = true

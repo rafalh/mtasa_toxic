@@ -16,34 +16,6 @@ local RadioPanel = {
 	tooltip = "Listen to internet radio",
 }
 
-local function loadChannels()
-	local channels = {}
-	local node, i = xmlLoadFile('conf/radio.xml'), 0
-	if(node) then
-		while(true) do
-			local subnode = xmlFindChild(node, 'channel', i)
-			if(not subnode) then break end
-			i = i + 1
-			
-			local ch = {}
-			ch.name = xmlNodeGetAttribute(subnode, 'name')
-			ch.img = xmlNodeGetAttribute(subnode, 'img')
-			ch.url = xmlNodeGetValue(subnode)
-			assert(ch.name and ch.url)
-			
-			table.insert(channels, ch)
-		end
-		
-		xmlUnloadFile(node)
-	else
-		Debug.warn('Failed to load radio channnels list')
-	end
-	
-	table.sort(channels, function(ch1, ch2) return ch1.name < ch2.name end)
-	
-	return channels
-end
-
 local function startRadio(url)
 	assert(not g_Sound)
 	setRadioChannel(0)
@@ -135,6 +107,26 @@ local function onFilterChange()
 	g_List:setFilter(g_Filter)
 end
 
+local function onChannelsList(channels)
+	g_Channels = channels
+	
+	g_List:clear()
+	for i, ch in ipairs(channels) do
+		local imgPath = ch.img and ':'..MEDIA_RES_NAME..'/'..ch.img
+		if(not imgPath or not fileExists(imgPath)) then
+			imgPath = 'img/no_img.png'
+		end
+		
+		g_List:addItem(ch.name, imgPath, i)
+		
+		if(ch.url == g_Url) then
+			g_List:setActiveItem(i)
+			guiSetText(g_RadioName, ch.name)
+			guiStaticImageLoadImage(g_RadioImg, imgPath)
+		end
+	end
+end
+
 local function createGui(panel)
 	g_Panel = panel
 	local w, h = guiGetSize(panel, false)
@@ -158,8 +150,6 @@ local function createGui(panel)
 	guiSetVisible(g_TurnOffBtn, g_Sound and true)
 	addEventHandler('onClientGUIClick', g_TurnOffBtn, onTurnOffClick, false)
 	
-	g_Channels = loadChannels()
-	
 	local listSize = {w - 20, h - 105}
 	if(UpNeedsBackBtn()) then
 		local btn = guiCreateButton(w - 80, h - 35, 70, 25, "Back", false, panel)
@@ -170,16 +160,8 @@ local function createGui(panel)
 	g_List = ListView.create({10, 100}, listSize, panel, nil, nil, nil, true)
 	g_List.onClickHandler = onChannelClick
 	
-	for i, ch in ipairs(g_Channels) do
-		local imgPath = ch.img and ':'..MEDIA_RES_NAME..'/'..ch.img or 'img/no_img.png'
-		g_List:addItem(ch.name, imgPath, i)
-		
-		if(ch.url == g_Url) then
-			g_List:setActiveItem(i)
-			guiSetText(g_RadioName, ch.name)
-			guiStaticImageLoadImage(g_RadioImg, imgPath)
-		end
-	end
+	-- Get channels list from server
+	RPC('Radio.getChannels'):onResult(onChannelsList):exec()
 end
 
 function RadioPanel.onShow(panel)
