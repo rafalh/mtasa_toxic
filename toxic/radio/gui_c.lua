@@ -162,12 +162,17 @@ local function createGui(panel)
 	
 	-- Get channels list from server
 	RPC('Radio.getChannels'):onResult(onChannelsList):exec()
+	g_Channels = {}
 end
 
 function RadioPanel.onShow(panel)
 	if(not g_Panel) then
 		g_Panel = panel
 		createGui(panel)
+	elseif(not g_Channels) then
+		-- Get channels list from server
+		RPC('Radio.getChannels'):onResult(onChannelsList):exec()
+		g_Channels = {}
 	end
 end
 
@@ -217,9 +222,22 @@ local function initRadio()
 	setTimer(checkSounds, 1000, 0)
 end
 
+local function onRadioChannelsChange()
+	if(g_Panel and guiGetVisible(g_Panel)) then
+		-- Get channels list from server
+		RPC('Radio.getChannels'):onResult(onChannelsList):exec()
+		g_Channels = {}
+	else
+		g_Channels = false
+	end
+end
+
 UpRegister(RadioPanel)
 addEventHandler('onClientPlayerRadioSwitch', g_Me, onRadioSwitch)
 addEventHandler('onClientResourceStart', g_ResRoot, initRadio)
+
+addEvent('toxic.onRadioChannelsChange', true)
+addEventHandler('toxic.onRadioChannelsChange', g_ResRoot, onRadioChannelsChange)
 
 Settings.register
 {

@@ -99,10 +99,16 @@ end
 local function handleDeletePage(request, response)
 	local found = false
 	local channels = getChannels()
-	for i, ch2 in ipairs(channels) do
-		if(ch2.url == request.params.id) then
+	for i, ch in ipairs(channels) do
+		if(ch.url == request.params.id) then
 			found = true
 			table.remove(channels, i)
+			if(ch.img) then
+				local mediaRes = ResourceEditor('txmedia')
+				if(not mediaRes:deleteFile(ch.img)) then
+					Debug.warn('mediaRes:deleteFile '..ch.img..' failed')
+				end
+			end
 			break
 		end
 	end

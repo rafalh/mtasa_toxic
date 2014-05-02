@@ -1,5 +1,7 @@
 namespace('Radio')
 
+local g_NotifyPlayers = {}
+
 local function loadChannels()
 	channels = {}
 	local node, i = xmlLoadFile('conf/radio.xml'), 0
@@ -28,6 +30,10 @@ local function loadChannels()
 	return channels
 end
 
+local function notifyAll()
+	triggerClientEvent(g_NotifyPlayers, 'toxic.onRadioChannelsChange', resourceRoot)
+end
+
 function saveChannels(channels)
 	local node = xmlCreateFile('conf/radio.xml', 'channels')
 	if(not node) then return false end
@@ -46,6 +52,8 @@ function saveChannels(channels)
 	
 	xmlSaveFile(node)
 	xmlUnloadFile(node)
+	
+	notifyAll()
 end
 
 function getChannels()
@@ -54,7 +62,17 @@ function getChannels()
 		channels = loadChannels()
 		Cache.set('Radio.Channels', channels, 300)
 	end
+	
+	if(not table.find(g_NotifyPlayers, client)) then
+		table.insert(g_NotifyPlayers, client)
+	end
 	return channels
 end
 
 RPC.allow('Radio.getChannels')
+
+addInitFunc(function()
+	addEventHandler('onPlayerQuit', root, function()
+		table.removeValue(g_NotifyPlayers, source)
+	end)
+end)
