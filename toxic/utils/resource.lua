@@ -32,6 +32,10 @@ function Resource.__mt.__index:call(fnName, ...)
 	return call(self.res, fnName, ...)
 end
 
+function Resource.__mt.__index:getName()
+	return self.name
+end
+
 function Resource.__mt.__index:isReady()
 	return self.ready
 end

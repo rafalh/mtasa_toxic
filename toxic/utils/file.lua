@@ -18,6 +18,7 @@ function fileSetContents(path, buf)
 	
 	fileWrite(file, buf)
 	fileClose(file)
+	return true
 end
 
 function fileGetMd5(path)

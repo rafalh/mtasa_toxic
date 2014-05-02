@@ -91,6 +91,12 @@ function table.merge(tbl1, tbl2, _subst)
 	return ret
 end
 
+function table.set(tbl, data)
+	for k, v in pairs(data) do
+		tbl[k] = v
+	end
+end
+
 function table.dump(tbl, _stack)
 	-- Stack is needed to fix overflow for tables with recursion
 	if(not _stack) then

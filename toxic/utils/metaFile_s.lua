@@ -82,16 +82,7 @@ function MetaFile.__mt.__index:setInfo(attr, value)
 	return success
 end
 
-function MetaFile.__mt.__index:addClientFile(filename)
-	if(not self.node and not self:open()) then return false end
-	
-	local subnode = xmlCreateChild(self.node, 'file')
-	if(not subnode) then return false end
-	
-	return xmlNodeSetAttribute(subnode, 'src', filename)
-end
-
-function MetaFile.__mt.__index:removeFile(filename)
+function MetaFile.__mt.__index:getFileInfo(filename)
 	if(not self.node and not self:open()) then return false end
 	
 	for i, subnode in ipairs(xmlNodeGetChildren(self.node)) do
@@ -99,10 +90,52 @@ function MetaFile.__mt.__index:removeFile(filename)
 		if(tag == 'file' or tag == 'script' or tag == 'html') then
 			local src = xmlNodeGetAttribute(subnode, 'src')
 			if(src == filename) then
-				xmlDestroyNode(subnode)
+				local attr = xmlNodeGetAttributes(subnode)
+				attr.src = nil
+				return tag, attr
 			end
 		end
 	end
+	
+	return false
+end
+
+function MetaFile.__mt.__index:addFile(filename, tag, attr)
+	if(not self.node and not self:open()) then return false end
+	
+	if(not tag) then tag = 'file' end
+	local subnode = xmlCreateChild(self.node, tag)
+	if(not subnode) then return false end
+	
+	local success = xmlNodeSetAttribute(subnode, 'src', filename)
+	
+	for k, v in pairs(attr or {}) do
+		success = success and xmlNodeSetAttribute(subnode, k, v)
+	end
+	
+	if(not success) then
+		xmlDestroyNode(subnode)
+		return false
+	end
+	
+	return true
+end
+
+function MetaFile.__mt.__index:removeFile(filename)
+	if(not self.node and not self:open()) then return false end
+	
+	local ret = false
+	for i, subnode in ipairs(xmlNodeGetChildren(self.node)) do
+		local tag = xmlNodeGetName(subnode)
+		if(tag == 'file' or tag == 'script' or tag == 'html') then
+			local src = xmlNodeGetAttribute(subnode, 'src')
+			if(src == filename) then
+				ret = ret or xmlDestroyNode(subnode)
+			end
+		end
+	end
+	
+	return ret
 end
 
 function MetaFile.__mt.__index:open()
