@@ -3,8 +3,6 @@
 
 namespace('Teams')
 
-#if(SHOP_ITEM_TEAM) then
-
 local g_TeamGUI
 local g_TeamClrWnd
 
@@ -88,5 +86,3 @@ ShpRegisterItem{
 	dataToCount = function(val) return val and 1 end,
 	getAllowedAct = function(val) return not val, true, true end -- buy, sell, use
 }
-
-#end

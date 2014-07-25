@@ -8,5 +8,3 @@
 
 #PASSWORD_RECOVERY = true
 #ASK_FOR_EMAIL = true
-
-#SHOP_ITEM_TEAM = false

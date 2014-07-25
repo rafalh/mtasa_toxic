@@ -3,8 +3,6 @@
 
 namespace('Teams')
 
-#if(SHOP_ITEM_TEAM) then
-
 ShpRegisterItem
 {
 	id = 'team',
@@ -69,5 +67,3 @@ function getOwnedInfoRPC()
 	return teamInfo
 end
 RPC.allow('Teams.getOwnedInfoRPC')
-
-#end
