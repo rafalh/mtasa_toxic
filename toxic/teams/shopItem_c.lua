@@ -75,7 +75,8 @@ local function onOwnedTeamInfo(teamInfo, err)
 	showCursor(true)
 end
 
-g_ShopItems.team = {
+ShpRegisterItem{
+	id = 'team',
 	name = "Clan Team",
 	cost = 1500000,
 	descr = "Buy team for your clan. You can set tag, full name and color of your team.",

@@ -246,11 +246,12 @@ ShpRegisterItem{
 		
 		fixVehicle(veh)
 		addEventHandler('onVehicleDamage', veh, ShpGodmodeVehicleDamage)
+		local seconds = Shop.Config.get('godmode30').params.seconds or 15
 		setTimer(function(veh)
 			if(isElement(veh)) then
 				removeEventHandler('onVehicleDamage', veh, ShpGodmodeVehicleDamage)
 			end
-		end, 60000, 1, veh)
+		end, seconds*1000, 1, veh)
 		Player.fromEl(player).accountData:add('godmodes30', -1)
 		return true
 	end,
@@ -321,10 +322,11 @@ ShpRegisterItem{
 			return false
 		end
 		
+		local seconds = Shop.Config.get('smoke').params.seconds or 15
 		local x, y, z = getElementPosition(veh)
 		local obj = createObject(2780, x, y, z)
 		attachElements(obj, veh, 0, -2, 0)
-		setTimer(destroyElement, 15000, 1, obj)
+		setTimer(destroyElement, seconds * 1000, 1, obj)
 		
 		Player.fromEl(player).accountData:add('smoke', -1)
 		return true

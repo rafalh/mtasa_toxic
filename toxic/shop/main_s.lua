@@ -155,6 +155,18 @@ function ShpRegisterItem(item)
 	g_ShopItems[item.id] = item
 end
 
+local function ShpPrepareItems()
+	for id, item in pairs(g_ShopItems) do
+		local itemConfig = Shop.Config.get(id)
+		if (itemConfig) then
+			item.cost = itemConfig.price
+		else
+			g_ShopItems[id] = nil
+			Debug.info('Disabled Shop item: '..id)
+		end
+	end
+end
+
 ------------
 -- Events --
 ------------
@@ -164,4 +176,5 @@ addInitFunc(function()
 	addInternalEventHandler($(EV_SELL_SHOP_ITEM_REQUEST), ShpSellShopItemRequest)
 	addInternalEventHandler($(EV_USE_SHOP_ITEM_REQUEST), ShpUseShopItemRequest)
 	addInternalEventHandler($(EV_GET_INVENTORY_REQUEST), ShpGetInventoryRequest)
+	ShpPrepareItems()
 end)

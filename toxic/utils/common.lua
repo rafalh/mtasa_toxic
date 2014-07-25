@@ -131,12 +131,15 @@ function generateRandomStr(len)
 end
 
 function namespace(name)
-	local env = _G[name]
-	if(not env) then
-		env = {}
-		setmetatable(env, {__index = _G})
-		_G[name] = env
+	local components = split(name, '.')
+	local ref = _G
+	for i, comp in ipairs(components) do
+		if (not ref[comp]) then
+			ref[comp] = {}
+			setmetatable(ref[comp], {__index = _G})
+		end
+		ref = ref[comp]
 	end
-	setfenv(2, env)
-	return env
+	setfenv(2, ref)
+	return ref
 end

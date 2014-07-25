@@ -1,0 +1,25 @@
+<shop>
+	<item id="joinmsg" price="20000" />
+	<item id="health100" price="100000" />
+	<item id="flip" price="50000" />
+	<item id="selfdestr" price="500000" />
+	<item id="mine" price="200000" />
+	<item id="oil" price="100000" />
+	<item id="beer" price="2">
+		<param name="seconds" value="20" />
+	</item>
+	<item id="invisibility" price="300000" />
+	<item id="godmode30" price="300000">
+		<param name="seconds" value="60" />
+	</item>
+	<item id="thunder" price="200000" />
+	<item id="smoke" price="100000">
+		<param name="seconds" value="15" />
+	</item>
+	<item id="spikestrip" price="200000" />
+	<item id="nextmap" price="20000" />
+	<item id="vip1w" price="2800000">
+		<param name="days" value="7" />
+	</item>
+	<item id="team" price="1500000" />
+</shop>

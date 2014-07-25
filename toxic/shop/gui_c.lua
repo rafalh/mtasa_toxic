@@ -162,6 +162,18 @@ function ShpRegisterItem(itemInfo)
 	g_ShopItems[itemInfo.id] = itemInfo
 end
 
+local function ShpPrepareItems()
+	for id, item in pairs(g_ShopItems) do
+		local itemConfig = Shop.Config.get(id)
+		if (itemConfig) then
+			item.cost = itemConfig.price
+		else
+			g_ShopItems[id] = nil
+			Debug.info('Disabled Shop item: '..id)
+		end
+	end
+end
+
 local function ShpUseClick()
 	local itemId = g_InventoryList:getActiveItem()
 	local item = itemId and g_ShopItems[itemId]
@@ -456,6 +468,7 @@ local function ShpInit()
 	addCommandHandler('UserInventory', ShpToggleItems, false, false)
 	local key = getKeyBoundToCommand('UserInventory') or 'F3'
 	bindKey(key, 'down', 'UserInventory')
+	ShpPrepareItems()
 end
 
 local function ShpOnInventory(inventory, isVip)

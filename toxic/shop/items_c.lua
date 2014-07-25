@@ -257,6 +257,7 @@ local function ShpDrunkEffect()
 		end
 		addEventHandler('onClientPreRender', g_Root, ShpUpdateDrunkEffect, false)
 		
+		local seconds = Shop.Config.get('beer').params.seconds or 20
 		g_DrunkEffectTimer = setTimer(function()
 			g_DrunkEffectTimer = false
 			removeEventHandler('onClientPreRender', g_Root, ShpUpdateDrunkEffect)
@@ -265,7 +266,7 @@ local function ShpDrunkEffect()
 				local x, y, z = getVehicleGravity(veh)
 				setVehicleGravity(veh, x - math.sin(g_DrunkEffectLastAngle) / 3, y - math.cos(g_DrunkEffectLastAngle) / 3, z)
 			end
-		end, 20000, 1, target)
+		end, seconds * 1000, 1, target)
 	end
 end
 
