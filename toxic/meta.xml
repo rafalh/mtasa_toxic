@@ -25,7 +25,7 @@
 	<script src="utils/timers.lua" type="server" />
 	<script src="utils/binary.lua" type="shared" />
 	<script src="utils/worker.lua" type="server" />
-	<script src="utils/file.lua" type="server" />
+	<script src="utils/file.lua" type="shared" />
 	<script src="utils/rpc.lua" type="shared" />
 	<script src="utils/resource.lua" type="shared" />
 	<script src="utils/event.lua" type="server" />
@@ -95,6 +95,7 @@
 	<module src="invitations" />
 	<module src="login" />
 	<module src="map_rating" />
+	<module src="meme_browser" />
 	<module src="misc" />
 	<module src="msg_cmd" />
 	<module src="mui" />

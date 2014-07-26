@@ -1,5 +1,4 @@
-namespace('GUI')
-
+GUI = {}
 GUI.__mt = {__index = {}}
 GUI.templates = false
 GUI.wndToObj = {}
@@ -34,7 +33,9 @@ function GUI.loadTemplates(path)
 		return false
 	end
 	
-	GUI.templates = {}
+	if (not GUI.templates) then
+		GUI.templates = {}
+	end
 	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		local ctrl = GUI.loadNode(subnode)

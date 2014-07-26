@@ -13,7 +13,7 @@ function fileGetContents(path)
 end
 
 function fileSetContents(path, buf)
-	local file = fileCreate (path)
+	local file = fileCreate(path)
 	if(not file) then return false end
 	
 	fileWrite(file, buf)
