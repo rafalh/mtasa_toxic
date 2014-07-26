@@ -6,7 +6,6 @@ namespace('Teams')
 ShpRegisterItem
 {
 	id = 'team',
-	cost = 1500000,
 	field = 'ownedTeam',
 	onBuy = function(player, val)
 		if(val) then return false end

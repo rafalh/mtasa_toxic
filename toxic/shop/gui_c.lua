@@ -159,6 +159,7 @@ end
 
 function ShpRegisterItem(itemInfo)
 	assert(itemInfo and itemInfo.id and not g_ShopItems[itemInfo.id])
+	itemInfo.cost = 10000 -- default price
 	g_ShopItems[itemInfo.id] = itemInfo
 end
 

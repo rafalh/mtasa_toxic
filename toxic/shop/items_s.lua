@@ -12,7 +12,6 @@ local g_VipRes = Resource('rafalh_vip')
 
 ShpRegisterItem{
 	id = 'joinmsg',
-	cost = 20000,
 	field = 'joinmsg',
 	onBuy = function(player, val)
 		return not val and Player.fromEl(player).accountData:set('joinmsg', '')
@@ -24,7 +23,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'health100',
-	cost = 100000,
 	field = 'health100',
 	onBuy = function(player, val)
 		return Player.fromEl(player).accountData:add('health100', 1)
@@ -46,7 +44,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'flip',
-	cost = 50000,
 	field = 'flips',
 	onBuy = function(player, val)
 		return Player.fromEl(player).accountData:add('flips', 1)
@@ -70,7 +67,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'selfdestr',
-	cost = 500000,
 	field = 'selfdestr',
 	onBuy = function(player, val)
 		AchvActivate(player, 'Buy a weapon')
@@ -97,7 +93,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'mine',
-	cost = 200000,
 	field = 'mines',
 	onBuy = function(player, val)
 		AchvActivate(player, 'Buy a weapon')
@@ -139,7 +134,6 @@ end
 
 ShpRegisterItem{
 	id = 'oil',
-	cost = 100000,
 	field = 'oil',
 	onBuy = function(player, val)
 		AchvActivate(player, 'Buy a weapon')
@@ -172,7 +166,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'beer',
-	cost = 2,
 	field = 'beers',
 	onBuy = function(player, val)
 		return Player.fromEl(player).accountData:add('beers', 1)
@@ -193,7 +186,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'invisibility',
-	cost = 300000,
 	field = 'invisibility',
 	onBuy = function(player, val)
 		AchvActivate(player, 'Buy a weapon')
@@ -232,7 +224,6 @@ end
 
 ShpRegisterItem{
 	id = 'godmode30',
-	cost = 300000,
 	field = 'godmodes30',
 	onBuy = function(player, val)
 		AchvActivate(player, 'Buy a weapon')
@@ -262,7 +253,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'thunder',
-	cost = 200000,
 	field = 'thunders',
 	onBuy = function(player, val)
 		AchvActivate(player, 'Buy a weapon')
@@ -310,7 +300,6 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'smoke',
-	cost = 100000,
 	field = 'smoke',
 	onBuy = function(player)
 		AchvActivate(player, 'Buy a weapon')
@@ -340,7 +329,6 @@ ShpRegisterItem{
 -- 2899 - short spike strip
 ShpRegisterItem{
 	id = 'spikestrip',
-	cost = 200000,
 	field = 'spikeStrips',
 	onBuy = function(player)
 		AchvActivate(player, 'Buy a weapon')
@@ -361,13 +349,11 @@ ShpRegisterItem{
 
 ShpRegisterItem{
 	id = 'nextmap',
-	cost = 20000,
 	clientSideBuy = true,
 }
 
 ShpRegisterItem{
 	id = 'vip1w',
-	cost = 2800000,
 	noDiscount = true,
 	onBuy = function(player)
 		local success = g_VipRes:isReady() and g_VipRes:call('giveVip', player, 7)

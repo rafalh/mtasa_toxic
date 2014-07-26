@@ -151,7 +151,8 @@ function ShpGetItemPrice(itemId, player)
 end
 
 function ShpRegisterItem(item)
-	assert(type(item) == 'table' and item.id and item.cost)
+	assert(type(item) == 'table' and item.id and not g_ShopItems[item.id])
+	item.cost = 10000 -- default price
 	g_ShopItems[item.id] = item
 end
 

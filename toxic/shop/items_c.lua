@@ -52,7 +52,6 @@ end
 ShpRegisterItem{
 	id = 'joinmsg',
 	name = "Join Message",
-	cost = 20000,
 	descr = "Set message, which is displayed when you join.",
 	img = 'shop/img/joinmsg.png',
 	onUse = ShpOnJoinMsgUse,
@@ -65,7 +64,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'health100',
 	name = "Repair",
-	cost = 100000,
 	descr = "Repair your vehicle when you want.",
 	img = 'shop/img/repair.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -75,7 +73,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'flip',
 	name = "Flip",
-	cost = 50000,
 	descr = "Flips your vehicle.",
 	img = 'shop/img/flip.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -93,7 +90,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'selfdestr',
 	name = "Self-destruction",
-	cost = 500000,
 	descr = "Make self-destruction and kill all players, which are near to your vehicle!",
 	img = 'shop/img/selfdestr.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -103,7 +99,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'mine',
 	name = "Mine",
-	cost = 200000,
 	descr = "Place a mine under your car!",
 	img = 'shop/img/mine.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -113,7 +108,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'oil',
 	name = "Oil",
-	cost = 100000,
 	descr = "Spill oil over road!",
 	img = 'shop/img/oil.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -123,7 +117,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'beer',
 	name = "Beer",
-	cost = 2,
 	descr = "Are you angry with whole world? Get drunk!",
 	img = 'shop/img/beer.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -133,7 +126,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'invisibility',
 	name = "Invisibility",
-	cost = 300000,
 	descr = "Make your vehicle invisible...",
 	img = 'shop/img/ghost.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -143,7 +135,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'godmode30',
 	name = "God Mode",
-	cost = 300000,
 	descr = "Make your vehicle indestructible for 60 seconds!",
 	img = 'shop/img/godmode.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -153,7 +144,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'thunder',
 	name = "Thunder",
-	cost = 200000,
 	descr = "Attack nearest player with a thunder.",
 	img = 'shop/img/thunder.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -163,7 +153,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'smoke',
 	name = "Smoke",
-	cost = 100000,
 	descr = "Smoke behind your vehicle for 15 seconds.",
 	img = 'shop/img/smoke.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -173,7 +162,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'spikestrip',
 	name = "Spike Strip",
-	cost = 200000,
 	descr = "Punctur tires of your enemies vehicles.",
 	img = 'shop/img/spikestrip.png',
 	dataToCount = function(val) return val > 0 and val end,
@@ -201,7 +189,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'nextmap',
 	name = "Next map",
-	cost = 20000,
 	descr = "Add your favourite map to queue.",
 	img = 'shop/img/nextmap.png',
 	getAllowedAct = function(v) return true, false, false end, -- buy, sell, use
@@ -217,7 +204,6 @@ ShpRegisterItem{
 ShpRegisterItem{
 	id = 'vip1w',
 	name = "VIP rank",
-	cost = 2800000,
 	noDiscount = true,
 	descr = "VIP rank activation for 1 week.",
 	img = 'vip/enabled.png',
