@@ -82,7 +82,7 @@ end
 
 addInitFunc(init)
 
-#if(TEST) then
+#if (TEST) then
 	Test.register('FileCache', function()
 		Test.checkEq(FileCache.get('itemName'), nil)
 		

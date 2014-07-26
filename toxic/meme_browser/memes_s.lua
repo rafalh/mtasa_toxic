@@ -52,22 +52,31 @@ g_Services.kwejk = {
 	state = 'idle',
 }
 
+local function sendImageToClients(index, title, data, serviceId)
+	local service = g_Services[serviceId]
+	for client, _ in pairs(service.reqMap) do
+		RPC('MemeBrowser.addImage', index, title, data):setClient(client):exec()
+	end
+end
+
 local function downloadImages(imgList, serviceId)
 	Debug.info('Download '..serviceId..' images - '..#imgList)
-	local service = g_Services[serviceId]
 	for i, info in ipairs(imgList) do
-		fetchRemote(info[1], function(data, errno)
-			if (errno ~= 0) then
-				Debug.err('Failed to download image')
-				return
-			end
-			
-			for client, _ in pairs(service.reqMap) do
-				RPC('MemeBrowser.addImage', i, info[2], data):setClient(client):exec()
-			end
-		end)
+		local imgData = FileCache.get(info[1])
+		if (imgData) then
+			sendImageToClients(i, info[2], imgData, serviceId)
+		else
+			fetchRemote(info[1], function(data, errno)
+				if (errno ~= 0) then
+					Debug.err('Failed to download image')
+					return
+				end
+				
+				FileCache.set(info[1], data, 10*60)
+				sendImageToClients(i, info[2], data, serviceId)
+			end)
+		end
 	end
-	Debug.info('TODO')
 end
 
 local function imgListCallback(imgList, serviceId)

@@ -43,7 +43,7 @@ function remove(name)
 	g_Items[name] = nil
 end
 
-local function removeOutdated()
+function removeOutdated()
 	-- Find all outdated items
 	local now = getRealTime().timestamp
 	for name, descr in pairs(g_Items) do
@@ -60,3 +60,18 @@ local function init()
 end
 
 addInitFunc(init)
+
+#if (TEST) then
+	Test.register('Cache', function()
+		Test.checkEq(Cache.get('itemName'), nil)
+		
+		Cache.set('itemName', 'itemValue', 10)
+		Test.checkEq(Cache.get('itemName'), 'itemValue')
+		
+		Cache.removeOutdated()
+		Test.checkEq(Cache.get('itemName'), 'itemValue')
+		
+		Cache.remove('itemName')
+		Test.checkEq(Cache.get('itemName'), nil)
+	end)
+#end
