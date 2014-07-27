@@ -237,7 +237,7 @@ ShpRegisterItem{
 		
 		fixVehicle(veh)
 		addEventHandler('onVehicleDamage', veh, ShpGodmodeVehicleDamage)
-		local seconds = Shop.Config.get('godmode30').params.seconds or 15
+		local seconds = touint(Shop.Config.get('godmode30').params.seconds, 15)
 		setTimer(function(veh)
 			if(isElement(veh)) then
 				removeEventHandler('onVehicleDamage', veh, ShpGodmodeVehicleDamage)
@@ -311,7 +311,7 @@ ShpRegisterItem{
 			return false
 		end
 		
-		local seconds = Shop.Config.get('smoke').params.seconds or 15
+		local seconds = touint(Shop.Config.get('smoke').params.seconds, 15)
 		local x, y, z = getElementPosition(veh)
 		local obj = createObject(2780, x, y, z)
 		attachElements(obj, veh, 0, -2, 0)
@@ -356,7 +356,8 @@ ShpRegisterItem{
 	id = 'vip1w',
 	noDiscount = true,
 	onBuy = function(player)
-		local success = g_VipRes:isReady() and g_VipRes:call('giveVip', player, 7)
+		local days = touint(Shop.Config.get('vip1w').params.days, 7)
+		local success = g_VipRes:isReady() and g_VipRes:call('giveVip', player, days)
 		if(not success) then
 			privMsg(player, "You have to be logged in!")
 		end

@@ -1,9 +1,10 @@
-GUI = {}
+namespace('GUI') -- FIXME: to nie jest tu uzywane - trzeba by zrobic jakis obiekt GUI.Teplate
 GUI.__mt = {__index = {}}
 GUI.templates = false
 GUI.wndToObj = {}
 
 local g_ScrSize = Vector2(guiGetScreenSize())
+local g_MainTplLoaded = false
 
 function GUI.loadNode(node)
 	local ctrl = xmlNodeGetAttributes(node)
@@ -49,14 +50,18 @@ function GUI.loadTemplates(path)
 end
 
 function GUI.getTemplate(tplID)
-	if(not GUI.templates) then
-		if(not GUI.loadTemplates('gui/gui.xml')) then
-			Debug.err('Failed to load GUI')
-			return false
+	if(not g_MainTplLoaded) then
+		if(GUI.loadTemplates('gui/gui.xml')) then
+			g_MainTplLoaded = true
+		else
+			Debug.err('Failed to load main GUI template')
 		end
 	end
 	
 	local tpl = GUI.templates[tplID]
+	if (not tpl) then
+		Debug.err('Cannot find template '..tostring(tplID))
+	end
 	return tpl
 end
 
@@ -89,6 +94,9 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		end
 		if(tpl.masked == 'true') then
 			guiEditSetMasked(ctrl, true)
+		end
+		if(tpl.pattern) then
+			guiSetProperty(ctrl, 'ValidationString', tpl.pattern)
 		end
 	elseif(tpl.type == 'memo') then
 		ctrl = guiCreateMemo(x, y, w, h, tpl.text or '', false, parent)
@@ -219,7 +227,6 @@ function GUI.create(tpl, x, y, w, h, parent)
 	if(type(tpl) ~= 'table') then
 		tpl = GUI.getTemplate(tpl)
 		if(not tpl) then
-			Debug.err('Unknown template ID '..tostring(tpl))
 			return false
 		end
 	end

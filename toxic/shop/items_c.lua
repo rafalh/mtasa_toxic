@@ -221,7 +221,7 @@ local g_DrunkEffectTimer = false
 local function ShpUpdateDrunkEffect()
 	local veh = getCameraTarget()
 	if(veh and getElementType(veh) == 'vehicle') then
-		local a =(getTickCount() - g_DrunkEffectStartTime) / 1000
+		local a = (getTickCount() - g_DrunkEffectStartTime) / 1000
 		local x, y, z = getVehicleGravity(veh)
 		--outputChatBox('g: '..x..' '..y..' '..z)
 		setVehicleGravity(veh, x - math.sin(g_DrunkEffectLastAngle) / 3 + math.sin(a) / 3, y - math.cos(g_DrunkEffectLastAngle) / 3 + math.cos(a) / 3, z)
