@@ -88,7 +88,12 @@ function sendChatMsg(user, name, msg)
 	local str = '#ffff00'..tostring(name)..' (web)#ffffff: '..tostring(msg)
 	outputChatBox(str, g_Root, 255, 255, 255, true)
 	addChatStr(str)
-	--exports.toxic:chatHandler(user, msg, 0)
+	
+	local toxicRes = getResourceFromName('toxic')
+	if(toxicRes and getResourceState(toxicRes) == 'running') then
+		local ret = call(toxicRes, 'parseCommand', msg, user)
+		outputServerLog('calling toxic: '..tostring(ret))
+	end
 end
 
 ------------

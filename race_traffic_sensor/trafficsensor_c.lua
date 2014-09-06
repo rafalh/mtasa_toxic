@@ -25,7 +25,7 @@ addEvent("onClientScreenFadedIn", true)
 local function TsRender()
 	-- Ensure map allows it, and player not dead, and in a vehicle and not spectating
 	local vehicle = getPedOccupiedVehicle(g_Me)
-	if(not g_Allowed or isPlayerDead(g_Me) or g_FinishedPlayers[g_Me]
+	if(not g_Allowed or isPedDead(g_Me) or g_FinishedPlayers[g_Me]
 			or not vehicle or getCameraTarget() ~= vehicle) then
 		g_BeginValidSeconds = nil
 		return
@@ -61,7 +61,7 @@ local function TsRender()
 	
 	-- For each 'other player'
 	for player, _ in pairs(g_AllPlayers) do
-		local isDead = isPlayerDead(player)
+		local isDead = isPedDead(player)
 		local dim = getElementDimension(player)
 		if(player ~= g_Me and not isDead and not g_FinishedPlayers[player] and dim == myDim) then
 			

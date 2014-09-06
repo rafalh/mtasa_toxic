@@ -195,7 +195,7 @@ end
 
 local function NitOnVehicleEnter(player)
 	if(player == g_Me) then
-		DbgPrint ("NitOnVehicleEnter", 2)
+		DbgPrint("NitOnVehicleEnter")
 		NitRemove()
 		NitStopAutoNitro()
 		g_Vehicle = source
