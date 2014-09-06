@@ -19,6 +19,7 @@ local g_Lights = {
 	"Orange Led",
 	"Orange Lines",
 	"Pink Dots",
+	"Poland",
 	"Purple I",
 	"Purple II",
 	"Red Alfa Romeo",
@@ -68,7 +69,7 @@ local g_Lights = {
 	"Red Volkswagen",
 	"Violet Lilac",
 	"White Slanted Stripes",
-	"White Snake"
+	"White Snake",
 }
 
 local g_Shaders = {}

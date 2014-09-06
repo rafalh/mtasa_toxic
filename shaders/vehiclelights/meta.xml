@@ -21,6 +21,7 @@
 	<file src="images/Orange Led.jpg" />
 	<file src="images/Orange Lines.jpg" />
 	<file src="images/Pink Dots.jpg" />
+	<file src="images/Poland.jpg" />
 	<file src="images/Purple I.jpg" />
 	<file src="images/Purple II.jpg" />
 	<file src="images/Red Alfa Romeo.jpg" />
@@ -76,7 +77,6 @@
 	<script src="cookie_c.lua" type="client" />
 	<script src="effect_c.lua" type="client" />
 	
-
 	<file src="lights.fx" />
 	
 	<export function="setEffectEnabled" type="client" />
