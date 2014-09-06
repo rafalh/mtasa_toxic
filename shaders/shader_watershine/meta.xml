@@ -1,0 +1,14 @@
+<meta>
+	<info description="Shader - WaterShine" version="0.1.2" type="script" />
+	<min_mta_version client="1.3.3" server="1.3.3" />
+	<script src="c_water.lua" type="client" />
+	<script src="c_sunInfluence.lua" type="client" />
+	<file src="fx/water.fx" type="client" />
+	<file src="fx/mta-helper.fx" type="client" />
+	<file src="images/wavemap.png" type="client" />
+	<file src="images/cube_env256.dds" type="client" />
+	
+	<script src="effect_c.lua" type="client" />
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+</meta>
