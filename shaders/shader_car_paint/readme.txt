@@ -1,3 +1,10 @@
+Resource: Shader Car Paint fix v2.3
+
+-updated mta-helper.fx
+-added switching option (event and /sCarPaint)
+-added sky light and thin film/pearlescent effect to the car paint
+-the effect uses up to all 4 pointlights for vehicle lighting
+
 Resource: Shader Car Paint fix v2.1
 Changes:
 -Added a texture list (planes,boats etc)

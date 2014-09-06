@@ -1,162 +1,210 @@
 
+--
 -- c_car_reflect.lua
 --
-local Variables = {}
-Variables.renderDistance= 50 -- shader will be applied to textures nearer than this
-Variables.brightnessFactorPaint= 0.081
-Variables.brightnessFactorWShield= 0.49
-Variables.bumpSize =0.02 -- for car paint
-Variables.bumpSizeWnd =0 -- for windshields
-Variables.normal = 1.5 -- the higher , the less normalised 0-2
-Variables.brightnessAdd =0.5 -- before bright pass
-Variables.brightnessMul = 1.5 -- multiply after brightpass
-Variables.brightpassCutoff = 0.16 -- 0-1
-Variables.brightpassPower = 2 -- 1-5
-Variables.reflectionFlip = 1 -- 0 or 1
-Variables.reflectionFlipAngle =0.25 -- -1,1
-Variables.dirtTexture = 1 -- 0 or 1
 
-Variables.sProjectedXsize=0.5
-Variables.sProjectedXvecMul=1
-Variables.sProjectedXoffset=-0.021
-Variables.sProjectedYsize=0.5
-Variables.sProjectedYvecMul=1
-Variables.sProjectedYoffset=-0.22
-
-local g_Shaders = {
-	grunShader = {
-		"vehiclegrunge256", "?emap*",
-		"predator92body128", "monsterb92body256a", "monstera92body256a", "andromeda92wing", "fcr90092body128",
-		"hotknifebody128b", "hotknifebody128a", "rcbaron92texpage64", "rcgoblin92texpage128", "rcraider92texpage128", 
-		"rctiger92body128", "rhino92texpage256", "petrotr92interior128", "artict1logos","rumpo92adverts256", "dash92interior128",
-		"coach92interior128","combinetexpage128","hotdog92body256",
-		"raindance92body128", "cargobob92body256", "andromeda92body", "at400_92_256", "nevada92body256",
-		"polmavbody128a", "sparrow92body128", "hunterbody8bit256a", "seasparrow92floats64" , 
-		"dodo92body8bit256", "cropdustbody256", "beagle256", "hydrabody256", "rustler92body256", 
-		"shamalbody256", "skimmer92body128", "stunt256", "maverick92body128", "leviathnbody8bit256" },
-	geneShader = {"vehiclegeneric256", "hotdog92glass128", "okoshko"},
-	shatShader = {"vehicleshatter128"},
-}
+Settings = {}
+Settings.var = {}
 
 local scx, scy = guiGetScreenSize()
-local myScreenSource, textureVol
 
-local function updateScreen()
-	if myScreenSource then
-		dxUpdateScreenSource(myScreenSource)
-	end
+
+----------------------------------------------------------------------------------------------------------------------------------------
+-- an additional list of textures the effect is applied to
+	
+-- carpaint
+	
+	local texturegrun = {
+			"predator92body128", "monsterb92body256a", "monstera92body256a", "andromeda92wing","fcr90092body128",
+			"hotknifebody128b", "hotknifebody128a", "rcbaron92texpage64", "rcgoblin92texpage128", "rcraider92texpage128", 
+			"rctiger92body128","rhino92texpage256", "petrotr92interior128","artict1logos","rumpo92adverts256","dash92interior128",
+			"coach92interior128","combinetexpage128","hotdog92body256",
+			"raindance92body128", "cargobob92body256", "andromeda92body", "at400_92_256", "nevada92body256",
+			"polmavbody128a" , "sparrow92body128" , "hunterbody8bit256a" , "seasparrow92floats64" , 
+			"dodo92body8bit256" , "cropdustbody256", "beagle256", "hydrabody256", "rustler92body256", 
+			"shamalbody256", "skimmer92body128", "stunt256", "maverick92body128", "leviathnbody8bit256" }
+
+-- windshields
+			
+	local texturegene = {}
+
+-- Use shader tex names resource to pick the names
+----------------------------------------------------------------------------------------------------------------------------------------
+
+---------------------------------
+-- Settings for effect
+---------------------------------
+function setEffectV()
+    local v = Settings.var
+	
+	v.renderDistance = 50 -- shader will be applied to textures nearer than this
+
+	v.sparkleSize = 0.5	-- scale the carpaint sparkles
+	v.brightnessFactorPaint = 0.0099
+	v.brightnessFactorWShield = 0.099
+	
+	v.bumpSize = 0.5 -- for car paint
+	v.bumpSizeWnd = 0 -- for windshields
+	v.normalXY = 1.5 * 0.5 -- deformation strength (0-2.0) 2.0 = the highest (X and Y of vector)
+	v.normalZ = 1.5 -- deformation strength (0-2.0) 2.0 = the highest (Z of vector)
+	v.minZviewAngleFade = -0.5 -- the camera z direction where the fading starts
+	
+	v.brightnessAdd =0.5 -- before bright pass
+	v.brightnessMul = 1.5 -- multiply after brightpass
+	v.brightpassCutoff = 0.16 -- 0-1
+	v.brightpassPower = 2 -- 1-5
+	
+	v.uvMul = {1.00,0.85} -- uv multiply
+	v.uvMov = {0.00,-0.16} -- uv move
+	
+ --Sky gradient color coating
+	v.skyLightIntensity = 0.31
+
 end
 
-function enableCarReflect()
-		-- Version check
-		if getVersion ().sortable < "1.3.0" then
-			--outputChatBox( "Resource is not compatible with this client." )
-			return false
-		end
+function startCarPaintReflect()
+		if cprEffectEnabled then return true end
+		local v = Settings.var
+		setEffectV()
+		-- Create stuff
+		grunShader = dxCreateShader ( "fx/car_refgrun.fx",1,v.renderDistance,false)
+		geneShader = dxCreateShader ( "fx/car_refgene.fx",1,v.renderDistance,false)
+		shatShader = dxCreateShader ( "fx/car_refshat.fx",1,v.renderDistance,true)
+
+		myScreenSource = dxCreateScreenSource( scx, scy)
 		
-		-- you migh want to experiment with differend resolutions and bumpsizes
-		myScreenSource = dxCreateScreenSource ( scx/2, scy/2 )
-		
-		grunShader = dxCreateShader("car_refgrun.fx",1,Variables.renderDistance,false)
-		geneShader = dxCreateShader("car_refgene.fx",1,Variables.renderDistance,true)
-		shatShader = dxCreateShader("car_refgene.fx",1,Variables.renderDistance,true)
-		
-		if not grunShader or not geneShader or not shatShader then
-			return false
-			--outputChatBox( "Could not create shader. Please use debugscript 3" )
-		else
-			--outputChatBox( "Started: Shader Car paint reflect.")
-						
+		if grunShader and geneShader and shatShader and myScreenSource then
+
+			outputConsole( "Started: Shader Car paint reflect.")
+			
 			addEventHandler ( "onClientHUDRender", getRootElement (), updateScreen )
 	
 			--Set variables
-			dxSetShaderValue ( grunShader, "sCutoff",Variables.brightpassCutoff)
-			dxSetShaderValue ( grunShader, "sPower", Variables.brightpassPower)			
-			dxSetShaderValue ( grunShader, "sAdd", Variables.brightnessAdd)
-			dxSetShaderValue ( grunShader, "sMul", Variables.brightnessMul)
-			dxSetShaderValue ( grunShader, "sRefFl", Variables.reflectionFlip)
-			dxSetShaderValue ( grunShader, "sRefFlan", Variables.reflectionFlipAngle)
-			dxSetShaderValue ( grunShader, "sNorFac", Variables.normal)
-		    dxSetShaderValue ( grunShader, "brightnessFactor",Variables.brightnessFactorPaint)  
-			
-			dxSetShaderValue ( geneShader, "sCutoff",Variables.brightpassCutoff)
-			dxSetShaderValue ( geneShader, "sPower", Variables.brightpassPower)	
-			dxSetShaderValue ( geneShader, "sAdd", Variables.brightnessAdd)
-			dxSetShaderValue ( geneShader, "sMul", Variables.brightnessMul)
-			dxSetShaderValue ( geneShader, "sRefFl", Variables.reflectionFlip)
-			dxSetShaderValue ( geneShader, "sRefFlan", Variables.reflectionFlipAngle)
-			dxSetShaderValue ( geneShader, "sNorFac", Variables.normal)
-            dxSetShaderValue ( geneShader, "brightnessFactor",Variables.brightnessFactorWShield) 
-			
-		    dxSetShaderValue ( shatShader, "sCutoff",Variables.brightpassCutoff)
-			dxSetShaderValue ( shatShader, "sPower", Variables.brightpassPower)	
-			dxSetShaderValue ( shatShader, "sAdd", Variables.brightnessAdd)
-			dxSetShaderValue ( shatShader, "sMul", Variables.brightnessMul)
-			dxSetShaderValue ( shatShader, "sRefFl", Variables.reflectionFlip)
-			dxSetShaderValue ( shatShader, "sRefFlan", Variables.reflectionFlipAngle)
-			dxSetShaderValue ( shatShader, "sNorFac", Variables.normal)
-			dxSetShaderValue ( shatShader, "brightnessFactor",Variables.brightnessFactorWShield) 		
-			
-			dxSetShaderValue ( grunShader, "dirtTex",Variables.dirtTexture)
-		    dxSetShaderValue ( grunShader, "bumpSize",Variables.bumpSize)
-			dxSetShaderValue ( geneShader, "bumpSize",Variables.bumpSizeWnd)
+			dxSetShaderValue ( grunShader, "minZviewAngleFade",v.minZviewAngleFade)
+			dxSetShaderValue ( grunShader, "sCutoff",v.brightpassCutoff)
+			dxSetShaderValue ( grunShader, "sPower", v.brightpassPower)			
+			dxSetShaderValue ( grunShader, "sAdd", v.brightnessAdd)
+			dxSetShaderValue ( grunShader, "sMul", v.brightnessMul)
+			dxSetShaderValue ( grunShader, "sNorFacXY", v.normalXY)
+			dxSetShaderValue ( grunShader, "sNorFacZ", v.normalZ)
+		    dxSetShaderValue ( grunShader, "brightnessFactor", v.brightnessFactorPaint)  
+			dxSetShaderValue ( grunShader, "uvMul", v.uvMul[1],v.uvMul[2])
+			dxSetShaderValue ( grunShader, "uvMov", v.uvMov[1],v.uvMov[2])
+			dxSetShaderValue ( grunShader, "skyLightIntensity", v.skyLightIntensity *0.5)
+			dxSetShaderValue ( grunShader, "sparkleSize", v.sparkleSize)
 
-			dxSetShaderValue ( grunShader, "sProjectedXsize",Variables.sProjectedXsize)
-			dxSetShaderValue ( grunShader, "sProjectedXvecMul",Variables.sProjectedXvecMul)
-			dxSetShaderValue ( grunShader, "sProjectedXoffset",Variables.sProjectedXoffset)
-			dxSetShaderValue ( grunShader, "sProjectedYsize",Variables.sProjectedYsize)
-			dxSetShaderValue ( grunShader, "sProjectedYvecMul",Variables.sProjectedYvecMul)
-			dxSetShaderValue ( grunShader, "sProjectedYoffset",Variables.sProjectedYoffset)
-			
-			dxSetShaderValue ( geneShader, "sProjectedXsize",Variables.sProjectedXsize)
-			dxSetShaderValue ( geneShader, "sProjectedXvecMul",Variables.sProjectedXvecMul)
-			dxSetShaderValue ( geneShader, "sProjectedXoffset",Variables.sProjectedXoffset)
-			dxSetShaderValue ( geneShader, "sProjectedYsize",Variables.sProjectedYsize)
-			dxSetShaderValue ( geneShader, "sProjectedYvecMul",Variables.sProjectedYvecMul)
-			dxSetShaderValue ( geneShader, "sProjectedYoffset",Variables.sProjectedYoffset)
+			dxSetShaderValue ( geneShader, "minZviewAngleFade",v.minZviewAngleFade)			
+			dxSetShaderValue ( geneShader, "sCutoff",v.brightpassCutoff)
+			dxSetShaderValue ( geneShader, "sPower", v.brightpassPower)	
+			dxSetShaderValue ( geneShader, "sAdd", v.brightnessAdd)
+			dxSetShaderValue ( geneShader, "sMul", v.brightnessMul)
+			dxSetShaderValue ( geneShader, "sNorFacXY", v.normalXY)
+			dxSetShaderValue ( geneShader, "sNorFacZ", v.normalZ)
+            dxSetShaderValue ( geneShader, "brightnessFactor", v.brightnessFactorWShield) 
+			dxSetShaderValue ( geneShader, "uvMul", v.uvMul[1],v.uvMul[2])
+			dxSetShaderValue ( geneShader, "uvMov", v.uvMov[1],v.uvMov[2])
+			dxSetShaderValue ( geneShader, "skyLightIntensity", v.skyLightIntensity)
 
-			dxSetShaderValue ( shatShader, "sProjectedXsize",Variables.sProjectedXsize)
-			dxSetShaderValue ( shatShader, "sProjectedXvecMul",Variables.sProjectedXvecMul)
-			dxSetShaderValue ( shatShader, "sProjectedXoffset",Variables.sProjectedXoffset)
-			dxSetShaderValue ( shatShader, "sProjectedYsize",Variables.sProjectedYsize)
-			dxSetShaderValue ( shatShader, "sProjectedYvecMul",Variables.sProjectedYvecMul)
-			dxSetShaderValue ( shatShader, "sProjectedYoffset",Variables.sProjectedYoffset)
-		
-			-- Set textures
-			textureVol = dxCreateTexture ( "images/smallnoise3d.dds" );
+			dxSetShaderValue ( shatShader, "minZviewAngleFade",v.minZviewAngleFade)			
+		    dxSetShaderValue ( shatShader, "sCutoff",v.brightpassCutoff)
+			dxSetShaderValue ( shatShader, "sPower", v.brightpassPower)	
+			dxSetShaderValue ( shatShader, "sAdd", v.brightnessAdd)
+			dxSetShaderValue ( shatShader, "sMul", v.brightnessMul)
+			dxSetShaderValue ( shatShader, "sNorFacXY", v.normalXY)
+			dxSetShaderValue ( shatShader, "sNorFacZ", v.normalZ)
+			dxSetShaderValue ( shatShader, "brightnessFactor", v.brightnessFactorWShield) 		
+			dxSetShaderValue ( shatShader, "uvMul", v.uvMul[1],v.uvMul[2])
+			dxSetShaderValue ( shatShader, "uvMov", v.uvMov[1],v.uvMov[2])
+			dxSetShaderValue ( shatShader, "skyLightIntensity", v.skyLightIntensity)
 			
-			dxSetShaderValue ( grunShader, "sRandomTexture", textureVol );
-			dxSetShaderValue ( grunShader, "sReflectionTexture", myScreenSource );
+		    dxSetShaderValue ( grunShader, "bumpSize",v.bumpSize)
+			dxSetShaderValue ( geneShader, "bumpSize",v.bumpSizeWnd)
+
+			-- Set texture
+			textureVol = dxCreateTexture ( "images/smallnoise3d.dds" )
+			
+			dxSetShaderValue ( grunShader, "sRandomTexture", textureVol )
+			dxSetShaderValue ( grunShader, "sReflectionTexture", myScreenSource )
             
-			dxSetShaderValue ( geneShader, "gShatt", 0 );
-			dxSetShaderValue ( geneShader, "sRandomTexture", textureVol );
-			dxSetShaderValue ( geneShader, "sReflectionTexture", myScreenSource );
+			dxSetShaderValue ( geneShader, "gShatt", false )
+			dxSetShaderValue ( geneShader, "sRandomTexture", textureVol )
+			dxSetShaderValue ( geneShader, "sReflectionTexture", myScreenSource )
 			
-			dxSetShaderValue ( shatShader, "gShatt", 1 );
-            dxSetShaderValue ( shatShader, "sRandomTexture", textureVol );
-			dxSetShaderValue ( shatShader, "sReflectionTexture", myScreenSource );			
+			dxSetShaderValue ( shatShader, "gShatt", true )
+            dxSetShaderValue ( shatShader, "sRandomTexture", textureVol )
+			dxSetShaderValue ( shatShader, "sReflectionTexture", myScreenSource )			
+
+			-- Apply to world texture
+			engineApplyShaderToWorldTexture ( grunShader, "vehiclegrunge256" )
+			engineApplyShaderToWorldTexture ( grunShader, "?emap*" )
+			engineApplyShaderToWorldTexture ( geneShader, "vehiclegeneric256" )
+			engineApplyShaderToWorldTexture ( shatShader, "vehicleshatter128" )
+	
+	        engineApplyShaderToWorldTexture ( geneShader, "hotdog92glass128" )
+								
+			for _,addList in ipairs(texturegrun) do
+				engineApplyShaderToWorldTexture (grunShader, addList )
+		    end
 			
-			for shaderName, textures in pairs(g_Shaders) do
-				local shader = _G[shaderName]
-				if(shader) then
-					for i, texName in ipairs(textures) do
-						engineApplyShaderToWorldTexture(shader, texName)
-					end
-				else
-					outputDebugString("Shader is invalid "..shaderName, 2)
-				end
-			end
+			for _,addList in ipairs(texturegene) do
+				engineApplyShaderToWorldTexture (geneShader, addList )
+		    end
 			
+			cprEffectEnabled = true
+			
+			if v.skyLightIntensity==0 then return false end
+			local pntBright=v.skyLightIntensity
+			vehTimer = setTimer(function()
+							if cprEffectEnabled then
+								local rSkyTop,gSkyTop,bSkyTop,rSkyBott,gSkyBott,bSkyBott= getSkyGradient ()
+								local cx,cy,cz = getCameraMatrix()
+								if (isLineOfSightClear(cx,cy,cz,cx,cy,cz+30,true,false,false,true,false,true,false,localPlayer)) then 
+									pntBright=pntBright+0.015 else pntBright=pntBright-0.015 end
+								if pntBright>v.skyLightIntensity then pntBright=v.skyLightIntensity end
+								if pntBright<0 then pntBright=0 end 
+								dxSetShaderValue ( grunShader, "sSkyColorTop", rSkyTop/255, gSkyTop/255, bSkyTop/255)
+								dxSetShaderValue ( grunShader, "sSkyColorBott", rSkyBott/255, gSkyBott/255, bSkyBott/255)
+								dxSetShaderValue ( grunShader, "sSkyLightIntensity", pntBright)
+								dxSetShaderValue ( geneShader, "sSkyColorTop", rSkyTop/255, gSkyTop/255, bSkyTop/255)
+								dxSetShaderValue ( geneShader, "sSkyColorBott", rSkyBott/255, gSkyBott/255, bSkyBott/255)
+								dxSetShaderValue ( geneShader, "sSkyLightIntensity", pntBright)
+								dxSetShaderValue ( shatShader, "sSkyColorTop", rSkyTop/255, gSkyTop/255, bSkyTop/255)
+								dxSetShaderValue ( shatShader, "sSkyColorBott", rSkyBott/255, gSkyBott/255, bSkyBott/255)
+								dxSetShaderValue ( shatShader, "sSkyLightIntensity", pntBright)
+								
+							end
+						end
+						,50,0 )				
 			return true
+		else
+			outputChatBox( "Could not create CPRef shader. Please use debugscript 3" )
+			return false
 		end
-		
 end
 
-function disableCarReflect()
-	removeEventHandler("onClientHUDRender", getRootElement(), updateScreen)
+function stopCarPaintReflect()
+	if not cprEffectEnabled then return end
+	removeEventHandler ( "onClientHUDRender", getRootElement (), updateScreen )
+	engineRemoveShaderFromWorldTexture(grunShader,"*")
+	engineRemoveShaderFromWorldTexture(geneShader,"*")
+	engineRemoveShaderFromWorldTexture(shatShader,"*")
 	destroyElement(grunShader)
 	destroyElement(geneShader)
 	destroyElement(shatShader)
-	destroyElement(textureVol)
+	grunShader = nil
+	geneShader = nil
+	shatShader = nil
 	destroyElement(myScreenSource)
+	destroyElement(textureVol)
+	myScreenSource = nil
+	textureVol = nil
+	killTimer(vehTimer)
+	vehTimer = nil
+	cprEffectEnabled = false
+end
+
+function updateScreen()
+	if myScreenSource then
+		dxUpdateScreenSource( myScreenSource)
+	end
 end

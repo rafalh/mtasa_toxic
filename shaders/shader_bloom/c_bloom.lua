@@ -1,101 +1,140 @@
 --
 -- c_bloom.lua
 --
+local orderPriority = "-1.0"	-- The lower this number, the later the effect is applied
 
-local scx, scy = guiGetScreenSize()
-local bAllValid
-
------------------------------------------------------------------------------------
--- Le settings
------------------------------------------------------------------------------------
 Settings = {}
 Settings.var = {}
-Settings.var.cutoff = 0.08
-Settings.var.power = 1.88
-Settings.var.bloom = 2.0
-Settings.var.blendR = 204
-Settings.var.blendG = 153
-Settings.var.blendB = 130
-Settings.var.blendA = 140
 
-function enableBloom ()
-		-- Version check
-		if getVersion ().sortable < "1.1.0" then
-			outputChatBox( "Resource is not compatible with this client." )
-			return false
-		end
+----------------------------------------------------------------
+-- enableBloom
+----------------------------------------------------------------
 
-		-- Create things
-        myScreenSource = dxCreateScreenSource( scx/2, scy/2 )
+function enableBloom()
+	if bEffectEnabled then return true end
+	-- Create things
+	myScreenSource = dxCreateScreenSource( scx/2, scy/2 )
 
-        blurHShader,tecName = dxCreateShader( "blurH.fx" )
-		outputDebugString( "blurHShader is using technique " .. tostring(tecName) )
+	blurHShader,tecName = dxCreateShader( "fx/blurH.fx" )
+	outputDebugString( "blurHShader is using technique " .. tostring(tecName) )
 
-        blurVShader,tecName = dxCreateShader( "blurV.fx" )
-		outputDebugString( "blurVShader is using technique " .. tostring(tecName) )
+	blurVShader,tecName = dxCreateShader( "fx/blurV.fx" )
+	outputDebugString( "blurVShader is using technique " .. tostring(tecName) )
 
-        brightPassShader,tecName = dxCreateShader( "brightPass.fx" )
-		outputDebugString( "brightPassShader is using technique " .. tostring(tecName) )
+	brightPassShader,tecName = dxCreateShader( "fx/brightPass.fx" )
+	outputDebugString( "brightPassShader is using technique " .. tostring(tecName) )
 
-        addBlendShader,tecName = dxCreateShader( "addBlend.fx" )
-		outputDebugString( "addBlendShader is using technique " .. tostring(tecName) )
+    addBlendShader,tecName = dxCreateShader( "fx/addBlend.fx" )
+	outputDebugString( "addBlendShader is using technique " .. tostring(tecName) )
 
-		-- Check everything is ok
-		bAllValid = myScreenSource and blurHShader and blurVShader and brightPassShader and addBlendShader
+	-- Get list of all elements used
+	effectParts = {
+						myScreenSource,
+						blurVShader,
+						blurHShader,
+						brightPassShader,
+						addBlendShader,
+					}
 
-		if not bAllValid then
-			--outputChatBox( "Could not create some things. Please use debugscript 3" )
-			return false
-		else
-			addEventHandler ( "onClientHUDRender", root, onClientHUDRender )
-			return true
-		end
+	-- Check list of all elements used
+	bAllValid = true
+	for _,part in ipairs(effectParts) do
+		bAllValid = part and bAllValid
+	end
+	
+	setEffectVariables ()
+	bEffectEnabled = true
+	
+	if not bAllValid then
+		outputChatBox( "Bloom: Could not create some things. Please use debugscript 3" )
+		disableBloom()
+		return false
+	else
+		addEventHandler("onClientHUDRender", root, onClientHUDRender, true ,"low" .. orderPriority)
+		return true
+	end	
 end
 
-function disableBloom ()
-	removeEventHandler ( "onClientHUDRender", root, onClientHUDRender )
-	if(myScreenSource) then destroyElement(myScreenSource) myScreenSource = false end
-	if(blurHShader) then destroyElement(blurHShader) blurHShader = false end
-	if(blurVShader) then destroyElement(blurVShader) blurVShader = false end
-	if(brightPassShader) then destroyElement(brightPassShader) brightPassShader = false end
-	if(addBlendShader) then destroyElement(addBlendShader) addBlendShader = false end
+-----------------------------------------------------------------------------------
+-- disableBloom
+-----------------------------------------------------------------------------------
+function disableBloom()
+	if not bEffectEnabled then return end
+	removeEventHandler("onClientHUDRender", root, onClientHUDRender)
+	-- Destroy all shaders
+	for _,part in ipairs(effectParts) do
+		if part then
+			destroyElement( part )
+		end
+	end
+	effectParts = {}
+	bAllValid = false
+	RTPool.clear()
+	
+	-- Flag effect as stopped
+	bEffectEnabled = false
+end
+
+---------------------------------
+-- Settings for effect
+---------------------------------
+function setEffectVariables()
+    local v = Settings.var
+    -- Bloom
+    v.cutoff = 0.08
+    v.power = 1.88
+	v.blur = 0.9
+    v.bloom = 1.7
+    v.blendR = 204
+    v.blendG = 153
+    v.blendB = 130
+    v.blendA = 100
+
+	-- Debugging
+    v.PreviewEnable=0
+    v.PreviewPosY=0
+    v.PreviewPosX=100
+    v.PreviewSize=70
 end
 
 -----------------------------------------------------------------------------------
 -- onClientHUDRender
 -----------------------------------------------------------------------------------
 function onClientHUDRender()
-		if not Settings.var then
-			return
+		if not bAllValid or not Settings.var then return end
+		local v = Settings.var	
+			
+		-- Reset render target pool
+		RTPool.frameStart()
+		DebugResults.frameStart()
+		-- Update screen
+		dxUpdateScreenSource( myScreenSource, true )
+			
+		-- Start with screen
+		local current = myScreenSource
+
+		-- Apply all the effects, bouncing from one render target to another
+		current = applyBrightPass( current, v.cutoff, v.power )
+		current = applyDownsample( current )
+		current = applyDownsample( current )
+		current = applyGBlurH( current, v.bloom, v.blur )
+		current = applyGBlurV( current, v.bloom, v.blur )
+
+		-- When we're done, turn the render target back to default
+		dxSetRenderTarget()
+
+		-- Mix result onto the screen using 'add' rather than 'alpha blend'
+		if current then
+			dxSetShaderValue( addBlendShader, "TEX0", current )
+			local col = tocolor(v.blendR, v.blendG, v.blendB, v.blendA)
+			dxDrawImage( 0, 0, scx, scy, addBlendShader, 0,0,0, col )
 		end
-        if bAllValid then
-			-- Reset render target pool
-			RTPool.frameStart()
-
-			-- Update screen
-			dxUpdateScreenSource( myScreenSource )
-
-			-- Start with screen
-			local current = myScreenSource
-
-			-- Apply all the effects, bouncing from one render target to another
-			current = applyBrightPass( current, Settings.var.cutoff, Settings.var.power )
-			current = applyDownsample( current )
-			current = applyDownsample( current )
-			current = applyGBlurH( current, Settings.var.bloom )
-			current = applyGBlurV( current, Settings.var.bloom )
-
-			-- When we're done, turn the render target back to default
-			dxSetRenderTarget()
-
-			-- Mix result onto the screen using 'add' rather than 'alpha blend'
-			if current then
-				dxSetShaderValue( addBlendShader, "TEX0", current )
-				local col = tocolor(Settings.var.blendR, Settings.var.blendG, Settings.var.blendB, Settings.var.blendA)
-				dxDrawImage( 0, 0, scx, scy, addBlendShader, 0,0,0, col )
-			end
-        end
+		-- Debug stuff
+		if v.PreviewEnable > 0.5 then
+			DebugResults.drawItems ( v.PreviewSize, v.PreviewPosX, v.PreviewPosY )
+		end
 end
+
 
 -----------------------------------------------------------------------------------
 -- Apply the different stages
@@ -110,10 +149,11 @@ function applyDownsample( Src, amount )
 	if not newRT then return nil end
 	dxSetRenderTarget( newRT )
 	dxDrawImage( 0, 0, mx, my, Src )
+	DebugResults.addItem( newRT, "applyDownsample" )
 	return newRT
 end
 
-function applyGBlurH( Src, bloom )
+function applyGBlurH( Src, bloom, blur )
 	if not Src then return nil end
 	local mx,my = dxGetMaterialSize( Src )
 	local newRT = RTPool.GetUnused(mx,my)
@@ -122,11 +162,13 @@ function applyGBlurH( Src, bloom )
 	dxSetShaderValue( blurHShader, "TEX0", Src )
 	dxSetShaderValue( blurHShader, "TEX0SIZE", mx,my )
 	dxSetShaderValue( blurHShader, "BLOOM", bloom )
+	dxSetShaderValue( blurHShader, "BLUR", blur )
 	dxDrawImage( 0, 0, mx, my, blurHShader )
+	DebugResults.addItem( newRT, "applyGBlurH" )
 	return newRT
 end
 
-function applyGBlurV( Src, bloom )
+function applyGBlurV( Src, bloom, blur )
 	if not Src then return nil end
 	local mx,my = dxGetMaterialSize( Src )
 	local newRT = RTPool.GetUnused(mx,my)
@@ -135,7 +177,9 @@ function applyGBlurV( Src, bloom )
 	dxSetShaderValue( blurVShader, "TEX0", Src )
 	dxSetShaderValue( blurVShader, "TEX0SIZE", mx,my )
 	dxSetShaderValue( blurVShader, "BLOOM", bloom )
+	dxSetShaderValue( blurVShader, "BLUR", blur )
 	dxDrawImage( 0, 0, mx,my, blurVShader )
+	DebugResults.addItem( newRT, "applyGBlurV" )
 	return newRT
 end
 
@@ -149,35 +193,16 @@ function applyBrightPass( Src, cutoff, power )
 	dxSetShaderValue( brightPassShader, "CUTOFF", cutoff )
 	dxSetShaderValue( brightPassShader, "POWER", power )
 	dxDrawImage( 0, 0, mx,my, brightPassShader )
+	DebugResults.addItem( newRT, "applyBrightPass" )
 	return newRT
 end
 
 
------------------------------------------------------------------------------------
--- Pool of render targets
------------------------------------------------------------------------------------
-RTPool = {}
-RTPool.list = {}
-
-function RTPool.frameStart()
-	for rt,info in pairs(RTPool.list) do
-		info.bInUse = false
-	end
-end
-
-function RTPool.GetUnused( mx, my )
-	-- Find unused existing
-	for rt,info in pairs(RTPool.list) do
-		if not info.bInUse and info.mx == mx and info.my == my then
-			info.bInUse = true
-			return rt
-		end
-	end
-	-- Add new
-	local rt = dxCreateRenderTarget( mx, my )
-	if rt then
-		outputDebugString( "creating new RT " .. tostring(mx) .. " x " .. tostring(mx) )
-		RTPool.list[rt] = { bInUse = true, mx = mx, my = my }
-	end
-	return rt
+----------------------------------------------------------------
+-- Avoid errors messages when memory is low
+----------------------------------------------------------------
+_dxDrawImage = dxDrawImage
+function xdxDrawImage(posX, posY, width, height, image, ... )
+	if not image then return false end
+	return _dxDrawImage( posX, posY, width, height, image, ... )
 end

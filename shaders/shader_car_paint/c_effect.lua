@@ -1,4 +1,4 @@
-local g_EffectName = { "Shiny Cars", pl = "Błyszczące samochody" }
+local g_EffectName = {"Shiny Cars", pl = "Błyszczące samochody"}
 local g_AutoEnable = true
 
 local g_Enabled = false
@@ -9,11 +9,11 @@ addEvent("onRafalhGetEffects")
 
 function setEffectEnabled(enable)
 	g_Changed = true
-	if(enable == g_Enabled ) then return true end
+	if (enable == g_Enabled) then return true end
 	
-	if(not enable ) then
-		disableCarPaint()
-	elseif(not enableCarPaint()) then
+	if (not enable) then
+		stopCarPaint()
+	elseif (not startCarPaint()) then
 		return false
 	end
 	g_Enabled = enable
@@ -26,7 +26,7 @@ function isEffectEnabled()
 end
 
 local function initDelayed()
-	if(not g_Changed) then
+	if (not g_Changed) then
 		setEffectEnabled(g_AutoEnable)
 	end
 end

@@ -1,28 +1,21 @@
 //
-// Example shader - blurH.fx
+// Example shader - brightPass.fx
 //
-// Horizontal blur
+// Cut off pixels below threshold
 //
 
 //---------------------------------------------------------------------
-// blurH settings
+// brightPass settings
 //---------------------------------------------------------------------
-float sBloom : BLOOM = 1;
 texture sTex0 : TEX0;
-float2 sTex0Size : TEX0SIZE;
+float sCutoff : CUTOFF = 0.2;         // 0 - 1
+float sPower : POWER  = 1;            // 1 - 5
 
 
 //---------------------------------------------------------------------
 // Include some common stuff
 //---------------------------------------------------------------------
 #include "mta-helper.fx"
-
-
-//-----------------------------------------------------------------------------
-// Static data
-//-----------------------------------------------------------------------------
-static const float Kernel[13] = {-6, -5,     -4,     -3,     -2,     -1,     0,      1,      2,      3,      4,      5,      6};
-static const float Weights[13] = {      0.002216,       0.008764,       0.026995,       0.064759,       0.120985,       0.176033,       0.199471,       0.176033,       0.120985,       0.064759,       0.026995,       0.008764,       0.002216};
 
 
 //---------------------------------------------------------------------
@@ -34,6 +27,8 @@ sampler Sampler0 = sampler_state
     MinFilter       = Linear;
     MagFilter       = Linear;
     MipFilter       = Linear;
+    AddressU        = Mirror;
+    AddressV        = Mirror;
 };
 
 
@@ -89,25 +84,28 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 {
     float4 Color = 0;
 
-    float2 coord;
-    coord.y = PS.TexCoord.y;
+	float4 texel = tex2D(Sampler0, PS.TexCoord);
 
-    for(int i = 0; i < 13; ++i)
-    {
-        coord.x = PS.TexCoord.x + Kernel[i]/sTex0Size.x;
-        Color += tex2D(Sampler0, coord.xy) * Weights[i] * sBloom;
-    }
+    float lum = (texel.r + texel.g + texel.b)/3;
 
-    Color = Color * PS.Diffuse;
-    Color.a = 1;
-    return Color;  
+    float adj = saturate( lum - sCutoff );
+
+    adj = adj / (1.01 - sCutoff);
+    
+    texel = texel * adj;
+    texel = pow(texel, sPower);
+
+    Color = texel;
+
+	Color.a = 1;
+	return Color;
 }
 
 
 //------------------------------------------------------------------------------------------
 // Techniques
 //------------------------------------------------------------------------------------------
-technique blurh
+technique brightpass
 {
     pass P0
     {

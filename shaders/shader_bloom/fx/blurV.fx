@@ -8,6 +8,7 @@
 // blurV settings
 //---------------------------------------------------------------------
 float sBloom : BLOOM = 1;
+float sBlur : BLUR = 1;
 texture sTex0 : TEX0;
 float2 sTex0Size : TEX0SIZE;
 
@@ -34,6 +35,8 @@ sampler Sampler0 = sampler_state
     MinFilter       = Linear;
     MagFilter       = Linear;
     MipFilter       = Linear;
+    AddressU        = Mirror;
+    AddressV        = Mirror;
 };
 
 
@@ -94,7 +97,7 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 
     for(int i = 0; i < 13; ++i)
     {
-        coord.y = PS.TexCoord.y + Kernel[i]/sTex0Size.y;
+        coord.y = PS.TexCoord.y + (sBlur * Kernel[i])/sTex0Size.y;
         Color += tex2D(Sampler0, coord.xy) * Weights[i] * sBloom;
     }
 

@@ -1,6 +1,8 @@
 //
 // car_paint.fx
-//
+// EDIT by Ren712: Paint color and reflection vector fix
+// added sky light and thin film effect to the car paint
+// the effect uses up to all 4 pointlights for vehicle lighting
 
 //
 // Badly converted from:
@@ -17,13 +19,16 @@
 //---------------------------------------------------------------------
 texture sReflectionTexture;
 texture sRandomTexture;
+texture sFringeMap;
 
-
+float gFilmDepth = 0.05; // 0-0.25
+float3 sSkyColorTop = float3(0,0,0);
+float3 sSkyColorBott = float3(0,0,0);
+float gFilmIntensity = 0.25;
 //---------------------------------------------------------------------
 // Include some common stuff
 //---------------------------------------------------------------------
 #include "mta-helper.fx"
-
 
 //------------------------------------------------------------------------------------------
 // Samplers for the textures
@@ -34,6 +39,16 @@ sampler Sampler0 = sampler_state
     MinFilter       = Linear;
     MagFilter       = Linear;
     MipFilter       = Linear;
+};
+
+sampler2D gFringeMapSampler = sampler_state 
+{
+   Texture = (sFringeMap);
+   MinFilter = Linear;
+   MipFilter = Linear;
+   MagFilter = Linear;
+   AddressU  = Clamp;
+   AddressV  = Clamp;
 };
 
 sampler3D RandomSampler = sampler_state
@@ -80,8 +95,18 @@ struct PSInput
     float3 NormalSurf : TEXCOORD4;
     float3 View : TEXCOORD5;
     float3 SparkleTex : TEXCOORD6;
+    float2 FilmDepth : COLOR1;
+    float3 Normalz : TEXCOORD7;	
 };
 
+//////////////////////////////////////////////////////////////////////////
+// Function to Index this texture - use in vertex or pixel shaders ///////
+//////////////////////////////////////////////////////////////////////////
+
+float calc_view_depth(float NDotV,float Thickness)
+{
+    return (Thickness / NDotV);
+}
 
 //------------------------------------------------------------------------------------------
 // VertexShaderFunction
@@ -103,24 +128,31 @@ PSInput VertexShaderFunction(VSInput VS)
     Tangent.xz = VS.TexCoord.xy;
     float3 Binormal = normalize( cross(Tangent, VS.Normal) );
     Tangent = normalize( cross(Binormal, VS.Normal) );
-
     // Transfer some stuff
     PS.TexCoord = VS.TexCoord;
-    PS.Tangent = normalize( mul(Tangent, (float3x3)gWorld) );
-    PS.Binormal = normalize( mul(Binormal, (float3x3)gWorld) );
+    PS.Tangent = normalize(mul(Tangent, gWorldInverseTranspose).xyz);
+    PS.Binormal = normalize(mul(Binormal, gWorldInverseTranspose).xyz);
     PS.Normal = normalize( mul(VS.Normal, (float3x3)gWorld) );
     PS.NormalSurf = VS.Normal;
     PS.View = viewDirection;
     PS.SparkleTex.x = fmod( VS.Position.x, 10 ) * 4.0;
     PS.SparkleTex.y = fmod( VS.Position.y, 10 ) * 4.0;
     PS.SparkleTex.z = fmod( VS.Position.z, 10 ) * 4.0;
-
+    // compute the view depth for the thin film
+    float3 Nn = mul(VS.Normal,gWorldInverseTranspose).xyz;	
+    float3 Vn = normalize(gCameraPosition - worldPosition);
+    float vdn = dot(Vn,Nn);
+    float viewdepth = calc_view_depth(vdn,gFilmDepth.x);
+    PS.FilmDepth = viewdepth.xx;	
+    // Normal Z vector for sky light 
+    float worldNormalZ = mul(VS.Normal,(float3x3)gWorld).z;
+    float skyTopmask = pow(worldNormalZ,5);
+    PS.Normalz = (skyTopmask * sSkyColorTop + saturate(worldNormalZ-skyTopmask)* sSkyColorBott);
+    PS.Normalz *=gGlobalAmbient.xyz;
     // Calc lighting
-    PS.Diffuse = MTACalcGTAVehicleDiffuse( PS.Normal, VS.Diffuse );
-
+    PS.Diffuse = MTACalcGTACompleteDiffuse( PS.Normal, VS.Diffuse );
     return PS;
 }
-
 
 //------------------------------------------------------------------------------------------
 // PixelShaderFunction
@@ -134,7 +166,7 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 
     // Some settings for something or another
     float microflakePerturbation = 1.00;
-    float brightnessFactor = 0.10;
+    float brightnessFactor = 0.40; // the default value is 0.10
     float normalPerturbation = 1.00;
     float microflakePerturbationA = 0.10;
 
@@ -147,7 +179,7 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 
     paintColorMid = base;
     paintColor2.r = base.g / 2 + base.b / 2;
-    paintColor2.g = -(base.r / 2 + base.b / 2);
+    paintColor2.g = (base.r / 2 + base.b / 2);
     paintColor2.b = base.r / 2 + base.g / 2;
 
     paintColor0.r = base.r / 2 + base.g / 2;
@@ -191,29 +223,38 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
     // and produces artifacts.
     float3 vView = normalize( PS.View );
 
-
     // Transform the surface normal into world space (in order to compute reflection
     // vector to perform environment map look-up):
     float3x3 mTangentToWorld = transpose( float3x3( PS.Tangent, PS.Binormal, PS.Normal ) );
     float3 vNormalWorld = normalize( mul( mTangentToWorld, vNormal ));
 
-
     // Compute reflection vector resulted from the clear coat of paint on the metallic
     // surface:
     float fNdotV = saturate(dot( vNormalWorld, vView));
-    float3 vReflection = 2 * vNormalWorld * fNdotV - vView;
-
+    
+    // Count reflection vector
+    float3 Nn = vNormal;
+    float3 Vn = PS.View; 
+    float3 vReflection = reflect(Vn,Nn);
+	
     // Hack in some bumpyness
-    vReflection.x += vNp2.x * fmod(gTime/100,1);
-
+    vReflection.x+= vNp2.x * 0.2;
+    vReflection.y+= vNp2.y * 0.1;
+    vReflection.xyz = vReflection.xzy;
     // Sample environment map using this reflection vector:
-    float4 envMap = texCUBE( ReflectionSampler, vReflection );
+    float4 envMap = texCUBE( ReflectionSampler, -vReflection );
 
     // Premultiply by alpha:
     envMap.rgb = envMap.rgb * envMap.rgb * envMap.rgb;
 
     // Brighten the environment map sampling result:
     envMap.rgb *= brightnessFactor;
+    envMap.rgb += PS.Normalz; // If you don't want to see sky color just comment that line	
+    // Sample dust texture:
+    float4 maptex = tex2D(Sampler0,PS.TexCoord.xy);
+	
+    // Sample fringe map:
+    float3 fringeCol = (float3)tex2D(gFringeMapSampler, PS.FilmDepth);
 
     // Compute modified Fresnel term for reflections from the first layer of
     // microflakes. First transform perturbed surface normal for that layer into
@@ -242,10 +283,12 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
     finalColor = envMap * fEnvContribution + paintColor;
     finalColor.a = 1.0;
 
+    PS.Diffuse.rgb += PS.Diffuse.rgb * fringeCol * gFilmIntensity; // If you don't want to see the color ramp just comment that line
     // Bodge in the car colors
     float4 Color = 1;
     Color = finalColor / 1 + PS.Diffuse * 0.5;
     Color += finalColor * PS.Diffuse * 1;
+    Color *= maptex; // If you don't want to see the dirt texture just comment that line
     Color.a = PS.Diffuse.a;
     return Color;
 }
@@ -254,7 +297,7 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 //------------------------------------------------------------------------------------------
 // Techniques
 //------------------------------------------------------------------------------------------
-technique carpaint
+technique carpaint_fix_v2_3
 {
     pass P0
     {

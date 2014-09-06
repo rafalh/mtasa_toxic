@@ -1,10 +1,13 @@
 <meta>
-	<info description="Shader - Car Paint" version="0.1.0" type="script" />
+	<!-- Based on shader_car_paint_fix -->
+	<info description="Shader - Car Paint" version="0.1.4" type="script" />
+	<min_mta_version client="1.3.3" server="1.3.3" />
 	<script src="c_car_paint.lua" type="client" />
-	<file src="car_paint.fx" type="client" />
-	<file src="mta-helper.fx" type="client" />
+	<file src="fx/car_paint.fx" type="client" />
+	<file src="fx/mta-helper.fx" type="client" />
 	<file src="images/smallnoise3d.dds" type="client" />
 	<file src="images/cube_env256.dds" type="client" />
+	<file src="images/ColorRamp01.png" type="client" />
 	
 	<script src="c_effect.lua" type="client" />
 	<export function="setEffectEnabled" type="client" />
