@@ -52,16 +52,16 @@ CmdMgr.register{
 		for i, player in ipairs(getElementsByType('player')) do
 			local accountName = getAccountName(getPlayerAccount(player))
 			
-			if(isObjectInACLGroup('user.'..accountName, adminGroup)) then
+			if (adminGroup and isObjectInACLGroup('user.'..accountName, adminGroup)) then
 				table.insert(admins, getPlayerName(player))
 			end
 			
-			if(isObjectInACLGroup('user.'..accountName, smodGroup)) then
+			if (smodGroup and isObjectInACLGroup('user.'..accountName, smodGroup)) then
 				table.insert(superMods, getPlayerName(player))
 			end
 			
-			if(isObjectInACLGroup('user.'..accountName, modGroup) or
-			   isObjectInACLGroup('user.'..accountName, premModGroup)) then
+			if ((modGroup and isObjectInACLGroup('user.'..accountName, modGroup)) or
+			   (premModGroup and isObjectInACLGroup('user.'..accountName, premModGroup))) then
 				table.insert(mods, getPlayerName(player))
 			end
 		end
