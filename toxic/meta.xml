@@ -55,6 +55,7 @@
 	<script src="core/updateList_s.lua" type="server" />
 	<script src="core/cache_s.lua" type="server" />
 	<script src="core/fileCache_s.lua" type="server" />
+	<script src="core/downloadMgr_s.lua" type="server" />
 	<script src="core/logger.lua" type="server" />
 	
 	<script src="commands/accounts_s.lua" type="server" />

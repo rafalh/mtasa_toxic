@@ -22,7 +22,12 @@ function get(name)
 	DbQuery('UPDATE '..CacheTable..' SET expires=? WHERE id=?', now + data.duration, data.id)
 	
 	-- Return item value
-	return fileGetContents(CACHE_DIR..data.filename)
+	local val = fileGetContents(CACHE_DIR..data.filename)
+	if (not val) then
+		-- File is removed
+		DbQuery('DELETE FROM '..CacheTable..' WHERE id=?', data.id)
+	end
+	return val
 end
 
 function set(name, val, sec)
