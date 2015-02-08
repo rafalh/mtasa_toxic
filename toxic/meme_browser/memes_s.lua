@@ -62,8 +62,11 @@ g_Services.kwejk = {
 	getImageList = function(self, callback, page, ...)
 		local url, cacheResponse
 		if (page) then
-			local page2 = 10 - (page - 1)
-			url = 'http://kwejk.pl/' -- FIXME: page
+			if (page == 1 or not self.pageNum) then
+				url = 'http://kwejk.pl/' -- FIXME: page
+			else
+				url = 'http://kwejk.pl/strona/'..self.pageNum - (page - 1)
+			end
 			cacheResponse = true
 		else
 			url = 'http://kwejk.pl/losuj'
@@ -84,6 +87,11 @@ g_Services.kwejk = {
 					table.insert(imgList, imgInfo)
 				end
 				callback(imgList, page, ...)
+				
+				local pagesTotal = data:match('pagesTotal: (%d+)')
+				if (pagesTotal) then
+					self.pageNum = pagesTotal
+				end
 			end
 		end, ...)
 	end,
