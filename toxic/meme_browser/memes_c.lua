@@ -185,4 +185,15 @@ local function init()
 	GUI.loadTemplates('meme_browser/gui.xml')
 end
 
+UpRegister {
+	name = "Meme browser",
+	img = 'meme_browser/icon.jpg',
+	tooltip = "Browse newest internet memes.",
+	noWnd = true,
+	onShow = function(panel)
+		show()
+		return true
+	end,
+}
+
 addEventHandler('onClientResourceStart', resourceRoot, init)

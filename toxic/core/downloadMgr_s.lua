@@ -29,7 +29,7 @@ function get(url, cacheResponse, callback, ...)
 			local curl = curlInit(url)
 			g_CurlToUrl[curl] = url
 			curlSetopt(curl, 'CURLOPT_FOLLOWLOCATION', true)
-			local ret = curlExec(curl)
+			local ret = curlPerform(curl)
 			
 			if (ret) then
 				g_Requests[url] = req
