@@ -93,7 +93,7 @@ local function MiRenderMapInfo(x, y, w, h)
 	-- Draw tops
 	for i, data in ipairs(g_Tops) do
 		local itemY = y + 110 + i * 14
-		local clr = (data.player == g_MyId) and MYSELF_COLOR or TEXT_COLOR
+		local clr = (data.player == g_SharedState.accountId) and MYSELF_COLOR or TEXT_COLOR
 		
 		dxDrawText(tostring(i), x + POS_OFFSET, itemY, x + TIME_OFFSET, itemY + 15, clr, 1, FONT_RANKING)
 		dxDrawText(data.time or data.victCount, x + TIME_OFFSET, itemY, x + NAME_OFFSET, itemY + 15, clr, 1, FONT_RANKING)

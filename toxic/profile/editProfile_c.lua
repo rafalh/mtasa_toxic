@@ -93,11 +93,11 @@ local function initGui()
 	
 	g_ChangePwBtn = guiCreateButton(10, 10, 120, 25, "Change password", false, g_Panel)
 	addEventHandler('onClientGUIClick', g_ChangePwBtn, openChangePasswordGui, false)
-	guiSetEnabled(g_ChangePwBtn, g_UserName and true)
+	guiSetEnabled(g_ChangePwBtn, g_SharedState.accountName and true)
 	
 	g_ChangeEmailBtn = guiCreateButton(140, 10, 120, 25, "Change e-mail", false, g_Panel)
 	addEventHandler('onClientGUIClick', g_ChangeEmailBtn, openChangeEmailGui, false)
-	guiSetEnabled(g_ChangeEmailBtn, g_UserName and true)
+	guiSetEnabled(g_ChangeEmailBtn, g_SharedState.accountName and true)
 	y = y + 35
 	
 	RPC('getProfileFields'):onResult(onProfileFields):exec()
@@ -119,8 +119,8 @@ function EditProfilePanel.onShow(panel)
 		initGui()
 	end
 	
-	if(g_MyId) then
-		RPC('getPlayerProfile', g_MyId):onResult(onProfileData):exec()
+	if (g_SharedState.accountId) then
+		RPC('getPlayerProfile', g_SharedState.accountId):onResult(onProfileData):exec()
 	end
 end
 

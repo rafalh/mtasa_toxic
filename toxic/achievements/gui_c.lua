@@ -120,7 +120,7 @@ function AchvActivate(name)
 	local achv = g_NameToAchv[name]
 	assert(achv and achv.client)
 	
-	if(not g_MyId) then return end
+	if(not g_SharedState.accountId) then return end
 	
 	if(achv.active) then
 		--Debug.info('Failed to activate client achievement '..name)

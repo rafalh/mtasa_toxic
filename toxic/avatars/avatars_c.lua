@@ -58,7 +58,7 @@ function AvtOpenGUI()
 	
 	local minLevel = Settings.avatar_min_level
 	if(minLevel > 1) then
-		local exp = StGet(g_MyId or g_Me, 'points')
+		local exp = StGet(g_SharedState.accountId or g_Me, 'points')
 		local lvl = exp and LvlFromExp(exp)
 		if(not lvl or lvl < minLevel) then
 			outputMsg(Styles.red, "You need at least %u. level to change your avatar!", minLevel)

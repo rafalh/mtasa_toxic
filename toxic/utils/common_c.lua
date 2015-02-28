@@ -9,7 +9,6 @@
 ----------------------
 
 g_Me = getLocalPlayer()
-g_MyId = 0
 g_ScreenSize = {guiGetScreenSize()}
 g_InternalEventHandlers = {}
 

@@ -18,12 +18,12 @@ local function SpInitGui()
 	guiSetAlpha(g_Wnd, 0.8)
 	guiSetVisible(g_Wnd, false)
 	
-	g_StatsView = StatsView.create(g_MyId or g_Me, g_Wnd, 10, 25, g_Width - 20, h - 35)
+	g_StatsView = StatsView.create(g_SharedState.accountId or g_Me, g_Wnd, 10, 25, g_Width - 20, h - 35)
 end
 
 local function onAccountChange()
 	if(g_StatsView) then
-		g_StatsView:changeTarget(g_MyId or g_Me)
+		g_StatsView:changeTarget(g_SharedState.accountId or g_Me)
 	end
 end
 

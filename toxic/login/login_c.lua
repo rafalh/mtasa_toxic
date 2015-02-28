@@ -4,7 +4,6 @@
 #include 'include/config.lua'
 
 local g_GUI
-g_UserName = false
 
 addEvent('main.onLoginReq', true)
 addEvent('main.onLoginStatus', true)

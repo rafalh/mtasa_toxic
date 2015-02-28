@@ -76,7 +76,7 @@ function StOnSync(syncTbl)
 	
 	-- check id
 	local id = syncTbl.stats[1]
-	if(not g_Stats[id] and id ~= g_MyId and id ~= g_Me) then return end
+	if(not g_Stats[id] and id ~= g_SharedState.accountId and id ~= g_Me) then return end
 	
 	-- create table if not exists
 	if(not g_Stats[id]) then

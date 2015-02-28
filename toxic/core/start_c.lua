@@ -35,7 +35,6 @@ local function onClientInit(accountId, settings, isNew, localeId)
 	g_SharedState.accountId = accountId
 	g_SharedState.newPlayer = isNew
 	
-	g_MyId = accountId
 	Settings.setGlobal(settings)
 	Settings.locale = localeId
 	triggerEvent('onClientLangChange', g_Root, localeId)

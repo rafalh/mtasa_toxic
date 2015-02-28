@@ -111,7 +111,7 @@ end
 function StatsView:destroy(ignoreEl)
 	self:hide()
 	
-	if(self.id ~= g_MyId) then
+	if(self.id ~= g_SharedState.accountId) then
 		StDeleteIfNotUsed(self.id)
 	end
 	
@@ -184,7 +184,7 @@ function StatsPanel.onShow(panel)
 	local w, h = guiGetSize(panel, false)
 	
 	if(not StatsPanel.statsView) then
-		StatsPanel.statsView = StatsView.create(g_MyId or g_Me, panel, 10, 10, w - 20, h - 20)
+		StatsPanel.statsView = StatsView.create(g_SharedState.accountId or g_Me, panel, 10, 10, w - 20, h - 20)
 	end
 	StatsPanel.statsView:show()
 	
@@ -200,7 +200,7 @@ end
 
 function StatsPanel.onAccountChange()
 	if(StatsPanel.statsView) then
-		StatsPanel.statsView:changeTarget(g_MyId or g_Me)
+		StatsPanel.statsView:changeTarget(g_SharedState.accountId or g_Me)
 	end
 end
 

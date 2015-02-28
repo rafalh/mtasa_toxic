@@ -13,8 +13,6 @@ addEvent('main.onAccountChange', true)
 
 -- Functions
 local function onAccountChange(accountName, accountId)
-	g_UserName = accountName
-	g_MyId = accountId
 	g_SharedState.accountId = accountId
 	g_SharedState.accountName = accountName
 end

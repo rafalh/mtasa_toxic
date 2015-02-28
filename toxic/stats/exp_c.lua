@@ -68,7 +68,7 @@ local function EbRender()
 	local w, h = g_ScreenSize[1], FONT_H
 	local x, y = 0, g_ScreenSize[2] - h
 	
-	local exp = StGet and StGet(g_MyId or g_Me, 'points') or 0
+	local exp = StGet and StGet(g_SharedState.accountId or g_Me, 'points') or 0
 	if(exp ~= g_EXP) then
 		g_EXP = exp
 		if(USE_RENDER_TARGET) then
@@ -94,7 +94,7 @@ end
 local function EbAccountChange()
 	StStopSync(g_CurrentId)
 	StDeleteIfNotUsed(g_CurrentId)
-	g_CurrentId = g_MyId or g_Me
+	g_CurrentId = g_SharedState.accountId or g_Me
 	StStartSync(g_CurrentId)
 end
 
@@ -102,7 +102,7 @@ addInitFunc(function()
 	if(not Settings.exp_bar) then return end
 	addEventHandler('onClientRender', g_Root, EbRender)
 	addEventHandler('onClientRestore', g_Root, EbRestore)
-	g_CurrentId = g_MyId or g_Me
+	g_CurrentId = g_SharedState.accountId or g_Me
 	StStartSync(g_CurrentId)
 	addEventHandler('main.onAccountChange', resourceRoot, EbAccountChange)
 end)

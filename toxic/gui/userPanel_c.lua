@@ -102,7 +102,7 @@ local function UpSetAccount(accountName)
 end
 
 local function UpLogInOut()
-	if(g_UserName) then
+	if(g_SharedState.accountName) then
 		RPC('logOutReq'):exec()
 	else
 		UpHide()
@@ -131,7 +131,7 @@ local function UpCreateLocalUserBlock(x, y, w, wnd)
 	g_LogInOutBtn = guiCreateButton(x + w - 90, y, 80, 25, "Logout", false, wnd)
 	addEventHandler('onClientGUIClick', g_LogInOutBtn, UpLogInOut, false)
 	
-	UpSetAccount(g_UserName)
+	UpSetAccount(g_SharedState.accountName)
 end
 
 local function UpCreateGui()
