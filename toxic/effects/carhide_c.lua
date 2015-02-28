@@ -149,24 +149,26 @@ local function ChInit()
 	bindKey(key, 'down', 'carhide')
 end
 
-addEventHandler('onClientResourceStart', resourceRoot, ChInit)
+addInitFunc(ChInit)
 
-Settings.register
-{
-	name = 'carHide',
-	default = false,
-	cast = tobool,
-	onChange = function(oldVal, newVal)
-		ChSetEnabled(newVal)
-	end,
-	createGui = function(wnd, x, y, w, onChange)
-		local cb = guiCreateCheckBox(x, y, w, 20, "Hide other cars when GM is enabled", Settings.carHide, false, wnd)
-		if(onChange) then
-			addEventHandler('onClientGUIClick', cb, onChange, false)
-		end
-		return 20, cb
-	end,
-	acceptGui = function(cb)
-		Settings.carHide = guiCheckBoxGetSelected(cb)
-	end,
-}
+addInitFunc(function()
+	Settings.register
+	{
+		name = 'carHide',
+		default = false,
+		cast = tobool,
+		onChange = function(oldVal, newVal)
+			ChSetEnabled(newVal)
+		end,
+		createGui = function(wnd, x, y, w, onChange)
+			local cb = guiCreateCheckBox(x, y, w, 20, "Hide other cars when GM is enabled", Settings.carHide, false, wnd)
+			if(onChange) then
+				addEventHandler('onClientGUIClick', cb, onChange, false)
+			end
+			return 20, cb
+		end,
+		acceptGui = function(cb)
+			Settings.carHide = guiCheckBoxGetSelected(cb)
+		end,
+	}
+end, -2000)

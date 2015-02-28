@@ -14,6 +14,7 @@
 	<script src="blipColor_s.lua" type="server" />
 	<script src="clientDebug_s.lua" type="server" />
 	<script src="clientDebug_c.lua" type="client" />
+	<script src="quitMsg_c.lua" type="client" />
 	
 	<config src="../conf/server_rules.xml" type="client" />
 </meta>

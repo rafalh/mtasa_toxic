@@ -1,8 +1,4 @@
--- Includes
-#include 'include/internal_events.lua'
-
 -- Variables
-
 local PANEL_COLUMNS = 1
 local PANEL_ALPHA = 0.9
 local ITEM_W, ITEM_H = 130, 36
@@ -164,7 +160,7 @@ local function UpCreateGui()
 		end
 	end
 	
-	if(ServerRules) then
+	if (ServerRules) then
 		local link = Link(10, h - 50, 150, 20, g_Wnd, "Server Rules")
 		link:setNormalColor('#cc8800')
 		addEventHandler('onClientGUIClick', link.el, ServerRules.display, false)
@@ -206,22 +202,40 @@ local function UpShow()
 end
 
 local function UpInit()
+	addEventHandler('main.onAccountChange', g_ResRoot, UpSetAccount)
+	
 	addCommandHandler('UserPanel', UpToggle, false, false)
 	local key = getKeyBoundToCommand('UserPanel') or 'F2'
 	bindKey(key, 'down', 'UserPanel')
+	
+	if (g_SharedState.newPlayer) then
+		local userPanelKey = getKeyBoundToCommand('UserPanel') or 'F2'
+		local statsPanelKey = getKeyBoundToCommand('StatsPanel') or '-'
+		outputMsg(Styles.help, "Press %s to open User Panel and %s to open Statistics Panel!", userPanelKey, statsPanelKey)
+	end
 end
 
-function UpNeedsBackBtn()
-	return VIEW_W == 0
+local function UpPostInit()
+	table.sort(g_Items, function(a, b)
+		return a.prio < b.prio
+	end)
+	for i, item in ipairs(g_Items) do
+		item.idx = i
+	end
+	
 end
+
+addInitFunc(UpInit)
+addInitFunc(UpPostInit, 100)
 
 ----------------------
 -- Global functions --
 ----------------------
 
 function UpRegister(item)
+	assert(g_InitPhase > 0)
 	--assert(type(item) == 'table')
-	item.idx = #g_Items + 1
+	item.prio = item.prio or 0
 	table.insert(g_Items, item)
 end
 
@@ -252,9 +266,6 @@ function UpBack()
 	GaFadeIn(g_Wnd, FADE_DELAY, PANEL_ALPHA)
 end
 
-------------
--- Events --
-------------
-
-addEventHandler('onClientResourceStart', g_ResRoot, UpInit)
-addEventHandler('main.onAccountChange', g_ResRoot, UpSetAccount)
+function UpNeedsBackBtn()
+	return VIEW_W == 0
+end

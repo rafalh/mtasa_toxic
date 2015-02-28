@@ -171,11 +171,7 @@ function ChatRoom.onKey(btn, keyDown)
 	end
 end
 
-------------
--- Events --
-------------
-
-addEventHandler('onClientResourceStart', resourceRoot, function()
+addInitFunc(function()
 	guiSetInputMode('no_binds_when_editing')
 	addEventHandler('onClientKey', root, ChatRoom.onKey)
 end)

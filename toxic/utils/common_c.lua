@@ -127,4 +127,6 @@ end
 -- Events --
 ------------
 
-addEventHandler('onEvent_'..g_ThisResName, g_Root, onEventHandler)
+addInitFunc(function()
+	addEventHandler('onEvent_'..g_ThisResName, g_Root, onEventHandler)
+end, -1000)

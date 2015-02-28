@@ -95,9 +95,11 @@ local function onResReady(res)
 	--outputDebugString(#self.readyHandlers..' handlers called.', 3)
 end
 
-local isServer = triggerClientEvent
-local resStartEvent = isServer and 'onResourceStart' or 'onClientResourceStart'
-local resStopEvent = isServer and 'onResourceStop' or 'onClientResourceStop'
-addEventHandler(resStartEvent, root, onResStart)
-addEventHandler(resStopEvent, root, onResStop)
-addEventHandler('toxic.onResReady', root, onResReady)
+addInitFunc(function()
+	local isServer = triggerClientEvent
+	local resStartEvent = isServer and 'onResourceStart' or 'onClientResourceStart'
+	local resStopEvent = isServer and 'onResourceStop' or 'onClientResourceStop'
+	addEventHandler(resStartEvent, root, onResStart)
+	addEventHandler(resStopEvent, root, onResStop)
+	addEventHandler('toxic.onResReady', root, onResReady)
+end)

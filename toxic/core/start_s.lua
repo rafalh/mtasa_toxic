@@ -1,57 +1,33 @@
-local g_InitFuncs = {}
+local g_InitCallbacks = {}
 local g_PreInitFuncs = {}
 local _addEventHandler
 local g_Co, g_CoTicks
-local g_ScoreBoardRes = Resource('scoreboard')
+local g_ScoreBoardRes
 
 #DBG_START_PERF = false
 
 local function setupDatabase()
-	if(not DbInit()) then
+	if (not DbInit()) then
 		return false
 	end
 	
-	if(not Settings.init()) then
+	if (not Settings.init()) then
 		return false
 	end
 	
-	if(not Updater.run()) then
+	if (not Updater.run()) then
 		return false
 	end
 	
 	return true
 end
 
-local function setupACL()
-	local acl = aclGet('Admin')
-	if(not acl) then
-		Debug.err('Cannot find Admin ACL!')
-		return false
+local function cleanUpDatabase()
+	if (not Settings.cleanup_done) then
+		Debug.warn('Cleaning database!')
+		DbQuery('UPDATE '..DbPrefix..'players SET online=0')
 	end
-	
-	local rightsToAdd = {}
-	local save = false
-	
-	for i, right in ipairs(AccessRight.list) do
-		local rightName = right:getFullName()
-		if(not aclGetRight(acl, rightName)) then
-			table.insert(rightsToAdd, rightName)
-		end
-	end
-	
-	if(#rightsToAdd > 0) then
-		if(hasObjectPermissionTo(resource, 'function.aclSetRight') and hasObjectPermissionTo(resource, 'function.aclSave')) then
-			for i, right in ipairs(rightsToAdd) do
-				aclSetRight(acl, right, true)
-			end
-			aclSave()
-			Debug.info('ACL has been updated')
-		else
-			Debug.warn('Resource does not have right to change ACL. Add custom rights manually...')
-		end
-	end
-	
-	return true
+	Settings.cleanup_done = false
 end
 
 local function LoadCountries()
@@ -86,91 +62,21 @@ local function LoadLanguages()
 	return true
 end
 
-local function LoadMapTypes()
-	local node = xmlLoadFile('conf/map_types.xml')
-	if(not node) then return false end
-	
-	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
-		local data = {}
-		data.name = xmlNodeGetAttribute(subnode, 'name')
-		data.pattern = xmlNodeGetAttribute(subnode, 'pattern')
-		
-		local gm = xmlNodeGetAttribute(subnode, 'ghostmode')
-		data.gm = touint(gm) or (gm == 'true')
-		
-		data.others_in_row = 0
-		data.max_others_in_row = touint(xmlNodeGetAttribute(subnode, 'max_others_in_row'))
-		
-		local winning_veh_str = xmlNodeGetAttribute(subnode, 'winning_vehicles') or ''
-		local id_list = split(winning_veh_str, ',')
-		local added = false
-		local winning_veh = {}
-		
-		for j, v in ipairs(id_list) do
-			local id = touint(v)
-			if(id) then
-				winning_veh[id] = true
-				added = true
-			end
-		end
-		
-		if(added) then
-			data.winning_veh = winning_veh
-		end
-		
-		data.max_fps = touint(xmlNodeGetAttribute(subnode, 'max_fps'))
-		
-		assert(data.name)
-		table.insert(g_MapTypes, data)
-	end
-	
-	xmlUnloadFile(node)
-	return true
-end
-
 local function setupScoreboard()
-	if(g_ScoreBoardRes:isReady()) then
+	if (g_ScoreBoardRes:isReady()) then
 		g_ScoreBoardRes:call('scoreboardAddColumn', 'country', g_Root, 50, 'Country', false, 'country_img')
-		if(AvtSetupScoreboard) then
+		if (AvtSetupScoreboard) then
 			AvtSetupScoreboard(g_ScoreBoardRes.res)
 		end
-		if(StSetupScoreboard) then
+		if (StSetupScoreboard) then
 			StSetupScoreboard(g_ScoreBoardRes.res)
 		end
 	end
 end
 
-g_ScoreBoardRes:addReadyHandler(function()
-	setTimer(setupScoreboard, 1000, 1)
-end)
-
-local function initRountine()
-	local prof = DbgPerf(300)
-	
-	if(not setupDatabase() or not setupACL()) then
-		cancelEvent()
-		return
-	end
-	
-	if(not Settings.cleanup_done) then
-		Debug.warn('Cleaning database!')
-		DbQuery('UPDATE '..DbPrefix..'players SET online=0')
-	end
-	Settings.cleanup_done = false
-	
-	LocaleList.init()
-	LoadCountries()
-	LoadLanguages()
-	LoadMapTypes()
-	
-	setupScoreboard()
-	
-	for i, func in ipairs(g_PreInitFuncs) do
-		func()
-	end
-	
+local function initPlayers()
 	for i, playerEl in ipairs (getElementsByType('player')) do
-		if(NbCheckPlayerAndFix) then
+		if (NbCheckPlayerAndFix) then
 			NbCheckPlayerAndFix(playerEl)
 		end
 		
@@ -180,20 +86,28 @@ local function initRountine()
 	local consoles = getElementsByType('console')
 	assert(#consoles == 1)
 	Player.create(consoles[1])
+end
+
+local function initRountine()
+	table.sort(g_InitCallbacks, function(a, b)
+		return a[2] < b[2]
+	end)
 	
-	prof:cp('init1')
+	local prof = DbgPerf(300)
 	
-	for i, func in ipairs(g_InitFuncs) do
+	for i, data in ipairs(g_InitCallbacks) do
+		local func = data[1]
 #if(DBG_START_PERF) then
+		local name = data[3]
 		local prof2 = DbgPerf()
-		func[1]()
-		prof2:cp(func[2])
+		func()
+		prof2:cp(name)
 #else
 		func()
 #end
 	end
 	
-	prof:cp('init2')
+	prof:cp('init')
 	Debug.info('rafalh script has started!')
 #if(TEST) then
 	Debug.warn('Script compiled with test support')
@@ -243,23 +157,18 @@ local function init()
 	continueCoRountine()
 end
 
-function addInitFunc(func)
+function addInitFunc(func, prio)
 	assert(func)
 #if(DBG_START_PERF) then
 	local name = Debug.getStackTrace(1, 1)[1]
-	table.insert(g_InitFuncs, {func, name})
+	table.insert(g_InitCallbacks, {func, prio or 0, name})
 #else
-	table.insert(g_InitFuncs, func)
+	table.insert(g_InitCallbacks, {func, prio or 0})
 #end
 	
 end
 
-function addPreInitFunc(func)
-	assert(func)
-	table.insert(g_PreInitFuncs, func)
-end
-
-addEventHandler('onResourceStart', g_ResRoot, init)
+addEventHandler('onResourceStart', resourceRoot, init)
 
 -- Disable addEventHandler for loading
 _addEventHandler = addEventHandler
@@ -268,3 +177,18 @@ function addEventHandler(...)
 	Debug.printStackTrace()
 	return _addEventHandler(...)
 end
+
+addInitFunc(setupDatabase, -200)
+addInitFunc(cleanUpDatabase, -190)
+addInitFunc(initPlayers, -100)
+
+addInitFunc(LoadCountries, -10)
+addInitFunc(LoadLanguages, -10)
+
+addInitFunc(function()
+	g_ScoreBoardRes = Resource('scoreboard')
+	setupScoreboard()
+	g_ScoreBoardRes:addReadyHandler(function()
+		setTimer(setupScoreboard, 1000, 1)
+	end)
+end)

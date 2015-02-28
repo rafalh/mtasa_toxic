@@ -99,5 +99,7 @@ function openRegisterWnd()
 	addEventHandler('onClientGUIChanged', g_GUI.pw, onPwChange, false)
 end
 
-addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)
-addEventHandler('main.onRegStatus', g_ResRoot, onRegStatus)
+addInitFunc(function()
+	addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)
+	addEventHandler('main.onRegStatus', g_ResRoot, onRegStatus)
+end)

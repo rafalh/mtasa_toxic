@@ -98,13 +98,11 @@ local function EbAccountChange()
 	StStartSync(g_CurrentId)
 end
 
-local function EbInit()
+addInitFunc(function()
 	if(not Settings.exp_bar) then return end
 	addEventHandler('onClientRender', g_Root, EbRender)
 	addEventHandler('onClientRestore', g_Root, EbRestore)
 	g_CurrentId = g_MyId or g_Me
 	StStartSync(g_CurrentId)
 	addEventHandler('main.onAccountChange', resourceRoot, EbAccountChange)
-end
-
-addInternalEventHandler($(EV_CLIENT_INIT), EbInit)
+end)

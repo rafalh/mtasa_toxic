@@ -1,8 +1,10 @@
 namespace('Shop.Config')
 
-local g_ItemsConfig = {}
+local g_ItemsConfig
 
 local function loadConfig()
+	g_ItemsConfig = {}
+	
 	local node = xmlLoadFile('conf/shop.xml')
 	if(not node) then
 		Debug.warn('Failed to load shop.xml')
@@ -40,11 +42,8 @@ local function loadConfig()
 end
 
 function get(id)
+	assert(g_ItemsConfig)
 	return g_ItemsConfig[id]
 end
 
-if (g_ServerSide) then
-	addInitFunc(loadConfig)
-else
-	addEventHandler('onClientResourceStart', resourceRoot, loadConfig)
-end
+addInitFunc(loadConfig, -1)

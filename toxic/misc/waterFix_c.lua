@@ -12,5 +12,7 @@ local function onMapStart()
 	setTimer(updateWaterLevel, 3000, 1)
 end
 
-addEventHandler('onClientMapStarting', g_Root, onMapStart)
-addEventHandler('onClientResourceStart', g_ResRoot, updateWaterLevel)
+addInitFunc(function()
+	addEventHandler('onClientMapStarting', g_Root, onMapStart)
+	addEventHandler('onClientResourceStart', g_ResRoot, updateWaterLevel)
+end)

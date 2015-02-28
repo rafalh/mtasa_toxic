@@ -118,22 +118,26 @@ end
 -- Events --
 ------------
 
-addInternalEventHandler($(EV_CLIENT_PLAYER_CHAT), onPlayerChat)
-addEventHandler('onClientPlayerChatting', g_Root, onPlayerChatting)
-addEventHandler('onClientRender', g_Root, onRender)
-addEventHandler('onClientResourceStart', g_ResRoot, init)
-addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
+addInitFunc(function()
+	addInternalEventHandler($(EV_CLIENT_PLAYER_CHAT), onPlayerChat)
+	addEventHandler('onClientPlayerChatting', g_Root, onPlayerChatting)
+	addEventHandler('onClientRender', g_Root, onRender)
+	addEventHandler('onClientResourceStart', g_ResRoot, init)
+	addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
+end)
 
-Settings.register
-{
-	name = 'msgAboveCar',
-	default = true,
-	cast = tobool,
-	createGui = function(wnd, x, y, w)
-		local cb = guiCreateCheckBox(x, y, w, 20, "Display chat messages above players", Settings.msgAboveCar, false, wnd)
-		return 20, cb
-	end,
-	acceptGui = function(cb)
-		Settings.msgAboveCar = guiCheckBoxGetSelected(cb)
-	end,
-}
+addInitFunc(function()
+	Settings.register
+	{
+		name = 'msgAboveCar',
+		default = true,
+		cast = tobool,
+		createGui = function(wnd, x, y, w)
+			local cb = guiCreateCheckBox(x, y, w, 20, "Display chat messages above players", Settings.msgAboveCar, false, wnd)
+			return 20, cb
+		end,
+		acceptGui = function(cb)
+			Settings.msgAboveCar = guiCheckBoxGetSelected(cb)
+		end,
+	}
+end, -2000)

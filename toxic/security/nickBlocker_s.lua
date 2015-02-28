@@ -49,4 +49,4 @@ local function NbInit()
 	end
 end
 
-addPreInitFunc(NbInit)
+addInitFunc(NbInit, -200)

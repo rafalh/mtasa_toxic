@@ -56,3 +56,5 @@ function LocaleList.count()
 	
 	return #LocaleList.tbl
 end
+
+addInitFunc(LocaleList.init, -1)

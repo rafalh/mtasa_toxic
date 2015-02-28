@@ -180,20 +180,18 @@ local function toggleBrowser()
 	end
 end
 
-local function init()
+addInitFunc(function()
 	addCommandHandler('memes', toggleBrowser, false)
 	GUI.loadTemplates('meme_browser/gui.xml')
-end
-
-UpRegister {
-	name = "Meme browser",
-	img = 'meme_browser/icon.jpg',
-	tooltip = "Browse newest internet memes.",
-	noWnd = true,
-	onShow = function(panel)
-		show()
-		return true
-	end,
-}
-
-addEventHandler('onClientResourceStart', resourceRoot, init)
+	
+	UpRegister {
+		name = "Meme browser",
+		img = 'meme_browser/icon.jpg',
+		tooltip = "Browse newest internet memes.",
+		noWnd = true,
+		onShow = function(panel)
+			show()
+			return true
+		end,
+	}
+end)

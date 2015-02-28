@@ -160,5 +160,7 @@ function openLoginWnd()
 	loadAutoLogin()
 end
 
-addEventHandler('main.onLoginReq', g_ResRoot, openLoginWnd)
-addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)
+addInitFunc(function()
+	addEventHandler('main.onLoginReq', g_ResRoot, openLoginWnd)
+	addEventHandler('main.onLoginStatus', g_ResRoot, onLoginStatus)
+end)

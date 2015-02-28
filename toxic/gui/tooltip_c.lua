@@ -85,8 +85,6 @@ local function TtShow()
 	tooltip.ticks = getTickCount()
 end
 
-addEventHandler('onClientMouseEnter', root, TtShow)
-
 local function TtHide(el)
 	if(not isElement(el)) then el = source end
 	local tooltip = g_Tooltips[el]
@@ -107,5 +105,8 @@ local function TtHide(el)
 	end
 end
 
-addEventHandler('onClientMouseLeave', root, TtHide)
-addEventHandler('onClientGUIClick', root, TtHide)
+addInitFunc(function()
+	addEventHandler('onClientMouseEnter', root, TtShow)
+	addEventHandler('onClientMouseLeave', root, TtHide)
+	addEventHandler('onClientGUIClick', root, TtHide)
+end)

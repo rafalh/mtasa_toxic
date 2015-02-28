@@ -16,6 +16,7 @@
 	<script src="mapsListGui_c.lua" type="client" />
 	<script src="http_s.lua" type="server" />
 	<script src="mapPatcher_s.lua" type="server" />
+	<script src="mapTypes_s.lua" type="server" />
 	
 	<config src="../conf/map_types.xml" type="server" />
 	

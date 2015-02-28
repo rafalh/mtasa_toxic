@@ -30,4 +30,6 @@ local function onDbgMsg(msg, lvl, file, line)
 	RPC('ClientDebug.addMsg', msg, lvl, file, line):exec()
 end
 
-addEventHandler('onClientDebugMessage', root, onDbgMsg, false)
+addInitFunc(function()
+	addEventHandler('onClientDebugMessage', root, onDbgMsg, false)
+end, -100)

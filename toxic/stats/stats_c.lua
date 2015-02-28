@@ -102,4 +102,6 @@ function StOnSync(syncTbl)
 	end
 end
 
-addInternalEventHandler($(EV_SYNC), StOnSync)
+addInitFunc(function()
+	addInternalEventHandler($(EV_SYNC), StOnSync)
+end)

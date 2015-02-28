@@ -5,6 +5,7 @@ local AchievementsPanel = {
 	name = "Achievements",
 	img = 'achievements/img/icon.png',
 	tooltip = "Check your achievements list",
+	prio = -90,
 }
 
 local g_LockedStyle = {}
@@ -134,7 +135,9 @@ function AchievementsPanel.onShow(panel)
 	end
 end
 
-UpRegister(AchievementsPanel)
-
-addEventHandler('main.onAchvList', g_ResRoot, AchvOnList)
-addEventHandler('main.onAchvChange', g_ResRoot, AchvOnChange)
+addInitFunc(function()
+	addEventHandler('main.onAchvList', g_ResRoot, AchvOnList)
+	addEventHandler('main.onAchvChange', g_ResRoot, AchvOnChange)
+	
+	UpRegister(AchievementsPanel)
+end)

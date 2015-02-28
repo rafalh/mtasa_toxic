@@ -60,3 +60,36 @@ function AccessList.__mt.__index:send(player)
 	end
 	RPC('AccessList.updateLocal', tbl):setClient(player):exec()
 end
+
+addInitFunc(function()
+	-- Give all rights to Admin group
+	local acl = aclGet('Admin')
+	if(not acl) then
+		Debug.err('Cannot find Admin ACL!')
+		return false
+	end
+	
+	-- First find missing rights
+	local rightsToAdd = {}
+	for i, right in ipairs(AccessRight.list) do
+		local rightName = right:getFullName()
+		if(not aclGetRight(acl, rightName)) then
+			table.insert(rightsToAdd, rightName)
+		end
+	end
+	
+	-- Then try to add them if script has needed rights
+	if (#rightsToAdd > 0) then
+		if (hasObjectPermissionTo(resource, 'function.aclSetRight') and hasObjectPermissionTo(resource, 'function.aclSave')) then
+			for i, right in ipairs(rightsToAdd) do
+				aclSetRight(acl, right, true)
+			end
+			aclSave()
+			Debug.info('ACL has been updated')
+		else
+			Debug.warn('Resource does not have right to change ACL. Add custom rights manually...')
+		end
+	end
+	
+	return true
+end, 10)

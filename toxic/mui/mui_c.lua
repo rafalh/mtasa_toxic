@@ -156,5 +156,7 @@ local function MuiOnElementDestroy ()
 	end
 end
 
-addEventHandler('onClientLangChange', getResourceRootElement(), MuiSetLang)
-addEventHandler('onClientElementDestroy', getResourceRootElement(), MuiOnElementDestroy)
+addInitFunc(function()
+	addEventHandler('onClientLangChange', getResourceRootElement(), MuiSetLang)
+	addEventHandler('onClientElementDestroy', getResourceRootElement(), MuiOnElementDestroy)
+end)

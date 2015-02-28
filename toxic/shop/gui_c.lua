@@ -465,13 +465,6 @@ function ShpToggleItems()
 	end
 end
 
-local function ShpInit()
-	addCommandHandler('UserInventory', ShpToggleItems, false, false)
-	local key = getKeyBoundToCommand('UserInventory') or 'F3'
-	bindKey(key, 'down', 'UserInventory')
-	ShpPrepareItems()
-end
-
 local function ShpOnInventory(inventory, isVip)
 	local oldIsVip = g_IsVip
 	g_Inventory = inventory
@@ -493,12 +486,15 @@ function ShpSetInventory(itemId, value)
 	g_Inventory[itemId] = value
 end
 
-------------
--- Events --
-------------
-
-UpRegister(ShopPanel)
-addInternalEventHandler($(EV_SYNC), ShpOnSync)
-addInternalEventHandler($(EV_CLIENT_INVENTORY), ShpOnInventory)
-addEventHandler('onClientLangChanged', g_ResRoot, ShpOnChangeLang)
-addEventHandler('onClientResourceStart', g_ResRoot, ShpInit)
+addInitFunc(function()
+	UpRegister(ShopPanel)
+	
+	addInternalEventHandler($(EV_SYNC), ShpOnSync)
+	addInternalEventHandler($(EV_CLIENT_INVENTORY), ShpOnInventory)
+	addEventHandler('onClientLangChanged', g_ResRoot, ShpOnChangeLang)
+	
+	addCommandHandler('UserInventory', ShpToggleItems, false, false)
+	local key = getKeyBoundToCommand('UserInventory') or 'F3'
+	bindKey(key, 'down', 'UserInventory')
+	ShpPrepareItems()
+end)

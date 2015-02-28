@@ -321,10 +321,8 @@ local function ShpSetPlayerAlpha(value)
 	end
 end
 
-------------
--- Events --
-------------
-
-addInternalEventHandler($(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect)
-addEventHandler('toxic.onThunderEffect', g_Root, ShpThunderEffect.start)
-addEventHandler('toxic.onSetPlayerAlphaReq', g_Root, ShpSetPlayerAlpha)
+addInitFunc(function()
+	addInternalEventHandler($(EV_CLIENT_DRUNK_EFFECT), ShpDrunkEffect)
+	addEventHandler('toxic.onThunderEffect', g_Root, ShpThunderEffect.start)
+	addEventHandler('toxic.onSetPlayerAlphaReq', g_Root, ShpSetPlayerAlpha)
+end)

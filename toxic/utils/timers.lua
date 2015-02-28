@@ -56,5 +56,7 @@ local function TmMapStop()
 	room.mapTimers = {}
 end
 
-addEventHandler('onGamemodeMapStop', g_Root, TmMapStop)
-addEventHandler('onPlayerQuit', g_Root, TmPlayerQuit)
+addInitFunc(function()
+	addEventHandler('onGamemodeMapStop', g_Root, TmMapStop)
+	addEventHandler('onPlayerQuit', g_Root, TmPlayerQuit)
+end)

@@ -212,11 +212,9 @@ local function onChatMessage ( text )
 	assert ( not g_ChatMsg or g_MsgCount == #g_ChatMsg )
 end
 
-----------------------
--- Global variables --
-----------------------
-
-UpRegister ( TranslatorPanel )
-addEventHandler ( 'onClientTranslate', g_Root, onTranslate )
-addEventHandler ( 'onClientTranslateLangList', g_Root, onTranslateLangList )
-addEventHandler ( 'onClientChatMessage', g_Root, onChatMessage )
+addInitFunc(function()
+	UpRegister(TranslatorPanel)
+	addEventHandler('onClientTranslate', g_Root, onTranslate)
+	addEventHandler('onClientTranslateLangList', g_Root, onTranslateLangList)
+	addEventHandler('onClientChatMessage', g_Root, onChatMessage)
+end)

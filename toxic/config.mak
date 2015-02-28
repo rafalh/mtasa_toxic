@@ -1,2 +1,2 @@
 STRING_LIST  := 1
-#DEFINES      := -DTEST=1
+DEFINES      := -DTEST=1

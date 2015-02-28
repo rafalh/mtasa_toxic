@@ -134,8 +134,4 @@ local function HlpInit()
 	end
 end
 
---------------
--- Commands --
---------------
-
-addInternalEventHandler($(EV_CLIENT_INIT), HlpInit)
+addInitFunc(HlpInit)

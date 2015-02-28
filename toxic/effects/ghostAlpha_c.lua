@@ -29,28 +29,32 @@ local function updateAlpha()
 	end
 end
 
-addEventHandler('onClientPreRender', g_Root, updateAlpha)
+addInitFunc(function()
+	addEventHandler('onClientPreRender', g_Root, updateAlpha)
+end)
 
-Settings.register
-{
-	name = 'hideNearbyCars',
-	default = true,
-	cast = tobool,
-	onChange = function(oldVal, newVal)
-		if(newVal) then
-			addEventHandler('onClientPreRender', g_Root, updateAlpha)
-		else
-			removeEventHandler('onClientPreRender', g_Root, updateAlpha)
-		end
-	end,
-	createGui = function(wnd, x, y, w, onChange)
-		local cb = guiCreateCheckBox(x, y, w, 20, "Hide nearby cars", Settings.hideNearbyCars, false, wnd)
-		if(onChange) then
-			addEventHandler('onClientGUIClick', cb, onChange, false)
-		end
-		return 20, cb
-	end,
-	acceptGui = function(cb)
-		Settings.hideNearbyCars = guiCheckBoxGetSelected(cb)
-	end,
-}
+addInitFunc(function()
+	Settings.register
+	{
+		name = 'hideNearbyCars',
+		default = true,
+		cast = tobool,
+		onChange = function(oldVal, newVal)
+			if(newVal) then
+				addEventHandler('onClientPreRender', g_Root, updateAlpha)
+			else
+				removeEventHandler('onClientPreRender', g_Root, updateAlpha)
+			end
+		end,
+		createGui = function(wnd, x, y, w, onChange)
+			local cb = guiCreateCheckBox(x, y, w, 20, "Hide nearby cars", Settings.hideNearbyCars, false, wnd)
+			if(onChange) then
+				addEventHandler('onClientGUIClick', cb, onChange, false)
+			end
+			return 20, cb
+		end,
+		acceptGui = function(cb)
+			Settings.hideNearbyCars = guiCheckBoxGetSelected(cb)
+		end,
+	}
+end, -2000)

@@ -218,10 +218,6 @@ local function checkSounds()
 	end
 end
 
-local function initRadio()
-	setTimer(checkSounds, 1000, 0)
-end
-
 local function onRadioChannelsChange()
 	if(g_Panel and guiGetVisible(g_Panel)) then
 		-- Get channels list from server
@@ -232,35 +228,41 @@ local function onRadioChannelsChange()
 	end
 end
 
-UpRegister(RadioPanel)
-addEventHandler('onClientPlayerRadioSwitch', g_Me, onRadioSwitch)
-addEventHandler('onClientResourceStart', g_ResRoot, initRadio)
-
 addEvent('toxic.onRadioChannelsChange', true)
-addEventHandler('toxic.onRadioChannelsChange', g_ResRoot, onRadioChannelsChange)
 
-Settings.register
-{
-	name = 'radioChannel',
-	default = '',
-	cast = tostring,
-	onChange = function(oldVal, newVal)
-		stopRadio()
-		if(newVal ~= '' and not g_Muted) then
-			startRadio(newVal)
-		end
-	end,
-}
+addInitFunc(function()
+	UpRegister(RadioPanel)
+	
+	addEventHandler('onClientPlayerRadioSwitch', g_Me, onRadioSwitch)
+	addEventHandler('toxic.onRadioChannelsChange', g_ResRoot, onRadioChannelsChange)
+	
+	setTimer(checkSounds, 1000, 0)
+end)
 
-Settings.register
-{
-	name = 'radioVolume',
-	default = 100,
-	cast = tonumber,
-	onChange = function(oldVal, newVal)
-		if(g_Sound) then
-			setSoundVolume(g_Sound, newVal / 100)
-		end
-		setMuted(newVal == 0)
-	end,
-}
+addInitFunc(function()
+	Settings.register
+	{
+		name = 'radioChannel',
+		default = '',
+		cast = tostring,
+		onChange = function(oldVal, newVal)
+			stopRadio()
+			if (newVal ~= '' and not g_Muted) then
+				startRadio(newVal)
+			end
+		end,
+	}
+
+	Settings.register
+	{
+		name = 'radioVolume',
+		default = 100,
+		cast = tonumber,
+		onChange = function(oldVal, newVal)
+			if (g_Sound) then
+				setSoundVolume(g_Sound, newVal / 100)
+			end
+			setMuted(newVal == 0)
+		end,
+	}
+end, -2000)

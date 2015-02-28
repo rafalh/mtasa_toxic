@@ -176,7 +176,9 @@ local function DisplayChangeMapGui()
 	end)
 end
 
-addEventHandler('onClientDisplayVotenextGuiReq', g_ResRoot, DisplayVotenextGui)
-addEventHandler('onClientDisplayNextMapGuiReq', g_ResRoot, DisplayNextMapGui)
-addEventHandler('onClientDisplayChangeMapGuiReq', g_ResRoot, DisplayChangeMapGui)
-addEventHandler('onClientMapStarting', g_Root, MlstOnMapStart)
+addInitFunc(function()
+	addEventHandler('onClientDisplayVotenextGuiReq', g_ResRoot, DisplayVotenextGui)
+	addEventHandler('onClientDisplayNextMapGuiReq', g_ResRoot, DisplayNextMapGui)
+	addEventHandler('onClientDisplayChangeMapGuiReq', g_ResRoot, DisplayChangeMapGui)
+	addEventHandler('onClientMapStarting', g_Root, MlstOnMapStart)
+end)

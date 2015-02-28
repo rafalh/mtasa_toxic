@@ -139,6 +139,7 @@ else
 end
 
 #if(TEST) then
+addInitFunc(function()
 	Test.register('debug', function()
 		function funcA()
 			--Debug.printStackTrace(3)
@@ -153,4 +154,5 @@ end
 		end
 		funcB()
 	end)
+end)
 #end

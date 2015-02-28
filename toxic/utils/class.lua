@@ -67,6 +67,7 @@ end
 setmetatable(Class, mt)
 
 #if(TEST) then
+addInitFunc(function()
 	Test.register('Class', function()
 		A = Class('A')
 		A.x = 1
@@ -100,4 +101,5 @@ setmetatable(Class, mt)
 		Test.checkEq(objB:test(), 'B test')
 		Test.checkEq(objB:test2(), 'A test2')
 	end)
+end)
 #end

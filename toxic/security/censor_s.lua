@@ -178,7 +178,7 @@ local function CsInit()
 	CsLoadWords()
 end
 
-addPreInitFunc(CsInit)
+addInitFunc(CsInit, -200)
 
 #if(TEST) then
 	Test.register('censor', function()

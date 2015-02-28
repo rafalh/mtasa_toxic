@@ -17,6 +17,7 @@ local SettingsPanel = {
 	img = 'settings/icon.png',
 	tooltip = "Adjust settings to your needs",
 	height = 420,
+	prio = 90,
 }
 
 -- Code
@@ -98,8 +99,6 @@ function SettingsPanel.onHide(panel)
 	end
 end
 
-----------------------
--- Global variables --
-----------------------
-
-UpRegister(SettingsPanel)
+addInitFunc(function()
+	UpRegister(SettingsPanel)
+end)

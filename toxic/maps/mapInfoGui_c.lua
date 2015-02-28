@@ -268,8 +268,4 @@ local function MiInit()
 	addEventHandler('onClientRestore', g_Root, MiRestore)
 end
 
-------------
--- Events --
-------------
-
-addEventHandler('onClientResourceStart', g_ResRoot, MiInit)
+addInitFunc(MiInit)

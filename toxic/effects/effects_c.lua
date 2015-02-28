@@ -65,15 +65,6 @@ local function checkFps()
 	end
 end
 
-local function init()
-	-- Get all effects on startup
-	triggerEvent('onRafalhGetEffects', g_Root)
-	triggerEvent('toxic.onEffectInfoReq', g_Root)
-	
-	-- Check if FPS is not too low
-	setTimer(checkFps, 1000, 0)
-end
-
 local function onResStop(res)
 	if(not g_Effects[res]) then return end
 	
@@ -108,7 +99,20 @@ local function onAddEffect(res, name)
 	onEffectInfo(info)
 end
 
-Settings.register
+local function init()
+	addEventHandler('onClientResourceStop', g_Root, onResStop)
+	addEventHandler('onRafalhAddEffect', g_Root, onAddEffect)
+	addEventHandler('toxic.onEffectInfo', g_Root, onEffectInfo)
+
+	-- Get all effects on startup
+	triggerEvent('onRafalhGetEffects', g_Root)
+	triggerEvent('toxic.onEffectInfoReq', g_Root)
+	
+	-- Check if FPS is not too low
+	setTimer(checkFps, 1000, 0)
+end
+
+local EffectSettings =
 {
 	name = 'effects',
 	default = '',
@@ -166,11 +170,7 @@ Settings.register
 	end,
 }
 
-------------
--- Events --
-------------
-
-addEventHandler('onClientResourceStart', g_ResRoot, init)
-addEventHandler('onClientResourceStop', g_Root, onResStop)
-addEventHandler('onRafalhAddEffect', g_Root, onAddEffect)
-addEventHandler('toxic.onEffectInfo', g_Root, onEffectInfo)
+addInitFunc(init)
+addInitFunc(function()
+	Settings.register(EffectSettings, -2000)
+end)

@@ -12,6 +12,7 @@ local EditProfilePanel = {
 	tooltip = "Edit your profile",
 	width = 300,
 	height = 360,
+	prio = -50,
 }
 
 --------------------------------
@@ -123,10 +124,8 @@ function EditProfilePanel.onShow(panel)
 	end
 end
 
-UpRegister(EditProfilePanel)
-
-------------
--- Events --
-------------
-
-addEventHandler('main.onAccountChange', g_ResRoot, onAccountChange)
+addInitFunc(function()
+	addEventHandler('main.onAccountChange', g_ResRoot, onAccountChange)
+	
+	UpRegister(EditProfilePanel)
+end)

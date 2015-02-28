@@ -36,6 +36,7 @@ local PlayersPanel = {
 	img = 'players/img/icon.png',
 	tooltip = "Read more about other players",
 	width = 620,
+	prio = -20,
 }
 
 --------------------------------
@@ -171,15 +172,9 @@ local function onPlayersList(rows, cnt)
 	end
 end
 
-----------------------
--- Global variables --
-----------------------
-
-UpRegister(PlayersPanel)
-
-------------
--- Events --
-------------
-
-addEvent('main_onPlayersList', true)
-addEventHandler('main_onPlayersList', g_ResRoot, onPlayersList)
+addInitFunc(function()
+	addEvent('main_onPlayersList', true)
+	addEventHandler('main_onPlayersList', g_ResRoot, onPlayersList)
+	
+	UpRegister(PlayersPanel)
+end)

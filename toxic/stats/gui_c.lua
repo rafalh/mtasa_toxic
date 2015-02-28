@@ -10,6 +10,7 @@ local StatsPanel = {
 	tooltip = "Check your statistics",
 	width = 230,
 	height = 270,
+	prio = -100,
 }
 
 --------------------------------
@@ -203,10 +204,7 @@ function StatsPanel.onAccountChange()
 	end
 end
 
-UpRegister(StatsPanel)
-
-------------
--- Events --
-------------
-
-addEventHandler('main.onAccountChange', g_ResRoot, StatsPanel.onAccountChange)
+addInitFunc(function()
+	addEventHandler('main.onAccountChange', resourceRoot, StatsPanel.onAccountChange)
+	UpRegister(StatsPanel)
+end)

@@ -61,20 +61,7 @@ local function renderGlass()
 	end
 end
 
-------------
--- Events --
-------------
-
-local function init()
-	local prof = DbgPerf(20)
-	g_Texture = dxCreateTexture('effects/broken_glass.png')
-	if(g_Texture) then
-		addEventHandler('onClientRender', g_Root, renderGlass)
-	end
-	prof:cp('broken_glass loading')
-end
-
-Settings.register
+local breakableGlassSetting =
 {
 	name = 'breakableGlass',
 	default = true,
@@ -102,7 +89,7 @@ Settings.register
 	end,
 }
 
-Settings.register
+local redDmgScreenSetting =
 {
 	name = 'redDmgScreen',
 	default = true,
@@ -128,4 +115,16 @@ Settings.register
 	end,
 }
 
-addEventHandler('onClientResourceStart', g_ResRoot, init)
+addInitFunc(function()
+	Settings.register(breakableGlassSetting)
+	Settings.register(redDmgScreenSetting)
+end, -2000)
+
+addInitFunc(function()
+	local prof = DbgPerf(20)
+	g_Texture = dxCreateTexture('effects/broken_glass.png')
+	if (g_Texture) then
+		addEventHandler('onClientRender', g_Root, renderGlass)
+	end
+	prof:cp('broken_glass loading')
+end)

@@ -35,4 +35,6 @@ function FormattedLabel.__mt.__index:setText(fmt, ...)
 	self:updateText()
 end
 
-addEventHandler('onClientLangChanged', root, onLangChange)
+addInitFunc(function()
+	addEventHandler('onClientLangChanged', root, onLangChange)
+end)

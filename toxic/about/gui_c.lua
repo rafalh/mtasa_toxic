@@ -8,6 +8,7 @@ local AboutPanel = {
 	name = "About",
 	img = 'about/icon.png',
 	tooltip = "Learn more about this server",
+	prio = 100,
 }
 
 --------------------------------
@@ -109,8 +110,6 @@ function AboutPanel.onShow(panel)
 	AchvActivate("Read about the server")
 end
 
-----------------------
--- Global variables --
-----------------------
-
-UpRegister(AboutPanel)
+addInitFunc(function()
+	UpRegister(AboutPanel)
+end)

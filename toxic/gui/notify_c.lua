@@ -164,7 +164,7 @@ local function NfInit()
 	addEventHandler('onClientRender', root, NfRender)
 end
 
-addEventHandler('onClientResourceStart', resourceRoot, NfInit)
+addInitFunc(NfInit)
 
 -- TEST
 #TEST = false

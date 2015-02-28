@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include 'include/internal_events.lua'
-
 ---------------------
 -- Local variables --
 ---------------------
@@ -27,19 +21,21 @@ local function SpInitGui()
 	g_StatsView = StatsView.create(g_MyId or g_Me, g_Wnd, 10, 25, g_Width - 20, h - 35)
 end
 
+local function onAccountChange()
+	if(g_StatsView) then
+		g_StatsView:changeTarget(g_MyId or g_Me)
+	end
+end
+
 local function SpInit()
+	addEventHandler('main.onAccountChange', g_ResRoot, onAccountChange)
+
 	addCommandHandler('StatsPanel', SpToggle, false, false)
 	local key = getKeyBoundToCommand('StatsPanel') or 'F1'
 	bindKey(key, 'down', 'StatsPanel')
 	
 	-- Me: 270, RoadRunner: 225
 	--Debug.info('Height def-normal '..GUI.getFontHeight('default-normal')..' def-small '..GUI.getFontHeight('default-small')..' def-bold-small '..GUI.getFontHeight('default-bold-small')..' clear-norm '..GUI.getFontHeight('clear-normal')..' sa-hdr '..GUI.getFontHeight('sa-header'))
-end
-
-local function onAccountChange()
-	if(g_StatsView) then
-		g_StatsView:changeTarget(g_MyId or g_Me)
-	end
 end
 
 ----------------------
@@ -69,9 +65,4 @@ function SpToggle()
 	g_Visible = not g_Visible
 end
 
-------------
--- Events --
-------------
-
-addEventHandler('onClientResourceStart', g_ResRoot, SpInit)
-addEventHandler('main.onAccountChange', g_ResRoot, onAccountChange)
+addInitFunc(SpInit)

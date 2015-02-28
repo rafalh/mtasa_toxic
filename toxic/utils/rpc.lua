@@ -122,5 +122,7 @@ local function onRpcResult(id, ...)
 	prof:cp('RPC result')
 end
 
-addEventHandler('main.onRpc', resourceRoot, onRpc)
-addEventHandler('main.onRpcResult', resourceRoot, onRpcResult)
+addInitFunc(function()
+	addEventHandler('main.onRpc', resourceRoot, onRpc)
+	addEventHandler('main.onRpcResult', resourceRoot, onRpcResult)
+end)

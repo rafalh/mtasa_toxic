@@ -2,7 +2,7 @@
 #include 'include/internal_events.lua'
 
 local VIP_INFO_URL = 'http://mtatoxic.tk/vip/'
-local g_VipRes = Resource('rafalh_vip')
+local g_VipRes
 
 addEvent('vip.onStatus')
 
@@ -26,8 +26,6 @@ local VipPanel = {
 	end
 }
 
-UpRegister(VipPanel)
-
 local function onVipStatus(isVip)
 	VipPanel.img = isVip and 'vip/enabled.png' or 'vip/disabled.png'
 	VipPanel.tooltip = isVip and "Press G to open VIP Panel" or "You don't have VIP account. More info: "..VIP_INFO_URL
@@ -35,10 +33,14 @@ local function onVipStatus(isVip)
 end
 
 local function init()
+	UpRegister(VipPanel)
+	
+	g_VipRes = Resource('rafalh_vip')
 	if(g_VipRes:isReady() and g_VipRes:call('isVip')) then
 		onVipStatus(true)
 	end
+	
+	addEventHandler('vip.onStatus', g_Root, onVipStatus)
 end
 
-addInternalEventHandler($(EV_CLIENT_INIT), init)
-addEventHandler('vip.onStatus', g_Root, onVipStatus)
+addInitFunc(init)

@@ -142,14 +142,8 @@ local function PmOnPlayerQuit()
 	end
 end
 
---------------
--- Commands --
---------------
-
-local function PmInit()
+addInitFunc(function()
 	addCommandHandler('pm', PmCmdHandler, false)
 	addInternalEventHandler($(EV_CLIENT_PLAYER_PM), PmOnPlayerPrivMsg)
 	addEventHandler('onClientPlayerQuit', g_Root, PmOnPlayerQuit)
-end
-
-addEventHandler('onClientResourceStart', g_ResRoot, PmInit)
+end)

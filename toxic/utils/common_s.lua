@@ -198,4 +198,6 @@ end
 -- Events --
 ------------
 
-addEventHandler('onEvent_'..g_ResName, g_Root, onEventHandler)
+addInitFunc(function()
+	addEventHandler('onEvent_'..g_ResName, g_Root, onEventHandler)
+end)

@@ -8,22 +8,20 @@ local function onChatMsg(text)
 	end
 end
 
-CmdMgr.register{
-	name = 'copyurl',
-	desc = "Copies last URL from chatbox to the clipboard",
-	func = function(ctx)
-		if(not g_LastUrl) then
-			outputMsg(Styles.red, "There is no URL to copy!")
-		elseif(setClipboard(g_LastUrl)) then
-			outputMsg(Styles.yellow, "URL has been copied: %s", g_LastUrl)
-		else
-			outputMsg(Styles.red, "Failed to copy URL to clipboard!")
-		end
-	end
-}
-
-local function init()
+addInitFunc(function()
 	addEventHandler('onClientChatMessage', g_Root, onChatMsg)
-end
-
-addEventHandler('onClientResourceStart', g_ResRoot, init)
+	
+	CmdMgr.register{
+		name = 'copyurl',
+		desc = "Copies last URL from chatbox to the clipboard",
+		func = function(ctx)
+			if(not g_LastUrl) then
+				outputMsg(Styles.red, "There is no URL to copy!")
+			elseif(setClipboard(g_LastUrl)) then
+				outputMsg(Styles.yellow, "URL has been copied: %s", g_LastUrl)
+			else
+				outputMsg(Styles.red, "Failed to copy URL to clipboard!")
+			end
+		end
+	}
+end)

@@ -133,14 +133,8 @@ function Recorder.stopSendReq(mapId)
 	g_Rec = false
 end
 
-------------
--- Events --
-------------
-
-local function RcInit()
+addInitFunc(function()
 	addInternalEventHandler($(EV_CLIENT_START_RECORDING_REQUEST), Recorder.startReq)
 	addInternalEventHandler($(EV_CLIENT_STOP_RECORDING_REQUEST), Recorder.stopReq)
 	addInternalEventHandler($(EV_CLIENT_STOP_SEND_RECORDING_REQUEST), Recorder.stopSendReq)
-end
-
-addEventHandler('onClientResourceStart', g_ResRoot, RcInit)
+end)

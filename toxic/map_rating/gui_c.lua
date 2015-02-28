@@ -148,15 +148,10 @@ local function RtMapStop()
 	RtDestroyGui()
 end
 
-local function RtInit()
-	if(DEBUG) then
+addInitFunc(function()
+	addEventHandler('onClientMapStopping', g_Root, RtMapStop)
+	
+	if (DEBUG) then
 		RtSetVisible(true)
 	end
-end
-
-------------
--- Events --
-------------
-
-addEventHandler('onClientMapStopping', g_Root, RtMapStop)
-addEventHandler('onClientResourceStart', g_ResRoot, RtInit)
+end)

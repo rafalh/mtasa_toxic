@@ -1,6 +1,4 @@
 
-#include 'include/internal_events.lua'
-
 #local DEBUG = false
 
 local g_Adverts = {}
@@ -102,4 +100,4 @@ local function AdvInit()
 	end
 end
 
-addInternalEventHandler($(EV_CLIENT_INIT), AdvInit)
+addInitFunc(AdvInit)
