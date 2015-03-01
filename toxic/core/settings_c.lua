@@ -48,14 +48,16 @@ Settings.__mt.__index = function(self, key)
 		return val
 	end
 	
-	Debug.warn('Unknown setting '..tostring(key))
+	Debug.warn('Cannot get unknown setting '..tostring(key))
+	Debug.printStackTrace()
 	return nil
 end
 
 function Settings.__mt.__newindex(self, key, val)
 	local item = rawget(Settings, 'localMap')[key]
 	if(not item) then
-		Debug.warn('Unknown setting '..tostring(key))
+		Debug.warn('Cannot set unknown setting '..tostring(key))
+		Debug.printStackTrace()
 	elseif(item.validate and not item.validate(val)) then
 		Debug.warn('Invalid setting value '..tostring(val))
 	else

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Main" author="rafalh" />
+	
+	<script src="debug.lua" type="shared" />
+	<script src="main_s.lua" type="server" />
+	<script src="main_c.lua" type="client" />
+	<script src="player_s.lua" type="server" />
+	<script src="accountData_s.lua" type="server" />
+	<script src="accounts_s.lua" type="server" />
+	<script src="room_s.lua" type="server" />
+	<script src="sync_s.lua" type="server" />
+	<script src="mute_s.lua" type="server" />
+	<script src="updater_s.lua" type="server" />
+	<script src="updateList_s.lua" type="server" />
+	<script src="cache_s.lua" type="server" />
+	<script src="fileCache_s.lua" type="server" />
+	<script src="downloadMgr_s.lua" type="server" />
+	<script src="logger.lua" type="server" />
+</meta>

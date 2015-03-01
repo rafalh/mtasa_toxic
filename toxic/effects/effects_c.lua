@@ -173,4 +173,4 @@ local EffectSettings =
 addInitFunc(init)
 addInitFunc(function()
 	Settings.register(EffectSettings, -2000)
-end)
+end, -2000)

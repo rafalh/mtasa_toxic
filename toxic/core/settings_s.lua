@@ -247,16 +247,17 @@ function Settings.onChange(name, oldVal, newVal)
 	end
 end
 
+-- RPC
 function Settings.clientSettingChanged(name, val)
 	local player = Player.fromEl(client)
 	if(not player) then return end
 	player.clientSettings[name] = val
 	--Debug.info('clientSettingChanged [S] '..tostring(name)..' '..tostring(val))
 end
-RPC.allow('Settings.clientSettingChanged')
 
 setmetatable(Settings, Settings.__mt)
 
 addInitFunc(function()
 	addEventHandler('onSettingChange', g_Root, Settings.onChange)
+	RPC.allow('Settings.clientSettingChanged')
 end)

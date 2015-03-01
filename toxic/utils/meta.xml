@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="Utilities" author="rafalh" />
+	
+	<script src="common.lua" type="shared" />
+	<script src="common_s.lua" type="server" />
+	<script src="common_c.lua" type="client" />
+	<script src="table.lua" type="shared" />
+	<script src="string.lua" type="shared" />
+	<script src="rpc.lua" type="shared" />
+	<script src="outputChat_s.lua" type="server" />
+	<script src="outputChat_c.lua" type="client" />
+	<script src="vector2.lua" type="shared" />
+	<script src="vector3.lua" type="shared" />
+	<script src="quaternion.lua" type="client" />
+	<script src="rect.lua" type="client" />
+	<script src="anim_c.lua" type="client" />
+	<script src="timers.lua" type="server" />
+	<script src="binary.lua" type="shared" />
+	<script src="worker.lua" type="server" />
+	<script src="file.lua" type="shared" />
+	<script src="resource.lua" type="shared" />
+	<script src="event.lua" type="server" />
+	<script src="metaFile_s.lua" type="server" />
+	<script src="resourceEditor_s.lua" type="server" />
+</meta>
