@@ -17,4 +17,5 @@
 	<script src="fileCache_s.lua" type="server" />
 	<script src="downloadMgr_s.lua" type="server" />
 	<script src="logger.lua" type="server" />
+	<script src="thread_s.lua" type="server" />
 </meta>
