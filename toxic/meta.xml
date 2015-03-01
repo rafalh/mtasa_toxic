@@ -48,8 +48,6 @@
 	<script src="core/accounts_s.lua" type="server" />
 	<script src="settings/settings_c.lua" type="client" />
 	
-	<script src="commands/cmdMgr_s.lua" type="server" />
-	<script src="commands/cmdMgr_c.lua" type="client" />
 	<script src="core/room_s.lua" type="server" />
 	<script src="core/sync_s.lua" type="server" />
 	<script src="core/mute_s.lua" type="server" />
@@ -60,63 +58,50 @@
 	<script src="core/downloadMgr_s.lua" type="server" />
 	<script src="core/logger.lua" type="server" />
 	
+	<script src="commands/cmdMgr_s.lua" type="server" />
+	<script src="commands/cmdMgr_c.lua" type="client" />
 	<script src="commands/accounts_s.lua" type="server" />
 	<script src="commands/admin_s.lua" type="server" />
 	<script src="commands/cleanDb_s.lua" type="server" />
 	<script src="commands/general_s.lua" type="server" />
 	<script src="commands/trace_s.lua" type="server" />
 	
-	<script src="gui/gui_c.lua" type="client" />
-	<script src="gui/guiHelpers_c.lua" type="client" />
-	<script src="gui/guiStr_s.lua" type="server" />
-	<script src="gui/input_c.lua" type="client" />
-	<script src="gui/anim_c.lua" type="client" />
-	<script src="gui/help_c.lua" type="client" />
-	<script src="gui/userPanel_c.lua" type="client" />
-	<script src="gui/iconPanel_c.lua" type="client" />
-	<script src="gui/panelPath_c.lua" type="client" />
-	<script src="gui/adminPanel_c.lua" type="client" />
-	<script src="gui/advert_c.lua" type="client" />
-	<script src="gui/link_c.lua" type="client" />
-	<script src="gui/listView_c.lua" type="client" />
-	<script src="gui/tooltip_c.lua" type="client" />
-	<script src="gui/onOffBtn_c.lua" type="client" />
-	<script src="gui/notify_c.lua" type="client" />
-	<script src="gui/formattedLabel_c.lua" type="client" />
-	<script src="gui/msgBox_c.lua" type="client" />
-	
 	<!-- MODULES -->
-	<module src="maps" />
-	<module src="alias" />
-	<module src="stats" />
+	<module src="about" />
 	<module src="achievements" />
+	<module src="alias" />
 	<module src="best_times" />
-	<module src="players" />
 	<module src="chat_icon" />
 	<module src="chat_rooms" />
 	<module src="effects" />
 	<module src="gambling" />
+	<module src="gui" />
+	<module src="http" />
 	<module src="invitations" />
 	<module src="login" />
+	<module src="maps" />
 	<module src="map_rating" />
 	<module src="meme_browser" />
 	<module src="misc" />
 	<module src="msg_cmd" />
 	<module src="mui" />
+	<module src="players" />
 	<module src="profile" />
 	<module src="radio" />
 	<module src="security" />
+	<module src="settings" />
 	<module src="shop" />
+	<module src="stats" />
 	<module src="teams" />
 	<module src="translator" />
 	<module src="vip" />
-	<module src="settings" />
 	<module src="votes" />
-	<module src="about" />
-	<module src="http" />
+	
 	<!--module src="button_theme" /-->
 	<!--module src="avatars" /-->
 	<!-- MODULES END -->
+	
+	
 	
 	<script src="core/stop_s.lua" type="server" />
 	

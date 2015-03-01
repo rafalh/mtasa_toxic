@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<meta>
+	<info name="GUI" author="rafalh" />
+	
+	<script src="gui_c.lua" type="client" />
+	<script src="guiHelpers_c.lua" type="client" />
+	<script src="guiStr_s.lua" type="server" />
+	<script src="input_c.lua" type="client" />
+	<script src="anim_c.lua" type="client" />
+	<script src="help_c.lua" type="client" />
+	<script src="userPanel_c.lua" type="client" />
+	<script src="iconPanel_c.lua" type="client" />
+	<script src="panelPath_c.lua" type="client" />
+	<script src="adminPanel_c.lua" type="client" />
+	<script src="advert_c.lua" type="client" />
+	<script src="link_c.lua" type="client" />
+	<script src="listView_c.lua" type="client" />
+	<script src="tooltip_c.lua" type="client" />
+	<script src="onOffBtn_c.lua" type="client" />
+	<script src="notify_c.lua" type="client" />
+	<script src="formattedLabel_c.lua" type="client" />
+	<script src="msgBox_c.lua" type="client" />
+</meta>

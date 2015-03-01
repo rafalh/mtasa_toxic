@@ -5,7 +5,7 @@ LocaleAdmin.pathName = "Interface Translation"
 local LocaleStrList = {}
 LocaleStrList.pathName = ''
 
-AdminPanel:addItem{
+local MuiAdminPanel = {
 	name = "Interface Translation",
 	right = AccessRight('mui'),
 	exec = function(self)
@@ -455,3 +455,7 @@ end
 function LocaleStrList:isVisible()
 	return self.gui and true
 end
+
+addInitFunc(function()
+	AdminPanel:addItem(MuiAdminPanel)
+end)

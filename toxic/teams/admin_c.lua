@@ -3,7 +3,7 @@ local g_CtxEdit
 local TeamsAdmin = {}
 TeamsAdmin.pathName = "Teams"
 
-AdminPanel:addItem{
+local TeamsAdminPanel = {
 	name = "Teams",
 	right = AccessRight('teams'),
 	exec = function()
@@ -260,3 +260,7 @@ function TeamsAdmin:hide()
 	
 	showCursor(false)
 end
+
+addInitFunc(function()
+	AdminPanel:addItem(TeamsAdminPanel)
+end)
