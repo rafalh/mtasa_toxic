@@ -567,20 +567,49 @@ function db.MySQLConnector.__mt.__index:addConstraints(tbl, constrInfoTbl)
 	return true
 end
 
------------------ MTA Internal Connector -----------------
--- TODO
---[[db.InternalDatabase = Class('InternalDatabase', db.BaseConnector)
+----------------- MTA Internal Registry Connector -----------------
+db.InternalQuery = Class('InternalQuery', db.BaseQuery)
 
-Database.Drivers.Internal = {}
-
-function Database.Drivers.Internal:query(query, ...)
-	return executeSQLQuery(query, ...)
+function db.InternalQuery.__mt.__index:init(sql, ...)
+	self.sql = sql
+	self.args = {...}
 end
 
-Database.Drivers.Internal.exec = Database.Drivers.Internal.query
-Database.Drivers.Internal.escape = db.SQLiteConnector.escape
-Database.Drivers.Internal.createTable = db.SQLiteConnector.createTable
-Database.Drivers.Internal.insertDefault = db.SQLiteConnector.insertDefault
-Database.Drivers.Internal.getLastInsertID = db.SQLiteConnector.getLastInsertID
-Database.Drivers.Internal.optimize = db.SQLiteConnector.optimize
-Database.Drivers.Internal.verifySchema = db.SQLiteConnector.verifySchema]]
+function db.InternalQuery.__mt.__index:poll()
+	local result = executeSQLQuery(self.sql, unpack(self.args))
+	if (not result) then
+		Debug.warn('SQL query ('..self.sql..') failed')
+		Debug.printStackTrace(2)
+	elseif (self.fmt) then
+		result = self.fmt(result)
+	end
+	
+	if (self.cb) then
+		self.cb(result)
+	end
+	
+	return result
+end
+
+db.InternalQuery.__mt.__index.start = db.InternalQuery.__mt.__index.poll
+
+db.InternalConnector = Class('InternalConnector', db.SQLiteConnector)
+
+function db.InternalConnector.__mt.__index:init()
+end
+
+function db.InternalConnector.__mt.__index:connect()
+	return true
+end
+
+function db.InternalConnector:disconnect()
+	return false
+end
+
+function db.InternalConnector.__mt.__index:query(sql, ...)
+	-- See MTA bug #8174 - its resolved but still doesnt work for 'false'
+	local args = {...}
+	sql = fixNullsInQuery(sql, args)
+	
+	return db.InternalQuery(sql, unpack(args))
+end
