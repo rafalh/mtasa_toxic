@@ -5,6 +5,7 @@ local g_FailCount = 0
 local g_ExecutedCount = 0
 local g_Player
 local g_OutputStyle = {'#FFFFFF', '#FFFFFF'}
+local g_ServerSide = (triggerClientEvent ~= nil)
 
 local function print(msg)
 	if(getElementType(g_Player) == 'console') then
@@ -54,7 +55,7 @@ function checkLte(val1, val2, descr)
 end
 
 function checkTblEq(tbl, validTbl, descr)
-	check(type(tbl) == 'table' and type(validTbl) == 'table' and table.compare(tbl, validTbl, true), 'expected '..table.dump(validTbl)..', got '..table.dump(tbl), 1)
+	check(type(tbl) == 'table' and table.compare(tbl, validTbl, true), 'expected '..(type(validTbl) == 'table' and table.dump(validTbl) or tostring(validTbl))..', got '..(type(tbl) == 'table' and table.dump(tbl) or tostring(tbl)), 1)
 end
 
 local function runInternal(name)
@@ -88,6 +89,10 @@ if(g_ServerSide) then
 			run(testName, player)
 		end
 	end, false, true)
+#if(TEST) then
+	outputChatBox('Server test: /tests [testName]')
+	outputChatBox('Client test: /testc [testName]')
+#end
 else
 	addCommandHandler('testc', function(cmd, testName)
 		run(testName, localPlayer)
