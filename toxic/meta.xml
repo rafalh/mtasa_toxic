@@ -15,7 +15,13 @@
 	
 	<module src="utils" />
 	
-	<script src="core/database_s.lua" type="server" />
+	
+	<!--script src="core/database_s.lua" type="server" /-->
+	<script src="core/db/database_s.lua" type="server" />
+	<script src="core/db/connectors_s.lua" type="server" />
+	<script src="core/db/table_s.lua" type="server" />
+	<script src="core/db/legacy_s.lua" type="server" />
+	
 	<config src="conf/database.xml" type="server" />
 	<script src="core/access_s.lua" type="server" />
 	<script src="core/access_c.lua" type="client" />

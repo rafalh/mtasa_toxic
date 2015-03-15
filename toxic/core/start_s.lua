@@ -178,7 +178,7 @@ function addEventHandler(...)
 	return _addEventHandler(...)
 end
 
-addInitFunc(setupDatabase, -200)
+addInitFunc(setupDatabase, -195)
 addInitFunc(cleanUpDatabase, -190)
 addInitFunc(initPlayers, -100)
 

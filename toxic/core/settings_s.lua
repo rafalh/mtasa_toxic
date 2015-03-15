@@ -73,35 +73,29 @@ function Settings.loadMeta()
 end
 
 function Settings.createDbTbl()
-	local fields, defValues = {}, {}
-	
-	SettingsTable = Database.Table{
+	SettingsTable = db.Table{
 		name = 'settings',
 	}
 	
 	for key, item in pairs(Settings.items) do
-		if(item.priv) then
+		if (item.priv) then
 			SettingsTable:addColumns{
 				{item.name, item.type, default = item.default},
 			}
 		end
 	end
 	
-	return Database.createTable(SettingsTable)
+	return db.createTable(SettingsTable)
 end
 
 function Settings.loadPrivate()
-	if(not DbIsReady()) then
-		Debug.warn('Database is not ready yet')
-		return false
+	local data = db.querySingle('SELECT * FROM '..SettingsTable..' LIMIT 1'):poll()
+	if(not data) then
+		db.insertDefault(SettingsTable)
+		data = db.querySingle('SELECT * FROM '..SettingsTable..' LIMIT 1'):poll()
 	end
 	
-	local rows = DbQuery('SELECT * FROM '..SettingsTable..' LIMIT 1')
-	if(not rows[1]) then
-		SettingsTable:insertDefault()
-		rows = DbQuery('SELECT * FROM '..SettingsTable..' LIMIT 1')
-	end
-	for key, val in pairs(rows[1]) do
+	for key, val in pairs(data) do
 		local item = Settings.items[key]
 		if(item) then
 			if(item.type == 'BOOL' or item.type == 'BOOLEAN') then
@@ -113,6 +107,8 @@ function Settings.loadPrivate()
 				item.valArgs = {}
 			end
 			item.value = val
+		else
+			--Debug.warn('Unknown column '..key..' in settings table')
 		end
 	end
 	
@@ -135,7 +131,7 @@ Settings.__mt.__index = function(self, key)
 	
 	local item = rawget(Settings, 'items')[key]
 	if(not item) then
-		Debug.warn('Unknown setting '..tostring(key))
+		Debug.warn('Getting unknown setting '..tostring(key))
 		return nil
 	end
 	
@@ -159,7 +155,7 @@ end
 function Settings.__mt.__newindex(self, key, val)
 	local item = Settings.items[key]
 	if(not item) then
-		Debug.warn('Unknown setting '..tostring(key))
+		Debug.warn('Setting unknown setting '..tostring(key))
 		return
 	end
 	
@@ -180,7 +176,7 @@ function Settings.__mt.__newindex(self, key, val)
 			if(type(sqlVal) == 'boolean') then
 				sqlVal = sqlVal and 1 or 0
 			end
-			DbQuery('UPDATE '..SettingsTable..' SET '..key..'=?', sqlVal)
+			db.query('UPDATE '..SettingsTable..' SET '..key..'=?', sqlVal):start()
 		else
 			set(key, newVal)
 		end

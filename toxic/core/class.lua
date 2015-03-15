@@ -46,6 +46,7 @@ function mt:__call(name, parent)
 	end
 	
 	cls.__mt.__index.cls = cls
+	cls.__mt.__index._superClass = parent
 	
 	function cls.__mt:__tostring()
 		return tostring(self.cls)
