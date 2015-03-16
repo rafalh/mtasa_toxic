@@ -1,9 +1,3 @@
---------------
--- Includes --
---------------
-
-#include 'include/internal_events.lua'
-
 ---------------------
 -- Local variables --
 ---------------------

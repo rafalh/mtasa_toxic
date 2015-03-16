@@ -20,4 +20,5 @@
 	<script src="notify_c.lua" type="client" />
 	<script src="formattedLabel_c.lua" type="client" />
 	<script src="msgBox_c.lua" type="client" />
+	<script src="comboBoxFix_c.lua" type="client" />
 </meta>
