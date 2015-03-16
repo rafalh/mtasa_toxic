@@ -6,7 +6,9 @@ local function updatePlayerBlipColor(playerEl)
 	if(isRace) then return end
 	
 	for i, el in ipairs(getAttachedElements(playerEl)) do
-		if(getElementType(el) == 'blip') then
+		if (not isElement(el)) then
+			Debug.warn(player:getName()..' attached '..tostring(el)..' is not element')
+		elseif (getElementType(el) == 'blip') then
 			local r, g, b, a = getBlipColor(el)
 			local pr, pg, pb = getPlayerNametagColor(playerEl)
 			r = 100 + pr*0.5

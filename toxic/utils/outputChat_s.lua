@@ -47,7 +47,7 @@ function scriptMsg(fmt, ...)
 	end
 	
 	local recipients = {}
-	for i, element in ipairs(g_ScriptMsgState.recipients ) do
+	for i, element in ipairs(g_ScriptMsgState.recipients) do
 		for i, player in ipairs(getElementsByType('player', element)) do
 			table.insert(recipients, player )
 		end

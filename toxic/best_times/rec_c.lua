@@ -121,16 +121,15 @@ end
 
 function Recorder.stopSendReq(mapId)
 	Debug.info('Recorder.stopSendReq')
-	assert(g_Rec and not g_Waiting)
+	assert(g_Rec and not g_Waiting, tostring(g_Rec)..' '..tostring(g_Waiting))
 	
 	if(mapId == g_MapID) then
 		triggerServerInternalEvent($(EV_RECORDING), g_Me, g_MapID, g_Rec.data)
+		g_Rec:destroy()
+		g_Rec = false
 	else
 		Debug.warn('Wrong map ID: '..tostring(map_id)..'<>'..tostring(g_MapID))
 	end
-	
-	g_Rec:destroy()
-	g_Rec = false
 end
 
 addInitFunc(function()
