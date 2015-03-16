@@ -159,4 +159,4 @@ end
 addInitFunc(function()
 	addEventHandler('onClientLangChange', getResourceRootElement(), MuiSetLang)
 	addEventHandler('onClientElementDestroy', getResourceRootElement(), MuiOnElementDestroy)
-end)
+end, -20)
