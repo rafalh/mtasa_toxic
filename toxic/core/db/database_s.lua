@@ -133,6 +133,14 @@ function queryLastInsertID()
 	return mainConnection:queryLastInsertID()
 end
 
+function beginTransaction()
+	return mainConnection:beginTransaction()
+end
+
+function endTransaction()
+	return mainConnection:endTransaction()
+end
+
 function escape(str)
 	return mainConnection:escape(str)
 end
@@ -200,7 +208,7 @@ addInitFunc(initDatabase, -200)
 		Test.check(conn:createTable(testTbl))
 		
 		Test.check(conn:query('INSERT INTO '..testTbl..' (name, nullable) VALUES(?, ?)', 'Test row', false):poll())
-		local id = conn:getLastInsertID()
+		local id = conn:queryLastInsertID():poll()
 		Test.checkGt(id, 0)
 		
 		local data2

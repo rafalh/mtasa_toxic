@@ -75,6 +75,9 @@ function db.BaseConnector.__mt.__index:query(sql, ...)
 end
 
 function db.BaseConnector.__mt.__index:querySingle(sql, ...)
+	if (not sql:find(' LIMIT ', 1, true)) then
+		sql = sql..' LIMIT 1'
+	end
 	return self:query(sql, ...):formatter(function(result)
 		return result and result[1]
 	end)
@@ -84,6 +87,14 @@ function db.BaseConnector.__mt.__index:queryCount(tbl, whereCond, ...)
 	return self:query('SELECT COUNT(*) AS c FROM '..tbl..' WHERE '..whereCond, ...):formatter(function(result)
 		return result and result[1].c
 	end)
+end
+
+function db.BaseConnector.__mt.__index:beginTransaction()
+	self:query('BEGIN'):start()
+end
+
+function db.BaseConnector.__mt.__index:endTransaction()
+	self:query('COMMIT'):start()
 end
 
 function db.BaseConnector.__mt.__index:getConstraints(colInfo, constrTbl)
@@ -241,7 +252,7 @@ function db.SQLiteConnector.__mt.__index:init(config)
 end
 
 function db.SQLiteConnector.__mt.__index:connect()
-	self.conn = dbConnect('sqlite', self.path)
+	self.conn = dbConnect('sqlite', self.path, '', '', 'batch=0')
 	if (not self.conn) then
 		Debug.err('Failed to connect to SQLite database!')
 		return false
@@ -249,7 +260,7 @@ function db.SQLiteConnector.__mt.__index:connect()
 	return true
 end
 
-function db.SQLiteConnector:disconnect()
+function db.SQLiteConnector.__mt.__index:disconnect()
 	if (not self.conn) then return false end
 	destroyElement(self.conn)
 	self.conn = false
@@ -465,7 +476,7 @@ function db.MySQLConnector.__mt.__index:connect()
 	end
 	
 	Debug.warn('MySQL support is experimental!')
-	self.conn = dbConnect('mysql', params, g_Config.username, g_Config.password)
+	self.conn = dbConnect('mysql', params, g_Config.username, g_Config.password, 'batch=0')
 	if(not self.conn) then
 		Debug.err('Failed to connect to MySQL database - '..params..' '..g_Config.username..' '..('*'):rep(g_Config.password:len()))
 		return false
