@@ -14,5 +14,5 @@ end
 
 addInitFunc(function()
 	addEventHandler('onClientMapStarting', g_Root, onMapStart)
-	addEventHandler('onClientResourceStart', g_ResRoot, updateWaterLevel)
+	updateWaterLevel() -- update in current map
 end)

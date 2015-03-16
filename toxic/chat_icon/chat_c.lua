@@ -42,11 +42,6 @@ local function update()
 	end
 end
 
-local function init ()
-	g_ChatTexture = dxCreateTexture('chat_icon/chat.png')
-	setTimer(update, 250, 0)
-end
-
 local function onRender()
 	local cx, cy, cz = getCameraMatrix()
 	local localDim = getElementDimension(localPlayer)
@@ -122,8 +117,10 @@ addInitFunc(function()
 	addInternalEventHandler($(EV_CLIENT_PLAYER_CHAT), onPlayerChat)
 	addEventHandler('onClientPlayerChatting', g_Root, onPlayerChatting)
 	addEventHandler('onClientRender', g_Root, onRender)
-	addEventHandler('onClientResourceStart', g_ResRoot, init)
 	addEventHandler('onClientPlayerQuit', g_Root, onPlayerQuit)
+	
+	g_ChatTexture = dxCreateTexture('chat_icon/chat.png')
+	setTimer(update, 250, 0)
 end)
 
 addInitFunc(function()
