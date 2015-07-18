@@ -83,11 +83,13 @@ local function render()
 		-- fft contains our precalculated data so just grab it
 		local peak = fft[x]
 		local i = x + 1
-		local peakH = math.sqrt(peak) * g_Size[2] -- scale it (sqrt to make low values more visible)
-		
-		if (peakH > g_Size[2]) then
-			peakH = g_Size[2]
-		end -- cap it
+
+		-- cap it
+		peak = math.max(peak, 0)
+		peak = math.min(peak, 1)
+
+		-- scale it (sqrt to make low values more visible)
+		local peakH = math.sqrt(peak) * g_Size[2]
 		
 		-- render peak
 		local peakX = g_Pos[1] + i * peakWPad + peakOffX
