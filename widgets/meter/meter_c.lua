@@ -142,12 +142,10 @@ end
 
 g_WidgetCtrl[$(wg_move)] = function(x, y)
 	g_Pos = { x, y }
-	recalc()
 end
 
 g_WidgetCtrl[$(wg_resize)] = function(w, h)
 	g_Size = { w, h }
-	recalc()
 end
 
 g_WidgetCtrl[$(wg_getsize)] = function()
