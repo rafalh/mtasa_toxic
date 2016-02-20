@@ -309,9 +309,40 @@ local function VipCleanup()
 	end
 end
 
+local function setupAcl()
+	-- Create ACL with 'resource.rafalh_vip' right and group with that ACL
+	local acl = aclGet('VIP')
+	local rightSet = acl and aclGetRight(acl, g_VipRight)
+	
+	if (g_VipGroup and acl and rightSet) then
+		-- Everything is ok
+		return true
+	end
+	
+	local neededFunctions = {'aclCreate', 'aclSetRight', 'aclCreateGroup', 'aclGroupAddACL'}
+	for i, v in ipairs(neededFunctions) do
+		if (not hasObjectPermissionTo(resource, 'function.'..v)) then
+			outputChatBox('Add VIP group and ACL manually!')
+			return false
+		end
+	end
+
+	if (not acl) then
+		acl = aclCreate('VIP')
+	end
+	if (rightSet) then
+		rightSet = aclSetRight(acl, g_VipRight, true)
+	end
+	if (not g_VipGroup) then
+		g_VipGroup = aclCreateGroup('VIP')
+		aclGroupAddACL(g_VipGroup, acl)
+	end
+	return (g_VipGroup and acl and rightSet)
+end
+
 local function VipInit()
-	if(not g_VipGroup) then
-		g_VipGroup = aclCreateGroup("VIP")
+	if (not setupAcl()) then
+		cancelEvent()
 	end
 	
 	addEventHandler("vip.onReady", g_Root, VipOnClientReady)
