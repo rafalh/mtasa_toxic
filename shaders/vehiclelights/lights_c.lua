@@ -78,18 +78,18 @@ local g_CurrentLight = "High Quality"
 local g_LightsEnabled = false
 
 local function loadVehicleLights(veh, image)
-	if(not g_LightsEnabled) then return end
+	if (not g_LightsEnabled) then return end
 	
 	local controller = getVehicleController(veh)
-	if(not controller) then return end
+	if (not controller) then return end
 	
 	image = image or getElementData(controller, "vehiclelight")
-	if(not image) then return end
+	if (not image) then return end
 	
-	if(not g_Shaders[image]) then
+	if (not g_Shaders[image]) then
 		local texture = dxCreateTexture("images/"..image..".jpg", "dxt3")
 		if(not texture) then
-			outputDebugString("dxCreateTexture failed for "..tostring(image), 2)
+			outputDebugString("dxCreateTexture failed for "..tostring(image).." player "..getPlayerName(controller), 2)
 		end
 		local shader = dxCreateShader("lights.fx")
 		dxSetShaderValue(shader, "gTexture", texture)
@@ -131,16 +131,30 @@ function disableCustomLights()
 	g_Shaders = {}
 end
 
+local function isValidLight (lightName)
+	for i, currentLight in ipairs(g_Lights) do
+		if currentLight == lightName then
+			return true
+		end
+	end
+	return false
+end
+
 addEventHandler("onClientResourceStart", resourceRoot, function()
 	local light = getCookieOption("lights")
-	if(light) then
-		g_CurrentLight = (light ~= "" and light)
+	if light then
+		if light == '' then
+			g_CurrentLight = false
+		elseif isValidLight(light) then
+			g_CurrentLight = light
+		end
 	end
-	setElementData(localPlayer, "vehiclelight", g_CurrentLight, true)
+	
+	setElementData(localPlayer, "vehiclelight", g_CurrentLight)
 end)
 
 addEventHandler("onClientElementStreamIn", root, function()
-	if(getElementType(source) == "vehicle") then
+	if (getElementType(source) == "vehicle") then
 		loadVehicleLights(source)
 	end
 end)
@@ -149,14 +163,18 @@ addEventHandler("onClientVehicleEnter", root, function()
 	loadVehicleLights(source)
 end)
 
-addEventHandler("onClientElementDataChange", root, function(key, oldValue)
-	if(key ~= "vehiclelight" or getElementType(source) ~= "player") then return end
+local function onPlayerDataChange(key, oldValue)
+	if (key ~= "vehiclelight") then return end
 	
 	local veh = getPedOccupiedVehicle(source)
 	if(veh) then
 		unloadVehicleLights(veh, oldValue)
 		loadVehicleLights(veh)
 	end
+end
+
+addEventHandler("onClientPlayerJoin", root, function()
+	addEventHandler("onClientElementDataChange", source, onPlayerDataChange, false)
 end)
 
 ------------- GUI -------------
@@ -167,10 +185,10 @@ local function applyChanges(btn)
 	
 	local id = guiComboBoxGetSelected(g_LightsComboBox)
 	local light = (id ~= 0 and guiComboBoxGetItemText(g_LightsComboBox, id))
-	if(light ~= g_CurrentLight) then
+	if (light ~= g_CurrentLight) then
 		g_CurrentLight = light
 		setElementData(localPlayer, "vehiclelight", g_CurrentLight)
-		setCookieOption("lights", g_CurrentLight)
+		setCookieOption("lights", g_CurrentLight or '')
 	end
 end
 
@@ -191,7 +209,7 @@ end
 local function updatePreview()
 	local id = guiComboBoxGetSelected(g_LightsComboBox)
 	local light = (id ~= 0 and guiComboBoxGetItemText(g_LightsComboBox, id))
-	if(not light) then
+	if (not light) then
 		guiSetVisible(g_PreviewImage, false)
 	else
 		guiSetVisible(g_PreviewImage, true)
@@ -202,24 +220,31 @@ end
 local function initGui()
 	local w, h = 380, 375
 	local x, y = 200, 70
-	g_LightsWindow = guiCreateWindow (x, y, w, h, "Vehicle Lights", false)
-	guiWindowSetSizable (g_LightsWindow, false)
+	g_LightsWindow = guiCreateWindow(x, y, w, h, "Vehicle Lights", false)
+	guiWindowSetSizable(g_LightsWindow, false)
 	
 	guiCreateLabel(15, 25, 380, 20, "Lights:", false, g_LightsWindow)
-	g_LightsComboBox = guiCreateComboBox (15, 45, 350, 160, "", false, g_LightsWindow)
+	g_LightsComboBox = guiCreateComboBox(15, 45, 350, 160, "", false, g_LightsWindow)
 	local id = guiComboBoxAddItem(g_LightsComboBox, "Default")
 	guiComboBoxSetSelected(g_LightsComboBox, id)
 	
 	for i, light in ipairs(g_Lights) do
 		local id = guiComboBoxAddItem(g_LightsComboBox, light)
-		if(light == g_CurrentLight) then
+		if (light == g_CurrentLight) then
 			guiComboBoxSetSelected(g_LightsComboBox, id)
 		end
 	end
 	addEventHandler("onClientGUIComboBoxAccepted", g_LightsComboBox, updatePreview)
 	
-	guiCreateLabel (15, 75, 380, 20, "Preview:", false, g_LightsWindow)
-	g_PreviewImage = guiCreateStaticImage (15, 95, 350, 220, "images/"..g_CurrentLight..".jpg", false, g_LightsWindow)
+	guiCreateLabel(15, 75, 380, 20, "Preview:", false, g_LightsWindow)
+	if (g_CurrentLight) then
+		local imgPath = "images/"..g_CurrentLight..".jpg"
+		g_PreviewImage = guiCreateStaticImage(15, 95, 350, 220, imgPath, false, g_LightsWindow)
+	else
+		local imgPath = "images/"..g_Lights[1]..".jpg"
+		g_PreviewImage = guiCreateStaticImage(15, 95, 350, 220, imgPath, false, g_LightsWindow)
+		guiSetVisible(g_PreviewImage, false)
+	end
 	
 	local okBtn = guiCreateButton (w - 3*90, h - 35, 80, 25, "OK", false, g_LightsWindow)
 	addEventHandler("onClientGUIClick", okBtn, applyChangesAndClose, false)
