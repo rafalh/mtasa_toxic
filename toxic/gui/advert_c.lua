@@ -56,7 +56,7 @@ local function AdvShowNext()
 	outputConsole(g_Adverts[g_AdvertIdx]:gsub('#%x%x%x%x%x%x', ''))
 end
 
-local function AdvInit()
+local function AdvLoad()
 	local node = xmlLoadFile('conf/adverts.xml')
 	if(not node) then
 		Debug.warn('Failed to load adverts.xml')
@@ -83,11 +83,16 @@ local function AdvInit()
 	
 	table.sort(tmp, function(a, b) return a.freq < b.freq end)
 	
+	g_Adverts = {}
 	for i, advert in ipairs(tmp) do
 		for j = 1, advert.freq, 1 do
 			table.insert(g_Adverts, math.floor(#g_Adverts * j / advert.freq) + 1, advert.text)
 		end
 	end
+end
+
+local function AdvInit()
+	AdvLoad()
 	
 	if(#g_Adverts > 0) then
 		g_AdvertIdx = math.random(0, #g_Adverts)
