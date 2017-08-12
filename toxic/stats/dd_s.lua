@@ -177,6 +177,21 @@ function DdGetPersonalTop(mapId, playerId, needsPos)
 	return info and table.copy(info)
 end
 
+function DdAddVictory(player, map)
+	if(not player.id) then return end -- guest
+	local rows = DbQuery('SELECT victCount FROM '..VictoriesTable..' WHERE map=? AND player=?', map:getId(), player.id)
+	local victCount = rows and rows[1] and rows[1].victCount
+	if(victCount) then
+		DbQuery('UPDATE '..VictoriesTable..' SET victCount=victCount+1 WHERE map=? AND player=?', map:getId(), player.id)
+	else
+		DbQuery('INSERT INTO '..VictoriesTable..' (map, player, victCount) VALUES(?, ?, 1)', map:getId(), player.id)
+	end
+	
+	Cache.remove('Stats.m'..map:getId()..'.DdTops')
+	
+	MiUpdateTops()
+end
+
 #end -- DD_TOPS
 
 local function onPlayerWasted()
