@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="censor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="word" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="unique-word">
+      <xs:selector xpath="word"/>
+   </xs:unique>
+  </xs:element>
+  <xs:element name="word">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="word">
+          <xs:attribute name="repl" type="xs:string" use="required"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="word">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^ ]+"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

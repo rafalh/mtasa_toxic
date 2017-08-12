@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="commands">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="command" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="unique-cmd">
+      <xs:selector xpath="command"/>
+      <xs:field xpath="@cmd"/>
+   </xs:unique>
+   <xs:unique name="unique-sound">
+      <xs:selector xpath="command"/>
+      <xs:field xpath="@sound"/>
+   </xs:unique>
+  </xs:element>
+  <xs:element name="command">
+    <xs:complexType>
+      <xs:attribute name="cmd" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9&lt;&gt;]+"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="msg" type="xs:string" use="required"/>
+      <xs:attribute name="sound">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9_-]+\.mp3"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  
+</xs:schema>
