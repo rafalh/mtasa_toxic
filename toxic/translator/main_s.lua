@@ -8,17 +8,18 @@ addEvent('onClientTranslate', true)
 addEvent('onClientTranslateLangList', true)
 addEvent('onHttpResult')
 
-local function onTranslateResult(new_text, errno, old_text, lang_to)
-	if(new_text == 'ERROR' or not new_text) then
+local function xmlUnescape(str)
+	return str:gsub('&lt;', '<'):gsub('&gt;', '>'):gsub('&amp;', '&')
+end
+
+local function onTranslateResult(data, errno, old_text, lang_to)
+	if(data == 'ERROR' or not data) then
 		Debug.info('Failed to translate: '..tostring(errno))
 		return
 	end
 	
-	-- remove UTF-8 BOM
-	local b1, b2, b3 = new_text:byte(1, 3)
-	if(b1 == 0xEF and b2 == 0xBB and b3 == 0xBF) then
-		new_text = new_text:sub(4)
-	end
+	new_text = data:match("<string[^>]*>([^<]*)</string>")
+	new_text = xmlUnescape(new_text)
 	
 	if(g_Queries[old_text]) then
 		for i, data in ipairs(g_Queries[old_text]) do
@@ -39,7 +40,7 @@ function translate(text, from, to, callback, ...)
 	local text_enc = urlEncode(text)
 	local from_enc = urlEncode(from or '')
 	local to_enc = urlEncode(to or 'en')
-	local url = 'https://api.microsofttranslator.com/v1/Http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
+	local url = 'https://api.microsofttranslator.com/v2/http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
 	--Debug.warn(url)
 	if(not fetchRemote(url, onTranslateResult, '', false, text, to)) then
 		return false
@@ -110,13 +111,17 @@ local function onTranslateLangList(data, errno, player)
 		return
 	end
 	
-	g_Langs = split(data, '\r\n')
+	g_Langs = {}
+	for lang in data:gmatch("<string>(%a+)</string>") do
+		table.insert(g_Langs, lang)
+	end
+
 	triggerClientEvent(player, 'onClientTranslateLangList', g_Root, g_Langs)
 end
 
 local function onTranslateLangListReq()
 	if(not g_Langs) then
-		local url = 'https://api.microsofttranslator.com/v1/Http.svc/GetLanguages?appId='..g_BingAppId
+		local url = 'https://api.microsofttranslator.com/v2/http.svc/GetLanguagesForTranslate?appId='..g_BingAppId
 		fetchRemote(url, onTranslateLangList, '', false, client)
 	else
 		triggerClientEvent(client, 'onClientTranslateLangList', g_Root, g_Langs)
