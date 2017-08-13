@@ -1,4 +1,4 @@
--- See: http://bugs.mtatoxic.tk/view.php?id=23
+-- See: https://bugs.mtatoxic.tk/view.php?id=23
 --[[function onVehCol(hitElement)
 	if(hitElement ~= nil) then
 		if(getElementType(hitElement) ~= 'object') then 

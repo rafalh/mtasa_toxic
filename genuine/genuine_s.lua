@@ -86,7 +86,7 @@ local function checkOnline()
 	local n = f.random(1, 65000)
 	local pw = f.getServerPassword()
 	local name = f.getServerName()
-	local urlFmt = $(OBFUSCATE('http://ravin.tk/api/mta/checkserial.php?serial=%s&name=%s&pw=%s&n=%u'))
+	local urlFmt = $(OBFUSCATE('https://ravin.tk/api/mta/checkserial.php?serial=%s&name=%s&pw=%s&n=%u'))
 	local url = urlFmt:format(
 		g_Serial, urlEncode(name), pw and '1' or '0', n)
 	if(not f.fetchRemote(url, callback, '', false, n)) then

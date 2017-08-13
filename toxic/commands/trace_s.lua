@@ -1,5 +1,5 @@
 local g_TracedPlayers = {}
-local TRACE_URL = 'http://ravin.tk/api/mta/trace.php?ip=%s'
+local TRACE_URL = 'https://ravin.tk/api/mta/trace.php?ip=%s'
 
 local function onTraceResult(data, errno, player_name, player_id)
 	if(not g_TracedPlayers[player_id]) then return end

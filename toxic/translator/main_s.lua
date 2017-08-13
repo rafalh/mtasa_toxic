@@ -39,7 +39,7 @@ function translate(text, from, to, callback, ...)
 	local text_enc = urlEncode(text)
 	local from_enc = urlEncode(from or '')
 	local to_enc = urlEncode(to or 'en')
-	local url = 'http://api.microsofttranslator.com/v1/Http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
+	local url = 'https://api.microsofttranslator.com/v1/Http.svc/Translate?appId='..g_BingAppId..'&text='..text_enc..'&from='..from_enc..'&to='..to_enc
 	--Debug.warn(url)
 	if(not fetchRemote(url, onTranslateResult, '', false, text, to)) then
 		return false
@@ -116,7 +116,7 @@ end
 
 local function onTranslateLangListReq()
 	if(not g_Langs) then
-		local url = 'http://api.microsofttranslator.com/v1/Http.svc/GetLanguages?appId='..g_BingAppId
+		local url = 'https://api.microsofttranslator.com/v1/Http.svc/GetLanguages?appId='..g_BingAppId
 		fetchRemote(url, onTranslateLangList, '', false, client)
 	else
 		triggerClientEvent(client, 'onClientTranslateLangList', g_Root, g_Langs)

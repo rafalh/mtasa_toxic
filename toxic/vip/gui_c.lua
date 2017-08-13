@@ -1,7 +1,7 @@
 
 #include 'include/internal_events.lua'
 
-local VIP_INFO_URL = 'http://mtatoxic.tk/vip/'
+local VIP_INFO_URL = 'https://mtatoxic.tk/vip/'
 local g_VipRes
 
 addEvent('vip.onStatus')

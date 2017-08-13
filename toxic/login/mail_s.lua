@@ -56,7 +56,7 @@ function Mail.__mt.__index:send()
 		to = self.to, toTitle = self.toTitle,
 		subject = self.subject}
 	
-	if(not fetchRemote('http://ravin.tk/api/mta/sendmail.php?'..urlEncodeTbl(params), function(responseData, errno)
+	if(not fetchRemote('https://ravin.tk/api/mta/sendmail.php?'..urlEncodeTbl(params), function(responseData, errno)
 		if(responseData == 'ERROR') then
 			Debug.err('sendMail failed: '..errno)
 			if(self.callback) then
