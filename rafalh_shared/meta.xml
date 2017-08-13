@@ -3,7 +3,6 @@
 	
 	<script src="color_dlg_c.lua" type="client" />
 	<script src="animated_bar_c.lua" type="client" />
-	<script src="http_s.lua" type="server" />
 	<script src="debug.lua" type="client" />
 	<script src="gif_c.lua" type="client" />
 	
@@ -16,9 +15,6 @@
 	<export function="createAnimatedProgressBar" type="client" />
 	<export function="setAnimatedProgressBarProgress" type="client" />
 	<export function="getAnimatedProgressBarProgress" type="client" />
-	
-	<export function="HttpSendRequest" />
-	<export function="HttpEncodeUrl" />
 	
 	<export function="GifLoad" type="client" />
 	<export function="GifRender" type="client" />
