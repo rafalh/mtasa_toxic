@@ -93,7 +93,7 @@ local function onLoginStatus(success)
 		local remember = guiCheckBoxGetSelected(g_GUI.remember)
 		if(remember) then
 			saveAutoLogin()
-		else
+		elseif fileExists('@autologin.txt') then
 			fileDelete('@autologin.txt')
 		end
 		
