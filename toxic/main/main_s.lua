@@ -318,7 +318,7 @@ addInitFunc(function()
 	Event('onPlayerChangeNick'):addFilter(onPlayerChangeNickFilter)
 	Event('onPlayerChangeNick'):addHandler(onPlayerChangeNick)
 	addEventHandler('onPlayerChat', g_Root, onPlayerChat)
-	addEventHandler('main.onPlayerReady', g_ResRoot, onPlayerReady)
+	addEventHandler('main.onPlayerReady', g_ResRoot, onPlayerReady, true, 'high')
 	addInternalEventHandler($(EV_PLAYER_PM_REQUEST), onPlayerPMRequest)
 end)
 
