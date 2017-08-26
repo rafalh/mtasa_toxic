@@ -153,7 +153,7 @@ function GbFinishBets(winner)
 		g_BetsTimer = false
 	end
 	
-	local mult = math.sqrt(g_PlayersCount)
+	local mult = 1 + math.log10(g_PlayersCount)
 	
 	for player, pdata in pairs(g_Players) do
 		if(winner and pdata.bet == winner) then
