@@ -108,11 +108,15 @@ ShpRegisterItem{
 		local vx, vy, vz = getElementVelocity(el)
 		local speed =(vx^2 + vy^2 + vz^2) ^ 0.5
 		local v = math.max(speed, 0.012)
+		local marker = createMarker(x, y, z, 'cylinder', 1, 255, 0, 0, 128)
+		assert(marker)
 		setTimer(function(x, y, z, marker)
 			destroyElement(marker)
 			local room = g_RootRoom
-			table.insert(room.tempElements, createObject(1225, x, y, z))
-		end, math.max(60/v, 50), 1, x, y, z, createMarker(x, y, z, 'cylinder', 1, 255, 0, 0, 128))
+			local mine = createObject(1225, x, y, z)
+			assert(mine)
+			table.insert(room.tempElements, mine)
+		end, math.max(60/v, 50), 1, x, y, z, marker)
 		Player.fromEl(player).accountData:add('mines', -1)
 		return true
 	end,
@@ -148,8 +152,9 @@ ShpRegisterItem{
 		local x, y, z = getElementPosition(el)
 		local vx, vy, vz = getElementVelocity(el)
 		local v = math.max(( vx^2 + vy^2)^( 1/2), 0.001)
-		local marker = createMarker(x, y, z - 0.4, 'cylinder', 8, 255, 255, 0, 32)
 		local room = g_RootRoom
+		local marker = createMarker(x, y, z - 0.4, 'cylinder', 8, 255, 255, 0, 32)
+		assert(marker)
 		table.insert(room.tempElements, marker)
 		setTimer(function(marker)
 			if(isElement(marker)) then
@@ -456,6 +461,7 @@ function ShpSpikeStrip(x, y, z, rx, ry, rz, mat)
 	local room = g_RootRoom
 	
 	local obj = createObject(2892, x, y, z, rx, ry, rz)
+	assert(obj)
 	table.insert(room.tempElements, obj)
 	
 	local center = Vector3(x, y, z)
@@ -467,6 +473,7 @@ function ShpSpikeStrip(x, y, z, rx, ry, rz, mat)
 	local fwRight = center + rightDir*5 + fwDir
 	local col = createColPolygon(center[1], center[2], bwLeft[1], bwLeft[2], bwRight[1], bwRight[2], fwRight[1], fwRight[2], fwLeft[1], fwLeft[2])
 	local minZ, maxZ = z, z + 3
+	assert(col)
 	table.insert(room.tempElements, col)
 	
 	setTimer(function()
