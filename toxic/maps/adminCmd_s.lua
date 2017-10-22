@@ -22,11 +22,15 @@ CmdMgr.register{
 		local now = getRealTime().timestamp
 
 		DbQuery('UPDATE '..MapsTable..' SET removed=?, removed_timestamp=? WHERE map=?', reason, now, map:getId())
-		renameResource(map.res, map.resName, REMOVED_MAPS_ORG_PATH)
 
 		outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map:getName(), ctx.player:getName(true))
 
 		startRandomMap(ctx.player.room)
+
+		-- rename resource after map change
+		setTimer(function ()
+			renameResource(map.res, map.resName, REMOVED_MAPS_ORG_PATH)
+		end, 1000, 1)
 	end
 }
 
