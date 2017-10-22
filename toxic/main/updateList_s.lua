@@ -526,3 +526,12 @@ Updater.register{
 		end
 	end
 }
+
+Updater.register{
+	ver = 174,
+	func = function()
+		if(not DbQuerySync('ALTER TABLE '..MapsTable..' ADD COLUMN removed_timestamp INT UNSIGNED DEFAULT NULL')) then
+			return 'Failed to add ownedTeam column'
+		end
+	end
+}

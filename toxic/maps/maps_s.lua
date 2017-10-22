@@ -16,6 +16,7 @@ MapsTable = Database.Table{
 	{'removed', 'VARCHAR(255)', null = true},
 	{'played_timestamp', 'INT UNSIGNED', null = true},
 	{'added_timestamp', 'INT UNSIGNED', null = true},
+	{'removed_timestamp', 'INT UNSIGNED', null = true},
 	{'maps_idx', unique = {'name'}},
 }
 

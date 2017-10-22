@@ -16,8 +16,9 @@ CmdMgr.register{
 		if(not map) then return end
 		
 		reason = reason..' (removed by '..ctx.player:getAccountName()..')'
-		
-		DbQuery('UPDATE '..MapsTable..' SET removed=? WHERE map=?', reason, map:getId())
+		local now = getRealTime().timestamp
+
+		DbQuery('UPDATE '..MapsTable..' SET removed=?, removed_timestamp=? WHERE map=?', reason, now, map:getId())
 		outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map:getName(), ctx.player:getName(true))
 		
 		startRandomMap(ctx.player.room)
