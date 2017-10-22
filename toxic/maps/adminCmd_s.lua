@@ -190,9 +190,9 @@ CmdMgr.register{
 	accessRight = AccessRight('remmap'),
 	func = function(ctx)
 		local num = 0
-		local rows = DbQuery('SELECT map, name FROM '..MapsTable..' WHERE removed IN NOT NULL')
-		for row in ipairs(rows) do
-			local res = getResourceByName(row['name'])
+		local rows = DbQuery('SELECT map, name FROM '..MapsTable..' WHERE removed IS NOT NULL')
+		for i, row in ipairs(rows) do
+			local res = getResourceFromName(row['name'])
 			if res and getResourceOrganizationalPath(res) ~= REMOVED_MAPS_ORG_PATH then
 				renameResource(res, row['name'], REMOVED_MAPS_ORG_PATH)
 				num = num + 1
