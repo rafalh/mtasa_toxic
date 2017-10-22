@@ -29,7 +29,7 @@ local function autoBackupFunc()
 end
 
 local function setupBackup(config)
-	local backupsInt = touint(config.backupInterval, 0) * 3600 * 24
+	local backupsInt = touint(config.backupInterval, 0) * 1000 * 3600 * 24
 	if(backupsInt > 0) then
 		setTimer(autoBackupFunc, backupsInt, 0)
 		setTimer(function()
