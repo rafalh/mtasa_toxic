@@ -50,10 +50,12 @@ function run()
 	end
 	
 	-- Make backup before update
-	Database.makeBackup()
+	db.makeBackup()
 	
+	-- End MTA transaction (batch option in dbConnect)
+	--DbQuery('COMMIT')
+
 	-- Begin transaction
-	DbQuery('COMMIT')
 	DbQuery('BEGIN')
 	
 	-- Start update
@@ -73,7 +75,9 @@ function run()
 		
 		-- Commit changes
 		DbQuery('COMMIT')
-		DbQuery('BEGIN')
+
+		-- Begin MTA transaction (batch option in dbConnect)
+		--DbQuery('BEGIN')
 		
 		-- Update succeeded
 		Debug.info('Database update ('..ver..' -> '..upd.ver..') succeeded!')
@@ -86,7 +90,7 @@ function run()
 	end
 	
 	-- Verify tables after update
-	Database.verifyTables()
+	db.verifyAllTables()
 	
 	return true
 end

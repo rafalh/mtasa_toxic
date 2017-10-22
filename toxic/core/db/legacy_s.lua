@@ -41,7 +41,8 @@ Database.alterColumns = db.alterColumns
 Database.dropColumns = db.dropColumns
 Database.addConstraint = db.addConstraint
 Database.addConstraints = db.addConstraints
-Database.verifyTables = db.verifyTables
+Database.verifyTables = db.verifyAllTables
+Database.makeBackup = db.makeBackup
 Database.Table = db.Table
 
 addInitFunc(function()

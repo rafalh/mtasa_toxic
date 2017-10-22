@@ -249,6 +249,7 @@ db.SQLiteConnector = Class('SQLiteConnector', db.BaseConnector)
 
 function db.SQLiteConnector.__mt.__index:init(config)
 	self.path = config.path or 'runtime/db.sqlite'
+	self.config = config
 end
 
 function db.SQLiteConnector.__mt.__index:connect()
@@ -419,7 +420,7 @@ end
 
 function db.SQLiteConnector.__mt.__index:makeBackup()
 	-- remove backup if there is too many
-	local maxBackups = touint(g_Config.maxBackups, 0)
+	local maxBackups = touint(self.config.maxBackups, 0)
 	if(maxBackups > 0) then
 		local i = maxBackups
 		while(fileExists('backups/db'..i..'.sqlite')) do
@@ -460,8 +461,9 @@ db.MySQLConnector = Class('MySQLConnector', db.BaseConnector)
 function db.MySQLConnector.__mt.__index:init(config)
 	self.host = config.host
 	self.dbname = config.dbname
-	self.user = config.username
+	self.username = config.username
 	self.password = config.password
+	self.port = config.port
 end
 
 function db.MySQLConnector.__mt.__index:connect()
@@ -470,15 +472,15 @@ function db.MySQLConnector.__mt.__index:connect()
 		return false
 	end
 	
-	local params = 'dbname='..g_Config.dbname..';host='..g_Config.host
-	if(g_Config.port) then
-		params = params..';port='..g_Config.port
+	local params = 'dbname='..self.dbname..';host='..self.host
+	if(self.port) then
+		params = params..';port='..self.port
 	end
 	
 	Debug.warn('MySQL support is experimental!')
-	self.conn = dbConnect('mysql', params, g_Config.username, g_Config.password, 'batch=0')
+	self.conn = dbConnect('mysql', params, self.username, self.password, 'batch=0')
 	if(not self.conn) then
-		Debug.err('Failed to connect to MySQL database - '..params..' '..g_Config.username..' '..('*'):rep(g_Config.password:len()))
+		Debug.err('Failed to connect to MySQL database - '..params..' '..self.username..' '..('*'):rep(self.password:len()))
 		return false
 	end
 	

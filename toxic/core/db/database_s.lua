@@ -95,7 +95,7 @@ local function initDatabase()
 	end
 	
 	if (mainConnection.makeBackup) then
-		--setupBackup(config)
+		setupBackup(config)
 	end
 	
 	return true
