@@ -6,6 +6,7 @@ function Event.__mt.__index:handle(...)
 	
 	for i, filter in ipairs(self.filters) do
 		if(not filter(...)) then
+			cancelEvent()
 			return
 		end
 	end
