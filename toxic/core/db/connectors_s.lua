@@ -90,11 +90,15 @@ function db.BaseConnector.__mt.__index:queryCount(tbl, whereCond, ...)
 end
 
 function db.BaseConnector.__mt.__index:beginTransaction()
-	self:query('BEGIN'):start()
+	self:query('BEGIN'):poll()
 end
 
-function db.BaseConnector.__mt.__index:endTransaction()
-	self:query('COMMIT'):start()
+function db.BaseConnector.__mt.__index:commit()
+	self:query('COMMIT'):poll()
+end
+
+function db.BaseConnector.__mt.__index:rollBack()
+	self:query('ROLLBACK'):poll()
 end
 
 function db.BaseConnector.__mt.__index:getConstraints(colInfo, constrTbl)

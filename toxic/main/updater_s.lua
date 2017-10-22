@@ -52,32 +52,22 @@ function run()
 	-- Make backup before update
 	db.makeBackup()
 	
-	-- End MTA transaction (batch option in dbConnect)
-	--DbQuery('COMMIT')
-
-	-- Begin transaction
-	DbQuery('BEGIN')
-	
 	-- Start update
 	while(#g_Queue > 0) do
 		local upd = table.remove(g_Queue, 1)
 		
-		local status, err = pcall(upd.func)
-		if(err) then
+		local status, err = pcall(db.transaction, function ()
+			-- Run migration
+			upd.func()
+			
+			-- Update version in settings table
+			Settings.version = upd.ver
+		end)
+
+		if not status then
 			Debug.err('Database update ('..ver..' -> '..upd.ver..') failed: '..tostring(err))
-			DbQuery('ROLLBACK')
-			DbQuery('BEGIN')
 			return false
 		end
-		
-		-- Update version in settings table
-		Settings.version = upd.ver
-		
-		-- Commit changes
-		DbQuery('COMMIT')
-
-		-- Begin MTA transaction (batch option in dbConnect)
-		--DbQuery('BEGIN')
 		
 		-- Update succeeded
 		Debug.info('Database update ('..ver..' -> '..upd.ver..') succeeded!')
@@ -86,7 +76,9 @@ function run()
 	
 	-- Recreate tables if requested
 	for i, tbl in ipairs(g_TablesToRecreate) do
-		Database.recreateTable(tbl)
+		db.transaction(function ()
+			db.recreateTable(tbl)
+		end)
 	end
 	
 	-- Verify tables after update

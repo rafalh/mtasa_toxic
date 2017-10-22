@@ -23,6 +23,7 @@ end
 
 local function autoBackupFunc()
 	Debug.info('Auto-backup...')
+	local now = getRealTime().timestamp
 	db.makeBackup()
 	Settings.backupTimestamp = now
 end
@@ -133,12 +134,29 @@ function queryLastInsertID()
 	return mainConnection:queryLastInsertID()
 end
 
-function beginTransaction()
-	return mainConnection:beginTransaction()
-end
+function transaction(func)
+	-- End MTA transaction (see batch option in dbConnect)
+	--mainConnection:commit()
 
-function endTransaction()
-	return mainConnection:endTransaction()
+	-- Begin transaction
+	mainConnection:beginTransaction()
+
+	local res = { pcall(func) }
+	if not res[1] then
+		Debug.err('Transaction failed: '..tostring(res[2]))
+		mainConnection:rollBack()
+		-- Begin MTA transaction (see batch option in dbConnect)
+		--mainConnection:beginTransaction()
+		error(res[2])
+	end
+
+	-- End transaction
+	mainConnection:commit()
+
+	-- Begin MTA transaction (see batch option in dbConnect)
+	--mainConnection:beginTransaction()
+
+	return unpack(res, 2)
 end
 
 function escape(str)
