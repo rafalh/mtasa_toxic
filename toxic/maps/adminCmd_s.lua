@@ -1,5 +1,8 @@
 local g_LastRedo = 0
 
+local REMOVED_MAPS_ORG_PATH = '[removed_maps]'
+local RESTORED_MAPS_ORG_PATH = '[restored_maps]'
+
 addEvent('onClientDisplayNextMapGuiReq', true)
 
 CmdMgr.register{
@@ -19,8 +22,10 @@ CmdMgr.register{
 		local now = getRealTime().timestamp
 
 		DbQuery('UPDATE '..MapsTable..' SET removed=?, removed_timestamp=? WHERE map=?', reason, now, map:getId())
+		renameResource(map.res, map.resName, REMOVED_MAPS_ORG_PATH)
+
 		outputMsg(g_Root, Styles.red, "%s has been removed by %s!", map:getName(), ctx.player:getName(true))
-		
+
 		startRandomMap(ctx.player.room)
 	end
 }
@@ -41,7 +46,9 @@ CmdMgr.register{
 			return
 		end
 		
-		DbQuery('UPDATE '..MapsTable..' SET removed=NULL WHERE map=?', map:getId())
+		DbQuery('UPDATE '..MapsTable..' SET removed=NULL, removed_timestamp=NULL WHERE map=?', map:getId())
+		renameResource(map.res, map.resName, RESTORED_MAPS_ORG_PATH)
+
 		outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map:getName(), ctx.player:getName(true))
 	end
 }
@@ -174,6 +181,24 @@ CmdMgr.register{
 			g_LastRedo = now
 			map:start(room)
 		end
+	end
+}
+
+CmdMgr.register{
+	name = 'moveremovedmaps',
+	cat = 'Admin',
+	accessRight = AccessRight('remmap'),
+	func = function(ctx)
+		local num = 0
+		local rows = DbQuery('SELECT map, name FROM '..MapsTable..' WHERE removed IN NOT NULL')
+		for row in ipairs(rows) do
+			local res = getResourceByName(row['name'])
+			if res and getResourceOrganizationalPath(res) ~= REMOVED_MAPS_ORG_PATH then
+				renameResource(res, row['name'], REMOVED_MAPS_ORG_PATH)
+				num = num + 1
+			end
+		end
+		privMsg(ctx.player, "Moved %u removed maps!", num)
 	end
 }
 
