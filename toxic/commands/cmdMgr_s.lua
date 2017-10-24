@@ -273,7 +273,7 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 		
 	end
 	if(not ctx.player) then return end
-	
+
 	-- First check if this is a valid command
 	local ch1 = msg:sub(1, 1)
 	if(ch1 ~= '/' and ch1 ~= '!') then return end
@@ -285,7 +285,7 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	ctx.cmdName = table.remove(args, 1):sub(2)
 	local cmd = CmdMgr.map[ctx.cmdName:lower()]
 	if(not cmd) then return end
-	
+
 	-- Check if player has access to this command
 	if(cmd.accessRight and not cmd.accessRight:check(ctx.player)) then
 		CmdMgr.output(ctx, "Access denied for \"%s\"!", ctx.cmdName)
@@ -313,10 +313,22 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 		end
 	end
 	
+	local nowTicks = getTickCount()
+	if ctx.player.lastCmdTicks and nowTicks - ctx.player.lastCmdTicks < 1000 then
+		privMsg(ctx.player, "Please do not execute commands so fast!")
+		return -- ignore command spam
+	end
+	ctx.player.lastCmdTicks = nowTicks
+
+	local shortMsg = msg:sub(1, 100)
+	outputServerLog('CMD: '..ctx.player:getName()..': '..shortMsg)
+	local prof = DbgPerf()
+
 	local status, err = pcall(cmd.func, ctx, unpack(args))
 	if(not status) then
-		Debug.err('Command '..msg:sub(1, 100)..' failed: '..err)
+		Debug.err('Command \''..shortMsg..'\' failed: '..err)
 	end
+	prof:cp('Command %s', shortMsg)
 	
 	g_ScriptMsgState.recipients = {g_Root}
 	g_ScriptMsgState.prefix = ''
