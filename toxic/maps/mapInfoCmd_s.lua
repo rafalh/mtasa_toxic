@@ -104,38 +104,49 @@ CmdMgr.register{
 	name = 'mapstats',
 	desc = "Shows statistics for each map type",
 	func = function(ctx)
-		local rows = DbQuery('SELECT map, removed, rates, rates_count, played FROM '..MapsTable)
-		local maps_data = {}
-		for i, data in ipairs(rows) do
-			maps_data[data.map] = data
-		end
-		
-		local maps = getMapsList()
-		local map_type_stats = {}
-		for i, map in maps:ipairs() do
-			local map_name = map:getName()
-			local map_type = map:getType()
-			assert(map_type)
-			
-			local stats = map_type_stats[map_type]
-			if(not stats) then
-				stats = { count = 0, removed = 0, rates = 0, rates_count = 0, played = 0 }
-				map_type_stats[map_type] = stats
+
+		local mapTypeStats = Cache.get('mapTypeStats')
+		if not mapTypeStats then
+			local rows = DbQuery('SELECT map, removed, rates, rates_count, played FROM '..MapsTable)
+			local maps_data = {}
+			for i, data in ipairs(rows) do
+				maps_data[data.map] = data
 			end
 			
-			stats.count = stats.count + 1
-			local map_id = map:getId()
-			if(maps_data[map_id]) then
-				if(maps_data[map_id].removed) then
-					stats.removed = stats.removed + 1
+			local maps = getMapsList()
+			mapTypeStats = {}
+			for i, map in maps:ipairs() do
+				local map_name = map:getName()
+				local map_type = map:getType()
+				assert(map_type)
+				
+				local stats = mapTypeStats[map_type]
+				if(not stats) then
+					stats = { count = 0, removed = 0, rates = 0, rates_count = 0, played = 0 }
+					mapTypeStats[map_type] = stats
 				end
-				stats.rates = stats.rates + maps_data[map_id].rates
-				stats.rates_count = stats.rates_count + maps_data[map_id].rates_count
-				stats.played = stats.played + maps_data[map_id].played
+				
+				stats.count = stats.count + 1
+				local map_id = map:getId()
+				if(maps_data[map_id]) then
+					if(maps_data[map_id].removed) then
+						stats.removed = stats.removed + 1
+					end
+					stats.rates = stats.rates + maps_data[map_id].rates
+					stats.rates_count = stats.rates_count + maps_data[map_id].rates_count
+					stats.played = stats.played + maps_data[map_id].played
+				end
 			end
+			Cache.set('mapTypeStats', mapTypeStats, 60)
 		end
-		scriptMsg("Total maps count: %u", maps:getCount())
-		for map_type, stats in pairs(map_type_stats) do
+
+		local totalCount = 0
+		for map_type, stats in pairs(mapTypeStats) do
+			totalCount = totalCount + stats.count
+		end
+
+		scriptMsg("Total maps count: %u", totalCount)
+		for map_type, stats in pairs(mapTypeStats) do
 			local rating = 0
 			if(stats.rates_count > 0) then
 				rating = stats.rates / stats.rates_count
