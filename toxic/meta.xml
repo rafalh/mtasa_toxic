@@ -16,7 +16,6 @@
 	<module src="utils" />
 	
 	
-	<!--script src="core/database_s.lua" type="server" /-->
 	<script src="core/db/database_s.lua" type="server" />
 	<script src="core/db/connectors_s.lua" type="server" />
 	<script src="core/db/table_s.lua" type="server" />
