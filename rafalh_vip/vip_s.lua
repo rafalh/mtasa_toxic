@@ -9,6 +9,8 @@ g_Players = {}
 g_VipGroup = aclGetGroup('VIP')
 g_VipRight = 'resource.rafalh_vip'
 
+local MAX_AVATAR_SIZE_B = 64*1024
+
 -------------------
 -- Custom events --
 -------------------
@@ -126,27 +128,47 @@ local function VipCheckAvatarFormat(data)
 	return false
 end
 
-local function VipAvatarCallback(data, errno, player, reqID)
+local function VipAvatarCallback(responseData, responseInfo, player, reqID)
 	local pdata = g_Players[player]
-	if(not pdata) then return end
+	if not pdata then return end
 	
-	if(pdata.avatarReq ~= reqID) then return end
+	if pdata.avatarReq ~= reqID then return end
 	
-	if(errno ~= 0 or data:len() == 0) then
-		outputChatBox("Failed to download avatar: "..tostring(errno), player, 255, 0, 0)
+	if not responseInfo.success or responseData:len() == 0 then
+		outputChatBox("Failed to download avatar: "..tostring(responseInfo.statusCode), player, 255, 0, 0)
+		outputDebugString("Failed to download avatar: "..tostring(responseInfo.statusCode), 3)
 		return
 	end
 	
-	if(data:len() > 1024 * 64) then
+	if responseData:len() > MAX_AVATAR_SIZE_B then
 		outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
-	elseif(not VipCheckAvatarFormat(data)) then
+		outputDebugString("Avatar data too big: "..tostring(len), 2)
+	elseif not VipCheckAvatarFormat(responseData) then
 		outputChatBox("Unknown avatar image format!", player, 255, 0, 0)
+		outputDebugString("Unknown avatar image format!", 3)
 	else
-		setElementData(player, "avatar", data)
+		setElementData(player, "avatar", responseData)
 		local playerName = getPlayerName(player):gsub("#%x%x%x%x%x%x", "")
-		outputDebugString(playerName.." avatar set ("..data:len().." bytes)", 3)
+		outputDebugString(playerName.." avatar set ("..responseData:len().." bytes)", 3)
 	end
 end
+
+local function VipAvatarHeadCallback(responseData, responseInfo, avatar, player, reqID)
+	local len = tonumber(responseInfo.headers['Content-Length'])
+	if not len or len > MAX_AVATAR_SIZE_B then
+		if not len then
+			outputDebugString("Expected Content-Length header for avatar "..tostring(avatar), 2)
+		end
+		outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
+		outputDebugString("Avatar too big: "..tostring(len), 3)
+		return
+	end
+	local args = { player, reqID }
+	if not fetchRemote(avatar, {}, VipAvatarCallback, args) then
+		outputDebugString("Failed to download avatar "..avatar, 2)
+	end
+end
+
 
 local function VipSetAvatar(player, avatar)
 	local pdata = g_Players[player]
@@ -155,7 +177,10 @@ local function VipSetAvatar(player, avatar)
 	setElementData(player, "avatar", false)
 	
 	pdata.avatarReq = (pdata.avatarReq or 0) + 1
-	if(not fetchRemote(avatar, VipAvatarCallback, "", false, player, pdata.avatarReq)) then
+	-- first check headers
+	local options = { method = 'HEAD' }
+	local args = { avatar, player, pdata.avatarReq }
+	if not fetchRemote(avatar, options, VipAvatarHeadCallback, args) then
 		outputDebugString("Failed to download avatar "..avatar, 2)
 	end
 end

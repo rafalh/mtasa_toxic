@@ -1,5 +1,6 @@
 <meta>
-	<info name="Modifications for VIPs" author="rafalh" version="1.4.2" type="script" description="Modifications for VIPs" />
+	<info name="Modifications for VIPs" author="rafalh" version="1.4.3" type="script" description="Modifications for VIPs" />
+	<min_mta_version server="1.5.4-9.11413"/>
 
 	<script src="vip_s.lua" type="server" />
 	<script src="vip_c.lua" type="client" />
