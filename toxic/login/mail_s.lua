@@ -66,7 +66,7 @@ function Mail.__mt.__index:send()
 			local status, err = fromJSON(responseData)
 			local success = (status == 1)
 			
-			if(not result or not success) then
+			if(not success) then
 				Debug.err('sendMail failed: '..tostring(err))
 			end
 			

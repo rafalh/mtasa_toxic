@@ -104,6 +104,12 @@ function passwordRecoveryReq(email)
 	end
 	g_LastMailTicks = ticks
 	
+	local key
+	while true do
+		key = md5(generateRandomStr(10)):sub(1, 16)
+		local data = DbQuerySingle('SELECT player, account FROM '..PlayersTable..' WHERE passwordRecoveryKey=?', key)
+		if not data then break end
+	end
 	local key = md5(generateRandomStr(10)):sub(1, 16)
 	local accountData = AccountData.create(data.player)
 	local player = Player.fromEl(client)
@@ -147,8 +153,7 @@ CmdMgr.register{
 		{'key', type = 'str'},
 	},
 	func = function(ctx, key)
-		local rows = DbQuery('SELECT player, account FROM '..PlayersTable..' WHERE passwordRecoveryKey=? AND serial=?', key, ctx.player:getSerial())
-		local data = rows and rows[1]
+		local data = DbQuerySingle('SELECT player, account FROM '..PlayersTable..' WHERE passwordRecoveryKey=?', key)
 		if(not data) then
 			outputMsg(ctx.player, Styles.red, "Failed to reset password. Please generate a new key and try again.")
 			return
