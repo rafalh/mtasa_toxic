@@ -2,13 +2,18 @@ local DEBUG = true
 local PERF_DEBUG_CHECKPOINTS = true
 local PERF_DEBUG_EVENTS = false
 
+local debugMsgMaxLen = triggerClientEvent and 250
+
 Debug = {}
 
 function Debug.print(str, lvl)
 	str = tostring(str)
-	while(str ~= '') do
-		outputDebugString(str:sub(1, 511), lvl)
-		str = str:sub(512)
+	if debugMsgMaxLen then
+		for part in str:wordWrapSplitIter(debugMsgMaxLen) do
+			outputDebugString(part, lvl)
+		end
+	else
+		outputDebugString(str, lvl)
 	end
 end
 

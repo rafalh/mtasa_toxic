@@ -156,3 +156,11 @@ function table.compare(tbl1, tbl2, deep)
 	
 	return true
 end
+
+function table.fromIter(iter)
+	local tbl = {}
+	for val in iter do
+		table.insert(tbl, val)
+	end
+	return tbl
+end

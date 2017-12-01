@@ -1,18 +1,7 @@
 g_ScriptMsgState = { recipients = { g_Root }, prefix = '', color = false }
 local g_WebChatRes
 
-function divChatStr(str)
-	local tbl = {}
-	
-	while(str:len() > 0) do
-		local t = str:sub(1, 128):reverse():find(' ')
-		local part = str:sub(1, (t and ( 129 - t)) or 128)
-		table.insert(tbl, part)
-		str = str:sub(part:len() + 1)
-	end
-	
-	return tbl
-end
+local CHAT_MSG_MAX_LEN = 128
 
 function privMsg(player, fmt, ...)
 	if(type(player) == 'table') then player = player.el end
@@ -24,9 +13,7 @@ function privMsg(player, fmt, ...)
 	if(is_console) then
 		outputServerLog(msg)
 	else
-		local parts = divChatStr(msg)
-		
-		for i, part in ipairs(parts) do
+		for part in string.wordWrapSplitIter(msg, CHAT_MSG_MAX_LEN) do
 			outputChatBox(part, player, 255, 96, 96, false)
 		end
 	end
@@ -63,10 +50,9 @@ function scriptMsg(fmt, ...)
 	
 	for i, player in ipairs(recipients) do
 		local msg = g_ScriptMsgState.prefix..MuiGetMsg(fmt, player):format(...):gsub('#%x%x%x%x%x%x', '')
-		local parts = divChatStr(msg)
 		local is_console = getElementType(player) == 'console'
 		
-		for i, part in ipairs(parts) do
+		for part in string.wordWrapSplitIter(msg, CHAT_MSG_MAX_LEN) do
 			if(is_console) then
 				outputServerLog(part)
 			else
@@ -130,7 +116,7 @@ end
 
 function outputChatBoxLong(msg, player, ...)
 	local pdata = Player.fromEl(player)
-	if(pdata and pdata.sync and msg:len() > 128) then -- fix long message being ignored
+	if(pdata and pdata.sync and msg:len() > CHAT_MSG_MAX_LEN) then -- fix long message being ignored
 		RPC('outputChatBox', msg, ...):setClient(player):exec()
 		--Debug.info('outputChatBoxLong - long msg')
 		return true
