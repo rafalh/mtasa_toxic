@@ -17,15 +17,26 @@ function Debug.print(str, lvl)
 	end
 end
 
-function Debug.info(str)
+local function debugConcat(...)
+	local tbl = { ... }
+	for i, val in ipairs(tbl) do
+		tbl[i] = tostring(val)
+	end
+	return table.concat(tbl, ' ')
+end
+
+function Debug.info(...)
+	local str = debugConcat(...)
 	Debug.print(str, 3)
 end
 
-function Debug.warn(str)
+function Debug.warn(...)
+	local str = debugConcat(...)
 	Debug.print(str, 2)
 end
 
-function Debug.err(str)
+function Debug.err(...)
+	local str = debugConcat(...)
 	Debug.print(str, 1)
 end
 
