@@ -29,6 +29,9 @@ local function LoadMapTypes()
 		if(added) then
 			data.winning_veh = winning_veh
 		end
+
+		local disabled_shop_items_str = xmlNodeGetAttribute(subnode, 'disabled_shop_items') or ''
+		data.disabled_shop_items = split(disabled_shop_items_str, ',')
 		
 		data.max_fps = touint(xmlNodeGetAttribute(subnode, 'max_fps'))
 		

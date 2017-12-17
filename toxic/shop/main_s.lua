@@ -129,6 +129,13 @@ function ShpUseItem(itemId, player)
 	local item = g_ShopItems[itemId]
 	assert(item)
 	
+	local room = pdata.room
+	local map = getCurrentMap(room)
+	local mapType = map:getType()
+	if (table.find(mapType.disabled_shop_items, itemId)) then
+		return false
+	end
+
 	if(item.onUse) then
 		local val = item.field and pdata.accountData:get(item.field)
 		
