@@ -205,7 +205,9 @@ ShpRegisterItem{
 	id = 'vip1w',
 	name = "VIP rank",
 	noDiscount = true,
-	descr = "VIP rank activation for 1 week.",
+	descr = function()
+		return MuiGetMsg("VIP rank activation for %u days."):format(touint(Shop.Config.get('vip1w').params.days, 7))
+	end,
 	img = 'vip/enabled.png',
 	getAllowedAct = function(v) return true, false, false end -- buy, sell, use
 }

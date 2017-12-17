@@ -140,7 +140,7 @@
 	<msg id="Smoke behind your vehicle for 15 seconds.">Dym za pojazdem przez 15 sekund.</msg>
 	<msg id="Punctur tires of your enemies vehicles.">Rozstaw kolczatkę i przebij opony wrogich pojazdów.</msg>
 	<msg id="Add your favourite map to queue.">Dodaj swoją ulubioną mapę do kolejki.</msg>
-	<msg id="VIP rank activation for 1 week.">Aktywacja rangi VIP na 1 tydzień.</msg>
+	<msg id="VIP rank activation for %u days.">Aktywacja rangi VIP na %u dni.</msg>
 	
 	<msg id="Translator">Tłumacz</msg>
 	<msg id="From:">Z:</msg>

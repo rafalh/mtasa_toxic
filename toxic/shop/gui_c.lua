@@ -77,7 +77,11 @@ local function ShpUpdateItemInfo(itemId, isInventory)
 	
 	guiSetText(g_ItemLabel, item.name)
 	ShpUpdateCostLabel(itemId)
-	guiSetText(g_DescrMemo, item.descr)
+	local descr = item.descr
+	if type(descr) == 'function' then
+		descr = descr()
+	end
+	guiSetText(g_DescrMemo, descr)
 	
 	guiSetVisible(g_BuyButton, not isInventory)
 	guiSetVisible(g_SellButton, isInventory)
