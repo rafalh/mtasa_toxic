@@ -1,6 +1,5 @@
 local RIGHTS = {kick = "command.kick", map = "command.setmap"}
 local SETTING_NAMES = {kick = "*votemanager.votekick_enabled", map = "*votemanager.votemap_enabled"}
-local MIN_MAP_DURATION = 5*60*1000
 local g_Votes = {kick = false, map = false}
 local g_MinDurationPassed = false
 local g_RaceRes = Resource('race')
@@ -60,15 +59,17 @@ local function AvAfterMapDuration()
 end
 
 local function AvOnMapStart()
-	g_MinDurationPassed = false
-	setMapTimer(AvAfterMapDuration, MIN_MAP_DURATION, 1, g_RootRoom)
+    g_MinDurationPassed = false
+    local lockTimeSec = Settings.votemap_lock_time_sec
+	setMapTimer(AvAfterMapDuration, lockTimeSec*1000, 1, g_RootRoom)
 end
 
 local function AvInit()
     local prof = DbgPerf()
 
-	local ms = g_RaceRes:isReady() and g_RaceRes:call('getTimePassed')
-	if ms > MIN_MAP_DURATION then
+    local ms = g_RaceRes:isReady() and g_RaceRes:call('getTimePassed')
+    local lockTimeSec = Settings.votemap_lock_time_sec
+	if ms and ms > lockTimeSec*1000 then
 		g_MinDurationPassed = true
 	end
 
