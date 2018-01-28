@@ -52,6 +52,7 @@ function getMapInfo(mapId)
 	
 	local mapRes = getResourceFromName(data.name)
 	if(mapRes) then
+		data.res_path = getResourceOrganizationalPath(mapRes)..'/'..data.name
 		data.name = getResourceInfo(mapRes, 'name')
 		data.author = getResourceInfo(mapRes, 'author')
 	end
