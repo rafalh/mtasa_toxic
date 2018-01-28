@@ -36,7 +36,8 @@ g_Services.demotywatory = {
 				Debug.err('Failed to download demotywatory images')
 				callback(false, page, ...)
 			elseif (data:len() < 200) then
-				Debug.warn('Something went wrong '..data)
+				Debug.warn('Returned data too short: '..data)
+				callback(false, page, ...)
 			else
 				local imgList = {}
 				local pattern = '<img%s+src="([^"]+)"%s+alt="([^"]+)"%s+class="demot".-/>'
@@ -74,10 +75,10 @@ g_Services.kwejk = {
 		
 		DownloadMgr.get(url, cacheResponse, function(data, ...)
 			if (not data) then
-				Debug.err('Failed to download kwejk images')
 				callback(false, page, ...)
 			elseif (data:len() < 1000) then
-				Debug.warn('Something went wrong '..data)
+				Debug.warn('Returned data too short: '..data)
+				callback(false, page, ...)
 			else
 				local imgList = {}
 				--local pattern = '<a data-track="true" data-track-category="[^"]+"+ data-track-action="[^"]+" data-track-label="[^"]+" +href="[^"]+">%s+<img src="([^"]+)" +alt="([^"]+)" />%s+</a>'
@@ -98,6 +99,10 @@ g_Services.kwejk = {
 }
 
 local function downloadImages(imgList, page, serviceId, playerEl)
+	if not imgList then
+		Debug.err('Failed to download '..serviceId..' images')
+		return
+	end
 	Debug.info('Download '..serviceId..' images - '..#imgList)
 	for i, imgInfo in ipairs(imgList) do
 		DownloadMgr.get(imgInfo[1], true, function(data)
