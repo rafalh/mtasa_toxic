@@ -9,6 +9,7 @@ CmdMgr.register{
 
 CmdMgr.register{
 	name = 'roll',
+	desc = "Rolls a dice and gives random event in return",
 	func = function(ctx)
 		if(GbRoll(ctx.player.el)) then
 			privMsg(ctx.player, "Rolling the dice...")
@@ -20,9 +21,10 @@ CmdMgr.register{
 
 CmdMgr.register{
 	name = 'spin',
+	desc = "Play a Roulette. Guess a number from range 0-36. If you succeed you get in return 40 times more cash than you invested.",
 	args = {
-		{'number', type = 'int', min = 1, max = 65},
-		{'cash', type = 'int', min = 1},
+		{'number', type = 'int', min = 0, max = 36},
+		{'cash', type = 'int', min = 1, max = 100000},
 	},
 	func = function(ctx, num, cash)
 		if(GbSpin(ctx.player.el, num, cash)) then

@@ -7,6 +7,11 @@ local g_LotteryPlayers = {}
 local g_FinishLotteryTimer = false
 local g_BetsTimer = false -- GbAreBetsPlaced uses it
 
+local SPIN_MAX_VAL = 36 -- also in cmd_s.lua
+local SPIN_CASH_MULT = 40
+local SPIN_CASH_LIMIT = 100000
+local SPIN_COOLDOWN_MS = 30000
+
 --------------------------------
 -- Local function definitions --
 --------------------------------
@@ -50,11 +55,12 @@ local function GbRollTimer(player)
 end
 
 local function GbSpinTimer(player, n, cash)
-	local n2 = math.random(1, 65)
+	local n2 = math.random(0, SPIN_MAX_VAL)
 	if(n == n2) then
 		local pdata = Player.fromEl(player)
-		pdata.accountData:add('cash', cash * 101)
-		privMsg(player, "You spinned %u and won %s.", n2, formatMoney(cash*100))
+		local cashAdd = cash * (SPIN_CASH_MULT+1)
+		pdata.accountData:add('cash', cashAdd)
+		privMsg(player, "You spinned %u and won %s.", n2, formatMoney(cashAdd))
 	else
 		privMsg(player, "You spinned %u and lost %s.", n2, formatMoney(cash))
 	end
@@ -231,9 +237,9 @@ end
 function GbSpin(player, number, cash)
 	local pdata = Player.fromEl(player)
 	local ticks = getTickCount()
-	if(pdata.last_spin and (ticks - pdata.last_spin) < 30000) then
+	if(pdata.last_spin and (ticks - pdata.last_spin) < SPIN_COOLDOWN_MS) then
 		privMsg(player, "You cannot spin so often!")
-	elseif(number < 1 or number > 65 or cash <= 0 or cash > 100000) then
+	elseif(number < 0 or number > SPIN_MAX_VAL or cash <= 0 or cash > SPIN_CASH_LIMIT) then
 		privMsg(player, "Invalid number!")
 	elseif(pdata.accountData.cash < cash) then
 		privMsg(player, "You don't have enough cash!")
