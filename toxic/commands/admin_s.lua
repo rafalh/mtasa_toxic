@@ -465,7 +465,7 @@ CmdMgr.register{
 					table.insert(tbl, tostring(k)..'='..tostring(v))
 				end
 				local buf = i..'. '..table.concat(tbl, ', ')
-				privMsg(ctx.player, buf:sub(1, 512))
+				privMsg(ctx.player, '%s', buf:sub(1, 512))
 				if(i > 10) then break end
 			end
 		elseif(rows) then
