@@ -1,10 +1,27 @@
 
-#include 'include/internal_events.lua'
-
 local VIP_INFO_URL = 'https://mtatoxic.tk/vip/'
-local g_VipRes
+local VIP_INFO_EMBEDDED_URL = VIP_INFO_URL..'?embedded'
+local g_VipRes, g_VipInfoGui
 
 addEvent('vip.onStatus')
+
+local function createVipInfoGui()
+	g_VipInfoGui = GUI.create('vipInfo')
+	addEventHandler('onClientGUIClick', g_VipInfoGui.closeBtn, function ()
+		g_VipInfoGui:destroy()
+	end, false)
+
+	local browser = guiGetBrowser(g_VipInfoGui.browser)
+	addEventHandler("onClientBrowserCreated", browser, function ()
+		if isBrowserDomainBlocked(VIP_INFO_EMBEDDED_URL, true) then
+			requestBrowserDomains({VIP_INFO_EMBEDDED_URL}, true, function ()
+				loadBrowserURL(browser, VIP_INFO_EMBEDDED_URL)
+			end)
+		else
+			loadBrowserURL(browser, VIP_INFO_EMBEDDED_URL)
+		end
+	end)
+end
 
 local VipPanel = {
 	name = "VIP Panel",
@@ -19,6 +36,7 @@ local VipPanel = {
 		
 		if(not g_VipRes:call('openVipPanel')) then
 			outputMsg(Styles.red, "You don't have VIP account. More info: %s", VIP_INFO_URL)
+			createVipInfoGui()
 			return false
 		end
 		

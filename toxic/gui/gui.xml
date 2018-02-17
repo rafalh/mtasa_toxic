@@ -255,4 +255,9 @@
 		<button rx="100" x="-200" ry="100" y="-35" w="100" h="25" id="acceptBtn" text="OK" />
 		<button rx="100" x="-90" ry="100" y="-35" w="80" h="25" id="closeBtn" text="Close" />
 	</window>
+
+	<window id="vipInfo" title="VIP Info" rx="50" x="-320" ry="50" y="-240" w="640" h="480" minw="260" minh="250" sizeable="false">
+		<browser x="10" y="25" rw="100" w="-20" rh="100" h="-70" id="browser" />
+		<button rx="100" x="-90" ry="100" y="-35" w="80" h="25" id="closeBtn" text="Close" />
+	</window>
 </gui>

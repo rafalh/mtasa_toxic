@@ -129,6 +129,8 @@ function GUI.__mt.__index:createControl(tpl, parent)
 		ctrl = guiCreateTabPanel(x, y, w, h, false, parent)
 	elseif(tpl.type == 'scrollpane') then
 		ctrl = guiCreateScrollPane(x, y, w, h, false, parent)
+	elseif(tpl.type == 'browser') then
+		ctrl = guiCreateBrowser(x, y, w, h, tpl.islocal == 'true', tpl.istransparent == 'true', false, parent)
 	elseif(tpl.type == 'tab') then
 		ctrl = guiCreateTab(tpl.text, parent)
 		if(tpl.selected) then
@@ -179,6 +181,11 @@ function GUI.__mt.__index:createControl(tpl, parent)
 	end
 	if(tpl.defbtn or self.tpl.defbtn) then
 		addEventHandler('onClientGUIAccepted', ctrl, GUI.onAccept, false)
+	end
+	if(tpl.type == 'browser') then
+		-- fix size of wrapped browser
+		local w, h = guiGetSize(ctrl, false)
+		guiSetSize(ctrl, w, h, false)
 	end
 	
 	return ctrl
