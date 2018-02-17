@@ -131,7 +131,8 @@ function ShpUseItem(itemId, player)
 	
 	local room = pdata.room
 	local map = getCurrentMap(room)
-	local disabledShopItems = map and map:getType() and mapType.disabled_shop_items
+	local mapType = map and map:getType()
+	local disabledShopItems = mapType and mapType.disabled_shop_items
 	if (table.find(disabledShopItems, itemId)) then
 		return false
 	end
