@@ -1,17 +1,17 @@
 <strings>
     <msg id='Access denied for &quot;%s&quot;!'>Nie masz uprawnień do &quot;%s&quot;!</msg>
-	
+    
     <msg id="%uth">%u.</msg>
     <msg id="%ust">%u.</msg>
     <msg id="%und">%u.</msg>
     <msg id="%urd">%u.</msg>
-	
+    
     <msg id="* %s died!">* %s umarł!</msg>
     <msg id="* %s drowned!">* %s utonął!</msg>
     <msg id="* %s has joined the game.">* %s dołączył do gry.</msg>
-	<msg id="* %s has joined the game (%s).">* %s dołączył do gry (%s).</msg>
+    <msg id="* %s has joined the game (%s).">* %s dołączył do gry (%s).</msg>
     <msg id="* %s is now known as %s.">* %s jest teraz znany jako %s.</msg>
-	
+    
     <msg id="Nick change spam! Wait %u seconds and try again.">Spam nazwą gracza! Poczekaj %u sekund i spróbuj ponownie.</msg>
     <msg id="Empty nick is not allowed!">Pusty nick nie jest dozwolony!</msg>
     <msg id="Do not swear %s! %s taked from your cash.">Nie przeklinaj %s! %s zabrane z twojej kasy.</msg>
@@ -27,12 +27,12 @@
     <msg id="Map %s is removed! Changing to random map.">Mapa %s jest usunięta! Zmienianie na losową mapę.</msg>
     <msg id="Cannot repeat the map for %uth time! Changing to random map.">Nie można powtórzyć mapy po raz %u! Zmienianie na losową mapę.</msg>
     <msg id="Ghost Mode has been enabled!">Ghost Mode został włączony!</msg>
-	<msg id="Ghost Mode has been enabled for %u seconds!">Ghost Mode został włączony na %u sekund!</msg>
+    <msg id="Ghost Mode has been enabled for %u seconds!">Ghost Mode został włączony na %u sekund!</msg>
     <msg id="Ghost Mode has been disabled!">Ghost Mode został wyłączony!</msg>
     <msg id="%s added to your cash! Total: %s.">%s dodano do twojej kasy! Łącznie: %s.</msg>
     <msg id="You earned %s points. Total: %s.">Zarobiłeś %s punktów. Łącznie: %s.</msg>
     <msg id="%s is the winner!">%s jest zwycięzcą!</msg>
-	<msg id="%s is on a winning streak! It's his %u. victory.">%s ma dziś szczęśliwy dzień. To jest %u. zwycięstwo pod rząd.</msg>
+    <msg id="%s is on a winning streak! It&apos;s his %u. victory.">%s ma dziś szczęśliwy dzień. To jest %u. zwycięstwo pod rząd.</msg>
     <msg id="Top Times:">Najlepsze Czasy:</msg>
     <msg id="The %s top time: %s by %s!">%s najlepszy czas: %s zrobiony przez %s!</msg>
     <msg id="No top times saved!">Żadne najlepsze czasy nie są zapisane!</msg>
@@ -49,12 +49,12 @@
     <msg id="%s has been muted by %s for %u seconds! Reason: %s.">%s został uciszony przez %s na %u sekund! Powód: %s.</msg>
     <msg id="%s has been muted by Script!">%s został uciszony automatycznie!</msg>
     <msg id="%s has been unmuted by Script!">%s odzyskał głos automatycznie!</msg>
-	<msg id="%s has been unmuted by %s!">%s odzyskał głos po interwencji %s!</msg>
+    <msg id="%s has been unmuted by %s!">%s odzyskał głos po interwencji %s!</msg>
     <msg id="%s has got permanent mute!">%s jest uciszony na stałe!</msg>
     <msg id="%s&apos;s %s: %s">%s %s: %s</msg>
     <msg id="%s&apos;s %s is not set.">%s %s nie jest ustawiony.</msg>
     <msg id="%s set his %s: %s.">%s ustawił swój %s: %s.</msg>
-	
+    
     <msg id="player">gracz</msg>
     <msg id="cash">kasa</msg>
     <msg id="points">punkty</msg>
@@ -63,7 +63,7 @@
     <msg id="name">nazwa</msg>
     <msg id="account ID">ID konta</msg>
     <msg id="level">poziom</msg>
-	
+    
     <msg id="Do not spam %s! Otherwise you will get kicked.">Nie spamuj %s! Inaczej zostaniesz wyrzucony.</msg>
     <msg id="Do not spam %s! Otherwise you will get muted.">Nie spamuj %s! Inaczej zostaniesz uciszony.</msg>
     <msg id="%s has been kicked for spamming.">%s został wykopany za spamowanie.</msg>
@@ -84,13 +84,13 @@
     <msg id="Lottery fund: %s. Max fund: %s.">Fundusz loterii: %s. Maksymalny fundusz: %s.</msg>
     <msg id="Rolling the dice...">Kostka została rzucona...</msg>
     <msg id="Please wait... You can roll once every %u seconds.">Proszę czekać... Możesz rzucić kostką raz na %u sekund.</msg>
-	<msg id="You rolled %u, you just lost %s.">Wylosowałeś %u, tracisz %s.</msg>
-	<msg id="You rolled %u, %s added to your cash.">Wylosowałeś %u, %s zostało dodane do twojej kasy.</msg>
-	<msg id="You rolled %u, which is mute.">Wylosowałeś %u, zostajesz uciszony.</msg>
-	<msg id="You rolled %u, the sky color changes.">Wylosowałeś %u, zmienia się kolor nieba.</msg>
-	<msg id="The wheel is spinning!">Koło fortuny się obraca!</msg>
-	<msg id="You spinned %u and won %s.">Wylosowałeś %u i wygrałeś %s.</msg>
-	<msg id="You spinned %u and lost %s.">Wylosowałeś %u i straciłeś %s.</msg>
+    <msg id="You rolled %u, you just lost %s.">Wylosowałeś %u, tracisz %s.</msg>
+    <msg id="You rolled %u, %s added to your cash.">Wylosowałeś %u, %s zostało dodane do twojej kasy.</msg>
+    <msg id="You rolled %u, which is mute.">Wylosowałeś %u, zostajesz uciszony.</msg>
+    <msg id="You rolled %u, the sky color changes.">Wylosowałeś %u, zmienia się kolor nieba.</msg>
+    <msg id="The wheel is spinning!">Koło fortuny się obraca!</msg>
+    <msg id="You spinned %u and won %s.">Wylosowałeś %u i wygrałeś %s.</msg>
+    <msg id="You spinned %u and lost %s.">Wylosowałeś %u i straciłeś %s.</msg>
     <msg id="Type /rate &lt;1-10&gt; to rate.">Wpisz /rate &lt;1-10&gt; aby ocenić.</msg>
     <msg id="Map rating: %.2f (rated by %u players).">Ocena mapy: %.2f (oceniona przez %u graczy).</msg>
     <msg id="Rate added! Current average rating: %.2f">Ocena dodana! Nowa średnia ocen: %.2f</msg>
@@ -119,18 +119,18 @@
     <msg id="Respawn is disabled.">Respawn jest wyłączony.</msg>
     <msg id="Found maps: %s.">Znaleziono mapy: %s.</msg>
     <msg id='Maps not found for &quot;%s&quot;.'>Żadne mapy nie zostały znalezione dla &quot;%s&quot;.</msg>
-	<msg id="%s has new level: %s!">%s ma nowy level: %s!</msg>
-	<msg id="You have reached %u. level!">Osiągnąłeś %u. level!</msg>
-	
-	<msg id="%s has been added to next map queue (pos. %u.)!">%s został dodany do kolejki następnych map (na poz. %u.)!</msg>
+    <msg id="%s has new level: %s!">%s ma nowy level: %s!</msg>
+    <msg id="You have reached %u. level!">Osiągnąłeś %u. level!</msg>
+    
+    <msg id="%s has been added to next map queue (pos. %u.)!">%s został dodany do kolejki następnych map (na poz. %u.)!</msg>
     <msg id="%s started vote for next map: %s.">%s rozpoczął głosowanie nad następną mapą: %s.</msg>
     <msg id="Next map is already set.">Następna mapa jest już ustawiona!</msg>
     <msg id="%s has been added to next map queue (pos. %u.) by %s!">%s został dodany do kolejki następnych map (na poz. %u.) przez %s!</msg>
-	<msg id="%s has been bought by %s (%u. in map queue)!">%s została kupiona przez %s (%u. w kolejce map)!</msg>
-	<msg id="Next map queue: %s.">Kolejka następnych map: %s.</msg>
-	<msg id="empty">pusta</msg>
-	
-	<msg id="Map cannot be repeated!">Mapa nie może być powtórzona!</msg>
+    <msg id="%s has been bought by %s (%u. in map queue)!">%s została kupiona przez %s (%u. w kolejce map)!</msg>
+    <msg id="Next map queue: %s.">Kolejka następnych map: %s.</msg>
+    <msg id="empty">pusta</msg>
+    
+    <msg id="Map cannot be repeated!">Mapa nie może być powtórzona!</msg>
     <msg id="This map has been removed!">Ta mapa została usunięta!</msg>
     <msg id="You can vote only for race map now! Allowed types: %s.">Nie możesz obecnie głosować na mapę tego typu! Dozwolone typy: %s.</msg>
     <msg id="You have to wait %u seconds!">Musisz zaczekać %u sekund!</msg>
@@ -139,20 +139,35 @@
     <msg id="Vote cancelled by %s!">Głosowanie anulowane przez %s!</msg>
     <msg id="No vote in progress!">Żadne głosowanie nie jest aktywne!</msg>
     <msg id="Aliases for %s:">Aliasy gracza %s:</msg>
-	<msg id="You cannot use sound commands so often!">Nie możesz tak często używać komend dźwiękowych!</msg>
-	
-	<msg id="%s has %u/%u warnings.">%s ma %u/%u ostrzeżeń.</msg>
-	<msg id="You have been warned by %s and have now %u/%u warnings. Reason of new warning: %s">Zostałeś ostrzeżony przez %s i masz teraz %u/%u ostrzeżeń. Powód nowego ostrzeżenia: %s</msg>
-	<msg id="%s has been banned by %s after %u warnings!">%s został zbanowany przez %s po %u ostrzeżeniach.</msg>
-	<msg id="Your warning has been removed by %s!">Twoje ostrzeżenie zostało usunięte przez %s!</msg>
-	
-	<msg id="You have been killed by %s (%u. level)!">Zostałeś zabity przez %s (%u. level)!</msg>
-	<msg id="You have killed %s (%u. level) and receive %s!">Zabiłes %s (%u. level) i otrzymałeś %s!</msg>
-	<msg id="You have killed %s (assist) and receive %s!">Zabiłes %s (asysta) i otrzymałeś %s!</msg>
-	<msg id="You have killed a total of %u players.">Zabiłeś łącznie %u graczy.</msg>
-	
-	<msg id="E-Mail address has not been set">Adres e-mail nie został podany</msg>
-	<msg id="E-mail address has not been set in your profile. Please enter it in order to be able to recover password if necessary.">Nie podałeś w swoim profilu adresu e-mail. Proszę go wpisać, aby umożliwić odzyskiwanie hasła w razie potrzeby.</msg>
-	<msg id="Other players cannot see your e-mail address.">Inni gracze nie będą widzieć twojego adresu e-mail.</msg>
-	<msg id="To set up your e-mail open User Panel (F2), click 'Profile' and then 'Change e-mail'.">Aby ustawić swój e-mail otwórz Panel Użytkownika (F2), kliknij 'Profil', a następnie 'Zmień e-mail'.</msg>
+    <msg id="You cannot use sound commands so often!">Nie możesz tak często używać komend dźwiękowych!</msg>
+    
+    <msg id="%s has %u/%u warnings.">%s ma %u/%u ostrzeżeń.</msg>
+    <msg id="You have been warned by %s and have now %u/%u warnings. Reason of new warning: %s">Zostałeś ostrzeżony przez %s i masz teraz %u/%u ostrzeżeń. Powód nowego ostrzeżenia: %s</msg>
+    <msg id="%s has been banned by %s after %u warnings!">%s został zbanowany przez %s po %u ostrzeżeniach.</msg>
+    <msg id="Your warning has been removed by %s!">Twoje ostrzeżenie zostało usunięte przez %s!</msg>
+    
+    <msg id="You have been killed by %s (%u. level)!">Zostałeś zabity przez %s (%u. level)!</msg>
+    <msg id="You have killed %s (%u. level) and receive %s!">Zabiłes %s (%u. level) i otrzymałeś %s!</msg>
+    <msg id="You have killed %s (assist) and receive %s!">Zabiłes %s (asysta) i otrzymałeś %s!</msg>
+    <msg id="You have killed a total of %u players.">Zabiłeś łącznie %u graczy.</msg>
+    
+    <msg id="E-Mail address has not been set">Adres e-mail nie został podany</msg>
+    <msg id="E-mail address has not been set in your profile. Please enter it in order to be able to recover password if necessary.">Nie podałeś w swoim profilu adresu e-mail. Proszę go wpisać, aby umożliwić odzyskiwanie hasła w razie potrzeby.</msg>
+    <msg id="Other players cannot see your e-mail address.">Inni gracze nie będą widzieć twojego adresu e-mail.</msg>
+    <msg id="To set up your e-mail open User Panel (F2), click &apos;Profile&apos; and then &apos;Change e-mail&apos;.">Aby ustawić swój e-mail otwórz Panel Użytkownika (F2), kliknij &apos;Profil&apos;, a następnie &apos;Zmień e-mail&apos;.</msg>
+    <msg id="Finished in %u ms.">Zakończono w %u ms.</msg>
+    <msg id="Too many arguments given. Expected %u, got %u.">Przekazano za dużo argumentów. Oczekiwano %u, otrzymano %u.</msg>
+    <msg id="Player &apos;%s&apos; has not been found!">Gracz &apos;%s&apos; nie został znaleziony!</msg>
+    <msg id="Expected number at argument #%u (%s).">Oczekiwano liczby jako %u. argument (%s).</msg>
+    <msg id="Argument #%u (%s) must be greater than or equal to %d.">Argument #%u (%s) musi być wiekszy lub równy %d.</msg>
+    <msg id="Argument #%u (%s) must be less than or equal to %d.">Argument #%u (%s) musi być mniejszy lub równy %d.</msg>
+    <msg id="Expected integer at argument #%u (%s).">Oczekiwano liczy całkowitej jako argument #%u (%s).</msg>
+    <msg id="Expected boolean value at argument #%u (%s).">Oczekiwano wartości logicznej jako argument #%u (%s).</msg>
+    <msg id="Not enough arguments given. Expected argument #%u (%s).">Przekazano za mało argumentów. Oczekiwano argumentu #%u (%s).</msg>
+    <msg id="Access denied! You cannot use command &apos;%s&apos;.">Brak dostępu! Nie możesz użyć komendy &apos;%s&apos;.</msg>
+    <msg id="Wrong password!">Złe hasło!</msg>
+    <msg id="PM from %s: %s">PM od %s: %s</msg>
+    <msg id="%s is muted!">%s jest uciszony!</msg>
+    <msg id="You don&apos;t have enough cash!">Nie masz wystarczająco dużo kasy!</msg>
+    <msg id="Set next map to ">Ustaw następną mapę na </msg>
 </strings>
