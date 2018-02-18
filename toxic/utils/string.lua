@@ -43,6 +43,10 @@ function string.wordWrapSplitIter(str, maxLen)
 	end
 end
 
+function string.escapePattern(str)
+	return str:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%0")
+end
+
 -- Obsulate:
 trimStr = string.trim
 upperCaseWords = string.upperCaseWords

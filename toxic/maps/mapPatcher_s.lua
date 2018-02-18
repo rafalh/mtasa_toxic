@@ -321,11 +321,97 @@ function CsmPatch.fix(ctx)
 	return xmlNodeSetValue(ctx.sync_map_element_data, 'true')
 end
 
+-------------------
+-- Common Models --
+-------------------
+
+local COMMON_MODELS = {
+	['370358a6fe972dec20a6293f15c4a737'] = 'veg_palm03.dff',
+	['449c5e0d7d5db0ce5279701cbf7fd7cd'] = 'veg_palm02.dff',
+	['5dd7fc0b077f81461a94033c6a4067b0'] = 'gta_tree_palm.txd',
+	['386017d7dfbd5099aa22fe8ea68f4228'] = 'gta_tree_palm2.txd',
+	['8f666b023a7156d11faf2220d048641f'] = 'gta_tree_palm3.txd',
+}
+-- Examples:
+-- 370358a6fe972dec20a6293f15c4a737  ./[fakedeath]/race-[DM]FakeDeathFtKillerbeex-DotEXE/veg_palm03.dff
+-- 449c5e0d7d5db0ce5279701cbf7fd7cd ./[k0ufosgr]/race-[DM]K0uFosGrFtTyFl0sGr-NaturalLife/veg_palm02.dff
+-- 5dd7fc0b077f81461a94033c6a4067b0  ./[warlord]/race-[DM]WarLordFtDaRkEngEl-NaturalDay/gta_tree_palm.txd
+-- 386017d7dfbd5099aa22fe8ea68f4228  ./[renovatio]/race-[DM]Renovatio-Innovation/621.txd
+-- 8f666b023a7156d11faf2220d048641f  ./[fakedeath]/race-[DM]FakeDeathFtKillerbeex-DotEXE/gta_tree_palm.txd
+
+local CommonModelsPath = {}
+
+function CommonModelsPath.preprocess(ctx)
+	for filePath, fileNode in pairs(ctx.files) do
+		local absPath = ctx.mapPath..'/'..filePath
+		local cksum = fileGetMd5(absPath):lower()
+		if COMMON_MODELS[cksum] then
+			return true
+		end
+	end
+	return false
+end
+
+function CommonModelsPath.fix(ctx)
+	local status = false
+	for filePath, fileNode in pairs(ctx.files) do
+		local absPath = ctx.mapPath..'/'..filePath
+		local cksum = fileGetMd5(absPath):lower()
+		local commonModelName = COMMON_MODELS[cksum]
+		if commonModelName then
+			local commonResName = 'model-'..commonModelName:gsub('%.', '_')
+
+			local newAbsPath = ':'..commonResName..'/'..commonModelName
+			local commonRes = getResourceFromName(commonResName)
+			if not commonRes then
+				commonRes = createResource(commonResName, "[common_models]")
+				if not commonRes then return end
+				fileCopy(absPath, newAbsPath)
+				local meta = xmlLoadFile(':'..commonResName..'/meta.xml')
+				local fileNode = xmlCreateChild(meta, 'file')
+				xmlNodeSetAttribute(fileNode, 'src', commonModelName)
+				xmlSaveFile(meta)
+				xmlUnloadFile(meta)
+			end
+
+			local filePattern = string.escapePattern(filePath)
+			local compiled = false
+			for scriptPath, scriptNode in pairs(ctx.client_scripts) do
+				local absPath = ctx.mapPath..'/'..scriptPath
+				local contents = fileGetContents(absPath)
+				if contents:match(filePattern) and contents:match('%z') then
+					compiled = true
+				end
+			end
+
+			if not compiled then
+				xmlDestroyNode(fileNode)
+				ctx.files[filePath] = nil
+				fileDelete(absPath)
+
+				local node = xmlCreateChild(ctx.node, 'include')
+				xmlNodeSetAttribute(node, 'resource', commonResName)
+
+				for scriptPath, scriptNode in pairs(ctx.client_scripts) do
+					local absPath = ctx.mapPath..'/'..scriptPath
+					local contents = fileGetContents(absPath)
+					local newContents = contents:gsub(filePattern, newAbsPath)
+					if newContents ~= contents then
+						fileSetContents(absPath, newContents)
+					end
+				end
+				status = true
+			end
+		end
+	end
+	return status
+end
+
 -------------
 -- GENERAL --
 -------------
 
-local g_Patches = {MusicPatch, PumaMarkers2Patch, CloudsPatch, CsmPatch}
+local g_Patches = {MusicPatch, PumaMarkers2Patch, CloudsPatch, CsmPatch, CommonModelsPath}
 
 function MapPatcher.processMap(map, force)
 	-- Check if map needs to be checked

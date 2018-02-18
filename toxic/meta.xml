@@ -135,6 +135,7 @@
 		<right name="function.aclGroupAddObject" access="true" />
 		<right name="function.aclGroupRemoveObject" access="true" />
 		<right name="function.aclSave" access="true" />
+		<right name="function.createResource" access="true" />
 	</aclrequest>
 	
 	<settings>
