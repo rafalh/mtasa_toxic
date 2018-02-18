@@ -12,7 +12,7 @@ local function createVipInfoGui()
 	end, false)
 
 	local browser = guiGetBrowser(g_VipInfoGui.browser)
-	addEventHandler("onClientBrowserCreated", browser, function ()
+	addEventHandler('onClientBrowserCreated', browser, function ()
 		if isBrowserDomainBlocked(VIP_INFO_EMBEDDED_URL, true) then
 			requestBrowserDomains({VIP_INFO_EMBEDDED_URL}, true, function ()
 				loadBrowserURL(browser, VIP_INFO_EMBEDDED_URL)

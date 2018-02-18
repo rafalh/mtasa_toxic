@@ -364,7 +364,7 @@ function CommonModelsPath.fix(ctx)
 			local newAbsPath = ':'..commonResName..'/'..commonModelName
 			local commonRes = getResourceFromName(commonResName)
 			if not commonRes then
-				commonRes = createResource(commonResName, "[common_models]")
+				commonRes = createResource(commonResName, '[common_models]')
 				if not commonRes then return end
 				fileCopy(absPath, newAbsPath)
 				local meta = xmlLoadFile(':'..commonResName..'/meta.xml')

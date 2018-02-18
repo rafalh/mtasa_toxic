@@ -1,5 +1,5 @@
-local RIGHTS = {kick = "command.kick", map = "command.setmap"}
-local SETTING_NAMES = {kick = "*votemanager.votekick_enabled", map = "*votemanager.votemap_enabled"}
+local RIGHTS = {kick = 'command.kick', map = 'command.setmap'}
+local SETTING_NAMES = {kick = '*votemanager.votekick_enabled', map = '*votemanager.votemap_enabled'}
 local g_Votes = {kick = false, map = false}
 local g_MinDurationPassed = false
 local g_RaceRes = Resource('race')
@@ -27,15 +27,15 @@ end
 
 local function AvUpdateVotekick(ignored)
 	if Settings.auto_votekick then
-        local enabled = AvCheckAllPlayers("kick", ignored)
-        AvSetVoteEnabled("kick", enabled)
+        local enabled = AvCheckAllPlayers('kick', ignored)
+        AvSetVoteEnabled('kick', enabled)
     end
 end
 
 local function AvUpdateVotemap(ignored)
     if Settings.auto_votemap then
-        local enabled = AvCheckAllPlayers("map", ignored) and g_MinDurationPassed
-        AvSetVoteEnabled("map", enabled)
+        local enabled = AvCheckAllPlayers('map', ignored) and g_MinDurationPassed
+        AvSetVoteEnabled('map', enabled)
     end
 end
 
@@ -46,10 +46,10 @@ end
 
 local function AvOnPlayerLogin()
     if Settings.auto_votekick and hasObjectPermissionTo(source, RIGHTS.kick, false) then
-        AvSetVoteEnabled("kick", false)
+        AvSetVoteEnabled('kick', false)
     end
     if Settings.auto_votemap and hasObjectPermissionTo(source, RIGHTS.map, false) then
-        AvSetVoteEnabled("map", false)
+        AvSetVoteEnabled('map', false)
     end
 end
 
@@ -76,12 +76,12 @@ local function AvInit()
 	AvUpdateVotekick()
 	AvUpdateVotemap()
 
-    Event("onPlayerLogin"):addHandler(AvOnPlayerLogin)
-    addEventHandler("onPlayerLogout", g_Root, AvOnPlayerLogout)
-	addEventHandler("onPlayerQuit", g_Root, AvOnPlayerLogout)
+    Event('onPlayerLogin'):addHandler(AvOnPlayerLogin)
+    addEventHandler('onPlayerLogout', g_Root, AvOnPlayerLogout)
+	addEventHandler('onPlayerQuit', g_Root, AvOnPlayerLogout)
 	addEventHandler('onGamemodeMapStart', g_Root, AvOnMapStart)
 
-    prof:cp("AutoVotes init")
+    prof:cp('AutoVotes init')
 end
 
 addInitFunc(AvInit)

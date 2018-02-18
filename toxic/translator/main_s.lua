@@ -18,7 +18,7 @@ local function onTranslateResult(data, errno, old_text, lang_to)
 		return
 	end
 	
-	new_text = data:match("<string[^>]*>([^<]*)</string>")
+	new_text = data:match('<string[^>]*>([^<]*)</string>')
 	new_text = xmlUnescape(new_text)
 	
 	if(g_Queries[old_text]) then
@@ -112,7 +112,7 @@ local function onTranslateLangList(data, errno, player)
 	end
 	
 	g_Langs = {}
-	for lang in data:gmatch("<string>(%a+)</string>") do
+	for lang in data:gmatch('<string>(%a+)</string>') do
 		table.insert(g_Langs, lang)
 	end
 

@@ -2,8 +2,8 @@
 -- Custom events --
 -------------------
 
-addEvent("onPollModified")
-addEvent("onPollStarting")
+addEvent('onPollModified')
+addEvent('onPollStarting')
 
 --------------------------------
 -- Local function definitions --
@@ -98,21 +98,21 @@ local function onPollStarting(poll)
 
                         if (randomPlayAgainVote) then
                             -- If this is 'Random, Play again' vote rename current option to Random
-                            opt[1] = "Random"
+                            opt[1] = 'Random'
                         elseif (showRatings) then
                             -- Get map rating
                             local map = Map(opt[4])
                             local mapId = map:getId()
                             local data =
                                 DbQuerySingle(
-                                "SELECT rates, rates_count FROM " .. MapsTable .. " WHERE map=? LIMIT 1",
+                                'SELECT rates, rates_count FROM ' .. MapsTable .. ' WHERE map=? LIMIT 1',
                                 mapId
                             )
                             opt[1] = map:getName()
 
                             -- If there are any votes display rating
                             if (data.rates_count > 0) then
-                                opt[1] = opt[1] .. (" (%.2f)"):format(data.rates / data.rates_count)
+                                opt[1] = opt[1] .. (' (%.2f)'):format(data.rates / data.rates_count)
                             end
                         end
                     end
@@ -143,13 +143,13 @@ local function onPollStarting(poll)
     end
 
     if (#poll == 0) then -- this shouldnt happen
-        Debug.warn("No maps in votemap!")
+        Debug.warn('No maps in votemap!')
         startRandomMap(room)
     end
     --end
 
     -- Poll has been modified
-    triggerEvent("onPollModified", g_Root, poll)
+    triggerEvent('onPollModified', g_Root, poll)
 end
 
 ------------
@@ -158,6 +158,6 @@ end
 
 addInitFunc(
     function()
-        addEventHandler("onPollStarting", g_Root, onPollStarting)
+        addEventHandler('onPollStarting', g_Root, onPollStarting)
     end
 )

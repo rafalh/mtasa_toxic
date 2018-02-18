@@ -1,4 +1,4 @@
-local g_VoteMgrRes = Resource("votemanager")
+local g_VoteMgrRes = Resource('votemanager')
 
 --[[
 -- ONLY CHAT
@@ -42,11 +42,11 @@ CmdMgr.register{
 }
 ]]
 CmdMgr.register {
-    name = "cancel",
+    name = 'cancel',
     desc = "Cancels current vote",
-    accessRight = AccessRight("cancel"),
+    accessRight = AccessRight('cancel'),
     func = function(ctx)
-        if (g_VoteMgrRes:isReady() and g_VoteMgrRes:call("stopPoll")) then
+        if (g_VoteMgrRes:isReady() and g_VoteMgrRes:call('stopPoll')) then
             outputMsg(g_Root, Styles.red, "Vote cancelled by %s!", ctx.player:getName())
         else
             privMsg(ctx.player, "No vote is running now!")
@@ -55,10 +55,10 @@ CmdMgr.register {
 }
 
 CmdMgr.register {
-    name = "votenext",
+    name = 'votenext',
     desc = "Starts a vote for next map",
     args = {
-        {"mapName", type = "str"}
+        {'mapName', type = 'str'}
     },
     func = function(ctx, mapName)
         VtnStart(mapName, ctx.player.el)
@@ -66,11 +66,11 @@ CmdMgr.register {
 }
 
 CmdMgr.register {
-    name = "poll",
+    name = 'poll',
     desc = "Starts a custom poll",
-    accessRight = AccessRight("poll"),
+    accessRight = AccessRight('poll'),
     args = {
-        {"title", type = "str"}
+        {'title', type = 'str'}
     },
     func = function(ctx, title)
         if (not g_VoteMgrRes:isReady()) then
@@ -79,15 +79,15 @@ CmdMgr.register {
 
         local pollDidStart =
             g_VoteMgrRes:call(
-            "startPoll",
+            'startPoll',
             {
                 title = title,
                 percentage = 50,
                 timeout = 10,
                 allowchange = true,
                 visibleTo = g_Root,
-                [1] = {"Yes"},
-                [2] = {"No"}
+                [1] = {'Yes'},
+                [2] = {'No'}
             }
         )
 

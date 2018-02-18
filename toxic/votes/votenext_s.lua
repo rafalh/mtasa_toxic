@@ -1,9 +1,9 @@
 local g_LastVotenext = 0
-local g_VoteMgrRes = Resource("votemanager")
+local g_VoteMgrRes = Resource('votemanager')
 
-addEvent("toxic.onVotenextResult")
-addEvent("onClientDisplayVotenextGuiReq", true)
-addEvent("onVotenextReq", true)
+addEvent('toxic.onVotenextResult')
+addEvent('onClientDisplayVotenextGuiReq', true)
+addEvent('onVotenextReq', true)
 
 local function onVotenextResult(roomEl, map_res)
     if (not map_res) then
@@ -30,8 +30,8 @@ function VtnStart(pattern, player)
         return
     end
 
-    if (pattern == "") then
-        triggerClientEvent(player, "onClientDisplayVotenextGuiReq", g_ResRoot)
+    if (pattern == '') then
+        triggerClientEvent(player, 'onClientDisplayVotenextGuiReq', g_ResRoot)
         return
     end
 
@@ -61,15 +61,15 @@ function VtnStart(pattern, player)
     -- Actual vote started here
     local pollDidStart =
         g_VoteMgrRes:call(
-        "startPoll",
+        'startPoll',
         {
-            title = "Set next map to " .. mapName .. "?",
+            title = 'Set next map to ' .. mapName .. '?',
             percentage = Settings.votenext_percentage,
             timeout = Settings.votenext_timeout,
             allowchange = Settings.votenext_allowchange,
             visibleTo = g_Root,
-            [1] = {"Yes", "toxic.onVotenextResult", g_ResRoot, room.el, map.res},
-            [2] = {"No", "toxic.onVotenextResult", g_ResRoot, room.el, false, default = true}
+            [1] = {'Yes', 'toxic.onVotenextResult', g_ResRoot, room.el, map.res},
+            [2] = {'No', 'toxic.onVotenextResult', g_ResRoot, room.el, false, default = true}
         }
     )
 
@@ -87,7 +87,7 @@ end
 
 addInitFunc(
     function()
-        addEventHandler("toxic.onVotenextResult", g_ResRoot, onVotenextResult)
-        addEventHandler("onVotenextReq", g_ResRoot, onVotenextReq)
+        addEventHandler('toxic.onVotenextResult', g_ResRoot, onVotenextResult)
+        addEventHandler('onVotenextReq', g_ResRoot, onVotenextReq)
     end
 )

@@ -8,10 +8,10 @@ function AsProcessMsg(player)
 		if(pdata.antispamWarning and (ticks - pdata.antispamWarning) < spamInterval) then
 			if(Settings.spammer_kick) then
 				scriptMsg("%s has been kicked for spamming.", name)
-				kickPlayer(player, "Spam")
+				kickPlayer(player, 'Spam')
 			else
 				local sec = 60
-				if(pdata:mute(sec, "Spam")) then
+				if(pdata:mute(sec, 'Spam')) then
 					outputMsg(g_Root, Styles.red, "%s has been muted for spamming.", pdata:getName(true))
 				end
 			end
