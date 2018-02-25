@@ -89,6 +89,10 @@
 	<config src="lang/ru_c.xml" type="client" />
 	<config src="lang/lt.xml" type="server" />
 	<config src="lang/lt_c.xml" type="client" />
+	<config src="lang/es.xml" type="server" />
+	<config src="lang/es_c.xml" type="client" />
+	<config src="lang/tr.xml" type="server" />
+	<config src="lang/tr_c.xml" type="client" />
 	
 	<file src="img/star.png" />
 	<file src="img/star_l.png" />
@@ -110,6 +114,8 @@
 	<file src="img/flags/ro.png" />
 	<file src="img/flags/ru.png" />
 	<file src="img/flags/lt.png" />
+	<file src="img/flags/es.png" />
+	<file src="img/flags/tr.png" />
 	
 	<file src="img/msgbox/info.png" />
 	<file src="img/msgbox/warn.png" />

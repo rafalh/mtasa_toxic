@@ -1,0 +1,272 @@
+<strings>
+    <msg id="* %s has left the game.">* %s oyundan ayrıldı.</msg>
+    <msg id="* %s has been kicked from the game.">* %s oyundan atıldı.</msg>
+    <msg id="* %s has been banned from the game.">* %s oyundan yasaklandı.</msg>
+    <msg id="* %s has left the game [%s].">* %s oyundan ayrıldı [%s].</msg>
+	
+	<msg id="Save">Kaydet</msg>
+	<msg id="Cancel">İptal Et</msg>
+	<msg id="Apply">Uygula</msg>
+    <msg id="Close">Kapat</msg>
+	<msg id="Color">Renk</msg>
+	<msg id="On">Aç</msg>
+	<msg id="Off">Kapat</msg>
+	<msg id="Add">Ekle</msg>
+	<msg id="Delete">Sil</msg>
+	<msg id="Up">Yukarı</msg>
+	<msg id="Down">Aşağı</msg>
+	<msg id="Change">Değiştir</msg>
+	
+    <msg id="Usage: %s">Kullanım: %s</msg>
+    <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Kullanıcı panelini açmak için %s ve istatistik panelini açmak için %s tuşlarına basın!</msg>
+    
+	<msg id="Login">Giriş Yap</msg>
+	<msg id="Please login to save your statistics">İstatistiklerinizi kaydetmek için giriş yapın</msg>
+	<msg id="Username:">Kullanıcı Adı:</msg>
+	<msg id="Password:">Şifre:</msg>
+	<msg id="Remember me">Beni hatırla</msg>
+	<msg id="Register">Kayıt Ol</msg>
+	<msg id="Play as guest">Misafir olarak oyna</msg>
+	<msg id="Forgot password">Şifremi unuttum</msg>
+	<msg id="Register new account">Yeni hesap oluştur</msg>
+	<msg id="Retry password:">Şifreyi tekrar gir:</msg>
+	<msg id="Password strength:">Şifre gücü:</msg>
+	<msg id="E-Mail (optional):">E-Mail (isteğe bağlı):</msg>
+	
+	<msg id="Username is too short!">Kullanıcı adı çok kısa!</msg>
+	<msg id="Password is too short!">Şifre çok kısa!</msg>
+	<msg id="Passwords do not match!">Girilen şifreler uyuşmuyor!</msg>
+	
+	<msg id="Password Recovery">Şifre Kurtarma</msg>
+	<msg id="Enter the same E-Mail address, you have used on account registration. Code for reseting the password will be send.">Hesap kaydında kullandığınız E-Mail adresinizi girin. Şifre sıfırlanması için kod gönderilecektir.</msg>
+	
+	<msg id="Statistics">İstatistikler</msg>
+    <msg id="Player:">Oyuncu:</msg>
+    <msg id="Cash:">Para:</msg>
+    <msg id="Points:">Puan:</msg>
+    <msg id="Rank:">Seviye:</msg>
+    <msg id="DD/DM Played:">Oynanan DD/DM:</msg>
+    <msg id="DD/DM Wins:">Kazanılan DD/DM:</msg>
+    <msg id="Race - 1st:">Race - 1.'lik:</msg>
+    <msg id="Race - 2nd:">Race - 2.'lik:</msg>
+    <msg id="Race - 3rd:">Race - 3.'lük:</msg>
+	<msg id="DM Victories:">Kazanılan DM:</msg>
+	<msg id="Hunters taken:">Alınan Hunter:</msg>
+	<msg id="DD Victories:">Kazanılan DD:</msg>
+	<msg id="DD Kills:">DD Öldürülen Oyuncu:</msg>
+	<msg id="Race Victories:">Kazanılan Yarış:</msg>
+	<msg id="Maximal Win Streak:">Maksimum Galibiyet Serisi:</msg>
+    <msg id="Top Times held:">Top Times held</msg>
+    <msg id="Bidlevel:">Bidlevel:</msg>
+    <msg id="Exploded:">Patlama:</msg>
+    <msg id="Drowned:">Boğulma:</msg>
+    <msg id="Playtime:">Oynama Süresi:</msg>
+	<msg id="Maps rated:">Derecelendirilen Haritalar:</msg>
+	<msg id="Maps bought:">Satın Alınan Haritalar:</msg>
+	<msg id="%s times">%s kez</msg>
+	
+    <msg id="Profile">Profil</msg>
+	<msg id="General">Genel</msg>
+	<msg id="Firstname:">Ad:</msg>
+	<msg id="Age:">Yaş:</msg>
+	<msg id="City:">Şehir:</msg>
+	<msg id="Interests:">İlgi Alanları:</msg>
+	<msg id="Contact">İletişim</msg>
+	
+	<msg id="Change password">Şifreni değiştir</msg>
+	<msg id="Change password for your account">Hesabınızın şifresini değiştirin</msg>
+	<msg id="Old password:">Eski şifre:</msg>
+	<msg id="Old password is invalid!">Girilen eski şifre yanlış!</msg>
+	
+	<msg id="Change e-mail">E-Mail değiştir</msg>
+	<msg id="Change your account e-mail address">Hesabınızın E-Mail adresini değiştirin</msg>
+	<msg id="Password is required!">Şifre gerekli!</msg>
+	<msg id="Password is incorrect!">Girilen şifre yanlış!</msg>
+	<msg id="E-mail address is invalid!">Girilen E-Mail adresi geçersiz!</msg>
+	
+    <msg id="Players list">Oyuncu listesi</msg>
+	<msg id="Player name">Oyuncu adı</msg>
+	<msg id="Sort:">Sıralama:</msg>
+	<msg id="descending">azalan</msg>
+    <msg id="Players online only">Yalnızca çevrimiçi oyuncular</msg>
+	<msg id="Cash">Para</msg>
+	<msg id="Points">Puan</msg>
+	<msg id="Playtime">Oynama Süresi</msg>
+	<msg id="Top times">Top times</msg>
+    <msg id="Race Vict">Kazanılan Yarış</msg>
+    <msg id="DD/DM Vict">Kazanılan DD/DM</msg>
+	<msg id="DM Vict">Kazanılan DM</msg>
+	<msg id="DD Vict">Kazanılan DD</msg>
+	
+    <msg id="Shop">Market</msg>
+	<msg id="All items:">Bütün öğeler:</msg>
+	<msg id="Your items:">Öğelerin:</msg>
+	<msg id="Cost:">Maliyet:</msg>
+    <msg id="Buy">Satın Al</msg>
+    <msg id="Sell">Sat</msg>
+    <msg id="Use">Kullan</msg>
+    <msg id="Description:">Açıklama:</msg>
+	<msg id="%u%% price reduction for VIP">VIP için %u%% fiyat indirimi</msg>
+	
+	<msg id="User Items">Kullanıcı Öğeleri</msg>
+	<msg id="You don't have any item!">Hiç öğen yok!</msg>
+	
+	<msg id="Beer">Bira</msg>
+	<msg id="Repair">Onar</msg>
+	<msg id="Smoke">Duman</msg>
+	<msg id="Mine">Mayın</msg>
+	<msg id="Godmode">Tanrı Modu</msg>
+	<msg id="Oil">Yağ</msg>
+	<msg id="Self-destruction">Kendini öldür</msg>
+	<msg id="Flip">Çevir</msg>
+	<msg id="VIP rank">VIP seviyesi</msg>
+	<msg id="Thunder">Şimşek</msg>
+	<msg id="Godmode (60 seconds)">Tanrı Modu (60 saniye)</msg>
+	<msg id="Invisibility">Görünmezlik</msg>
+	<msg id="Next map">Sonraki Harita</msg>
+	<msg id="VIP rank (1 week)">VIP seviyesi (1 hafta)</msg>
+	<msg id="Spike Strip">Spike Strip</msg>
+	
+	<msg id="Set message, which is displayed when you join.">Sunucuya bağlanınca görüntülecek mesajı ayarla</msg>
+	<msg id="Repair your vehicle when you want.">Aracınızı onarır.</msg>
+	<msg id="Flips your vehicle.">Aracınızı çevirir.</msg>
+	<msg id="Make self-destruction and kill all players, which are near to your vehicle!">Kendinizi ve aracınıza yakın oyunları öldürün!</msg>
+	<msg id="Place a mine under your car!">Aracınızın altına bir mayın yerleştirin!</msg>
+	<msg id="Spill oil over road!">Yola yağ dökün!</msg>
+	<msg id="Are you angry with whole world? Get drunk!">Sarhoş ol!</msg>
+	<msg id="Make your vehicle invisible...">Aracınızı görünmez yapın.</msg>
+	<msg id="Make your vehicle indestructible for 60 seconds!">60 saniye boyunca ölümsüz olun.</msg>
+	<msg id="Attack nearest player with a thunder.">Şimşek ile en yakın oyuncuya saldırın.</msg>
+	<msg id="Smoke behind your vehicle for 15 seconds.">15 saniye boyunca aracınızın arkasından duman çıkarın.</msg>
+	<msg id="Punctur tires of your enemies vehicles.">Diğer araçların lastiklerini delin.</msg>
+	<msg id="Add your favourite map to queue.">Sevdiğiniz bir haritayı sıraya ekleyin.</msg>
+	<msg id="VIP rank activation for 1 week.">1 haftalık VIP seviyesi</msg>
+	
+	<msg id="Translator">Çevirmen</msg>
+	<msg id="From:">Kimden:</msg>
+	<msg id="To:">Kime:</msg>
+	<msg id="Translate">Çevir</msg>
+	<msg id="Say translated">Say translated</msg>
+	<msg id="Load chat message">Sohbet mesajını yükle</msg>
+	<msg id="Input:">Giriş:</msg>
+	<msg id="Output:">Çıktı:</msg>
+	<msg id="Please wait...">Lütfen bekleyin...</msg>
+	<msg id="Translation by %s">Çevirmen %s</msg>
+	<msg id="Auto-detect">Otomatik algıla</msg>
+	
+	<msg id="Radio">Radyo</msg>
+	<msg id="Select radio channel">Radyo kanalı seç</msg>
+	<msg id="Turn off">Kapat</msg>
+	<msg id="Search...">Ara...</msg>
+	<msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Oyun içi radyoyu kullanmadan önce çevrimiçi radyoyu devre dışı bırakın. (Kullanıcı panelinden devre dışı bırakabilirsiniz.)</msg>
+	<msg id="Radio has been temporary disabled because other music source has been detected!">Başka bir müzik kaynağı algılandığından radyo devre dışı bırakıldı.</msg>
+	
+	<msg id="Achievements">Başarımlar</msg>
+	<msg id="Unlocked achievements: %u/%u">Açılan başarımlar: %u/%u</msg>
+	<msg id="Achievement unlocked: %s! %s have been added to your cash."> %s başarımı açıldı! Hesabınıza %s eklendi</msg>
+	
+    <msg id="Settings">Ayarlar</msg>
+    <msg id="Language:">Dil:</msg>
+    <msg id="Nick:">Takma Ad:</msg>
+    <msg id="Suicide key:">İntihar anahtarı:</msg>
+    <msg id="User Panel key:">Kullanıcı paneli anahtarı:</msg>
+    <msg id="Statistics Panel key:">İstatistik paneli anahtarı:</msg>
+	<msg id="Hide other cars when GM is enabled">GM etkinleştirildiğinde diğer araçları gizle</msg>
+	<msg id="Hide nearby cars">Yakındaki araçları gizle</msg>
+	<msg id="Show stars animation above winner car">Kazanan oyuncunun üstünde yıldız animasyonu göster</msg>
+	<msg id="Display chat messages above players">Sohbet mesajlarını oyuncuların üzerinde göster</msg>
+	<msg id="Broken glass after huge damage">Hasar sonrası ekranda kırık cam animasyonu göster</msg>
+	<msg id="Screen flashes red after huge damage">Büyük hasar sonrası kırmızı renkte ekran yanıp sönme animasyonu göster</msg>
+	<msg id="Top Time Playback">TopTime Önizlemesi</msg>
+	<msg id="Race Audio Volume: %u%%">Yarış Sesi Seviyesi: %u%%</msg>
+	<msg id="Commands Volume: %u%%">Komut Ses Seviyesi: %u%%</msg>
+	<msg id="Map Music Volume: %u%%">Harita Müzik Sesi Seviyesi: %u%%</msg>
+	<msg id="Effects:">Efektler:</msg>
+	<msg id="Options">Seçenekler</msg>
+	<msg id="%s has been disabled to improve your FPS!">%s FPS artışı için devre dışı bırakıldı!</msg>
+	
+	<msg id="Map Info">Harita Bilgisi</msg>
+	<msg id="Map: %s">Harita: %s</msg>
+    <msg id="Author: %s">Yapımcı: %s</msg>
+	<msg id="unknown">bilinmeyen</msg>
+    <msg id="Played: %u times">Oynama süresi: %u</msg>
+    <msg id="Rating: %s (%u votes)">Oylama: %s (%u oy)</msg>
+	<msg id="Your Rating: %s">Senin oyun: %s</msg>
+    <msg id="Top Times:">Top Times:</msg>
+	<msg id="Top Winners:">En İyi Kazananlar:</msg>
+    <msg id="Pos">Sıra</msg>
+    <msg id="Time">Zaman</msg>
+	<msg id="Wins">Kazanmalar</msg>
+	<msg id="Player">Oyuncu</msg>
+    <msg id="Empty">Boş</msg>
+	<msg id="none">yok</msg>
+	
+	<msg id="Rate this map">Bu haritayı oyla</msg>
+	<msg id="Press 1-5 to rate this map">Haritayı oylamak için 1-5 tuşlarına basın.</msg>
+	
+    <msg id="Private Chat - %s">Özel Sohbet - %s</msg>
+    <msg id="Say:">Konuş:</msg>
+    <msg id="Send">Gönder</msg>
+    <msg id="In background">Arka planda</msg>
+	<msg id="Restore">Eski haline getir</msg>
+	
+	<msg id="Help">Yardım</msg>
+	<msg id="Controls">Kontroller</msg>
+	<msg id="Press %s to show Statistics Panel.">İstatistik panelini görmek için %s tuşuna basın.</msg>
+	<msg id="Press %s to show User Panel.">Kullanıcı panelini görmek için %s tuşuna basın.</msg>
+	<msg id="Press %s to show User Items.">Kullanıcı öğelerini görmek için %s tuşuna basın.</msg>
+	<msg id="Press %s to show Map Info.">Harita bilgisini görmek için %s tuşuna basın.</msg>
+	<msg id="Commands">Komutlar</msg>
+	<msg id="Search:">Ara:</msg>
+	<msg id="Command">Komut</msg>
+	<msg id="Description">Açıklama</msg>
+	
+    <msg id="User Panel">Kullanıcı Paneli</msg>
+	<msg id="Log In">Giriş Yap</msg>
+	<msg id="Log Out">Çıkış Yap</msg>
+	<msg id="Back">Geri</msg>
+	<msg id="You are logged in as %s">%s olarak giriş yaptınız</msg>
+	<msg id="You are not logged in">Giriş yapmadınız</msg>
+	<msg id="Server Rules">Sunucu Kuralları</msg>
+	
+    <msg id="About">Hakkında</msg>
+	<msg id="About ToxiC Server">About ToxiC Server</msg>
+	
+	<msg id="Select next map">Sonraki haritayı seç</msg>
+	<msg id="Add to queue">Sıraya ekle</msg>
+	<msg id="Buy map">Harita satın al</msg>
+	<msg id="Map name">Harita adı</msg>
+	<msg id="Played">Oynanma</msg>
+	<msg id="Map rating">Harita oylaması</msg>
+	<msg id="Select your candidate for next map">Sonraki harita için adayını seç</msg>
+	<msg id="Choose the next map to buy">Satın alacağınız haritayı seçin</msg>
+	
+	<msg id="Player profile">Oyuncu profili</msg>
+	<msg id="Information">Bilgi</msg>
+	
+	<msg id="Teams Admin Panel">Teams Admin Panel</msg>
+	<msg id="Name">İsim</msg>
+	<msg id="Type">Tip</msg>
+	<msg id="Last Usage">Son Kullanım</msg>
+	<msg id="today">bugün</msg>
+	<msg id="yesterday">dün</msg>
+	<msg id="%u days ago">%u gün önce</msg>
+	<msg id="Update players">Oyuncuları yenile</msg>
+	
+	<msg id="Car Hide has been enabled">Araç gizleme açıldı.</msg>
+	<msg id="Car Hide has been disabled">Araç gizleme kapatıldı.</msg>
+	
+	<msg id="Warn player">Oyuncuyu uyar</msg>
+	<msg id="Reason:">Neden:</msg>
+	<msg id="Warnings list">Uyarı listesi</msg>
+	<msg id="Active warnings:">Aktif uyarılar:</msg>
+	<msg id="From">Kimden</msg>
+	<msg id="Date">Tarih</msg>
+	<msg id="Reason">Neden</msg>
+	
+	<msg id="Clan Team">Klan Oluştur</msg>
+	<msg id="Edit Clan Team">Klanını düzenle</msg>
+	<msg id="Please enter information about your clan">Lütfen klanınızla ilgili bilgileri girin</msg>
+	<msg id="Name:">İsim:</msg>
+	<msg id="Color:">renk:</msg>
+</strings>

@@ -10,20 +10,20 @@
 		<label id="playerLeftLabel" x="10" ry="100" y="-35" rw="100" w="-170" h="15" text="Player has left the game." visible="false" color="#FF0000" />
 	</window>
 	
-	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-150" w="300" h="300" sizeable="false" defbtn="logBtn">
+	<window id="loginWnd" title="Login" rx="50" x="-150" ry="50" y="-150" w="340" h="300" sizeable="false" defbtn="logBtn">
 		<image rx="50" x="-32" y="30" w="64" h="64" src="login/img/login.png" />
 		
 		<label id="info" x="10" y="90" rw="100" w="-20" h="20" text="Please login to save your statistics" align="center" />
 		
 		<label id="flags" x="10" y="115" rw="100" w="-20" h="20" text="" />
 		
-		<label x="30" y="150" w="80" h="15" text="Username:" />
-		<edit id="name" x="120" y="145" w="140" h="25" maxlen="128" focus="true" />
+		<label rx="50" x="-120" y="150" w="80" h="15" text="Username:" />
+		<edit id="name" rx="50" x="-30" y="145" w="150" h="25" maxlen="128" focus="true" />
 		
-		<label x="30" y="180" w="80" h="15" text="Password:" />
-		<edit id="pw" x="120" y="175" w="140" h="25" maxlen="128" masked="true" />
+		<label rx="50" x="-120" y="180" w="80" h="15" text="Password:" />
+		<edit id="pw" rx="50" x="-30" y="175" w="150" h="25" maxlen="128" masked="true" />
 		
-		<checkbox id="remember" x="30" y="205" w="160" h="25" text="Remember me" />
+		<checkbox id="remember" rx="50" x="-120" y="205" w="160" h="25" text="Remember me" />
 		
 		<button id="logBtn" rx="50" x="-140" y="235" w="80" h="30" text="Login" />
 		<button id="regBtn" rx="50" x="-50" y="235" w="80" h="30" text="Register" />
