@@ -109,7 +109,7 @@ ShpRegisterItem{
 		local speed =(vx^2 + vy^2 + vz^2) ^ 0.5
 		local v = math.max(speed, 0.012)
 		local marker = createMarker(x, y, z, 'cylinder', 1, 255, 0, 0, 128)
-		assert(marker)
+		assert(marker, tostring(x)..' '..tostring(y)..' '..tostring(z)..' '..tostring(el))
 		setTimer(function(x, y, z, marker)
 			destroyElement(marker)
 			local room = g_RootRoom
