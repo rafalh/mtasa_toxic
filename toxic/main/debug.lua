@@ -1,6 +1,8 @@
 local DEBUG = true
-local PERF_DEBUG_CHECKPOINTS = true
-local PERF_DEBUG_EVENTS = false
+local PROFILE_CHECKPOINTS = true
+local PROFILE_EVENT_HANDLERS = true
+local PROFILE_EVENT_HANDLERS_LIMIT = 200
+local REPEAT_EVENT_HANDLER = {} -- {onClientRender = 10, onClientPreRender = 10}
 
 local debugMsgMaxLen = triggerClientEvent and 250
 
@@ -40,10 +42,10 @@ function Debug.err(...)
 	Debug.print(str, 1)
 end
 
-function Debug.getStackTrace(len, offset)
-	local trace = debug.traceback('', (offset or 0) + 2)
+function Debug.getStackTrace(maxLen, trimTop, trimBottom)
+	local trace = debug.traceback('', (trimTop or 0) + 2)
 	local lines = split(trace, '\n')
-	local start, stop = 2, math.min(1 + (len or #lines - 1), #lines)
+	local start, stop = 2, math.min(1 + (maxLen or #lines - 1), (#lines - (trimBottom or 0)))
 	
 	local tbl = {}
 	for i = start, stop do
@@ -54,32 +56,14 @@ function Debug.getStackTrace(len, offset)
 	return tbl
 end
 
-function Debug.printStackTrace(lvl, len, offset)
-	local trace = Debug.getStackTrace(len or false, (offset or 0) + 1)
+function Debug.printStackTrace(lvl, maxLen, trimTop, trimBottom)
+	local trace = Debug.getStackTrace(maxLen, (trimTop or 0) + 1, trimBottom)
 	for i, str in ipairs(trace) do
 		Debug.print(str, lvl or 2)
 	end
 end
 
-local _assert = assert
-function assert(val, str)
-	if(not val) then
-		Debug.printStackTrace(1, false, 1)
-		_assert(val, str)
-	end
-end
-
-local _addEventHandler = addEventHandler
-function addEventHandler(...)
-	local success = _addEventHandler(...)
-	if(not success) then
-		Debug.warn('addEventHandler failed')
-		Debug.printStackTrace(2, false, 1)
-	end
-	return success
-end
-
-if(DEBUG) then
+if DEBUG then
 	function Debug.dump(str, title)
 		local len = str:len()
 		local bytes = {str:byte(1, len)}
@@ -103,7 +87,7 @@ if(DEBUG) then
 		if(dt <= self.limit) then
 			self.ticks = ticks
 			return false
-		elseif(PERF_DEBUG_CHECKPOINTS) then
+		elseif(PROFILE_CHECKPOINTS) then
 			local name = fmt:format(...)
 			if(name:len() > 128) then
 				name = name:sub(1, 128)..'...'
@@ -114,37 +98,46 @@ if(DEBUG) then
 		self.ticks = getTickCount() -- get ticks again
 		return true
 	end
-	
-	if(PERF_DEBUG_EVENTS) then
+
+	local g_handlerWrappers = {}
+	setmetatable(g_handlerWrappers, { __mode = 'v' })
+
+	-- Note: we are using addInitFunc because addEventHandler during startup is overriden
+	addInitFunc(function ()
 		local _addEventHandler = addEventHandler
-		local repeatEventHandler = {onClientRender = 10, onClientPreRender = 10}
-		local g_Handlers = {}
-		
 		function addEventHandler(eventName, attachedTo, handlerFunction, ...)
-			local trace = Debug.getStackTrace(1, 1)
-			local func = function(...)
-				local prof = DbgPerf()
-				local cnt = repeatEventHandler[eventName] or 1
-				for i = 1, cnt do
-					-- Check if handler wasn't removed in this loop
-					if(g_Handlers[handlerFunction]) then
-						handlerFunction(...)
+			local func = g_handlerWrappers[handlerFunction]
+			if not func then
+				func = function (...)
+					local prof = PROFILE_EVENT_HANDLERS and DbgPerf(PROFILE_EVENT_HANDLERS_LIMIT)
+					local cnt = (PROFILE_EVENT_HANDLERS and REPEAT_EVENT_HANDLER[eventName]) or 1
+					local args = {...}
+					for i = 1, cnt do
+						-- Check if handler wasn't removed in this loop
+						if g_handlerWrappers[handlerFunction] then
+							xpcall(function ()
+								handlerFunction(unpack(args))
+							end, function (err)
+								Debug.err(tostring(err))
+								Debug.printStackTrace(2, 5, 3, 3)
+							end)
+						end
+					end
+					if PROFILE_EVENT_HANDLERS and prof:cp(eventName) then
+						Debug.printStackTrace(3, 1, 3, 3)
+						Debug.info(trace[1], 3)
 					end
 				end
-				if(prof:cp(eventName) and trace[1]) then
-					Debug.info(trace[1], 3)
-				end
+				g_handlerWrappers[handlerFunction] = func
 			end
-			g_Handlers[handlerFunction] = func -- what about different eventName/source
 			return _addEventHandler(eventName, attachedTo, func, ...)
 		end
-		
-		local _removeEventHandler = removeEventHandler
-		function removeEventHandler(eventName, attachedTo, handlerFunction, ...)
-			local func = g_Handlers[handlerFunction] or handlerFunction
-			g_Handlers[handlerFunction] = nil
-			return _removeEventHandler(eventName, attachedTo, func, ...)
-		end
+	end, -9999)
+	
+	local _removeEventHandler = removeEventHandler
+	function removeEventHandler(eventName, attachedTo, handlerFunction, ...)
+		local func = g_handlerWrappers[handlerFunction] or handlerFunction
+		return _removeEventHandler(eventName, attachedTo, func, ...)
 	end
 else
 	local function DbgDummy()

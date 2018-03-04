@@ -324,10 +324,12 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 	outputServerLog('CMD: '..ctx.player:getName()..': '..shortMsg)
 	local prof = DbgPerf()
 
-	local status, err = pcall(cmd.func, ctx, unpack(args))
-	if(not status) then
-		Debug.err('Command \''..shortMsg..'\' failed: '..err)
-	end
+	xpcall(function ()
+		cmd.func(ctx, unpack(args))
+	end, function (err)
+		Debug.err('Command \''..shortMsg..'\' failed: '..tostring(err))
+		Debug.printStackTrace(2, 5, 3, 7)
+	end)
 	prof:cp('Command %s', shortMsg)
 	
 	g_ScriptMsgState.recipients = {g_Root}
