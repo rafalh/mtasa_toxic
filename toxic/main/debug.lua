@@ -125,7 +125,6 @@ if DEBUG then
 					end
 					if PROFILE_EVENT_HANDLERS and prof:cp(eventName) then
 						Debug.printStackTrace(3, 1, 3, 3)
-						Debug.info(trace[1], 3)
 					end
 				end
 				g_handlerWrappers[handlerFunction] = func

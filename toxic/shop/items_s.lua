@@ -109,7 +109,11 @@ ShpRegisterItem{
 		local speed =(vx^2 + vy^2 + vz^2) ^ 0.5
 		local v = math.max(speed, 0.012)
 		local marker = createMarker(x, y, z, 'cylinder', 1, 255, 0, 0, 128)
-		assert(marker, tostring(x)..' '..tostring(y)..' '..tostring(z)..' '..tostring(el))
+		if not marker then
+			-- Note: createMarker fails on some bugged maps if created marker is immediately consumed in onMarkerHit event
+			outputDebugString('createMarker failed', 2)
+			return false
+		end
 		setTimer(function(x, y, z, marker)
 			destroyElement(marker)
 			local room = g_RootRoom
@@ -154,7 +158,11 @@ ShpRegisterItem{
 		local v = math.max(( vx^2 + vy^2)^( 1/2), 0.001)
 		local room = g_RootRoom
 		local marker = createMarker(x, y, z - 0.4, 'cylinder', 8, 255, 255, 0, 32)
-		assert(marker)
+		if not marker then
+			-- Note: createMarker fails on some bugged maps if created marker is immediately consumed in onMarkerHit event
+			outputDebugString('createMarker failed', 2)
+			return false
+		end
 		table.insert(room.tempElements, marker)
 		setTimer(function(marker)
 			if(isElement(marker)) then
