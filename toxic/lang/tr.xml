@@ -125,7 +125,7 @@
 	<msg id="%s has been added to next map queue (pos. %u.)!">%s haritası sıraya eklendi. (sıra %u.)!</msg>
     <msg id="%s started vote for next map: %s.">%s sonraki harita için oylama başlattı: %s.</msg>
     <msg id="Next map is already set.">Sıradaki harita zaten seçildi!</msg>
-    <msg id="%s has been added to next map queue (pos. %u.) by %s!">%s haritası %s tarafından sıraya eklendi. (sıra %u.)  !</msg>
+    <msg id="%s has been added to next map queue (pos. %u.) by %s!">%s haritası (sıra %u.) %s tarafından sıraya eklendi. !</msg>
 	<msg id="%s has been bought by %s (%u. in map queue)!">%s haritası %s tarafından satın alındı (%u. sıra)!</msg>
 	<msg id="Next map queue: %s.">Sonraki harita sırası: %s.</msg>
 	<msg id="empty">boş</msg>
