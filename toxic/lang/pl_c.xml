@@ -279,4 +279,18 @@
     <msg id="Type:">Typ:</msg>
     <msg id="Value">Wartość</msg>
     <msg id="Edit your profile">Edytuj swój profil</msg>
+    <msg id="Toxic Help">Pomoc Toxic</msg>
+    <msg id="Logout">Wyloguj</msg>
+    <msg id="Version: %s">Wersja: %s</msg>
+    <msg id="Access denied!">Brak dostępu!</msg>
+    <msg id="Locale">Lokalizacja</msg>
+    <msg id="Meme browser">Memy</msg>
+    <msg id="E-Mail is invalid!">E-Mail jest niepoprawny!</msg>
+    <msg id="Registration failed">Rejestracja się nie udała</msg>
+    <msg id="Registration succeeded!">Rejestracja się powiodła!</msg>
+    <msg id="URL has been copied: %s">URL został skopiowany: %s</msg>
+    <msg id="Wait until another sound command finishes playing!">Poczekaj aż inna komenda dźwiękowa się zakończy!</msg>
+    <msg id="Disable online radio before using in-game radio (you can do it in User Panel)!">Wyłącz radio online przed użyciem radia w grze (możesz to zrobić w Panelu Użytkownika)!</msg>
+    <msg id="You don&apos;t have VIP account. More info: %s">Nie masz konta VIP. Więcej informacji: %s</msg>
+    <msg id="VIP Panel">Panel VIPa</msg>
 </strings>
