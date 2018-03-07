@@ -7,6 +7,7 @@ local g_PrevHp = 1000
 local g_PrevTarget = nil
 local g_Size = 0
 local g_Pos = 0
+local g_Rot = 0
 local g_Texture = false
 
 --------------------------------
@@ -33,6 +34,7 @@ local function renderGlass()
 		if(not g_BigDemageTime) then
 			g_Size = math.random () / 2 + 0.25
 			g_Pos = math.random () * (1 - g_Size)
+			g_Rot = math.random () * 360
 		end
 		g_BigDemageTime = getTickCount()
 	elseif(h > g_PrevHp) then
@@ -50,7 +52,7 @@ local function renderGlass()
 	else
 		if(Settings.breakableGlass) then
 			-- broken glass
-			dxDrawImage(g_Pos * g_ScreenSize[1], g_Pos * g_ScreenSize[2], g_Size * g_ScreenSize[1], g_Size * g_ScreenSize[2], g_Texture, 0, 0, 0, tocolor(255, 255, 255, a))
+			dxDrawImage(g_Pos * g_ScreenSize[1], g_Pos * g_ScreenSize[2], g_Size * g_ScreenSize[1], g_Size * g_ScreenSize[2], g_Texture, g_Rot, 0, 0, tocolor(255, 255, 255, a))
 		end
 		
 		-- red screen for 128 ms
