@@ -279,7 +279,7 @@ function LocaleStrList:prepareEditWnd(state, row)
 	end
 	
 	-- Allow changing ID only if we add new row or if string is in unknown list
-	guiEditSetReadOnly(self.editGui.id, row and state ~= 'u')
+	guiEditSetReadOnly(self.editGui.id, (row and state ~= 'u') or false)
 	
 	-- Save edited row ID
 	self.editGui.state = state
