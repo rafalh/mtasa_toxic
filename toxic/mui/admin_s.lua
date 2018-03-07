@@ -21,7 +21,7 @@ local function getLocaleState(code)
 		map[entry.id] = 's'
 	end
 	for i, entry in ipairs(tblC) do
-		if(map[entry.id]) then
+		if(map[entry.id] == 's') then
 			map[entry.id] = '*'
 		else
 			map[entry.id] = 'c'
@@ -94,13 +94,19 @@ function mui.getLocaleData(localeCode)
 	for i, entry in ipairs(serverMap:getList()) do
 		local e = table.copy(entry)
 		e.t = 's'
-		map[entry.id] = e
-		table.insert(unknownList, e)
+		if(map[entry.id]) then
+			Debug.warn('Duplicated key', e.id)
+		else
+			map[entry.id] = e
+			table.insert(unknownList, e)
+		end
 	end
 	for i, entry in ipairs(clientMap:getList()) do
 		local e = map[entry.id]
-		if(e) then
+		if(e and e.t == 's') then
 			e.t = '*'
+		elseif(e) then
+			Debug.warn('Duplicated key', e.id)
 		else
 			e = table.copy(entry)
 			e.t = 'c'
