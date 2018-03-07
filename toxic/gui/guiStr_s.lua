@@ -9,6 +9,11 @@ function GuiStringProvider.__mt.__index:loadNode(node)
 	if(text and text ~= '') then
 		table.insert(self.list, text)
 	end
+
+	local title = xmlNodeGetAttribute(node, 'title')
+	if(title and title ~= '') then
+		table.insert(self.list, title)
+	end
 	
 	for i, subnode in ipairs(xmlNodeGetChildren(node)) do
 		self:loadNode(subnode)

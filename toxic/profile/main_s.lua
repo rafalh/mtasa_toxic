@@ -114,8 +114,33 @@ function setProfileReq(data)
 	end
 end
 
+ProfileFieldsStringProvider = Class('ProfileFieldsStringProvider')
+
+function ProfileFieldsStringProvider.__mt.__index:getString(i)
+	if not self.list then
+		self.list = {}
+		for catIndex, cat in ipairs(g_ProfileCats) do
+			table.insert(self.list, cat.name)
+			for fieldIndex, fieldInfo in ipairs(cat) do
+				local fieldFullName = fieldInfo.longname:sub(1, 1):upper()..fieldInfo.longname:sub(2)
+				table.insert(self.list, fieldFullName..':')
+			end
+		end
+	end
+	return self.list[i], 'c'
+end
+
+function ProfileFieldsStringProvider.__mt.__index:getStringCount()
+	local count = #g_ProfileCats
+	for i, cat in ipairs(g_ProfileCats) do
+		count = count + #cat
+	end
+	return count
+end
+
 local function PfInit()
 	PfLoadFields()
+	MuiStringList:registerProvider(ProfileFieldsStringProvider())
 end
 
 addInitFunc(PfInit)
