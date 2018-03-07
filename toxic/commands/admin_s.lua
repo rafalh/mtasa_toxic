@@ -182,7 +182,7 @@ CmdMgr.register{
 	},
 	func = function(ctx, player)
 		local ip = player:getIP()
-		scriptMsg("%s's IP: %s.", player:getName(), ip or "unknown")
+		scriptMsg("%s's IP: %s.", player:getName(), ip or '-')
 	end
 }
 
@@ -193,7 +193,7 @@ CmdMgr.register{
 		{'player', type = 'player', defValFromCtx = 'player'},
 	},
 	func = function(ctx, player)
-		scriptMsg("%s's account ID: %s.", player:getName(), player.id or "none")
+		scriptMsg("%s's account ID: %s.", player:getName(), player.id or '-')
 	end
 }
 
@@ -212,7 +212,7 @@ CmdMgr.register{
 		for i, data in ipairs(rows) do
 			table.insert(found, data.player)
 		end
-		local foundStr = #found > 0 and table.concat(found, ', ') or "none"
+		local foundStr = #found > 0 and table.concat(found, ', ') or 'none'
 		scriptMsg("Found accounts: %s", foundStr)
 	end
 }

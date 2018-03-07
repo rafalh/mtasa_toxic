@@ -3,194 +3,176 @@
     <msg id="* %s has been kicked from the game.">* %s buvo išspirtas iš žaidimo.</msg>
     <msg id="* %s has been banned from the game.">* %s buvo užblokuotas iš žaidimo.</msg>
     <msg id="* %s has left the game [%s].">* %s paliko žaidimą [%s].</msg>
-	
-	<msg id="Save">Išsaugoti</msg>
-	<msg id="Cancel">Atšaukti</msg>
-	<msg id="Apply">Taikyti</msg>
+    
+    <msg id="Save">Išsaugoti</msg>
+    <msg id="Cancel">Atšaukti</msg>
     <msg id="Close">Uždaryti</msg>
-	<msg id="Color">Spalva</msg>
-	
+    <msg id="Color">Spalva</msg>
+    
     <msg id="Usage: %s">Naudojimas: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Spauskite %s, kad atidarytumėte vartotojo valdymo panelę ar %s, kad atidarytumėte statistikos panelę!</msg>
     
-	<msg id="Login">Prisijungti</msg>
-	<msg id="Please login to save your statistics">Prašome prisijungti, kad išsaugotumėte savo statistiką</msg>
-	<msg id="Username:">Prisijungimo vardas:</msg>
-	<msg id="Password:">Slaptažodis:</msg>
-	<msg id="Remember me">Prisiminti mane</msg>
-	<msg id="Register">Registruotis</msg>
-	<msg id="Play as guest">Žaisti, kaip svečiui</msg>
-	<msg id="Register new account">Registruoti naują vartotoją</msg>
-	<msg id="Retry password:">Dar kartą parašyti slaptažodį:</msg>
-	<msg id="Password strength:">Slaptažodžio stiprumas:</msg>
-	<msg id="E-Mail (optional):">E-paštas (reikalinga):</msg>
-	
-	<msg id="Username is too short!">Vartotojo vardas per trumpas!</msg>
-	<msg id="Password is too short!">Slaptažodis per trumpas!</msg>
-	<msg id="Passwords do not match!">slaptažodžiai nesutampa!</msg>
-	
-	<msg id="Statistics">Statistika</msg>
+    <msg id="Login">Prisijungti</msg>
+    <msg id="Please login to save your statistics">Prašome prisijungti, kad išsaugotumėte savo statistiką</msg>
+    <msg id="Username:">Prisijungimo vardas:</msg>
+    <msg id="Password:">Slaptažodis:</msg>
+    <msg id="Remember me">Prisiminti mane</msg>
+    <msg id="Register">Registruotis</msg>
+    <msg id="Play as guest">Žaisti, kaip svečiui</msg>
+    <msg id="Register new account">Registruoti naują vartotoją</msg>
+    <msg id="Retry password:">Dar kartą parašyti slaptažodį:</msg>
+    <msg id="Password strength:">Slaptažodžio stiprumas:</msg>
+    <msg id="E-Mail (optional):">E-paštas (reikalinga):</msg>
+    
+    <msg id="Username is too short!">Vartotojo vardas per trumpas!</msg>
+    <msg id="Password is too short!">Slaptažodis per trumpas!</msg>
+    <msg id="Passwords do not match!">slaptažodžiai nesutampa!</msg>
+    
+    <msg id="Statistics">Statistika</msg>
     <msg id="Player:">Žaidėjas:</msg>
     <msg id="Cash:">Pinigai:</msg>
     <msg id="Points:">Taškai:</msg>
     <msg id="Rank:">Rangas:</msg>
-    <msg id="DD/DM Played:">Sužaista DD/DM:</msg>
-    <msg id="DD/DM Wins:">DD/DM pergalių:</msg>
-    <msg id="Race - 1st:">Lenktynių - 1 vietų.:</msg>
-    <msg id="Race - 2nd:">Lenktynių - 2 vietų.:</msg>
-    <msg id="Race - 3rd:">Lenktynių - 3 vietų.:</msg>
-	<msg id="DM Victories:">DM pergalės:</msg>
-	<msg id="Hunters taken:">Paiimta Hunter&apos;ių:</msg>
-	<msg id="DD Victories:">DD pergalės:</msg>
-	<msg id="Race Victories:">Lenktynių pergalės:</msg>
-	<msg id="Maximal Win Streak:">Maksimalus pergalių iš eilės skaičius:</msg>
+    <msg id="DM Victories:">DM pergalės:</msg>
+    <msg id="Hunters taken:">Paiimta Hunter&apos;ių:</msg>
+    <msg id="DD Victories:">DD pergalės:</msg>
+    <msg id="Race Victories:">Lenktynių pergalės:</msg>
+    <msg id="Maximal Win Streak:">Maksimalus pergalių iš eilės skaičius:</msg>
     <msg id="Top Times held:">Top laikų skaičius:</msg>
     <msg id="Bidlevel:">Statymų lygis:</msg>
     <msg id="Exploded:">Sprogo:</msg>
     <msg id="Drowned:">Nuskendo:</msg>
     <msg id="Playtime:">Pražaista:</msg>
-	<msg id="%s times">%s kartai</msg>
-	
+    <msg id="%s times">%s kartai</msg>
+    
     <msg id="Profile">Profilis</msg>
-	<msg id="General">Pagrindinis</msg>
-	<msg id="Firstname:">Vardas:</msg>
-	<msg id="Age:">Amžius:</msg>
-	<msg id="City:">Miestas:</msg>
-	<msg id="Interests:">Domisi:</msg>
-	<msg id="Contact">Kontaktai</msg>
-	
-	<msg id="Change password">Pakeisti slaptažodį</msg>
-	<msg id="Change password for your account">Pakeisti slaptažodį savo vartotojui</msg>
-	<msg id="Old password:">Senas slaptažodis:</msg>
-	<msg id="Old password is invalid!">Senas slaptažodis netinka!</msg>
-	
+    <msg id="General">Pagrindinis</msg>
+    <msg id="Firstname:">Vardas:</msg>
+    <msg id="Age:">Amžius:</msg>
+    <msg id="City:">Miestas:</msg>
+    <msg id="Interests:">Domisi:</msg>
+    <msg id="Contact">Kontaktai</msg>
+    
+    <msg id="Change password">Pakeisti slaptažodį</msg>
+    <msg id="Change password for your account">Pakeisti slaptažodį savo vartotojui</msg>
+    <msg id="Old password:">Senas slaptažodis:</msg>
+    <msg id="Old password is invalid!">Senas slaptažodis netinka!</msg>
+    
     <msg id="Players list">Žaidėjų sąrašas</msg>
-	<msg id="Player name">Žaidėjo vardas</msg>
-	<msg id="Sort:">Rūšis:</msg>
-	<msg id="descending">mažėjantis</msg>
+    <msg id="Player name">Žaidėjo vardas</msg>
+    <msg id="Sort:">Rūšis:</msg>
+    <msg id="descending">mažėjantis</msg>
     <msg id="Players online only">Tik prisijungę žaidėjai</msg>
-	<msg id="Cash">Pinigai</msg>
-	<msg id="Points">Taškai</msg>
-	<msg id="Playtime">Pražaista</msg>
-	<msg id="Top times">Geriausi laikai&apos;y</msg>
+    <msg id="Cash">Pinigai</msg>
+    <msg id="Points">Taškai</msg>
+    <msg id="Playtime">Pražaista</msg>
+    <msg id="Top times">Geriausi laikai&apos;y</msg>
     <msg id="Race Vict">Lenktynių pergalės</msg>
-    <msg id="DD/DM Vict">DD/DM pergalės</msg>
-	<msg id="DM Vict">DM pergalės</msg>
-	<msg id="DD Vict">DD pergalės</msg>
-	
+    <msg id="DM Vict">DM pergalės</msg>
+    <msg id="DD Vict">DD pergalės</msg>
+    
     <msg id="Shop">Parduotuvė</msg>
-	<msg id="All items:">Visos prekės:</msg>
-	<msg id="Your items:">Jūsų daiktai:</msg>
-	<msg id="Cost:">Kaina:</msg>
+    <msg id="All items:">Visos prekės:</msg>
+    <msg id="Your items:">Jūsų daiktai:</msg>
+    <msg id="Cost:">Kaina:</msg>
     <msg id="Buy">Pirkti</msg>
     <msg id="Sell">Parduoti</msg>
     <msg id="Use">Naudoti</msg>
     <msg id="Description:">Aprašymas:</msg>
-	<msg id="%u%% price reduction for VIP">%u%% Kainos mažinimas VIP žaidėjam</msg>
-	
-	<msg id="User Items">Vartotojo daiktai</msg>
-	<msg id="You don't have any item!">Jūs neturite daiktų!</msg>
-	
-	<msg id="Beer">Alus</msg>
-	<msg id="Repair">Pataisymas</msg>
-	<msg id="Smoke">Rūkalai</msg>
-	<msg id="Mine">Mina</msg>
-	<msg id="Godmode">Godmode(Nemirtingumas)</msg>
-	<msg id="Oil">Degalai</msg>
-	<msg id="Self-destruction">Savęs sunaikinimas</msg>
-	<msg id="Flip">Apsivertimas</msg>
-	<msg id="VIP rank">VIP rangas</msg>
-	<msg id="Thunder">Griaustinis</msg>
-	<msg id="Godmode (60 seconds)">Nemirtingumas (60 sekundžių)</msg>
-	<msg id="Invisibility">Nematomumas</msg>
-	<msg id="Next map">Kitas žemėlapis</msg>
-	<msg id="VIP rank (1 week)">VIP rangas (1 savaitei)</msg>
-	
-	<msg id="Translator">Vertėjas</msg>
-	<msg id="From:">Iš:</msg>
-	<msg id="To:">Į:</msg>
-	<msg id="Translate">Išversti</msg>
-	<msg id="Say translated">Pasakyti kada išversta.</msg>
-	<msg id="Load chat message">Užkrauti šaukyklos žinutes</msg>
-	<msg id="Input:">Tekstas vertimui:</msg>
-	<msg id="Output:">Išverstas tekstas:</msg>
-	<msg id="Please wait...">Prašome palaukti...</msg>
-	<msg id="Translation by %s">Vertimas %s</msg>
-	<msg id="Auto-detect">Automatinis nustatymas</msg>
-	
-	<msg id="Radio">Radijas</msg>
-	<msg id="Select radio channel">Pasirinkti radijo stotį</msg>
-	<msg id="Turn off">Išjungti</msg>
-	<msg id="Search...">Ieškoti...</msg>
-	<msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Išjungti radiją prieš naudojant žaidimo radiją (jūs galite tai padaryti Vartotojo panelėje)</msg>
-	<msg id="Radio has been temporary disabled because other music source has been detected!">Radijas buvo laikinai išjungtas dėl kito muzikos šaltinio radimo!</msg>
-	
-	<msg id="Achievements">Apdovanojimai</msg>
-	<msg id="Unlocked achievements: %u/%u">Atrakinti apdovanojimai: %u/%u</msg>
-	
+    <msg id="%u%% price reduction for VIP">%u%% Kainos mažinimas VIP žaidėjam</msg>
+    
+    <msg id="User Items">Vartotojo daiktai</msg>
+    <msg id="You don&apos;t have any item!">Jūs neturite daiktų!</msg>
+    
+    <msg id="Beer">Alus</msg>
+    <msg id="Repair">Pataisymas</msg>
+    <msg id="Smoke">Rūkalai</msg>
+    <msg id="Mine">Mina</msg>
+    <msg id="God Mode">Godmode(Nemirtingumas)</msg>
+    <msg id="Oil">Degalai</msg>
+    <msg id="Self-destruction">Savęs sunaikinimas</msg>
+    <msg id="Flip">Apsivertimas</msg>
+    <msg id="VIP rank">VIP rangas</msg>
+    <msg id="Thunder">Griaustinis</msg>
+    <msg id="Invisibility">Nematomumas</msg>
+    <msg id="Next map">Kitas žemėlapis</msg>
+    
+    <msg id="Translator">Vertėjas</msg>
+    <msg id="From:">Iš:</msg>
+    <msg id="To:">Į:</msg>
+    <msg id="Translate">Išversti</msg>
+    <msg id="Say translated">Pasakyti kada išversta.</msg>
+    <msg id="Load chat message">Užkrauti šaukyklos žinutes</msg>
+    <msg id="Input:">Tekstas vertimui:</msg>
+    <msg id="Output:">Išverstas tekstas:</msg>
+    <msg id="Please wait...">Prašome palaukti...</msg>
+    <msg id="Translation by %s">Vertimas %s</msg>
+    <msg id="Auto-detect">Automatinis nustatymas</msg>
+    
+    <msg id="Radio">Radijas</msg>
+    <msg id="Select radio channel">Pasirinkti radijo stotį</msg>
+    <msg id="Turn off">Išjungti</msg>
+    <msg id="Search...">Ieškoti...</msg>
+    <msg id="Disable online radio before using in-game radio (you can do it in User Panel)!">Išjungti radiją prieš naudojant žaidimo radiją (jūs galite tai padaryti Vartotojo panelėje)</msg>
+    <msg id="Radio has been temporary disabled because other music source has been detected!">Radijas buvo laikinai išjungtas dėl kito muzikos šaltinio radimo!</msg>
+    
+    <msg id="Achievements">Apdovanojimai</msg>
+    <msg id="Unlocked achievements: %u/%u">Atrakinti apdovanojimai: %u/%u</msg>
+    
     <msg id="Settings">Nustatymai</msg>
     <msg id="Language:">Kalba:</msg>
-    <msg id="Nick:">Slapyvardis:</msg>
-    <msg id="Suicide key:">Nusižudymo mygtukas:</msg>
-    <msg id="User Panel key:">Vartotojo panelės mygtukas:</msg>
-    <msg id="Statistics Panel key:">Statistikos panelės mygtukas:</msg>
-	<msg id="Hide other cars when GM is enabled">Paslėpti kitus automobilius kai GM įjungtas.</msg>
-	<msg id="Hide nearby cars">Paslėpti šalia esančius automobilius</msg>
-	<msg id="Show stars animation above winner car">Rodyti žvaigždžių animaciją po laimėtojo automobiliu</msg>
-	<msg id="Effects:">Efektai:</msg>
-	<msg id="%s has been disabled to improve your FPS!">%s buvo išjungtas, kad pagerinti jūsų FPS!</msg>
-	
-	<msg id="Map Info">Žemėlapio informacija</msg>
-	<msg id="Map: %s">Žemėlapis: %s</msg>
+    <msg id="Hide other cars when GM is enabled">Paslėpti kitus automobilius kai GM įjungtas.</msg>
+    <msg id="Hide nearby cars">Paslėpti šalia esančius automobilius</msg>
+    <msg id="Show stars animation above winner car">Rodyti žvaigždžių animaciją po laimėtojo automobiliu</msg>
+    <msg id="Effects:">Efektai:</msg>
+    <msg id="%s has been disabled to improve your FPS!">%s buvo išjungtas, kad pagerinti jūsų FPS!</msg>
+    
+    <msg id="Map: %s">Žemėlapis: %s</msg>
     <msg id="Author: %s">Autorius: %s</msg>
-	<msg id="unknown">nežinoma</msg>
+    <msg id="unknown">nežinoma</msg>
     <msg id="Played: %u times">Žaista: %u razy</msg>
-    <msg id="Rating:">Įvertinimas:</msg>
-	<msg id="(%u rates)">(%u įvertinimai)</msg>
     <msg id="Top Times:">Top laikai:</msg>
     <msg id="Pos">Vieta</msg>
     <msg id="Time">Laikas</msg>
-    <msg id="Empty">Tusčia</msg>
-	
-	<msg id="Rate this map">Įvertinti šį žemėlapį</msg>
-	<msg id="Press 1-5 to rate this map">Paspauskite 1-5, kad įvertintumėte žemėlapį</msg>
-	
+    
+    <msg id="Rate this map">Įvertinti šį žemėlapį</msg>
+    <msg id="Press 1-5 to rate this map">Paspauskite 1-5, kad įvertintumėte žemėlapį</msg>
+    
     <msg id="Private Chat - %s">Privatus susirašinėjimas - %s</msg>
     <msg id="Say:">Sakyti:</msg>
     <msg id="Send">Siųsti</msg>
     <msg id="In background">Fone</msg>
-	<msg id="Restore">Atkurti</msg>
-	
-	<msg id="Help">Pagalba</msg>
-	<msg id="Controls">Valdymas</msg>
-	<msg id="Press %s to show Statistics Panel.">Paspauskite %s, kad parodyti statistikos panelę.</msg>
-	<msg id="Press %s to show User Panel.">Paspauskite %s, kad parodyti vartotojo panelę.</msg>
-	<msg id="Press %s to show User Items.">Paspauskite %s, kad parodyti vartotojo daiktus.</msg>
-	<msg id="Press %s to show Top Times.">Paspauskite %s, kad parodyti Top laikus.</msg>
-	<msg id="Commands">Komandos</msg>
-	<msg id="Search:">Ieškoti:</msg>
-	<msg id="Command">Komanda</msg>
-	<msg id="Description">Aprašymas</msg>
-	
+    <msg id="Restore">Atkurti</msg>
+    
+    <msg id="Controls">Valdymas</msg>
+    <msg id="Press %s to show Statistics Panel.">Paspauskite %s, kad parodyti statistikos panelę.</msg>
+    <msg id="Press %s to show User Panel.">Paspauskite %s, kad parodyti vartotojo panelę.</msg>
+    <msg id="Press %s to show User Items.">Paspauskite %s, kad parodyti vartotojo daiktus.</msg>
+    <msg id="Commands">Komandos</msg>
+    <msg id="Search:">Ieškoti:</msg>
+    <msg id="Command">Komanda</msg>
+    <msg id="Description">Aprašymas</msg>
+    
     <msg id="User Panel">Vartotojo panelė</msg>
-	<msg id="Log In">Prisijungti</msg>
-	<msg id="Log Out">Atsijungti</msg>
-	<msg id="Back">Atgal</msg>
-	<msg id="You are logged in as %s">Jūs prisijungęs kaip %s</msg>
-	<msg id="You are not logged in">Jūs neprisijungęs</msg>
-	
+    <msg id="Log In">Prisijungti</msg>
+    <msg id="Log Out">Atsijungti</msg>
+    <msg id="Back">Atgal</msg>
+    <msg id="You are logged in as %s">Jūs prisijungęs kaip %s</msg>
+    <msg id="You are not logged in">Jūs neprisijungęs</msg>
+    
     <msg id="About">Apie</msg>
-	<msg id="About ToxiC Server">Apie ToxiC serverį</msg>
-	
-	<msg id="Select next map">Pasirinkti kitą žemėlapį</msg>
-	<msg id="Add to queue">Pridėti į eilę</msg>
-	<msg id="Buy map">Pirkti žemėlapį</msg>
-	<msg id="Map name">žemėlapio pavadinimas</msg>
-	<msg id="Played">Žaista</msg>
-	<msg id="Map rating">Žemėlapio įvertinimas</msg>
-	<msg id="Select your candidate for next map">Pasirinkite savo kandidatą kitam žemėlapiui</msg>
-	<msg id="Choose the next map to buy">Pasirinkite kitą žemėlapį pirkimui</msg>
-	
-	<msg id="Player profile">Žaidėjo profilis</msg>
-	<msg id="Information">Informacija</msg>
+    <msg id="About ToxiC Server">Apie ToxiC serverį</msg>
+    
+    <msg id="Select next map">Pasirinkti kitą žemėlapį</msg>
+    <msg id="Add to queue">Pridėti į eilę</msg>
+    <msg id="Buy map">Pirkti žemėlapį</msg>
+    <msg id="Map name">žemėlapio pavadinimas</msg>
+    <msg id="Played">Žaista</msg>
+    <msg id="Map rating">Žemėlapio įvertinimas</msg>
+    <msg id="Select your candidate for next map">Pasirinkite savo kandidatą kitam žemėlapiui</msg>
+    <msg id="Choose the next map to buy">Pasirinkite kitą žemėlapį pirkimui</msg>
+    
+    <msg id="Player profile">Žaidėjo profilis</msg>
+    <msg id="Information">Informacija</msg>
+    <msg id="none">niekas</msg>
 </strings>

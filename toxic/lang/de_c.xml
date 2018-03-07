@@ -12,11 +12,6 @@
     <msg id="Cash:">Geld:</msg>
     <msg id="Points:">Punkte:</msg>
     <msg id="Rank:">Rang:</msg>
-    <msg id="DD/DM Played:">DD/DM gespielt:</msg>
-    <msg id="DD/DM Wins:">DD/DM gewonnen:</msg>
-    <msg id="Race - 1st:">Race - 1. geworden:</msg>
-    <msg id="Race - 2nd:">Race - 2. geworden:</msg>
-    <msg id="Race - 3rd:">Race - 3. geworden:</msg>
     <msg id="Top Times held:">Schnellste Zeiten:</msg>
     <msg id="Bidlevel:">Bidlevel:</msg>
     <msg id="Exploded:">Explodiert:</msg>
@@ -36,17 +31,12 @@
     
     <msg id="Settings">Einstellungen</msg>
     <msg id="Language:">Sprache:</msg>
-    <msg id="Nick:">Spitzname:</msg>
-    <msg id="Suicide key:">Suicide Taste:</msg>
-    <msg id="User Panel key:">User Panel Taste:</msg>
-    <msg id="Statistics Panel key:">Statistiken Panel Taste:</msg>
     
     <msg id="Save">Speichern</msg>
     <msg id="Color">Farbe</msg>
     <msg id="Close">Schliessen</msg>
     <msg id="Pos">Pos</msg>
     <msg id="Time">Zeit</msg>
-    <msg id="Empty">Leer</msg>
     
     <msg id="Private Chat - %s">Privater Chat - %s</msg>
     <msg id="Say:">Sagen:</msg>
@@ -54,4 +44,6 @@
     <msg id="In background">Im Hintergrund</msg>
     
     <msg id="User Panel">User Panel</msg>
+    <msg id="Top Times:">Top Times:</msg>
+    <msg id="none">Keiner</msg>
 </strings>

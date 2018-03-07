@@ -65,7 +65,7 @@ local MIN_DIST_A = 0.2
 local ANIM_TIME = 1500
 local INFO_W = 180
 local INFO_BG = tocolor(0, 0, 0, 128)
-local TITLES = {'1st', '2nd', '3rd'}
+local TITLES = {"1st", "2nd", "3rd"}
 local TITLE_CLRS = {tocolor(255, 196, 0), tocolor(196, 196, 196), tocolor(140, 64, 0)}
 local FONT = 'sans'
 local TITLE_SCALE = 1.5
@@ -101,7 +101,7 @@ local function PodiumRender()
 			x, y = x - w/2, y - h/2
 			
 			dxDrawRectangle(x, y, w, h, INFO_BG)
-			dxDrawText(TITLES[i], x, y, x + w, titleH, TITLE_CLRS[i],
+			dxDrawText(MuiGetMsg(TITLES[i]), x, y, x + w, titleH, TITLE_CLRS[i],
 				scale*TITLE_SCALE, FONT, 'center')
 			dxDrawText(name, x, y + titleH, x + w, nameH, TITLE_CLRS[i],
 				scale*NAME_SCALE, FONT, 'center', 'top',

@@ -12,11 +12,6 @@
     <msg id="Cash:">Bani:</msg>
     <msg id="Points:">Puncte:</msg>
     <msg id="Rank:">Rang:</msg>
-    <msg id="DD/DM Played:">DD/DM Jucate:</msg>
-    <msg id="DD/DM Wins:">DD/DM Castigate:</msg>
-    <msg id="Race - 1st:">Race - Primul:</msg>
-    <msg id="Race - 2nd:">Race - Al doilea:</msg>
-    <msg id="Race - 3rd:">Race - Al treilea:</msg>
     <msg id="Top Times held:">Cei mai buni timpi detinuti:</msg>
     <msg id="Bidlevel:">Nivel:</msg>
     <msg id="Exploded:">A explodat:</msg>
@@ -36,17 +31,12 @@
     
     <msg id="Settings">Setari</msg>
     <msg id="Language:">Limba:</msg>
-    <msg id="Nick:">Nume:</msg>
-    <msg id="Suicide key:">Tasta pentru sinucidere:</msg>
-    <msg id="User Panel key:">Tasta pentru Controlul Utilizatorului:</msg>
-    <msg id="Statistics Panel key:">Tasta pentru Controlul Statisiticilor:</msg>
     
     <msg id="Save">Salveaza</msg>
     <msg id="Color">Culoare</msg>
     <msg id="Close">Inchide</msg>
     <msg id="Pos">Pozitie</msg>
     <msg id="Time">Timp</msg>
-    <msg id="Empty">GOL</msg>
     
     <msg id="Private Chat - %s">Chat privat - %s</msg>
     <msg id="Say:">Spune:</msg>
@@ -55,4 +45,6 @@
     
     <msg id="User Panel">Controlul utilizatorului</msg>
     <msg id="About">Despre</msg>
+    <msg id="Top Times:">Cei mai buni timpi:</msg>
+    <msg id="none">nimic</msg>
 </strings>

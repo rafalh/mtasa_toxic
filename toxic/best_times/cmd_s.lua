@@ -8,11 +8,8 @@ CmdMgr.register{
 		local map = getCurrentMap(player.room)
 		local rows = player.id and DbQuery('SELECT time FROM '..BestTimesTable..' WHERE player=? AND map=? LIMIT 1', player.id, map:getId())
 		
-		if(rows and rows[1]) then
-			scriptMsg("%s's personal best time: %s.", player:getName(), formatTimePeriod(rows[1].time / 1000))
-		else
-			scriptMsg("%s's personal best time: %s.", player:getName(), "none")
-		end
+		local bestTimeStr = rows and rows[1] and formatTimePeriod(rows[1].time / 1000)
+		scriptMsg("%s's personal best time: %s.", player:getName(), bestTimeStr or 'none')
 	end
 }
 

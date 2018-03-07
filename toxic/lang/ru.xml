@@ -1,20 +1,14 @@
 ﻿<strings>
     <msg id='Access denied for &quot;%s&quot;!'>Нет доступа к &quot;%s&quot;!</msg>
     
-    <msg id="%uth">%u.</msg>
-    <msg id="%ust">%u.</msg>
-    <msg id="%und">%u.</msg>
-    <msg id="%urd">%u.</msg>
     
-    <msg id="* %s died!">* %s умер!</msg>
-    <msg id="* %s drowned!">* %s утонул!</msg>
     <msg id="* %s has joined the game.">* %s присоеденился к игре.</msg>
-	<msg id="* %s has joined the game (%s).">* %s присоеденился к игре (%s).</msg>
+    <msg id="* %s has joined the game (%s).">* %s присоеденился к игре (%s).</msg>
     <msg id="* %s is now known as %s.">* %s &apos;а теперь зовут %s.</msg>
     
     <msg id="Nick change spam! Wait %u seconds and try again.">Частая смена ников! Подожди %u секунд и попробуй еще раз.</msg>
     <msg id="Empty nick is not allowed!">Pusty nick nie jest dozwolony!</msg>
-    <msg id="Do not swear %s! %s taked from your cash.">БЕЗ МАТА %s! %s штраф.</msg>
+    <msg id="Do not swear %s! %s has been taken from your cash.">БЕЗ МАТА %s! %s штраф.</msg>
     <msg id="Warning! Your ping is to high!">Предупреждение! Твой пинг слишком большой!Перестань качать порно!</msg>
     <msg id="Kicking %s for lagging. His ping: %u. Maximal ping: %u.">Удаление %s за лаги. Его пинг: %u. Максимальный &quot;пинговый порог&quot;: %u.</msg>
     <msg id="Too high ping">Слишком высокий пинг</msg>
@@ -23,11 +17,8 @@
     <msg id="FPS is too low">ФПС слишком низкий</msg>
     <msg id="Do not camp or you will be killed!">ТЫ СРАНЫЙ КЭМПЕР ТЕБЯ ЗАБАНЯТ ЕЕСЛИ НЕ ПОЕДЕШЬ!</msg>
     <msg id="You got killed for camping!">Убит нахуй за то что кэмпер сраный!</msg>
-    <msg id="Map %s played %u times.">Карта %s сыграна %u раз.</msg>
+    <msg id="Map %s has been played %u times.">Карта %s сыграна %u раз.</msg>
     <msg id="Map %s is removed! Changing to random map.">Карта %s удалена! Меняем на любую другую карту.</msg>
-    <msg id="Cannot repeat the map for %uth time! Changing to random map.">Невозможно повторить карту в %u раз! Меняем на любую другую карту.</msg>
-    <msg id="Ghostmode enabled for %u seconds!">Гостмод включен на %u секунд!</msg>
-    <msg id="Ghostmode disabled!">Гостмод отключен!</msg>
     <msg id="%s added to your cash! Total: %s.">%s добавлено в бумажник! Сейчас в нем: %s.</msg>
     <msg id="You earned %s points. Total: %s.">Ты заработал %s очков. Всего их: %s.</msg>
     <msg id="%s is the winner!">%s Победил!</msg>
@@ -36,31 +27,20 @@
     <msg id="The %s top time: %s by %s!">Рекорд№ %s : %s поставлен %s</msg>
     <msg id="No top times saved!">Нет рекордов!</msg>
     <msg id="Your personal best time: %s">Твой личный рекорд здесь: %s</msg>
-    <msg id="You have improved your personal best time! New: %s">Ты улучшил личный рекорд! Новый: %s</msg>
+    <msg id="You have improved your personal best time!">Ты улучшил личный рекорд!</msg>
+    <msg id="New: %s">Новый: %s</msg>
     <msg id="%s&apos;s personal best time: %s.">Личный рекорд здесь %s: %s.</msg>
     <msg id="Warning! %s has been given to %s.">Осторожно! %s на поле и его взял %s.</msg>
     <msg id="Usage: %s">Предметы: %s</msg>
-    <msg id='Cannot find player &quot;%s&quot;!'>&quot;%s&quot; нет на сервере!</msg>
     <msg id="You do not have enough cash!">У тебя недостаточно денег!</msg>
-    <msg id="none">пусто</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Карты &quot;%s&quot; нет на сервере!</msg>
     <msg id="Supported types: %s.">Поддерживаемые варианты: %s.</msg>
-    <msg id="%s has been muted by %s!">%s &apos;у заткнул пасть %s!</msg>
-    <msg id="%s has been muted by Script!">%s &apos;а заставил молчать скрипт!</msg>
     <msg id="%s has been unmuted by Script!">%s теперь может говорить опять!</msg>
     <msg id="%s has got permanent mute!">%s &apos; заткнули навсегда!</msg>
     <msg id="%s&apos;s %s: %s">%s %s: %s</msg>
     <msg id="%s&apos;s %s is not set.">%s %s нет.</msg>
     <msg id="%s set his %s: %s.">%s установил свой %s: %s.</msg>
     
-    <msg id="player">игрок</msg>
-    <msg id="cash">деньги</msg>
-    <msg id="points">очки</msg>
-    <msg id="map">карта</msg>
-    <msg id="time">время</msg>
-    <msg id="name">имя</msg>
-    <msg id="account ID">ID контакта</msg>
-    <msg id="level">Уровень</msg>
     
     <msg id="Do not spam %s! Otherwise you will get kicked.">Не спамь %s! Или тебя кикнут.</msg>
     <msg id="Do not spam %s! Otherwise you will get muted.">Не спамь %s! Или тебя заткнут.</msg>
@@ -81,7 +61,7 @@
     <msg id="%s won the lottery!">%s сорвал куш!</msg>
     <msg id="Lottery fund: %s. Max fund: %s.">Призовой фонд лотереи: %s. Максимальный призовой фонд: %s.</msg>
     <msg id="Rolling the dice...">Крутим барабан удачи...</msg>
-    <msg id="Please wait... You can roll once every %u seconds.">Подожди... Ты можешь испытать удачу каждые %u секунд.</msg>
+    <msg id="Please Wait... You can roll the dice once every %u seconds.">Подожди... Ты можешь испытать удачу каждые %u секунд.</msg>
     <msg id="You rolled %u, you just lost %s.">Выпавшее число %u, ты проиграл %s.</msg>
     <msg id="You rolled %u, %s added to your cash.">Выпавшее число %u,ты выиграл %s.</msg>
     <msg id="You rolled %u, which is mute.">Выпавшее число %u, ты теперь молчишь :x.</msg>
@@ -89,22 +69,19 @@
     <msg id="The wheel is spinning!">Барабан крутится!</msg>
     <msg id="You spinned %u and won %s.">Ты загадал %u и выиграл %s.</msg>
     <msg id="You spinned %u and lost %s.">Ты загадал %u и проиграл %s.</msg>
-    <msg id="Type /rate &lt;1-10&gt; to rate.">Напиши в чате /rate &lt;1-10&gt; чтобы оценить карту.</msg>
     <msg id="Map rating: %.2f (rated by %u players).">Оценка карты: %.2f (%u игроков оценили).</msg>
     <msg id="Rate added! Current average rating: %.2f">Оценка добавлена! Средняя оценка: %.2f</msg>
     <msg id="You rated this map before: %u!">Ты уже оценил карту: %u!</msg>
-    <msg id="Language successfully set to %s!">Язык изменен на: %s!</msg>
-    <msg id="%s&apos;s cash: %s - Bidlevel: %u.">Денег %s: %s - Уровень: %u.</msg>
+    <msg id="%s&apos;s cash: %s - Bid-level: %u.">Денег %s: %s - Уровень: %u.</msg>
     <msg id="%s gave %s %s.">%s дал %s %s.</msg>
     <msg id="%s&apos;s points: %s.">Очков %s: %s.</msg>
     <msg id="%s&apos;s rank: %s.">Ранг %s: %s.</msg>
     <msg id="%s has new rank: %s!"> у %s &apos;а теперь новый ранг: %s!</msg>
-    <msg id="%s&apos;s bidlevel: %u.">Уровень %s: %u.</msg>
+    <msg id="%s&apos;s bid-level: %u.">Уровень %s: %u.</msg>
     <msg id="%s&apos;s IP: %s.">IP %s: %s.</msg>
     <msg id="%s&apos;s trace: %s.">След игрока %s: %s.</msg>
     <msg id="%s&apos;s time here: %s.">Провел времени в игре %s: %s.</msg>
     <msg id="%s seen since %d:%02u:%02u.">%s 1 раз зашел %d:%02u:%02u.</msg>
-    <msg id="%s has been warned %u times.">%s предyпрежден %u раз.</msg>
     <msg id="%s&apos;s MTA version: %s (revision %s).">Версия МТА %s: %s (перепроверка %s).</msg>
     <msg id="Local time: %d-%02d-%02d %d:%02d:%02d.">Местное время: %d-%02d-%02d %d:%02d:%02d.</msg>
     <msg id="Total maps count: %u.">Всего карт на сервере: %u.</msg>
@@ -113,7 +90,6 @@
     <msg id="Current super-moderators: %s.">:Супер модераторы on-line %s.</msg>
     <msg id="Current moderators: %s.">Модераторы on-line: %s.</msg>
     <msg id="Alive Players: %s.">Живые игроки: %s.</msg>
-    <msg id="Commands list:">Список команд:</msg>
     <msg id="Respawn is enabled (%u seconds).">Возрождение активно (%u секунд).</msg>
     <msg id="Respawn is disabled.">Возрождение отключено.</msg>
     <msg id="Found maps: %s.">Найдено карт по запросу: %s.</msg>
@@ -127,11 +103,12 @@
     
     <msg id="Map cannot be repeated!">Карта не может быть повторена!</msg>
     <msg id="This map has been removed!">Карта была удалена!</msg>
-    <msg id="You can vote only for race map now! Allowed types: %s.">Ты можешь голосовать только за гонки! Возможные варианты: %s.</msg>
     <msg id="You have to wait %u seconds!">Жди %u секунд!</msg>
     <msg id="Vehicle weapons enabled by %s!">Оружие включил(-а) %s!</msg>
     <msg id="Vehicle weapons disabled by %s!">Оружие отключил(-а) %s!</msg>
     <msg id="Vote cancelled by %s!">Голосование отменил(-а) %s!</msg>
-    <msg id="No vote in progress!">Голосование не активно!</msg>
+    <msg id="No vote is running now!">Голосование не активно!</msg>
     <msg id="Aliases for %s:">Альтернатива для %s:</msg>
+    <msg id="Ghost Mode is enabled for %u seconds!">Гостмод включен на %u секунд!</msg>
+    <msg id="Ghost Mode has been disabled!">Гостмод отключен!</msg>
 </strings>

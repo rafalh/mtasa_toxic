@@ -6,7 +6,6 @@
     
     <msg id="Save">Zapisz</msg>
     <msg id="Cancel">Anuluj</msg>
-    <msg id="Apply">Zastosuj</msg>
     <msg id="Close">Zamknij</msg>
     <msg id="Color">Kolor</msg>
     <msg id="On">Wł.</msg>
@@ -45,11 +44,6 @@
     <msg id="Cash:">Kasa:</msg>
     <msg id="Points:">Punkty:</msg>
     <msg id="Rank:">Ranga:</msg>
-    <msg id="DD/DM Played:">Zagrane DD/DM:</msg>
-    <msg id="DD/DM Wins:">Wygrane DD/DM:</msg>
-    <msg id="Race - 1st:">Wyścigi - 1.:</msg>
-    <msg id="Race - 2nd:">Wyścigi - 2.:</msg>
-    <msg id="Race - 3rd:">Wyścigi - 3.:</msg>
     <msg id="DM Victories:">Wygrane DM:</msg>
     <msg id="Hunters taken:">Zdobyte Huntery:</msg>
     <msg id="DD Victories:">Wygrane DD:</msg>
@@ -94,7 +88,6 @@
     <msg id="Playtime">Czas gry</msg>
     <msg id="Top times">Top Time&apos;y</msg>
     <msg id="Race Vict">Wygr Wyścigi</msg>
-    <msg id="DD/DM Vict">Wygr DD/DM</msg>
     <msg id="DM Vict">Wygr DM</msg>
     <msg id="DD Vict">Wygr DD</msg>
     
@@ -115,16 +108,14 @@
     <msg id="Repair">Naprawa</msg>
     <msg id="Smoke">Dym</msg>
     <msg id="Mine">Mina</msg>
-    <msg id="Godmode">Tryb boga</msg>
+    <msg id="God Mode">Tryb boga</msg>
     <msg id="Oil">Olej</msg>
     <msg id="Self-destruction">Samo-destrukcja</msg>
     <msg id="Flip">Odwrócenie</msg>
     <msg id="VIP rank">Ranga VIP</msg>
     <msg id="Thunder">Piorun</msg>
-    <msg id="Godmode (60 seconds)">Tryb boga (60 sekund)</msg>
     <msg id="Invisibility">Niewidzialność</msg>
     <msg id="Next map">Następna mapa</msg>
-    <msg id="VIP rank (1 week)">Ranga VIPa (1 tydzień)</msg>
     <msg id="Spike Strip">Kolczatka</msg>
     
     <msg id="Set message, which is displayed when you join.">Ustaw wiadomość, która będzie wyświetlana podczas dołączenia do serwera.</msg>
@@ -158,7 +149,7 @@
     <msg id="Select radio channel">Wybierz stację radiową</msg>
     <msg id="Turn off">Wyłącz</msg>
     <msg id="Search...">Szukaj...</msg>
-    <msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Wyłącz radio online przed użyciem radia wbudowanego w grę (możesz to zrobić w Panelu Użytkownika)</msg>
+    <msg id="Disable online radio before using in-game radio (you can do it in User Panel)!">Wyłącz radio online przed użyciem radia wbudowanego w grę (możesz to zrobić w Panelu Użytkownika)</msg>
     <msg id="Radio has been temporary disabled because other music source has been detected!">Radio zostało tymczasowo wyłączone ponieważ wykryto inne źródło muzyki!</msg>
     
     <msg id="Achievements">Osiągnięcia</msg>
@@ -167,10 +158,6 @@
     
     <msg id="Settings">Ustawienia</msg>
     <msg id="Language:">Język:</msg>
-    <msg id="Nick:">Pseudonim:</msg>
-    <msg id="Suicide key:">Przycisk samobójstwa:</msg>
-    <msg id="User Panel key:">Przycisk Panelu Użytkownika:</msg>
-    <msg id="Statistics Panel key:">Przycisk Panelu Statystyk:</msg>
     <msg id="Hide other cars when GM is enabled">Chowaj inne samochody gdy GM jest włączony</msg>
     <msg id="Hide nearby cars">Chowaj bliskie samochody</msg>
     <msg id="Show stars animation above winner car">Pokaż animację gwiazdek nad samochodem zwycięzcy</msg>
@@ -186,7 +173,6 @@
     <msg id="Options">Opcje</msg>
     <msg id="%s has been disabled to improve your FPS!">%s został wyłączony, żeby poprawić twój FPS!</msg>
     
-    <msg id="Map Info">Informacje o mapie</msg>
     <msg id="Map: %s">Mapa: %s</msg>
     <msg id="Author: %s">Autor: %s</msg>
     <msg id="unknown">nieznany</msg>
@@ -199,7 +185,6 @@
     <msg id="Time">Czas</msg>
     <msg id="Wins">Zwycięstwa</msg>
     <msg id="Player">Gracz</msg>
-    <msg id="Empty">Puste</msg>
     <msg id="none">brak</msg>
     
     <msg id="Rate this map">Oceń tę mapę</msg>
@@ -211,7 +196,6 @@
     <msg id="In background">W tle</msg>
     <msg id="Restore">Przywróć</msg>
     
-    <msg id="Help">Pomoc</msg>
     <msg id="Controls">Klawisze</msg>
     <msg id="Press %s to show Statistics Panel.">Naciśnij %s aby pokazać Panel Statystyk.</msg>
     <msg id="Press %s to show User Panel.">Naciśnij %s aby pokazać Panel Użytkownika.</msg>
@@ -290,7 +274,6 @@
     <msg id="Registration succeeded!">Rejestracja się powiodła!</msg>
     <msg id="URL has been copied: %s">URL został skopiowany: %s</msg>
     <msg id="Wait until another sound command finishes playing!">Poczekaj aż inna komenda dźwiękowa się zakończy!</msg>
-    <msg id="Disable online radio before using in-game radio (you can do it in User Panel)!">Wyłącz radio online przed użyciem radia w grze (możesz to zrobić w Panelu Użytkownika)!</msg>
     <msg id="You don&apos;t have VIP account. More info: %s">Nie masz konta VIP. Więcej informacji: %s</msg>
     <msg id="VIP Panel">Panel VIPa</msg>
 </strings>

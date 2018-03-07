@@ -30,7 +30,7 @@ function StRankFromPoints(points)
 		end
 	end
 	
-	return rank or "none"
+	return rank or 'none'
 end
 
 function StDetectRankChange(player, oldPoints, newPoints)

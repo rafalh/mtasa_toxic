@@ -21,7 +21,7 @@ local STATS = {
 	{"Cash:", function(stats)
 		return formatMoney(stats.cash)
 	end},
-	{"EXP:", function(stats)
+	{"Points:", function(stats)
 		return formatNumber(stats.points)..' '..MuiGetMsg('(level %u)'):format(LvlFromExp(stats.points))
 	end},
 	{"Rank:", '_rank'},

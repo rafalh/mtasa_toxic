@@ -36,7 +36,7 @@ local function McHandleCommand(ctx, ...)
 			if(player) then
 				return getPlayerName(player):gsub('#%x%x%x%x%x%x', '')
 			else
-				privMsg(ctx.player, "Cannot find player %s", args[i])
+				privMsg(ctx.player, "Player '%s' has not been found!", args[i])
 				return ''
 			end
 		end

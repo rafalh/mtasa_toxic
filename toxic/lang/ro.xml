@@ -1,20 +1,14 @@
 <strings>
     <msg id='Access denied for &quot;%s&quot;!'>Acces interzis pentru &quot;%s&quot;!</msg>
     
-    <msg id="%uth">%uth</msg>
-    <msg id="%ust">%ust</msg>
-    <msg id="%und">%und</msg>
-    <msg id="%urd">%urd</msg>
     
-    <msg id="* %s died!">* %s a murit!</msg>
-    <msg id="* %s drowned!">* %s s-a inecat!</msg>
     <msg id="* %s has joined the game.">* %s s-a alaturat jocului.</msg>
-	<msg id="* %s has joined the game (%s).">* %s s-a alaturat jocului (%s).</msg>
+    <msg id="* %s has joined the game (%s).">* %s s-a alaturat jocului (%s).</msg>
     <msg id="* %s is now known as %s.">* %s este cunoscut acum ca %s.</msg>
     
     <msg id="Nick change spam! Wait %u seconds and try again.">Numele nu este permis! Asteapta %u secunde si reincearca.</msg>
     <msg id="Empty nick is not allowed!">Numele gol nu este permis!</msg>
-    <msg id="Do not swear %s! %s taked from your cash.">Nu injura %s! %s au fost luati din banii tai.</msg>
+    <msg id="Do not swear %s! %s has been taken from your cash.">Nu injura %s! %s au fost luati din banii tai.</msg>
     <msg id="Warning! Your ping is to high!">Atentie! Lag prea mare!</msg>
     <msg id="Kicking %s for lagging. His ping: %u. Maximal ping: %u.">Ai fost dat afara %s pentru lag. Lag: %u. Lag maxim: %u.</msg>
     <msg id="Too high ping">Lag prea mare</msg>
@@ -23,42 +17,26 @@
     <msg id="FPS is too low">FPS prea mic</msg>
     <msg id="Do not camp or you will be killed!">NU stationa sau vei fi ucis!</msg>
     <msg id="You got killed for camping!">Ai fost ucis pentru stationare!</msg>
-    <msg id="Map %s played %u times.">Harta %s s-a jucat de %u ori.</msg>
+    <msg id="Map %s has been played %u times.">Harta %s s-a jucat de %u ori.</msg>
     <msg id="Map %s is removed! Changing to random map.">Harta %s este stearsa! Schimbam catre o alta harta.</msg>
-    <msg id="Cannot repeat the map for %uth time! Changing to random map.">Nu putem repeta harta de %uth ori! Schimbam catre o alta harta.</msg>
-    <msg id="Ghostmode enabled for %u seconds!">Invizibilitate pornita pentru %u secunde!</msg>
-    <msg id="Ghostmode disabled!">Invizibilitate oprita!</msg>
     <msg id="%s added to your cash! Total: %s.">%s adaugati in portofelul tau! Total: %s.</msg>
     <msg id="%s is the winner!">%s este castigator!</msg>
     <msg id="Top Times:">Cei mai buni timpi:</msg>
     <msg id="The %s top time: %s by %s!">Cel mai bun timp este %s: %s by %s!</msg>
     <msg id="No top times saved!">Niciun timp bun salvat!</msg>
     <msg id="Your personal best time: %s">Cel mai bun timp al tau este: %s</msg>
-    <msg id="You have improved your personal best time! New: %s">Ti-ai revizuit cel mai bun timp al tau! Timp nou: %s</msg>
     <msg id="%s&apos;s personal best time: %s.">%s este cel mai bun timp al tau: %s.</msg>
     <msg id="Warning! %s has been given to %s.">Atentie! %s i-a fost dat lui %s.</msg>
     <msg id="Usage: %s">Folosit: %s</msg>
-    <msg id='Cannot find player &quot;%s&quot;!'>Nu pot gasi jucatorul &quot;%s&quot;!</msg>
     <msg id="You do not have enough cash!">Nu ai bani destui!</msg>
-    <msg id="none">nimic</msg>
     <msg id='Cannot find map &quot;%s&quot;!'>Nu pot gasi harta &quot;%s&quot;!</msg>
     <msg id="Supported types: %s.">Moduri suportate: %s.</msg>
-    <msg id="%s has been muted by %s!">%s a fost redus la tacere de %s!</msg>
-    <msg id="%s has been muted by Script!">%s a fost redus la tacere de Script!</msg>
     <msg id="%s has been unmuted by Script!">%s poate &quot;vorbi&quot; din nou datorita lui Script!</msg>
     <msg id="%s has got permanent mute!">%s nu mai poate vorbi niciodata!</msg>
     <msg id="%s&apos;s %s: %s">%s este %s: %s</msg>
     <msg id="%s&apos;s %s is not set.">%s este %s nu este setat.</msg>
     <msg id="%s set his %s: %s.">%s seteaza %s: lui %s.</msg>
     
-    <msg id="player">jucator</msg>
-    <msg id="cash">bani</msg>
-    <msg id="points">puncte</msg>
-    <msg id="map">harta</msg>
-    <msg id="time">timp</msg>
-    <msg id="name">nume</msg>
-    <msg id="account ID">cont ID</msg>
-    <msg id="level">nivel</msg>
     
     <msg id="Do not spam %s! Otherwise you will get kicked.">Nu fi vulgar %s! Altfel vei fi dat afara.</msg>
     <msg id="Do not spam %s! Otherwise you will get muted.">Nu fi vulgar %s! Altfel vei fi redus la tacere.</msg>
@@ -79,23 +57,20 @@
     <msg id="%s won the lottery!">%s a castigat la loterie!</msg>
     <msg id="Lottery fund: %s. Max fund: %s.">Fondul loteriei: %s. Fondul maxim: %s.</msg>
     <msg id="Rolling the dice...">Invarte zarurile...</msg>
-    <msg id="Please wait... You can roll once every %u seconds.">Asteapta... Poti invarti zarurile odata la %u secunde.</msg>
-    <msg id="Type /rate &lt;1-10&gt; to rate.">Scrie /rate &lt;1-10&gt; pentru a evalua harta .</msg>
+    <msg id="Please Wait... You can roll the dice once every %u seconds.">Asteapta... Poti invarti zarurile odata la %u secunde.</msg>
     <msg id="Map rating: %.2f (rated by %u players).">Evaluarea hartii: %.2f (evaluata de %u jucatori).</msg>
     <msg id="Rate added! Current average rating: %.2f">Evaluare adaugata! Evaluare medie: %.2f</msg>
     <msg id="You rated this map before: %u!">Ai evaluat harta inainte: %u!</msg>
-    <msg id="Language successfully set to %s!">Limba setata cu succes catre %s!</msg>
-    <msg id="%s&apos;s cash: %s - Bidlevel: %u.">%s-banii tai: %s - Nivel: %u.</msg>
+    <msg id="%s&apos;s cash: %s - Bid-level: %u.">%s-banii tai: %s - Nivel: %u.</msg>
     <msg id="%s gave %s %s.">%s-ai dat lui %s %s.</msg>
     <msg id="%s&apos;s points: %s.">%s-punctele tale: %s.</msg>
     <msg id="%s&apos;s rank: %s.">%s-rangul tau: %s.</msg>
     <msg id="%s has new rank: %s!">%s are un nou rang: %s!</msg>
-    <msg id="%s&apos;s bidlevel: %u.">%s-Nivelul tau: %u.</msg>
+    <msg id="%s&apos;s bid-level: %u.">%s-Nivelul tau: %u.</msg>
     <msg id="%s&apos;s IP: %s.">%s-IP tau: %s.</msg>
     <msg id="%s&apos;s trace: %s.">%s-Locatia ta: %s.</msg>
     <msg id="%s&apos;s time here: %s.">%s-Timp petrecut aici: %s.</msg>
     <msg id="%s seen since %d:%02u:%02u.">%s este aici de %d:%02u:%02u.</msg>
-    <msg id="%s has been warned %u times.">%s a fost avertizat de %u ori.</msg>
     <msg id="%s&apos;s MTA version: %s (revision %s).">%s- Versiune MTA: %s (Upgradare la %s).</msg>
     <msg id="Local time: %d-%02d-%02d %d:%02d:%02d.">Ora locala: %d-%02d-%02d %d:%02d:%02d.</msg>
     <msg id="Total maps count: %u.">Total harti: %u.</msg>
@@ -104,7 +79,6 @@
     <msg id="Current super-moderators: %s.">Super-moderatori acum: %s.</msg>
     <msg id="Current moderators: %s.">Moderatori acum: %s.</msg>
     <msg id="Alive Players: %s.">Jucatori in viata: %s.</msg>
-    <msg id="Commands list:">Lista comenzilor:</msg>
     <msg id="Respawn is enabled (%u seconds).">&quot;Renasterea&quot; este pornita (%u secunde).</msg>
     <msg id="Respawn is disabled.">&quot;Renasterea este oprita.</msg>
     <msg id="Found maps: %s.">Harti gasite: %s.</msg>
@@ -113,11 +87,14 @@
     <msg id="Next map is already set.">Urmatoarea harta a fost deja setata.</msg>
     <msg id="Map cannot be repeated!">Harta nu se poate repeta!</msg>
     <msg id="This map has been removed!">Aceasta harta a fost stearsa!</msg>
-    <msg id="You can vote only for race map now! Allowed types: %s.">Poti vota doar pentru harti de tip Race acum! Moduri permise: %s.</msg>
     <msg id="You have to wait %u seconds!">Trebuie sa astepti %u secunde!</msg>
     <msg id="Vehicle weapons enabled by %s!">Armele masinilor permise de %s!</msg>
     <msg id="Vehicle weapons disabled by %s!">Armele masinilor nepermise de %s!</msg>
     <msg id="Vote cancelled by %s!">Votare intrerupta de %s!</msg>
-    <msg id="No vote in progress!">Nicio votare prezenta!</msg>
+    <msg id="No vote is running now!">Nicio votare prezenta!</msg>
     <msg id="Aliases for %s:">Aliases pentru %s:</msg>
+    <msg id="Ghost Mode is enabled for %u seconds!">Invizibilitate pornita pentru %u secunde!</msg>
+    <msg id="Ghost Mode has been disabled!">Invizibilitate oprita!</msg>
+    <msg id="You have improved your personal best time!">Ti-ai revizuit cel mai bun timp al tau!</msg>
+    <msg id="New: %s">Timp nou: %s</msg>
 </strings>

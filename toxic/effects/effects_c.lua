@@ -147,7 +147,7 @@ local EffectSettings =
 				gui[res].onChange = onBtnToggle
 				
 				if(info.hasOptions) then
-					local optsBtn = guiCreateButton(x + 200 + OnOffBtn.w + 5, y + h, 60, OnOffBtn.h, 'Options', false, wnd)
+					local optsBtn = guiCreateButton(x + 200 + OnOffBtn.w + 5, y + h, 60, OnOffBtn.h, "Options", false, wnd)
 					addEventHandler('onClientGUIClick', optsBtn, function()
 						call(res, 'openEffectOptions')
 					end, false)

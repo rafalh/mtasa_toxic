@@ -3,270 +3,253 @@
     <msg id="* %s has been kicked from the game.">* %s ha sido kickeado del servidor.</msg>
     <msg id="* %s has been banned from the game.">* %s has sido baneado del servidor.</msg>
     <msg id="* %s has left the game [%s].">* %s has salido del servidor [%s].</msg>
-	
-	<msg id="Save">Guardar</msg>
-	<msg id="Cancel">Cancelar</msg>
-	<msg id="Apply">Aplicar</msg>
+    
+    <msg id="Save">Guardar</msg>
+    <msg id="Cancel">Cancelar</msg>
     <msg id="Close">Cerrar</msg>
-	<msg id="Color">Color</msg>
-	<msg id="On">Encendido.</msg>
-	<msg id="Off">Apagado.</msg>
-	<msg id="Add">Añadir</msg>
-	<msg id="Delete">Borrar</msg>
-	<msg id="Up">Arriba</msg>
-	<msg id="Down">Abajo</msg>
-	<msg id="Change">Cambiar</msg>
-	
+    <msg id="Color">Color</msg>
+    <msg id="On">Encendido.</msg>
+    <msg id="Off">Apagado.</msg>
+    <msg id="Add">Añadir</msg>
+    <msg id="Delete">Borrar</msg>
+    <msg id="Up">Arriba</msg>
+    <msg id="Down">Abajo</msg>
+    <msg id="Change">Cambiar</msg>
+    
     <msg id="Usage: %s">Uso: %s</msg>
     <msg id="Press %s to open User Panel and %s to open Statistics Panel!">Presiona %s para abrir el panel de usuario, y %s para abrir el panel de estadisticas!</msg>
     
-	<msg id="Login">Logueo</msg>
-	<msg id="Please login to save your statistics">Por favor, Logueate para guardar tus estadisticas</msg>
-	<msg id="Username:">Usuario:</msg>
-	<msg id="Password:">Password:</msg>
-	<msg id="Remember me">Recuerdame </msg>
-	<msg id="Register">Registro</msg>
-	<msg id="Play as guest">Jugar como invitado</msg>
-	<msg id="Forgot password">Olvide mi contraseña</msg>
-	<msg id="Register new account">Registrar nueva cuenta</msg>
-	<msg id="Retry password:">Reintentar contraseña:</msg>
-	<msg id="Password strength:">Fuerza contraseña:</msg>
-	<msg id="E-Mail (optional):">E-Mail (opcional):</msg>
-	
-	<msg id="Username is too short!">Usuario muy pequeño!</msg>
-	<msg id="Password is too short!">Contraseña muy pequeña!</msg>
-	<msg id="Passwords do not match!">Las contraseñas no coinciden!</msg>
-	
-	<msg id="Password Recovery">Recuperacion de la contraseña</msg>
-	<msg id="Enter the same E-Mail address, you have used on account registration. Code for reseting the password will be send.">Introduzca el mismo email que uso en el registro. El codigo de reset sera enviado a vuestro mail.</msg>
-	
-	<msg id="Statistics">Estadisticas</msg>
+    <msg id="Login">Logueo</msg>
+    <msg id="Please login to save your statistics">Por favor, Logueate para guardar tus estadisticas</msg>
+    <msg id="Username:">Usuario:</msg>
+    <msg id="Password:">Password:</msg>
+    <msg id="Remember me">Recuerdame </msg>
+    <msg id="Register">Registro</msg>
+    <msg id="Play as guest">Jugar como invitado</msg>
+    <msg id="Forgot password">Olvide mi contraseña</msg>
+    <msg id="Register new account">Registrar nueva cuenta</msg>
+    <msg id="Retry password:">Reintentar contraseña:</msg>
+    <msg id="Password strength:">Fuerza contraseña:</msg>
+    <msg id="E-Mail (optional):">E-Mail (opcional):</msg>
+    
+    <msg id="Username is too short!">Usuario muy pequeño!</msg>
+    <msg id="Password is too short!">Contraseña muy pequeña!</msg>
+    <msg id="Passwords do not match!">Las contraseñas no coinciden!</msg>
+    
+    <msg id="Password Recovery">Recuperacion de la contraseña</msg>
+    <msg id="Enter the same E-Mail address, you have used on account registration. Code for reseting the password will be send.">Introduzca el mismo email que uso en el registro. El codigo de reset sera enviado a vuestro mail.</msg>
+    
+    <msg id="Statistics">Estadisticas</msg>
     <msg id="Player:">Jugador:</msg>
     <msg id="Cash:">Dinero:</msg>
     <msg id="Points:">Puntos:</msg>
     <msg id="Rank:">Rango:</msg>
-    <msg id="DD/DM Played:">Carreras DD/DM jugadas:</msg>
-    <msg id="DD/DM Wins:">Carreras DD/DM ganadas:</msg>
-    <msg id="Race - 1st:">Carreras - 1Puesto.:</msg>
-    <msg id="Race - 2nd:">Carreras - 2Puesto.:</msg>
-    <msg id="Race - 3rd:">Carreras - 3Puesto.:</msg>
-	<msg id="DM Victories:">Victorias DM:</msg>
-	<msg id="Hunters taken:">Hunter cogidos:</msg>
-	<msg id="DD Victories:">Victorias DD:</msg>
-	<msg id="DD Kills:">Muertes en DD:</msg>
-	<msg id="Race Victories:">Victorias de race:</msg>
-	<msg id="Maximal Win Streak:">Maxima racha de victorias:</msg>
+    <msg id="DM Victories:">Victorias DM:</msg>
+    <msg id="Hunters taken:">Hunter cogidos:</msg>
+    <msg id="DD Victories:">Victorias DD:</msg>
+    <msg id="DD Kills:">Muertes en DD:</msg>
+    <msg id="Race Victories:">Victorias de race:</msg>
+    <msg id="Maximal Win Streak:">Maxima racha de victorias:</msg>
     <msg id="Top Times held:">Progreso Top times&apos;ów:</msg>
     <msg id="Bidlevel:">Bidlevel:</msg>
     <msg id="Exploded:">Explotado:</msg>
     <msg id="Drowned:">Ahogado:</msg>
     <msg id="Playtime:">Tiempo de juego:</msg>
-	<msg id="Maps rated:">Mapas valorados:</msg>
-	<msg id="Maps bought:">Mapas comprados:</msg>
-	<msg id="%s times">%s veces</msg>
-	
+    <msg id="Maps rated:">Mapas valorados:</msg>
+    <msg id="Maps bought:">Mapas comprados:</msg>
+    <msg id="%s times">%s veces</msg>
+    
     <msg id="Profile">Perfil</msg>
-	<msg id="General">General</msg>
-	<msg id="Firstname:">Primer nombre:</msg>
-	<msg id="Age:">Edad:</msg>
-	<msg id="City:">Ciudad:</msg>
-	<msg id="Interests:">Intereses:</msg>
-	<msg id="Contact">Contacto</msg>
-	
-	<msg id="Change password">Cambiar contraseña</msg>
-	<msg id="Change password for your account">Cambiar contraseña a tu cuenta</msg>
-	<msg id="Old password:">Antigua contraseña:</msg>
-	<msg id="Old password is invalid!">Antigua contraseña erronea!</msg>
-	
-	<msg id="Change e-mail">Cambiar e-mail</msg>
-	<msg id="Change your account e-mail address">Cambiar email de tu cuenta</msg>
-	<msg id="Password is required!">Contraseña requerida!</msg>
-	<msg id="Password is incorrect!">Contraseña es incorrecta!</msg>
-	<msg id="E-mail address is invalid!">E-mail incorrecto!</msg>
-	
+    <msg id="General">General</msg>
+    <msg id="Firstname:">Primer nombre:</msg>
+    <msg id="Age:">Edad:</msg>
+    <msg id="City:">Ciudad:</msg>
+    <msg id="Interests:">Intereses:</msg>
+    <msg id="Contact">Contacto</msg>
+    
+    <msg id="Change password">Cambiar contraseña</msg>
+    <msg id="Change password for your account">Cambiar contraseña a tu cuenta</msg>
+    <msg id="Old password:">Antigua contraseña:</msg>
+    <msg id="Old password is invalid!">Antigua contraseña erronea!</msg>
+    
+    <msg id="Change e-mail">Cambiar e-mail</msg>
+    <msg id="Change your account e-mail address">Cambiar email de tu cuenta</msg>
+    <msg id="Password is required!">Contraseña requerida!</msg>
+    <msg id="Password is incorrect!">Contraseña es incorrecta!</msg>
+    <msg id="E-mail address is invalid!">E-mail incorrecto!</msg>
+    
     <msg id="Players list">Lista de jugadores</msg>
-	<msg id="Player name">Nombre del jugador</msg>
-	<msg id="Sort:">Filtrar:</msg>
-	<msg id="descending">bajando</msg>
+    <msg id="Player name">Nombre del jugador</msg>
+    <msg id="Sort:">Filtrar:</msg>
+    <msg id="descending">bajando</msg>
     <msg id="Players online only">Jugadores conectados solo</msg>
-	<msg id="Cash">Dinero</msg>
-	<msg id="Points">Puntos</msg>
-	<msg id="Playtime">Tiempo de juego</msg>
-	<msg id="Top times">Top Time'y</msg>
+    <msg id="Cash">Dinero</msg>
+    <msg id="Points">Puntos</msg>
+    <msg id="Playtime">Tiempo de juego</msg>
+    <msg id="Top times">Top Time&apos;y</msg>
     <msg id="Race Vict">Victorias race</msg>
-    <msg id="DD/DM Vict">Victorias DD/DM</msg>
-	<msg id="DM Vict">Victorias DM</msg>
-	<msg id="DD Vict">Victorias DD</msg>
-	
+    <msg id="DM Vict">Victorias DM</msg>
+    <msg id="DD Vict">Victorias DD</msg>
+    
     <msg id="Shop">Tienda</msg>
-	<msg id="All items:">Todos los items:</msg>
-	<msg id="Your items:">Tus items:</msg>
-	<msg id="Cost:">Coste:</msg>
+    <msg id="All items:">Todos los items:</msg>
+    <msg id="Your items:">Tus items:</msg>
+    <msg id="Cost:">Coste:</msg>
     <msg id="Buy">Comprar</msg>
     <msg id="Sell">Vender</msg>
     <msg id="Use">Usar</msg>
     <msg id="Description:">Descripcion:</msg>
-	<msg id="%u%% price reduction for VIP">%u%% reducido del precio por el VIP</msg>
-	
-	<msg id="User Items">Items de usuario</msg>
-	<msg id="You don't have any item!">No tienes ningun item!</msg>
-	
-	<msg id="Beer">Cerveza</msg>
-	<msg id="Repair">Reparacion</msg>
-	<msg id="Smoke">Humo</msg>
-	<msg id="Mine">Mina</msg>
-	<msg id="Godmode">Modo dios</msg>
-	<msg id="Oil">Aceite</msg>
-	<msg id="Self-destruction">Propia destruccion</msg>
-	<msg id="Flip">Voltear</msg>
-	<msg id="VIP rank">Rango VIP</msg>
-	<msg id="Thunder">Relampago</msg>
-	<msg id="Godmode (60 seconds)">Modo dios (60 segundos)</msg>
-	<msg id="Invisibility">Invisibilidad</msg>
-	<msg id="Next map">Siguiente mapa</msg>
-	<msg id="VIP rank (1 week)">Rango VIP (1 semana)</msg>
-	<msg id="Spike Strip">Ataque de pico</msg>
-	
-	<msg id="Set message, which is displayed when you join.">Pon un mensaje, se mostrara al conectarte al servidor.</msg>
-	<msg id="Repair your vehicle when you want.">Reparar el vehiculo cuando quieras.</msg>
-	<msg id="Flips your vehicle.">Voltea tu vehiculo.</msg>
-	<msg id="Make self-destruction and kill all players, which are near to your vehicle!">Autodetonate y destruye a tus enemigos, deves estar cerca!</msg>
-	<msg id="Place a mine under your car!">Pon una mina bajo tu coche!</msg>
-	<msg id="Spill oil over road!">Rocia aceite en la carretera!</msg>
-	<msg id="Are you angry with whole world? Get drunk!">Estas enfadado con el mundo. Bebete una cerveza.</msg>
-	<msg id="Make your vehicle invisible...">Has tu vehiculo invisible...</msg>
-	<msg id="Make your vehicle indestructible for 60 seconds!">Has tu vehiculo indestructible por 60 segundos.</msg>
-	<msg id="Attack nearest player with a thunder.">Ataca a los enemigos cercanos con un relampago.</msg>
-	<msg id="Smoke behind your vehicle for 15 seconds.">Hecha humo de tu vehiculo durante 15 segundos.</msg>
-	<msg id="Punctur tires of your enemies vehicles.">Romper las ruedas de los vehiculos enemigos.</msg>
-	<msg id="Add your favourite map to queue.">Añade tu mapa favorito a la cola.</msg>
-	<msg id="VIP rank activation for 1 week.">Rango VIP por 1 semana.</msg>
-	
-	<msg id="Translator">Traductor</msg>
-	<msg id="From:">De:</msg>
-	<msg id="To:">A:</msg>
-	<msg id="Translate">Traducir</msg>
-	<msg id="Say translated">Decir traducido.</msg>
-	<msg id="Load chat message">Cargar mensaje de chat</msg>
-	<msg id="Input:">Entrada:</msg>
-	<msg id="Output:">Salida:</msg>
-	<msg id="Please wait...">Espera por favor...</msg>
-	<msg id="Translation by %s">Traduccion por %s</msg>
-	<msg id="Auto-detect">Autodetectar</msg>
-	
-	<msg id="Radio">Radio</msg>
-	<msg id="Select radio channel">Seleccionar canal de radio</msg>
-	<msg id="Turn off">Encender</msg>
-	<msg id="Search...">Buscar...</msg>
-	<msg id="Disable online radio before using ingame radio (you can do it in User Panel)!">Desactiva la radio antes de utilizar la musica del juego, haslo en el panel</msg>
-	<msg id="Radio has been temporary disabled because other music source has been detected!">Radio temporalmente desactivada!</msg>
-	
-	<msg id="Achievements">Logros</msg>
-	<msg id="Unlocked achievements: %u/%u">Logros desbloqueados: %u/%u</msg>
-	<msg id="Achievement unlocked: %s! %s have been added to your cash.">Logros desbloqueados: %s! %s ha sido añadido a tu cartera.</msg>
-	
+    <msg id="%u%% price reduction for VIP">%u%% reducido del precio por el VIP</msg>
+    
+    <msg id="User Items">Items de usuario</msg>
+    <msg id="You don&apos;t have any item!">No tienes ningun item!</msg>
+    
+    <msg id="Beer">Cerveza</msg>
+    <msg id="Repair">Reparacion</msg>
+    <msg id="Smoke">Humo</msg>
+    <msg id="Mine">Mina</msg>
+    <msg id="God Mode">Modo dios</msg>
+    <msg id="Oil">Aceite</msg>
+    <msg id="Self-destruction">Propia destruccion</msg>
+    <msg id="Flip">Voltear</msg>
+    <msg id="VIP rank">Rango VIP</msg>
+    <msg id="Thunder">Relampago</msg>
+    <msg id="Invisibility">Invisibilidad</msg>
+    <msg id="Next map">Siguiente mapa</msg>
+    <msg id="Spike Strip">Ataque de pico</msg>
+    
+    <msg id="Set message, which is displayed when you join.">Pon un mensaje, se mostrara al conectarte al servidor.</msg>
+    <msg id="Repair your vehicle when you want.">Reparar el vehiculo cuando quieras.</msg>
+    <msg id="Flips your vehicle.">Voltea tu vehiculo.</msg>
+    <msg id="Make self-destruction and kill all players, which are near to your vehicle!">Autodetonate y destruye a tus enemigos, deves estar cerca!</msg>
+    <msg id="Place a mine under your car!">Pon una mina bajo tu coche!</msg>
+    <msg id="Spill oil over road!">Rocia aceite en la carretera!</msg>
+    <msg id="Are you angry with whole world? Get drunk!">Estas enfadado con el mundo. Bebete una cerveza.</msg>
+    <msg id="Make your vehicle invisible...">Has tu vehiculo invisible...</msg>
+    <msg id="Make your vehicle indestructible for 60 seconds!">Has tu vehiculo indestructible por 60 segundos.</msg>
+    <msg id="Attack nearest player with a thunder.">Ataca a los enemigos cercanos con un relampago.</msg>
+    <msg id="Smoke behind your vehicle for 15 seconds.">Hecha humo de tu vehiculo durante 15 segundos.</msg>
+    <msg id="Punctur tires of your enemies vehicles.">Romper las ruedas de los vehiculos enemigos.</msg>
+    <msg id="Add your favourite map to queue.">Añade tu mapa favorito a la cola.</msg>
+    
+    <msg id="Translator">Traductor</msg>
+    <msg id="From:">De:</msg>
+    <msg id="To:">A:</msg>
+    <msg id="Translate">Traducir</msg>
+    <msg id="Say translated">Decir traducido.</msg>
+    <msg id="Load chat message">Cargar mensaje de chat</msg>
+    <msg id="Input:">Entrada:</msg>
+    <msg id="Output:">Salida:</msg>
+    <msg id="Please wait...">Espera por favor...</msg>
+    <msg id="Translation by %s">Traduccion por %s</msg>
+    <msg id="Auto-detect">Autodetectar</msg>
+    
+    <msg id="Radio">Radio</msg>
+    <msg id="Select radio channel">Seleccionar canal de radio</msg>
+    <msg id="Turn off">Encender</msg>
+    <msg id="Search...">Buscar...</msg>
+    <msg id="Disable online radio before using in-game radio (you can do it in User Panel)!">Desactiva la radio antes de utilizar la musica del juego, haslo en el panel</msg>
+    <msg id="Radio has been temporary disabled because other music source has been detected!">Radio temporalmente desactivada!</msg>
+    
+    <msg id="Achievements">Logros</msg>
+    <msg id="Unlocked achievements: %u/%u">Logros desbloqueados: %u/%u</msg>
+    <msg id="Achievement unlocked: %s! %s have been added to your cash.">Logros desbloqueados: %s! %s ha sido añadido a tu cartera.</msg>
+    
     <msg id="Settings">Ajustes</msg>
     <msg id="Language:">Idioma:</msg>
-    <msg id="Nick:">Usuario:</msg>
-    <msg id="Suicide key:">Tecla de suicidio:</msg>
-    <msg id="User Panel key:">Tecla de userpanel:</msg>
-    <msg id="Statistics Panel key:">Tecla de estadisticas:</msg>
-	<msg id="Hide other cars when GM is enabled">Esconde otros coches cuando el GM esta activado</msg>
-	<msg id="Hide nearby cars">Esconde coches cercanos</msg>
-	<msg id="Show stars animation above winner car">Muestra las estrellas encima del coche ganador</msg>
-	<msg id="Display chat messages above players">Muestra los mensajes encima de la gente</msg>
-	<msg id="Broken glass after huge damage">Cristal roto al recivir mucho daño</msg>
-	<msg id="Screen flashes red after huge damage">Flashes rojos despues de recivir mucho daño</msg>
-	<msg id="Top Time Playback">Top time PlayBack</msg>
-	<msg id="Race Audio Volume: %u%%">Volumen DM Radio: %u%%</msg>
-	<msg id="Commands Volume: %u%%">Volumen comandos: %u%%</msg>
-	<msg id="Map Music Volume: %u%%">Volumen Musica del mapa: %u%%</msg>
-	<msg id="Effects:">Efectos:</msg>
-	<msg id="Options">Opciones</msg>
-	<msg id="%s has been disabled to improve your FPS!">%s ha sido desactivado, para mejorar tus FPS!</msg>
-	
-	<msg id="Map Info">Informacion del mapa</msg>
-	<msg id="Map: %s">Mapa: %s</msg>
+    <msg id="Hide other cars when GM is enabled">Esconde otros coches cuando el GM esta activado</msg>
+    <msg id="Hide nearby cars">Esconde coches cercanos</msg>
+    <msg id="Show stars animation above winner car">Muestra las estrellas encima del coche ganador</msg>
+    <msg id="Display chat messages above players">Muestra los mensajes encima de la gente</msg>
+    <msg id="Broken glass after huge damage">Cristal roto al recivir mucho daño</msg>
+    <msg id="Screen flashes red after huge damage">Flashes rojos despues de recivir mucho daño</msg>
+    <msg id="Top Time Playback">Top time PlayBack</msg>
+    <msg id="Race Audio Volume: %u%%">Volumen DM Radio: %u%%</msg>
+    <msg id="Commands Volume: %u%%">Volumen comandos: %u%%</msg>
+    <msg id="Map Music Volume: %u%%">Volumen Musica del mapa: %u%%</msg>
+    <msg id="Effects:">Efectos:</msg>
+    <msg id="Options">Opciones</msg>
+    <msg id="%s has been disabled to improve your FPS!">%s ha sido desactivado, para mejorar tus FPS!</msg>
+    
+    <msg id="Map: %s">Mapa: %s</msg>
     <msg id="Author: %s">Autor: %s</msg>
-	<msg id="unknown">nieznany</msg>
+    <msg id="unknown">nieznany</msg>
     <msg id="Played: %u times">Jugado: %u veces</msg>
     <msg id="Rating: %s (%u votes)">Valorado: %s (%u votos)</msg>
-	<msg id="Your Rating: %s">Tu valoracion: %s</msg>
+    <msg id="Your Rating: %s">Tu valoracion: %s</msg>
     <msg id="Top Times:">Top times:</msg>
-	<msg id="Top Winners:">Top Ganadores:</msg>
+    <msg id="Top Winners:">Top Ganadores:</msg>
     <msg id="Pos">Lp</msg>
     <msg id="Time">Tiempo</msg>
-	<msg id="Wins">Ganadas</msg>
-	<msg id="Player">Jugador</msg>
-    <msg id="Empty">Vacio</msg>
-	<msg id="none">nada</msg>
-	
-	<msg id="Rate this map">Valora este mapa</msg>
-	<msg id="Press 1-5 to rate this map">Presiona 1-5 para valorar este mapa</msg>
-	
+    <msg id="Wins">Ganadas</msg>
+    <msg id="Player">Jugador</msg>
+    <msg id="none">brak</msg>
+    
+    <msg id="Rate this map">Valora este mapa</msg>
+    <msg id="Press 1-5 to rate this map">Presiona 1-5 para valorar este mapa</msg>
+    
     <msg id="Private Chat - %s">Chat privado - %s</msg>
     <msg id="Say:">Escribir:</msg>
     <msg id="Send">Mandar</msg>
     <msg id="In background">En segundo plano</msg>
-	<msg id="Restore">Restaurar</msg>
-	
-	<msg id="Help">Ayuda</msg>
-	<msg id="Controls">Controles</msg>
-	<msg id="Press %s to show Statistics Panel.">Presione %s para abrir el panel de estadisticas.</msg>
-	<msg id="Press %s to show User Panel.">Presione %s parar abrir el panel de usuario.</msg>
-	<msg id="Press %s to show User Items.">Presione %s para abrir items del usuario.</msg>
-	<msg id="Press %s to show Map Info.">Presione %s para mostrar la informacion del mapa.</msg>
-	<msg id="Commands">Comandos</msg>
-	<msg id="Search:">Buscar:</msg>
-	<msg id="Command">Comando</msg>
-	<msg id="Description">Descripcion</msg>
-	
+    <msg id="Restore">Restaurar</msg>
+    
+    <msg id="Controls">Controles</msg>
+    <msg id="Press %s to show Statistics Panel.">Presione %s para abrir el panel de estadisticas.</msg>
+    <msg id="Press %s to show User Panel.">Presione %s parar abrir el panel de usuario.</msg>
+    <msg id="Press %s to show User Items.">Presione %s para abrir items del usuario.</msg>
+    <msg id="Press %s to show Map Info.">Presione %s para mostrar la informacion del mapa.</msg>
+    <msg id="Commands">Comandos</msg>
+    <msg id="Search:">Buscar:</msg>
+    <msg id="Command">Comando</msg>
+    <msg id="Description">Descripcion</msg>
+    
     <msg id="User Panel">Panel de usuario</msg>
-	<msg id="Log In">Entrar</msg>
-	<msg id="Log Out">Desconectarse</msg>
-	<msg id="Back">Atras</msg>
-	<msg id="You are logged in as %s">Estas conectado como %s</msg>
-	<msg id="You are not logged in">No estas conectado</msg>
-	<msg id="Server Rules">Reglas del servidor</msg>
-	
+    <msg id="Log In">Entrar</msg>
+    <msg id="Log Out">Desconectarse</msg>
+    <msg id="Back">Atras</msg>
+    <msg id="You are logged in as %s">Estas conectado como %s</msg>
+    <msg id="You are not logged in">No estas conectado</msg>
+    <msg id="Server Rules">Reglas del servidor</msg>
+    
     <msg id="About">Acerca del server</msg>
-	<msg id="About ToxiC Server">Acerca del server ToxiC</msg>
-	
-	<msg id="Select next map">Seleccionar siguiente mapa</msg>
-	<msg id="Add to queue">Añadir a la cola</msg>
-	<msg id="Buy map">Comprar mapa</msg>
-	<msg id="Map name">Nombre del mapa</msg>
-	<msg id="Played">Jugado</msg>
-	<msg id="Map rating">Valoracion del mapa</msg>
-	<msg id="Select your candidate for next map">Seleccion a un candidato para siguiente mapa</msg>
-	<msg id="Choose the next map to buy">Elige el siguiente mapa que comprar</msg>
-	
-	<msg id="Player profile">Perfil del jugador</msg>
-	<msg id="Information">Informacion</msg>
-	
-	<msg id="Teams Admin Panel">Panel de administracion</msg>
-	<msg id="Name">Nombre</msg>
-	<msg id="Type">Tipo</msg>
-	<msg id="Last Usage">Ultimo uso</msg>
-	<msg id="today">Hoy</msg>
-	<msg id="yesterday">Ayer</msg>
-	<msg id="%u days ago">hace %u dias</msg>
-	<msg id="Update players">Actualizar jugadores</msg>
-	
-	<msg id="Car Hide has been enabled">Esconder vehiculos activado</msg>
-	<msg id="Car Hide has been disabled">Esconder vehiculos desactivado</msg>
-	
-	<msg id="Warn player">Advertir al jugador</msg>
-	<msg id="Reason:">Razon:</msg>
-	<msg id="Warnings list">Lista de advertencias</msg>
-	<msg id="Active warnings:">Advertencias activas:</msg>
-	<msg id="From">De</msg>
-	<msg id="Date">Fecha</msg>
-	<msg id="Reason">Razon</msg>
-	
-	<msg id="Clan Team">Equipo de clan</msg>
-	<msg id="Edit Clan Team">Editar equipo de clan</msg>
-	<msg id="Please enter information about your clan">Introdusca informacion sobre vuestro clan, Por favor</msg>
-	<msg id="Name:">Nombre:</msg>
-	<msg id="Color:">Color:</msg>
+    <msg id="About ToxiC Server">Acerca del server ToxiC</msg>
+    
+    <msg id="Select next map">Seleccionar siguiente mapa</msg>
+    <msg id="Add to queue">Añadir a la cola</msg>
+    <msg id="Buy map">Comprar mapa</msg>
+    <msg id="Map name">Nombre del mapa</msg>
+    <msg id="Played">Jugado</msg>
+    <msg id="Map rating">Valoracion del mapa</msg>
+    <msg id="Select your candidate for next map">Seleccion a un candidato para siguiente mapa</msg>
+    <msg id="Choose the next map to buy">Elige el siguiente mapa que comprar</msg>
+    
+    <msg id="Player profile">Perfil del jugador</msg>
+    <msg id="Information">Informacion</msg>
+    
+    <msg id="Teams Admin Panel">Panel de administracion</msg>
+    <msg id="Name">Nombre</msg>
+    <msg id="Type">Tipo</msg>
+    <msg id="Last Usage">Ultimo uso</msg>
+    <msg id="today">Hoy</msg>
+    <msg id="yesterday">Ayer</msg>
+    <msg id="%u days ago">hace %u dias</msg>
+    <msg id="Update players">Actualizar jugadores</msg>
+    
+    <msg id="Car Hide has been enabled">Esconder vehiculos activado</msg>
+    <msg id="Car Hide has been disabled">Esconder vehiculos desactivado</msg>
+    
+    <msg id="Warn player">Advertir al jugador</msg>
+    <msg id="Reason:">Razon:</msg>
+    <msg id="Warnings list">Lista de advertencias</msg>
+    <msg id="Active warnings:">Advertencias activas:</msg>
+    <msg id="From">De</msg>
+    <msg id="Date">Fecha</msg>
+    <msg id="Reason">Razon</msg>
+    
+    <msg id="Clan Team">Equipo de clan</msg>
+    <msg id="Edit Clan Team">Editar equipo de clan</msg>
+    <msg id="Please enter information about your clan">Introdusca informacion sobre vuestro clan, Por favor</msg>
+    <msg id="Name:">Nombre:</msg>
+    <msg id="Color:">Color:</msg>
 </strings>
