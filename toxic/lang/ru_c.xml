@@ -78,7 +78,7 @@
     <msg id="Author: %s">Автор: %s</msg>
     <msg id="unknown">Неизвестно</msg>
     <msg id="Played: %u times">Сыграна: %u раз</msg>
-    <msg id="Rating:">Оценка:</msg>
+    <msg id="Rating: %s (%u votes)">Оценка: %s (%u votes)</msg>
     <msg id="Top Times:">Рекорды:</msg>
     <msg id="Pos">Место</msg>
     <msg id="Time">Время</msg>
