@@ -63,17 +63,62 @@ function Debug.printStackTrace(lvl, maxLen, trimTop, trimBottom)
 	end
 end
 
-if DEBUG then
-	function Debug.dump(str, title)
-		local len = str:len()
-		local bytes = {str:byte(1, len)}
-		local buf = ''
-		for i, byte in ipairs(bytes) do
-			buf = buf..(' %02X'):format(byte)
-		end
-		Debug.info((title or 'dump')..':'..buf)
+function Debug.dump(value, quote, undumpedTables)
+	if not undumpedTables then
+		undumpedTables = {}
 	end
-	
+	if isElement(value) then
+		local elType = getElementType(value)
+		if elType == 'player' then
+			return elType..'('..getPlayerName(value)..')'
+		else
+			return elType..'('..getElementID(value)..')'
+		end
+	elseif type(value) == 'string' then
+		if value:match('[^%p%w%s]') then
+			return 'bin('..Debug.dumpHex(value)..')'
+		else
+			local quoteMark = quote and '\'' or ''
+			return quoteMark..value..quoteMark
+		end
+	elseif type(value) == 'table' then
+		if undumpedTables[value] then
+			return tostring(value)
+		else
+			-- make sure we don't have endless recursion
+			undumpedTables[value] = true
+			return Debug.dumpTbl(value, undumpedTables)
+		end
+	else
+		return tostring(val)
+	end
+end
+
+function Debug.dumpTbl(tbl, undumpedTables)
+	local temp = {}
+	for key, val in pairs(tbl) do
+		if type(key) == 'number' and key <= #tbl then
+			table.insert(temp, Debug.dump(val, true, undumpedTables))
+		elseif type(key) == 'string' and key:match('^%a') then
+			table.insert(temp, key..'='..Debug.dump(val, true, undumpedTables))
+		else
+			table.insert(temp, '['..Debug.dump(key, true, undumpedTables)..']='..Debug.dump(val, true, undumpedTables))
+		end
+	end
+	return '{'..table.concat(temp, ', ')..'}'
+end
+
+function Debug.dumpHex(str)
+	local len = str:len()
+	local bytes = {str:byte(1, len)}
+	local temp = {}
+	for i, byte in ipairs(bytes) do
+		table.insert(temp, ('%02X'):format(byte))
+	end
+	return table.concat(temp, ' ')
+end
+
+if DEBUG then
 	DbgPerf = Class('DbgPerf')
 	
 	function DbgPerf.__mt.__index:init(limit)
@@ -142,7 +187,6 @@ else
 	local function DbgDummy()
 	end
 	
-	Debug.dump = DbgDummy
 	DbgPerf = function() return {cp = DbgDummy} end
 end
 
