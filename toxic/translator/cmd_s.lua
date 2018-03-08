@@ -34,6 +34,7 @@ CmdMgr.register{
 		if(validateLangCode(langCode)) then
 			local state = table.copy(g_ScriptMsgState, true)
 			translate(text, false, langCode, function (text, state)
+				if(not isElement(ctx.player)) then return end
 				local oldState = g_ScriptMsgState
 				g_ScriptMsgState = state
 				scriptMsg("Translation: %s", text)

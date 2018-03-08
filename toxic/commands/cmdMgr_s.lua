@@ -302,6 +302,13 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 		recipients = getElementsByType('player')
 	end
 	
+	local nowTicks = getTickCount()
+	if ctx.player.lastCmdTicks and nowTicks - ctx.player.lastCmdTicks < 1000 then
+		privMsg(ctx.player, "Please do not execute commands so fast!")
+		return -- ignore command spam
+	end
+	ctx.player.lastCmdTicks = nowTicks
+
 	g_ScriptMsgState.prefix = chatPrefix or ''
 	g_ScriptMsgState.color = chatColor or false
 	
@@ -312,13 +319,6 @@ function parseCommand(msg, sender, recipients, chatPrefix, chatColor)
 			table.insert(g_ScriptMsgState.recipients, player)
 		end
 	end
-	
-	local nowTicks = getTickCount()
-	if ctx.player.lastCmdTicks and nowTicks - ctx.player.lastCmdTicks < 1000 then
-		privMsg(ctx.player, "Please do not execute commands so fast!")
-		return -- ignore command spam
-	end
-	ctx.player.lastCmdTicks = nowTicks
 
 	local shortMsg = msg:sub(1, 100)
 	outputServerLog('CMD: '..ctx.player:getName()..': '..shortMsg)
