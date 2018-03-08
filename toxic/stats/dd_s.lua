@@ -197,8 +197,8 @@ end
 local function onPlayerWasted()
 	local player = Player.fromEl(source)
 	
-	-- Check if killers detection is enabled
-	if(not player or not player.room.ddKilersDetection) then return end
+	-- Check if killers detection is enabled and player is ready
+	if(not player or not player.room.ddKilersDetection or not player.sync) then return end
 	
 	-- Check if Race State is valid
 	if(player.room.gameState == 'Running' or player.room.gameState == 'PostFinish') then
