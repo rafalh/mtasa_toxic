@@ -1,0 +1,8 @@
+<meta>
+	<info name="CP Spline" author="Rafalh" version="1.0.0" type="misc" />
+	
+	<script src="spline_c.lua" type="client" />
+	
+	<export function="setEffectEnabled" type="client" />
+	<export function="isEffectEnabled" type="client" />
+</meta>
