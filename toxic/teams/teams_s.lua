@@ -114,7 +114,7 @@ end
 
 local function removePlayerFromTeam(player)
 	local pdata = Player.fromEl(player)
-	local teamInfo = pdata.teamInfo or false
+	local teamInfo = pdata and pdata.teamInfo or false
 	if(not teamInfo) then return end
 	
 	setPlayerTeam(player, nil)

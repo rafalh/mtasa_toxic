@@ -53,7 +53,7 @@ CmdMgr.register{
 
 local function TrcOnPlayerQuit()
 	local pdata = Player.fromEl(source)
-	if(pdata.id) then
+	if pdata and pdata.id then
 		g_TracedPlayers[pdata.id] = nil
 	end
 end

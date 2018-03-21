@@ -40,7 +40,7 @@ end
 
 local function TmPlayerQuit()
 	local pdata = Player.fromEl(source)
-	assert(pdata)
+	if not pdata then return end
 	
 	for id, data in pairs(pdata.timers) do -- ipair is wrong here
 		killTimer(data.t)

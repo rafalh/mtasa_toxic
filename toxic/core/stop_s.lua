@@ -17,7 +17,10 @@ end
 
 local function onPlayerQuit()
 	local player = Player.fromEl(source)
-	player:destroy()
+	-- Note: onPlayerQuit without onPlayerJoin is rare but happens
+	if player then
+		player:destroy()
+	end
 end
 
 addInitFunc(function()
