@@ -116,6 +116,7 @@ function Recorder.stopReq()
 	
 	if(g_Waiting) then
 		removeEventHandler('onClientPreRender', g_Root, Recorder.preRender)
+		g_Waiting = false
 	end
 end
 
