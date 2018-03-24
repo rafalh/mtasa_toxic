@@ -1,0 +1,15 @@
+<meta>
+	<info author="rafalh" version="1.0" name="Client Log" type="script" />
+	
+	<script src="log_c.lua" type="client" />
+	<script src="log_s.lua" type="server" />
+
+	<settings>
+		<setting name="*debugConsole" value="false" accept="true,false" desc="Set to true to log to debug console"/>
+		<setting name="*maxLevel" value="1" desc="Maximal logged level (ERROR - 1, WARNING - 2, INFO - 3)"/>
+		<setting name="*msgIncludeFilter" value="" desc="PREG pattern of message inclusion (executed before exclude filter)" />
+		<setting name="*msgExcludeFilter" value="" desc="PREG pattern of message exclusion (executed before include filter)"/>
+		<setting name="*locationIncludeFilter" value="" desc="PREG pattern of location inclusion (executed before exclude filter). Location is in format 'file:line'. Example pattern: 'admin_client\.lua:123'."/>
+		<setting name="*locationExcludeFilter" value="" desc="PREG pattern of location exclusion (executed after include filter). Location is in format 'file:line'. Example pattern: 'admin_client\.lua:123'."/>
+	</settings>
+</meta>
