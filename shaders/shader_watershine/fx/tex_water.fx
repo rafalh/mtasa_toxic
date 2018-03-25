@@ -1,60 +1,89 @@
 //
-// water.fx
+// file: tex_water.fx
+// Watershine and other bits and pieces by Ren712
 //
-// Watershine and other bits and pieces by Ren712/AngerMAN
 
 //---------------------------------------------------------------------
-// Water settings
+// Variables
 //---------------------------------------------------------------------
 texture sReflectionTexture;
 texture sRandomTexture;
 
 float4 sWaterColor = float4(90 / 255.0, 170 / 255.0, 170 / 255.0, 240 / 255.0 );
-float3 sSkyColorTop = float3(0,0,0);
-float3 sSkyColorBott = float3(0,0,0);
-float sWatFadeStart = 110;
+float sWatFadeStart = 90;
 float sWatFadeEnd = 230;
 
-float3 sLightDir = float3(0.507,-0.507,-0.2);
-float4 sSunColorTop = float4(0,0,0,0);
-float4 sSunColorBott = float4(0,0,0,0);
-float sSpecularPower = 4;
-float sSpecularBrightness = 0;
-float sStrength = 0;
-float sVisibility = 0;
-float sFadeStart = 140;          // Near point where distance fading will start
-float sFadeEnd = 200;            // Far point where distance fading will complete (i.e. effect will not be visible past this point)
 
+float sSpecularBrightness = 1;
+float3 sLightDir = float3(0,-0.5,-0.5);
+float sSpecularPower = 4;
+float sVisibility = 0;
+float4 sSunColorTop = float4(1,1,1,1);
+float4 sSunColorBott = float4(1,1,1,1);
+
+float sFadeStart = 140;
+float sFadeEnd = 300;
+
+float sNormalStrength = 1;
+
+
+float fDepthSpread = 0.27;
+float gAlpha = 0.95;
 
 //---------------------------------------------------------------------
 // Include some common stuff
 //---------------------------------------------------------------------
-//#define GENERATE_NORMALS      // Uncomment for normals to be generated
-#include "mta-helper.fx"
-
+float4x4 gWorld : WORLD;
+float4x4 gView : VIEW;
+float4x4 gProjection : PROJECTION;
+float4x4 gViewProjection : VIEWPROJECTION;
+float4x4 gWorldViewProjection : WORLDVIEWPROJECTION;
+float4x4 gViewInverse : VIEWINVERSE;
+float3 gCameraDirection : CAMERADIRECTION;
+texture gDepthBuffer : DEPTHBUFFER;
+texture gTexture0 < string textureState="0,Texture"; >;
+matrix gProjectionMainScene : PROJECTION_MAIN_SCENE;
+float3 gCameraPosition : CAMERAPOSITION;
+float3 gCameraRotation : CAMERAROTATION;
+int CUSTOMFLAGS <string skipUnusedParameters = "yes"; >;
+int gFogEnable < string renderState="FOGENABLE"; >;
+float4 gFogColor < string renderState="FOGCOLOR"; >;
+float gFogStart < string renderState="FOGSTART"; >;
+float gFogEnd < string renderState="FOGEND"; >;
+float gTime : TIME;
 
 //------------------------------------------------------------------------------------------
 // Samplers for the textures
 //------------------------------------------------------------------------------------------
 sampler2D RandomSampler = sampler_state
 {
-   Texture = (sRandomTexture);
-   MAGFILTER = LINEAR;
-   MINFILTER = LINEAR;
-   MIPFILTER = LINEAR;
-   MIPMAPLODBIAS = 0.000000;
+    Texture = (sRandomTexture);
+    MagFilter = Linear;
+    MinFilter = Linear;
+    MipFilter = Linear;
+    MipMapLODBias = 0.000000;
 };
 
 samplerCUBE ReflectionSampler = sampler_state
 {
-   Texture = (sReflectionTexture);
-   MAGFILTER = LINEAR;
-   MINFILTER = LINEAR;
-   MIPFILTER = LINEAR;
-   MIPMAPLODBIAS = 0.000000;
+    Texture = (sReflectionTexture);
+    MagFilter = Linear;
+    MinFilter = Linear;
+    MipFilter = Linear;
+    MIPMAPLODBIAS = 0.000000;
 };
 
+sampler SamplerDepth = sampler_state
+{
+    Texture     = (gDepthBuffer);
+    AddressU    = Clamp;
+    AddressV    = Clamp;
+};
 
+sampler Sampler0 = sampler_state
+{
+    Texture     = (gTexture0);
+};
 //---------------------------------------------------------------------
 // Structure of data sent to the vertex shader
 //---------------------------------------------------------------------
@@ -79,8 +108,22 @@ struct PSInput
     float WatDistFade : TEXCOORD3;
     float DistFade : TEXCOORD4;
     float2 TexCoord : TEXCOORD5;
+    float4 ProjPos : TEXCOORD6;
+    float DistFromCam : TEXCOORD7;
 };
 
+
+//------------------------------------------------------------------------------------------
+// MTAUnlerp
+// - Find a the relative position between 2 values
+//------------------------------------------------------------------------------------------
+float MTAUnlerp( float from, float to, float pos )
+{
+    if ( from == to )
+        return 1.0;
+    else
+        return ( pos - from ) / ( to - from );
+}
 
 //------------------------------------------------------------------------------------------
 // VertexShaderFunction
@@ -102,10 +145,8 @@ PSInput VertexShaderFunction(VSInput VS)
 
     // Set information to do calculations in pixel shader
     PS.WorldPos = mul(VS.Position, gWorld);
-
-	// Texcoords
 	
-	PS.TexCoord = VS.TexCoord;
+    PS.TexCoord = VS.TexCoord;
 	
     // Scroll noise texture
     float2 uvpos1 = 0;
@@ -124,12 +165,51 @@ PSInput VertexShaderFunction(VSInput VS)
 
     PS.Normal =  float3(0,0,1);   
 
-    float DistanceFromCamera = MTACalcCameraDistance( gCameraPosition, PS.WorldPos.xyz );
-    PS.WatDistFade = MTAUnlerp ( sWatFadeEnd, sWatFadeStart, DistanceFromCamera );
-    PS.DistFade = MTAUnlerp ( sFadeEnd, sFadeStart, DistanceFromCamera );
+    float DistanceFromCam = distance( gCameraPosition, PS.WorldPos.xyz );
+    PS.WatDistFade = MTAUnlerp ( sWatFadeEnd, sWatFadeStart, DistanceFromCam );
+    PS.DistFade = MTAUnlerp ( sFadeEnd, sFadeStart, DistanceFromCam );
+	
     return PS;
 }
 
+//------------------------------------------------------------------------------------------
+// LightingSpecular
+//------------------------------------------------------------------------------------------
+
+float3 LightingSpecular(float3 color1, float3 color2, float3 normal,float3 lightDir, float3 worldPos, float specul) 
+{	
+    float3 h = normalize(normalize(gCameraPosition - worldPos) - normalize(lightDir));
+    float spec = pow(saturate(dot(h, normal)* 0.5), specul);	
+	
+    float spec1 = saturate(pow(spec, specul));
+    float spec2 = saturate(pow(spec, 2 * specul));
+    float3 specular = spec1 * color1.rgb / 3 + spec2 * color2.rgb;
+    return saturate( specular );
+}
+
+//-----------------------------------------------------------------------------
+// Get value from the depth buffer
+// Uses define set at compile time to handle RAWZ special case (which will use up a few more slots)
+//-----------------------------------------------------------------------------
+float FetchDepthBufferValue( float2 uv )
+{
+    float4 texel = tex2D(SamplerDepth, uv);
+#if IS_DEPTHBUFFER_RAWZ
+    float3 rawval = floor(255.0 * texel.arg + 0.5);
+    float3 valueScaler = float3(0.996093809371817670572857294849, 0.0038909914428586627756752238080039, 1.5199185323666651467481343000015e-5);
+    return dot(rawval, valueScaler / 255.0);
+#else
+    return texel.r;
+#endif
+}
+ 
+//-----------------------------------------------------------------------------
+// Use the last scene projecion matrix to linearize the depth value a bit more
+//-----------------------------------------------------------------------------
+float Linearize(float posZ)
+{
+    return gProjectionMainScene[3][2] / (posZ - gProjectionMainScene[2][2]);
+}
 
 //------------------------------------------------------------------------------------------
 // PixelShaderFunction
@@ -137,107 +217,58 @@ PSInput VertexShaderFunction(VSInput VS)
 //  2. Process
 //  3. Return pixel color
 //------------------------------------------------------------------------------------------
-
-float3 LightingSpecular(float3 normal,float3 lightDir, float3 worldPos, float specul, float intensity) {
-	
-    float3 reflectionVector = -reflect(lightDir, normal);
-    float spec = dot(normalize(reflectionVector), normalize(gCameraPosition - worldPos ));
-    float spec1 = saturate(pow(spec, 8 * specul)); 
-    float spec2 = saturate(pow(spec, 64 * specul));
-    float3 specular = lerp(spec1 * sSunColorTop.rgb/3,spec2 * sSunColorBott.rgb ,spec2);
-    return saturate( specular ) * intensity;
-}
-
 float4 PixelShaderFunction(PSInput PS) : COLOR0
 {
-    //
-    // This was all ripped and modded from the car paint shader, so some of the comments may seem a bit strange
-    //
-
-    float brightnessFactor = 0.10;
-    float glossLevel = 0.00;
-
-    // Get the surface normal
-    float3 vNormal = PS.Normal;
-
-    // Micro-flakes normal map is a high frequency normalized
-    // vector noise map which is repeated across the surface.
-    // Fetching the value from it for each pixel allows us to
-    // compute perturbed normal for the surface to simulate
-    // appearance of micro-flakes suspended in the coat of paint:
     float3 vFlakesNormal = tex2D(RandomSampler, PS.SparkleTex.xy).rgb;
     float3 vFlakesNormal2 = tex2D(RandomSampler, PS.SparkleTex.zw).rgb;
 
     vFlakesNormal = (vFlakesNormal + vFlakesNormal2 ) / 2;
-
-    // Don't forget to bias and scale to shift color into [-1.0, 1.0] range:
     vFlakesNormal = 2 * vFlakesNormal - 1.0;
-
-    // To compute the surface normal for the second layer of micro-flakes, which
-    // is shifted with respect to the first layer of micro-flakes, we use this formula:
-    // Np2 = ( c * Np + d * N ) / || c * Np + d * N || where c == d
-    float3 vNp2 = ( vFlakesNormal + vNormal ) ;
-
-    // The view vector (which is currently in world space) needs to be normalized.
-    // This vector is normalized in the pixel shader to ensure higher precision of
-    // the resulting view vector. For this highly detailed visual effect normalizing
-    // the view vector in the vertex shader and simply interpolating it is insufficient
-    // and produces artifacts.
+    float3 vNp2 = ( vFlakesNormal + PS.Normal ) * sNormalStrength;
     float3 vView = normalize( gCameraPosition - PS.WorldPos.xyz );
 
-    // Transform the surface normal into world space (in order to compute reflection
-    // vector to perform environment map look-up):
-    float3 vNormalWorld = PS.Normal;
-
-    // Compute reflection vector resulted from the clear coat of paint on the metallic
-    // surface:
+    float3 vNormalWorld = float3(0,0,-1);
     float fNdotV = saturate(dot( vNormalWorld, vView));
     float3 vReflection = 2 * vNormalWorld * fNdotV - vView;
-
-    // Hack in some bumpyness
     vReflection += vNp2;
 
-    // Calc Sky color reflection
-    float3 cameraDirection = float3(gCameraDirection.xy,saturate(gCameraDirection.z));
-    float3 h = normalize(normalize(gCameraPosition - PS.WorldPos.xyz) - normalize(cameraDirection));
-    float vdn = saturate(pow(saturate(dot(h,vNp2)), 1));
-    float3 skyColorTop = lerp(0,sSkyColorTop,vdn);	
-    float3 skyColorBott = lerp(0,sSkyColorBott,vdn);
-    float3 skyColor = lerp(skyColorBott,skyColorTop,saturate(PS.WatDistFade));	
+    float3 h = normalize(normalize(gCameraPosition - PS.WorldPos.xyz) - gCameraDirection);
+    float vdn = saturate(dot(h,vNp2));
+    float3 skyColor = gFogColor.rgb * vdn * saturate(PS.WatDistFade);	
 	
     // Specular calculation
     float3 lightDir = normalize(sLightDir.xyz);
-    float3 specLighting = LightingSpecular(vNp2,lightDir, PS.WorldPos.xyz,sSpecularPower,2);
+    float3 specLighting = LightingSpecular(sSunColorTop,sSunColorBott,vNp2,lightDir, PS.WorldPos.xyz,sSpecularPower);
 
     // Sample environment map using this reflection vector:
-    float4 envMap = texCUBE( ReflectionSampler, vReflection );
+    float4 envMap = texCUBE( ReflectionSampler, -vReflection );
     float envGray = (envMap.r + envMap.g + envMap.b)/3;
     envMap.rgb = float3(envGray,envGray,envGray);
     envMap.rgb = envMap.rgb * envMap.a;
 	
     // Blend rays with water
-    specLighting = specLighting * sSpecularBrightness * envMap.rgb ;
+    envGray = lerp(0.5,envGray,saturate(PS.WatDistFade));
+    specLighting = specLighting * envGray * sSpecularBrightness;
 	
     // Brighten the environment map sampling result:
-    envMap.rgb *= envMap.rgb;
-    envMap.rgb *= brightnessFactor;
-    envMap.rgb = saturate(envMap.rgb);
+    envMap.rgb *= vdn * 0.1;
     float4 finalColor = 1;
 
     // Bodge in the water color
     finalColor = envMap + PS.Diffuse * 0.5;
     finalColor += envMap * PS.Diffuse;
-    finalColor.rgb += skyColor *0.18;
+    finalColor.rgb += skyColor * 0.18 * PS.Diffuse.a;
     finalColor.rgb += specLighting * saturate(PS.DistFade) * sVisibility;
     finalColor.a = PS.Diffuse.a;
-    return finalColor;
+    finalColor.a *= gAlpha;
+    return saturate(finalColor);
 }
 
 
 //------------------------------------------------------------------------------------------
 // Techniques
 //------------------------------------------------------------------------------------------
-technique water2
+technique waterShine_v2
 {
     pass P0
     {

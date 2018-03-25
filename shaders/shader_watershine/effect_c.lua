@@ -16,9 +16,9 @@ function setEffectEnabled(enable)
 	if(enable == g_Enabled) then return true end
 	
 	if(not enable) then
-		stopWaterShine()
+		disableWaterShine()
 	else
-		startWaterShine()
+		enableWaterShine()
 	end
 	g_Enabled = enable
 	
