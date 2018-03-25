@@ -1,5 +1,5 @@
 <meta>
-	<info description="Shader - Detail" version="0.0.3" author="ccw" type="script" />
+	<info description="Shader - Detail" version="0.8" author="ccw/Einheit-101" type="script" />
 	<min_mta_version client="1.3.0" server="1.3.0" />
 
 	<script src="c_detail.lua" type="client" />
@@ -16,7 +16,7 @@
 	<file src="media/detail58.png" type="client" />
 	<file src="media/detail63.png" type="client" />
 	<file src="media/detail68.png" type="client" />
-	
+
 	<script src="c_effect.lua" type="client" />
 	<export function="setEffectEnabled" type="client" />
 	<export function="isEffectEnabled" type="client" />
