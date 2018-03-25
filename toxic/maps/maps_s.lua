@@ -383,10 +383,12 @@ end
 
 local function onPlayerWinDD()
 	handlePlayerWin(source)
-	triggerClientEvent(root, 'main.onPlayerWinDD', source)
-	
+
 	local player = Player.fromEl(source)
 	assert(player)
+
+	triggerClientEvent(getReadyPlayers(player.room), 'main.onPlayerWinDD', source)
+	
 	StPlayerFinish(player, 1)
 	
 	--[[local game_weight = 0.007 * g_PlayersCount / 32

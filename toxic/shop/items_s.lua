@@ -216,7 +216,7 @@ ShpRegisterItem{
 		
 		addEvent('toxic.onSetPlayerAlphaReq', true)
 		for player2, pdata2 in pairs(g_Players) do
-			if(player2 ~= player) then
+			if(player2 ~= player and pdata2.sync) then
 				triggerClientEvent(player2, 'toxic.onSetPlayerAlphaReq', player, 0)
 			end
 		end
@@ -282,8 +282,9 @@ ShpRegisterItem{
 		
 		local bestplayer, bestdist = nil, 20
 		local pos = { getElementPosition(player) }
+		local dim = getElementDimension(player)
 		for player2, pdata2 in pairs(g_Players) do
-			if(player2 ~= player and not isPedDead(player2)) then
+			if(player2 ~= player and not isPedDead(player2) and getElementDimension(player2) == dim) then
 				local pos2 = { getElementPosition(player2) }
 				local dist = getDistanceBetweenPoints3D(pos[1], pos[2], pos[3], pos2[1], pos2[2], pos2[3])
 				if(dist < bestdist) then
@@ -301,9 +302,9 @@ ShpRegisterItem{
 			return false
 		end
 		
-		addEvent('toxic.onThunderEffect', true)
-		triggerClientEvent(g_Root, 'toxic.onThunderEffect', player, bestplayer)
-		Player.fromEl(player).accountData:add('thunders', -1)
+		local pdata = Player.fromEl(player)
+		triggerClientEvent(getReadyPlayers(pdata.room), 'toxic.onThunderEffect', player, bestplayer)
+		pdata.accountData:add('thunders', -1)
 		return true
 	end,
 	onSell = function(player, val)

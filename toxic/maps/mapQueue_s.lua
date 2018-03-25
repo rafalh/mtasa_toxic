@@ -30,7 +30,7 @@ function MqAdd(room, map, display_msg, player)
 	end
 	
 	if(pos == 1) then
-		triggerClientEvent(g_Root, 'onClientSetNextMap', g_Root, mapName)
+		triggerClientEvent(getReadyPlayers(room), 'onClientSetNextMap', g_Root, mapName)
 	end
 	
 	if(display_msg) then
@@ -65,7 +65,7 @@ function MqRemove(room, pos)
 	if(pos == 1) then
 		local nextMap = room.mapQueue[1]
 		local nextMapName = nextMap and nextMap:getName()
-		triggerClientEvent(g_Root, 'onClientSetNextMap', g_Root, nextMapName)
+		triggerClientEvent(getReadyPlayers(room), 'onClientSetNextMap', g_Root, nextMapName)
 	end
 	
 	return map
@@ -79,7 +79,7 @@ function MqPop(room)
 	
 	local nextMap = room.mapQueue[1]
 	local nextMapName = nextMap and nextMap:getName()
-	triggerClientEvent(g_Root, 'onClientSetNextMap', g_Root, nextMapName)
+	triggerClientEvent(getReadyPlayers(room), 'onClientSetNextMap', g_Root, nextMapName)
 	
 	return map
 end

@@ -8,10 +8,13 @@ local g_HasWeapon = false
 local function ChUpdatePlayer(player)
 	local veh = getPedOccupiedVehicle(player)
 	local localVeh = getPedOccupiedVehicle(localPlayer)
-	local dim = 0
+	local dim = getElementDimension(localPlayer)
 	local cols = (isElement(veh) and getElementData(veh, 'race.collideothers') or 0) ~= 0
 	
-	if(g_CarHide and player ~= localPlayer and not cols and not g_SpecMode and not g_HasWeapon) then
+	if player == localPlayer then return end
+	if getElementData(player, 'roomid') ~= getElementData(localPlayer, 'roomid') then return end
+
+	if g_CarHide and not cols and not g_SpecMode and not g_HasWeapon then
 		dim = INVISIBLE_DIM
 	end
 	

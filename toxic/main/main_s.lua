@@ -302,6 +302,18 @@ local function onPlayerReady(clientSharedSettings)
 	pdata.new = false
 end
 
+function getReadyPlayers(room)
+	local players = getElementsByType('player')
+	local readyPlayers = {}
+	for i, player in ipairs(players) do
+		local pdata = Player.fromEl(player)
+		if pdata and pdata.sync and (not room or pdata.room == room) then
+			table.insert(readyPlayers, pdata.el)
+		end
+	end
+	return readyPlayers
+end
+
 RPC.allow('getThisResourceVersion')
 function getThisResourceVersion()
 	return getResourceInfo(resource, 'version')
