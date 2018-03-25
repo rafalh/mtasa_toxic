@@ -13,8 +13,8 @@ function setEffectEnabled(enable)
 	
 	if (not enable) then
 		stopCarPaintReflect()
-	elseif (not startCarPaintReflect()) then
-		return false
+	else
+		startCarPaintReflect()
 	end
 	g_Enabled = enable
 	
