@@ -108,6 +108,7 @@ local function handleDeletePage(request, response)
 				if(not mediaRes:deleteFile(ch.img)) then
 					Debug.warn('mediaRes:deleteFile '..ch.img..' failed')
 				end
+				mediaRes:destroy()
 			end
 			break
 		end
