@@ -229,10 +229,8 @@ float4 MTACalculateVehicleSpecular(float3 SurfNormal )
     SurfNormal = normalize(SurfNormal);
     float3 halfAngle = normalize(-gCameraDirection - gLightDirection);
     float r = saturate(dot(halfAngle, SurfNormal));
-    float DirectionFactor = max(0,dot(SurfNormal, - gLightDirection));
     float spec = pow(r, gMaterialSpecPower);
-    spec += r * max( 0.03 , gMaterialAmbient * 0.3 );
-	return gMaterialSpecular * spec * 0.8;
+	return gMaterialSpecular * spec;
 }
 
 //------------------------------------------------------------------------------------------

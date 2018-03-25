@@ -2,6 +2,7 @@
 // car_paint.fx
 // EDIT by Ren712: Paint color and reflection vector fix
 // added sky light and thin film effect to the car paint
+// and other bits and pieces ...
 // the effect uses up to all 4 pointlights for vehicle lighting
 
 //
@@ -21,14 +22,15 @@ texture sReflectionTexture;
 texture sRandomTexture;
 texture sFringeMap;
 
-float gFilmDepth = 0.05; // 0-0.25
-float3 sSkyColorTop = float3(0,0,0);
-float3 sSkyColorBott = float3(0,0,0);
+float gFilmDepth = 0.05;
 float gFilmIntensity = 0.25;
+bool gFilmDepthEnable = true;
+
 //---------------------------------------------------------------------
 // Include some common stuff
 //---------------------------------------------------------------------
 #include "mta-helper.fx"
+float4 gFogColor < string renderState="FOGCOLOR"; >;
 
 //------------------------------------------------------------------------------------------
 // Samplers for the textures
@@ -94,9 +96,9 @@ struct PSInput
     float3 Normal : TEXCOORD3;
     float3 NormalSurf : TEXCOORD4;
     float3 View : TEXCOORD5;
-    float3 SparkleTex : TEXCOORD6;
-    float2 FilmDepth : COLOR1;
-    float3 Normalz : TEXCOORD7;	
+    float4 BottomColor : TEXCOORD6;
+    float3 SparkleTex : TEXCOORD7;
+    float4 Diffuse2 : COLOR1;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -121,43 +123,48 @@ PSInput VertexShaderFunction(VSInput VS)
     // Transform postion
     PS.Position = mul(float4(VS.Position, 1), gWorldViewProjection);
     float3 worldPosition = MTACalcWorldPosition( VS.Position );
-    float3 viewDirection = normalize(gCameraPosition - worldPosition);
-
+    PS.View = normalize(gCameraPosition - worldPosition);
+	
     // Fake tangent and binormal
     float3 Tangent = VS.Normal.yxz;
     Tangent.xz = VS.TexCoord.xy;
     float3 Binormal = normalize( cross(Tangent, VS.Normal) );
     Tangent = normalize( cross(Binormal, VS.Normal) );
+	
     // Transfer some stuff
     PS.TexCoord = VS.TexCoord;
     PS.Tangent = normalize(mul(Tangent, gWorldInverseTranspose).xyz);
     PS.Binormal = normalize(mul(Binormal, gWorldInverseTranspose).xyz);
     PS.Normal = normalize( mul(VS.Normal, (float3x3)gWorld) );
     PS.NormalSurf = VS.Normal;
-    PS.View = viewDirection;
+
     PS.SparkleTex.x = fmod( VS.Position.x, 10 ) * 4.0;
     PS.SparkleTex.y = fmod( VS.Position.y, 10 ) * 4.0;
     PS.SparkleTex.z = fmod( VS.Position.z, 10 ) * 4.0;
+	
     // compute the view depth for the thin film
     float3 Nn = mul(VS.Normal,gWorldInverseTranspose).xyz;	
     float3 Vn = normalize(gCameraPosition - worldPosition);
     float vdn = dot(Vn,Nn);
     float viewdepth = calc_view_depth(vdn,gFilmDepth.x);
-    PS.FilmDepth = viewdepth.xx;	
-    // Normal Z vector for sky light 
-    float worldNormalZ = mul(VS.Normal,(float3x3)gWorld).z;
-    float skyTopmask = pow(worldNormalZ,5);
-    PS.Normalz = (skyTopmask * sSkyColorTop + saturate(worldNormalZ-skyTopmask)* sSkyColorBott);
-    PS.Normalz *=gGlobalAmbient.xyz;
+    PS.Diffuse2.a = viewdepth.x;
+	
+    float NormalZ = pow( mul( VS.Normal, (float3x3)gWorld ).z ,2 ); 
+    float3 h = normalize(normalize(gCameraPosition - worldPosition.xyz ) - normalize(gCameraDirection));
+    PS.BottomColor = gMaterialDiffuse * 0.3 *  NormalZ * (1 - saturate(pow(saturate(dot(PS.Normal,h)), 2)));
+	
     // Calc lighting
-    PS.Diffuse = MTACalcGTACompleteDiffuse( PS.Normal, VS.Diffuse );
+    PS.Diffuse2.rgb = gMaterialSpecular.rgb * MTACalculateSpecular( gCameraDirection, gLightDirection, PS.Normal, gMaterialSpecPower ) * 0.5;
+    PS.Diffuse2.rgb += MTACalcGTADynamicDiffuse( PS.Normal ) * saturate(gMaterialDiffuse/2 + 0.2);
+    PS.Diffuse2.rgb = saturate(PS.Diffuse2.rgb);
+    PS.Diffuse = MTACalcGTABuildingDiffuse( VS.Diffuse );
     return PS;
 }
 
 //------------------------------------------------------------------------------------------
 // PixelShaderFunction
 //  1. Read from PS structure
-//  2. Process
+//  2. Process                                       
 //  3. Return pixel color
 //------------------------------------------------------------------------------------------
 float4 PixelShaderFunction(PSInput PS) : COLOR0
@@ -166,12 +173,12 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 
     // Some settings for something or another
     float microflakePerturbation = 1.00;
-    float brightnessFactor = 0.40; // the default value is 0.10
     float normalPerturbation = 1.00;
     float microflakePerturbationA = 0.10;
 
     // Compute paint colors
     float4 base = gMaterialAmbient;
+
     float4 paintColorMid;
     float4 paintColor2;
     float4 paintColor0;
@@ -222,7 +229,7 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
     // the view vector in the vertex shader and simply interpolating it is insufficient
     // and produces artifacts.
     float3 vView = normalize( PS.View );
-
+	
     // Transform the surface normal into world space (in order to compute reflection
     // vector to perform environment map look-up):
     float3x3 mTangentToWorld = transpose( float3x3( PS.Tangent, PS.Binormal, PS.Normal ) );
@@ -233,34 +240,30 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
     float fNdotV = saturate(dot( vNormalWorld, vView));
     
     // Count reflection vector
-    float3 Nn = vNormal;
-    float3 Vn = PS.View; 
-    float3 vReflection = reflect(Vn,Nn);
+    float3 vReflection = reflect(PS.View,PS.Normal);
 	
     // Hack in some bumpyness
     vReflection.x+= vNp2.x * 0.2;
     vReflection.y+= vNp2.y * 0.1;
-    vReflection.xyz = vReflection.xzy;
     // Sample environment map using this reflection vector:
-    float4 envMap = texCUBE( ReflectionSampler, -vReflection );
-
+    float4 envMap = texCUBE( ReflectionSampler, -vReflection.xzy );
     // Premultiply by alpha:
-    envMap.rgb = envMap.rgb * envMap.rgb * envMap.rgb;
 
+    envMap.rgb = envMap.rgb * envMap.rgb * envMap.rgb;
     // Brighten the environment map sampling result:
-    envMap.rgb *= brightnessFactor;
-    envMap.rgb += PS.Normalz; // If you don't want to see sky color just comment that line	
+    envMap.rgb *= 0.4;
+	envMap.rgb += PS.BottomColor.rgb;
     // Sample dust texture:
     float4 maptex = tex2D(Sampler0,PS.TexCoord.xy);
 	
     // Sample fringe map:
-    float3 fringeCol = (float3)tex2D(gFringeMapSampler, PS.FilmDepth);
-
+    float3 fringeCol = tex2D(gFringeMapSampler, float2(PS.Diffuse2.a,PS.Diffuse2.a)).rgb;
+    
     // Compute modified Fresnel term for reflections from the first layer of
     // microflakes. First transform perturbed surface normal for that layer into
     // world space and then compute dot product of that normal with the view vector:
     float3 vNp1World = normalize( mul( mTangentToWorld, vNp1) );
-    float fFresnel1 = saturate( dot( vNp1World, vView ));
+    float fFresnel1 = saturate( dot( vNp1World, vView ) + PS.Diffuse2.r);
 
     // Compute modified Fresnel term for reflections from the second layer of
     // microflakes. Again, transform perturbed surface normal for that layer into
@@ -269,7 +272,7 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
     float fFresnel2 = saturate( dot( vNp2World, vView ));
 
     // Combine all layers of paint as well as two layers of microflakes
-    float fFresnel1Sq = fFresnel1 * fFresnel1;
+    float fFresnel1Sq = fFresnel1 * (fFresnel1);
 
     float4 paintColor = fFresnel1 * paintColor0 +
         fFresnel1Sq * paintColorMid +
@@ -279,16 +282,14 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
     // Combine result of environment map reflection with the paint color:
     float fEnvContribution = 1.0 - 0.5 * fNdotV;
 
-    float4 finalColor;
-    finalColor = envMap * fEnvContribution + paintColor;
+    float4 finalColor = envMap * fEnvContribution + paintColor * 0.8;
+    finalColor.rgb += PS.Diffuse2.rgb  * 0.75 * (1 + 0.5 * fFresnel2);
     finalColor.a = 1.0;
-
-    PS.Diffuse.rgb += PS.Diffuse.rgb * fringeCol * gFilmIntensity; // If you don't want to see the color ramp just comment that line
+    if (gFilmDepthEnable) PS.Diffuse.rgb += PS.Diffuse.rgb * fringeCol * gFilmIntensity;
     // Bodge in the car colors
-    float4 Color = 1;
-    Color = finalColor / 1 + PS.Diffuse * 0.5;
-    Color += finalColor * PS.Diffuse * 1;
-    Color *= maptex; // If you don't want to see the dirt texture just comment that line
+    float4 Color = 0.017 + finalColor / 1 + PS.Diffuse * 0.8;
+    Color.rgb += finalColor * PS.Diffuse;
+    Color *= maptex; 
     Color.a = PS.Diffuse.a;
     return Color;
 }
@@ -297,10 +298,12 @@ float4 PixelShaderFunction(PSInput PS) : COLOR0
 //------------------------------------------------------------------------------------------
 // Techniques
 //------------------------------------------------------------------------------------------
-technique carpaint_fix_v2_3
+technique carpaint_fix_v2_4
 {
     pass P0
     {
+        AlphaRef = 1;
+        AlphaBlendEnable = TRUE;
         VertexShader = compile vs_2_0 VertexShaderFunction();
         PixelShader  = compile ps_2_0 PixelShaderFunction();
     }

@@ -2,11 +2,12 @@
 -- c_car_paint.lua
 --
 
- --Sky gradient color coating
-local skyLightIntensity = 0.20
+ -- Max redner distance of the shader effect
+local renderDistance = 50
  --Pearlescent
-local filmDepth = 0.05
-local filmIntensity = 0.11
+local filmDepth = 0.08
+local filmIntensity = 0.21
+local filmDepthEnable = true
 
 --a table of additional texture names:
 			
@@ -23,9 +24,9 @@ local filmIntensity = 0.11
 
 
 function startCarPaint()
-		if cpEffectEnabled then return true end
+		if cpEffectEnabled then return end
 		-- Create shader
-		myShader, tec = dxCreateShader ( "fx/car_paint.fx" )
+		myShader, tec = dxCreateShader ( "fx/car_paint.fx",1 ,renderDistance ,false)
 
 		if myShader then
 			--outputConsole( "Using technique " .. tec )
@@ -40,36 +41,19 @@ function startCarPaint()
 			dxSetShaderValue ( myShader, "sFringeMap", textureFringe )
 			dxSetShaderValue ( myShader, "gFilmDepth", filmDepth )
 			dxSetShaderValue ( myShader, "gFilmIntensity", filmIntensity )
+			dxSetShaderValue ( myShader, "gFilmDepthEnable", filmDepthEnable )
 			
 			-- Apply to world texture
 			engineApplyShaderToWorldTexture ( myShader, "vehiclegrunge256" )
 			engineApplyShaderToWorldTexture ( myShader, "?emap*" )
-			
-								
+									
 			for _,addList in ipairs(texturegrun) do
 			engineApplyShaderToWorldTexture (myShader, addList )
 		    end
-			if skyLightIntensity==0 then return false end
-			local pntBright=skyLightIntensity
-			vehTimer = setTimer(function()
-							if myShader then
-								local rSkyTop,gSkyTop,bSkyTop,rSkyBott,gSkyBott,bSkyBott= getSkyGradient ()
-								local cx,cy,cz = getCameraMatrix()
-								if (isLineOfSightClear(cx,cy,cz,cx,cy,cz+30,true,false,false,true,false,true,false,localPlayer)) then 
-									pntBright=pntBright+0.015 else pntBright=pntBright-0.015 end
-								if pntBright>skyLightIntensity then pntBright=skyLightIntensity end
-								if pntBright<0 then pntBright=0 end 
-								dxSetShaderValue ( myShader, "sSkyColorTop", pntBright*rSkyTop/255, pntBright*gSkyTop/255, pntBright*bSkyTop/255)
-								dxSetShaderValue ( myShader, "sSkyColorBott", pntBright*rSkyBott/255, pntBright*gSkyBott/255, pntBright*bSkyBott/255)
-								
-							end
-						end
-						,50,0 )	
+
 			cpEffectEnabled = true
-			return true
 		else	
-			outputChatBox( "Could not create shader. Please use debugscript 3",255,0,0 )
-			return false
+			outputChatBox( "Could not create shader. Please use debugscript 3",255,0,0 ) return
 		end
 end
 
@@ -84,7 +68,5 @@ function stopCarPaint()
 	textureVol = nil
 	textureCube = nil
 	textureFringe = nil
-	killTimer(vehTimer)
-	vehTimer = nil
 	cpEffectEnabled = false
 end
