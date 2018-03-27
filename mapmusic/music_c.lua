@@ -79,7 +79,8 @@ local function startMusicReq(url)
 	if(getElementData(g_Me, 'lang') == 'pl') then
 		msg = 'Wciśnij "%s" by włączyć/wyłączyć muzykę'
 	end
-	outputChatBox(msg:format('#ffffffM#ffff00'), 255, 255, 0, true)
+	local key = (getKeyBoundToCommand('music') or 'M'):upper()
+	outputChatBox(msg:format('#ffffff'..key..'#ffff00'), 255, 255, 0, true)
 	
 	setMusicEnabled(g_AutoStart)
 end
@@ -102,7 +103,7 @@ local function init()
 end
 
 addCommandHandler('music', toggleMusic)
-bindKey('m', 'down', toggleMusic)
+bindKey('m', 'down', 'music')
 
 addEventHandler('mapmusic.onStartReq', g_ResRoot, startMusicReq)
 addEventHandler('mapmusic.onStopReq', g_ResRoot, stopMusicReq)

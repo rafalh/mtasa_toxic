@@ -188,7 +188,9 @@ local function NitInit()
 	bindKey("vehicle_fire", "both", NitOnKeyUpDown)
 	bindKey("vehicle_secondary_fire", "both", NitOnKeyUpDown)
 	
-	bindKey("mouse2", "both", NitOnTempKeyUpDown)
+	addCommandHandler('TemporaryNitro', NitOnTempKeyUpDown, false)
+	bindKey("mouse2", "down", 'TemporaryNitro', 'down')
+	bindKey("mouse2", "up", 'TemporaryNitro', 'up')
 	
 	g_Vehicle = getPedOccupiedVehicle(g_Me)
 end

@@ -301,7 +301,8 @@ local function VipOnClientVip(timestamp)
 	
 	VipActivateSettings()
 	
-	bindKey('g', 'down', VipToggleSettingsWnd)
+	addCommandHandler('VipPanel', VipToggleSettingsWnd, false)
+	bindKey('g', 'down', 'VipPanel')
 	
 	triggerEvent('vip.onStatus', resourceRoot, g_IsVip)
 	triggerEvent('onRafalhGetWidgets', g_Root)

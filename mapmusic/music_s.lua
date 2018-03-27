@@ -148,7 +148,11 @@ end
 local function onRaceStateChanging(state, oldState, room)
 	if(state == 'GridCountdown') then
 		local mapRes = getMapRes(room or false)
-		startMusic(mapRes, room or false)
+		if mapRes then
+			startMusic(mapRes, room or false)
+		else
+			outputDebugString('Cannot obtain current map resource', 2)
+		end
 	end
 end
 
