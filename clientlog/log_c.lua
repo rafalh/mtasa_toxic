@@ -1,4 +1,5 @@
 local MAX_QUEUE_SIZE = 20
+local DUP_DELAY_MS = 5000
 
 local g_settings
 local g_recentMsgs = {}
@@ -46,7 +47,6 @@ end
 addEventHandler('onClientDebugMessage', root, function (message, level, file, line)
     if isMsgFilteredOut(message, level, file, line) then return end
 
-
     local msgKey = table.concat({level, file or '', line or 0, message}, '/')
     local num = g_recentMsgs[msgKey]
     
@@ -62,7 +62,7 @@ addEventHandler('onClientDebugMessage', root, function (message, level, file, li
             if num > 0 then
                 sendDbgMsgToServer(message, level, file, line, num)
             end
-        end, 1000, 1)
+        end, DUP_DELAY_MS, 1)
     end
 end)
 

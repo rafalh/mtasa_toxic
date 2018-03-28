@@ -12,6 +12,9 @@ addEventHandler('onPlayerDebugMessage', resourceRoot, function (message, level, 
     
     local debugConsoleSetting = get('*'..g_resName..'.debugConsole')
     local logMsg = 'CLIENT_'..levelStr..' ('..playerName..'): '..location..tostring(message)
+    if num > 1 then
+        logMsg = logMsg..' [DUP x'..num..']'
+    end
     if debugConsoleSetting == 'true' then
         outputDebugString(logMsg, level)
     else
