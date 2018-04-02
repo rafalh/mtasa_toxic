@@ -50,10 +50,12 @@ CmdMgr.register{
 			return
 		end
 		
+		-- Note: after renameResource call resource handle is no longer valid so map name is retrived here
+		local mapName = map:getName()
 		DbQuery('UPDATE '..MapsTable..' SET removed=NULL, removed_timestamp=NULL WHERE map=?', map:getId())
 		renameResource(map.res, map.resName, RESTORED_MAPS_ORG_PATH)
 
-		outputMsg(g_Root, Styles.green, "%s has been restored by %s!", map:getName(), ctx.player:getName(true))
+		outputMsg(g_Root, Styles.green, "%s has been restored by %s!", mapName, ctx.player:getName(true))
 	end
 }
 

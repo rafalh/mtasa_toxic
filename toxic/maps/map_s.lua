@@ -151,6 +151,7 @@ end
 function Map.__mt.__index:init(res)
 	assert(res)
 	if(type(res) == 'userdata') then
+		assert(getUserdataType(res) == 'resource-data')
 		self.res = res
 		self.resRoot = getResourceRootElement(res)
 		self.resName = getResourceName(res)
