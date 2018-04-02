@@ -15,9 +15,9 @@ local function isMsgFilteredOut(message, level, file, line)
     if g_settings.msgIncludeFilter ~= '' and pregFind(message, g_settings.msgIncludeFilter) then return false end
     if g_settings.msgExcludeFilter ~= '' and pregFind(message, g_settings.msgExcludeFilter) then return true end
 
-    local location = file and line and file..':'..line
-    if location and g_settings.locationIncludeFilter ~= '' and pregFind(location, g_settings.locationIncludeFilter) then return false end
-    if location and g_settings.locationExcludeFilter ~= '' and pregFind(location, g_settings.locationExcludeFilter) then return true end
+    local location = file and line and file..':'..line or ''
+    if g_settings.locationIncludeFilter ~= '' and pregFind(location, g_settings.locationIncludeFilter) then return false end
+    if g_settings.locationExcludeFilter ~= '' and pregFind(location, g_settings.locationExcludeFilter) then return true end
 
     return false
 end
