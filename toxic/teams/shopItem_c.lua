@@ -10,8 +10,15 @@ addEvent('toxic.onColorDlgClose')
 
 local function closeOwnedTeamGUI()
 	if(not g_TeamGUI) then return end
+	-- Make sure color change window is destroyed as well
+	if g_TeamClrWnd then
+		destroyElement(g_TeamClrWnd)
+		g_TeamClrWnd = nil
+	end
+	-- Destroy team configuration window
 	g_TeamGUI:destroy()
 	g_TeamGUI = false
+	-- Hide cursor
 	showCursor(false)
 end
 
