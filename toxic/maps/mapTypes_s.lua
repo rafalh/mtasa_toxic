@@ -6,6 +6,7 @@ local function LoadMapTypes()
 		local data = {}
 		data.name = xmlNodeGetAttribute(subnode, 'name')
 		data.pattern = xmlNodeGetAttribute(subnode, 'pattern')
+		data.preg = xmlNodeGetAttribute(subnode, 'preg')
 		
 		local gm = xmlNodeGetAttribute(subnode, 'ghostmode')
 		data.gm = touint(gm) or (gm == 'true')

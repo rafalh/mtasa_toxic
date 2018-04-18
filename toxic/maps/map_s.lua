@@ -87,7 +87,13 @@ function Map.__mt.__index:getType()
 	
 	local mapNameLower = mapName:lower()
 	for i, mapType in ipairs(g_MapTypes) do
-		if(not mapType.pattern or mapNameLower:match(mapType.pattern)) then
+		local matches = true
+		if mapType.pattern then
+			matches = mapNameLower:match(mapType.pattern)
+		elseif mapType.preg then
+			matches = pregFind(mapNameLower, mapType.preg)
+		end
+		if matches then
 			return mapType
 		end
 	end

@@ -11,6 +11,7 @@
     <xs:complexType>
       <xs:attribute name="name" type="xs:string" use="required"/>
       <xs:attribute name="pattern" type="xs:string" use="optional"/>
+      <xs:attribute name="preg" type="xs:string" use="optional"/>
       <xs:attribute name="ghostmode" type="xs:string" use="required"/>
       <xs:attribute name="max_others_in_row" type="xs:string" use="required"/>
       <xs:attribute name="max_fps" type="xs:string" use="required"/>
