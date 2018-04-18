@@ -3,18 +3,17 @@
   <xs:element name="adverts">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="advert" maxOccurs="unbounded"/>
+        <xs:element name="advert" type="advert" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="advert">
-    <xs:complexType>
-      <xs:simpleContent>
-        <xs:extension base="xs:string">
-          <xs:attribute name="freq" type="xs:integer" use="optional"/>
-		  <xs:anyAttribute processContents="skip"/>
-        </xs:extension>
-      </xs:simpleContent>
-    </xs:complexType>
-  </xs:element>
+
+  <xs:complexType name="advert">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="freq" type="xs:integer" use="optional"/>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
 </xs:schema>

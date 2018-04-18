@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
   <xs:element name="map_types">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="type" maxOccurs="unbounded"/>
+        <xs:element name="type" type="type" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="type">
-    <xs:complexType>
-      <xs:attribute name="name" type="xs:string" use="required"/>
-      <xs:attribute name="pattern" type="xs:string" use="optional"/>
-      <xs:attribute name="preg" type="xs:string" use="optional"/>
-      <xs:attribute name="ghostmode" type="xs:string" use="required"/>
-      <xs:attribute name="max_others_in_row" type="xs:string" use="required"/>
-      <xs:attribute name="max_fps" type="xs:string" use="required"/>
-      <xs:attribute name="winning_vehicles" type="xs:string" use="optional"/>
-      <xs:attribute name="disabled_shop_items" type="xs:string" use="optional"/>
-    </xs:complexType>
-  </xs:element>
+
+  <xs:complexType name="type">
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="pattern" type="xs:string" use="optional"/>
+    <xs:attribute name="preg" type="xs:string" use="optional"/>
+    <xs:attribute name="ghostmode" type="xs:string" use="required"/>
+    <xs:attribute name="max_others_in_row" type="xs:string" use="required"/>
+    <xs:attribute name="max_fps" type="xs:string" use="required"/>
+    <xs:attribute name="winning_vehicles" type="xs:string" use="optional"/>
+    <xs:attribute name="disabled_shop_items" type="xs:string" use="optional"/>
+  </xs:complexType>
+
 </xs:schema>

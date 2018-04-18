@@ -1,4 +1,5 @@
-<gui>
+<?xml version="1.0" encoding="UTF-8"?>
+<gui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gui.xsd">
 	<window id="pm" title="Private Chat" rx="50" x="-160" ry="50" y="-120" w="320" h="240" minw="200" minh="150" alpha="196">
 		<image x="10" y="25" w="32" h="32" src="players/img/pm.png" />
 		<memo id="chat" x="50" y="25" rw="100" w="-60" rh="100" h="-100" readonly="true" />
@@ -29,7 +30,7 @@
 		<button id="regBtn" rx="50" x="-50" y="235" w="80" h="30" text="Register" />
 		<button id="guestBtn" rx="50" x="40" y="235" w="100" h="30" text="Play as guest" />
 		
-		<Link id="lostPw" rx="50" x="-80" y="270" w="160" h="20" text="Forgot password" align="center" />
+		<link id="lostPw" rx="50" x="-80" y="270" w="160" h="20" text="Forgot password" align="center" />
 	</window>
 	
 	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false" defbtn="regBtn">

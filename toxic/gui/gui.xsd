@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:element name="gui">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="window" type="window" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="guiElement">
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="x" type="xs:int" use="optional"/>
+    <xs:attribute name="y" type="xs:int" use="optional"/>
+    <xs:attribute name="w" type="xs:int" use="optional"/>
+    <xs:attribute name="h" type="xs:int" use="optional"/>
+    <xs:attribute name="rx" type="xs:int" use="optional"/>
+    <xs:attribute name="ry" type="xs:int" use="optional"/>
+    <xs:attribute name="rw" type="xs:int" use="optional"/>
+    <xs:attribute name="rh" type="xs:int" use="optional"/>
+    <xs:attribute name="visible" type="xs:boolean" use="optional"/>
+    <xs:attribute name="alpha" type="xs:int" use="optional"/>
+    <xs:attribute name="font" type="xs:string" use="optional"/>
+    <xs:attribute name="enabled" type="xs:boolean" use="optional"/>
+    <xs:attribute name="focus" type="xs:boolean" use="optional"/>
+    <xs:attribute name="defbtn" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="guiElementWithText">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:attribute name="text" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="container">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="image" type="image" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="memo" type="memo" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="label" type="label" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="edit" type="edit" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="button" type="guiElementWithText" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="checkbox" type="checkbox" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="radiobutton" type="checkbox" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="tabpanel" type="tabPanel" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="scrollpane" type="container" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="list" type="list" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="browser" type="browser" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="combobox" type="guiElementWithText" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="link" type="label" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="window">
+    <xs:complexContent>
+      <xs:extension base="container">
+        <xs:attribute name="title" type="xs:string" use="required"/>
+        <xs:attribute name="sizeable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="minw" type="xs:int" use="optional"/>
+        <xs:attribute name="minh" type="xs:int" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="image">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:attribute name="src" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="memo">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:attribute name="readonly" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="label">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:attribute name="text" type="xs:string" use="optional"/>
+        <xs:attribute name="align" type="xs:string" use="optional"/>
+        <xs:attribute name="wordwrap" type="xs:boolean" use="optional"/>
+        <xs:attribute name="color" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="edit">
+    <xs:complexContent>
+      <xs:extension base="guiElementWithText">
+        <xs:attribute name="maxlen" type="xs:int" use="optional"/>
+        <xs:attribute name="masked" type="xs:boolean" use="optional"/>
+        <xs:attribute name="pattern" type="xs:string" use="optional"/>
+        <xs:attribute name="readonly" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="checkbox">
+    <xs:complexContent>
+      <xs:extension base="guiElementWithText">
+        <xs:attribute name="selected" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="list">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:sequence>
+          <xs:element name="column" type="listColumn" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="sorting" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="tabPanel">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:sequence>
+          <xs:element name="tab" type="tab" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="listColumn">
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="text" type="xs:string" use="optional"/>
+    <xs:attribute name="w" type="xs:decimal" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="tab">
+    <xs:complexContent>
+      <xs:extension base="container">
+        <xs:attribute name="text" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="browser">
+    <xs:complexContent>
+      <xs:extension base="guiElement">
+        <xs:attribute name="islocal" type="xs:boolean" use="optional"/>
+        <xs:attribute name="istransparent" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>

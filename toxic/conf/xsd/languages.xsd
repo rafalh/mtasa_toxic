@@ -3,18 +3,17 @@
   <xs:element name="languages">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="lang" maxOccurs="unbounded"/>
+        <xs:element name="lang" type="lang" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="lang">
-    <xs:complexType>
-      <xs:simpleContent>
-        <xs:extension base="xs:string">
-          <xs:attribute name="name" type="xs:string" use="required"/>
-          <xs:attribute name="img" type="xs:string" use="required"/>
-        </xs:extension>
-      </xs:simpleContent>
-    </xs:complexType>
-  </xs:element>
+
+  <xs:complexType name="lang">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="img" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
 </xs:schema>

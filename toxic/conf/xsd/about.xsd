@@ -3,18 +3,18 @@
   <xs:element name="about">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="line" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:simpleContent>
-              <xs:extension base="xs:string">
-                <xs:attribute type="xs:string" name="bold" use="optional"/>
-                <xs:attribute type="xs:string" name="color" use="optional"/>
-                <xs:anyAttribute processContents="skip"/>
-              </xs:extension>
-            </xs:simpleContent>
-          </xs:complexType>
-        </xs:element>
+        <xs:element name="line" type="line" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+   <xs:complexType name="line">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="bold" use="optional"/>
+        <xs:attribute type="xs:string" name="color" use="optional"/>
+        <xs:anyAttribute processContents="skip"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
 </xs:schema>
