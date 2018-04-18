@@ -259,7 +259,7 @@ CmdMgr.register{
 
 CmdMgr.register{
 	name = 'setcompmode',
-	aliases = {'setcmode'},
+	aliases = {'setmapcompmode', 'setmaplegacymode'},
 	desc = "Enables or disables compatiblity mode for current map (makes Race resource compatible with old MTA:RM)",
 	accessRight = AccessRight('setcompmode'),
 	args = {
