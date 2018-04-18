@@ -1,6 +1,8 @@
-<smtp>
-	<host>smtp.gmail.com</host>
-	<username></username>
-	<password></password>
-	<email></email> <!-- used in 'From' e-mail header -->
+<?xml version="1.0" encoding="UTF-8"?>
+<smtp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/smtp.xsd">
+	<host>ssl://smtp.gmail.com</host>
+	<port>465</port>
+	<username>someone</username>
+	<password>pass</password>
+	<email>test.noreply@gmail.com</email> <!-- used in 'From' e-mail header -->
 </smtp>

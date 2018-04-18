@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="countries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="country" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="country">
+    <xs:complexType>
+      <xs:attribute name="code" type="xs:string" use="required"/>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

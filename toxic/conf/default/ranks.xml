@@ -1,1 +1,5 @@
-<ranks />
+<?xml version="1.0" encoding="UTF-8"?>
+<ranks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/ranks.xsd">
+    <rank points="0" name="Newbie" />
+    <rank points="1000" name="Advanced" />
+</ranks>

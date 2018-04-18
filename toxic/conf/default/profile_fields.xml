@@ -1,1 +1,6 @@
-<profile_fields />
+<?xml version="1.0" encoding="UTF-8"?>
+<profile_fields xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/profile_fields.xsd">
+    <cat name="General">
+        <field name="name" longname="firstname" type="str" w="100" />
+    </cat>
+</profile_fields>

@@ -1,9 +1,4 @@
-<channels>
-	<!-- Format:
-		<channel
-				name="Radio channel name"
-				img="Path to image for this radio">
-			URL of radio chanel (for example .pls/.m3u/.mp3 file)
-		</channel>
-	-->
+<?xml version="1.0" encoding="UTF-8"?>
+<channels xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/radio.xsd">
+    <channel name="Test Channel" img="img/test.png">http://stream.open.fm/1</channel>
 </channels>

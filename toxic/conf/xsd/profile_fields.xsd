@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="profile_fields">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cat" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cat">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="field" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="field">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+      <xs:attribute name="longname" type="xs:string" use="optional"/>
+      <xs:attribute name="type" type="xs:string" use="required"/>
+      <xs:attribute name="w" type="xs:int" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

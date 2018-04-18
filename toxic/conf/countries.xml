@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<countries>
+<?xml version="1.0" encoding="UTF-8"?>
+<countries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/countries.xsd">
 <!--
 	Source: http://www.iso.org/iso/home/standards/country_codes.htm
 	REGEX replace:

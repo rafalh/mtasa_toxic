@@ -1,2 +1,9 @@
-<server_rules>
+<?xml version="1.0" encoding="UTF-8"?>
+<server_rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/server_rules.xsd">
+    <rules lang="pl">
+        Rules PL
+    </rules>
+    <rules lang="*">
+        Rules EN
+    </rules>
 </server_rules>

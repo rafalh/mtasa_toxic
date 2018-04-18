@@ -1,1 +1,5 @@
-<censor />
+<?xml version="1.0" encoding="UTF-8"?>
+<censor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/censor.xsd">
+    <!-- repl is optional, if not defined word is replaced by asterics -->
+    <word repl="****">fuck</word>
+</censor>

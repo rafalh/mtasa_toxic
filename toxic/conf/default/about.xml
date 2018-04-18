@@ -1,1 +1,6 @@
-<about />
+<?xml version="1.0" encoding="UTF-8"?>
+<about xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/about.xsd">
+    <line bold="true" color="#aaffaa" pl="Witaj Świecie">Hello World</line>
+    <line>this is example</line>
+    <line/> <!-- column break -->
+</about>

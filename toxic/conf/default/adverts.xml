@@ -1,1 +1,9 @@
-<adverts />
+<?xml version="1.0" encoding="UTF-8"?>
+<adverts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xsd/adverts.xsd">
+    <!--
+      default text is provided as element content
+      translations provided as attributes
+      freq determines relative frequency, by default it's 1
+    -->
+    <advert pl="Toxic wymiata" freq="10">Toxic Rocks</advert>
+</adverts>

@@ -8,13 +8,14 @@
     </xs:complexType>
     <xs:unique name="unique-word">
       <xs:selector xpath="word"/>
+      <xs:field xpath="."/>
    </xs:unique>
   </xs:element>
   <xs:element name="word">
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="word">
-          <xs:attribute name="repl" type="xs:string" use="required"/>
+          <xs:attribute name="repl" type="xs:string" use="optional"/>
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>

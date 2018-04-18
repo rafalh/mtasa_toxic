@@ -11,7 +11,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="url">
-          <xs:attribute name="img" type="filename"/>
+          <xs:attribute name="img" type="path"/>
           <xs:attribute name="name" type="xs:string" use="required"/>
         </xs:extension>
       </xs:simpleContent>
@@ -19,12 +19,12 @@
   </xs:element>
   <xs:simpleType name="url">
     <xs:restriction base="xs:string">
-      <xs:pattern value="https?://[a-zA-Z0-9:/=+\?&amp;\._-]+"/>
+      <xs:pattern value="https?://[a-zA-Z0-9:;/=+\?&amp;\._-]+"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="filename">
+  <xs:simpleType name="path">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[a-zA-Z0-9\._-]+"/>
+      <xs:pattern value="[a-zA-Z0-9\._/-]+"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>
