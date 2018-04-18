@@ -32,6 +32,11 @@ CmdMgr.register{
 		local mapTypes = { dd = 'DD', dm = 'DM', race = 'Race', cnr = 'CnR', tdd = 'TDD', tdm = 'TDM', fun = 'Fun' }
 		local newMapType = mapTypes[newMapType:lower()] or newMapType
 		
+		-- Make sure it's not fully lowercase
+		if newMapType == newMapType:lower() then
+			newMapType = newMapType:upper()
+		end
+		
 		local room = ctx.player.room
 		local map = getCurrentMap(room)
 		local name = map and map:getName()
