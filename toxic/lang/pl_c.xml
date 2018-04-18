@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="strings.xsd">
     <msg id="* %s has left the game.">* %s opuścił grę.</msg>
     <msg id="* %s has been kicked from the game.">* %s został wykopany z serwera.</msg>
@@ -277,4 +277,13 @@
     <msg id="Wait until another sound command finishes playing!">Poczekaj aż inna komenda dźwiękowa się zakończy!</msg>
     <msg id="You don&apos;t have VIP account. More info: %s">Nie masz konta VIP. Więcej informacji: %s</msg>
     <msg id="VIP Panel">Panel VIPa</msg>
+    <msg id="Buy team for your clan. You can set tag, full name and color of your team.">Kup drużynę dla swojego klanu. Możesz ustawić jej tag, pełną nazwę i kolor.</msg>
+    <msg id="Try built-in radio">Użyj wbudowanego radia</msg>
+    <msg id="Try built-in translator">Użyj wbudowanego tłumacza</msg>
+    <msg id="Finish a race">Ukończ wyścig</msg>
+    <msg id="Open User Panel">Otwórz Panel Użytkownika</msg>
+    <msg id="Open Statistics Panel">Otwórz Panel Statystyk</msg>
+    <msg id="Read about the server">Przeczytaj o serwerze</msg>
+    <msg id="Learn more about this server">Dowiedz się więcej o serwerze</msg>
+    <msg id="Check your achievements list">Sprawdź swoją listę osiągnięć</msg>
 </strings>
