@@ -51,7 +51,7 @@
           <xs:element name="list" type="list" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="browser" type="browser" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="combobox" type="guiElementWithText" minOccurs="0" maxOccurs="unbounded"/>
-          <xs:element name="link" type="label" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="Link" type="label" minOccurs="0" maxOccurs="unbounded"/>
         </xs:choice>
       </xs:extension>
     </xs:complexContent>

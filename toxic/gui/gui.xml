@@ -30,7 +30,7 @@
 		<button id="regBtn" rx="50" x="-50" y="235" w="80" h="30" text="Register" />
 		<button id="guestBtn" rx="50" x="40" y="235" w="100" h="30" text="Play as guest" />
 		
-		<link id="lostPw" rx="50" x="-80" y="270" w="160" h="20" text="Forgot password" align="center" />
+		<Link id="lostPw" rx="50" x="-80" y="270" w="160" h="20" text="Forgot password" align="center" />
 	</window>
 	
 	<window id="registerWnd" title="Register" rx="50" x="-160" ry="50" y="-130" w="320" h="320" sizeable="false" defbtn="regBtn">
