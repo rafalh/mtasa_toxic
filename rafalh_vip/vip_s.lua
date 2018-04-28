@@ -131,12 +131,11 @@ end
 local function VipAvatarCallback(responseData, responseInfo, player, reqID)
 	local pdata = g_Players[player]
 	if not pdata then return end
-	
 	if pdata.avatarReq ~= reqID then return end
 	
 	if not responseInfo.success or responseData:len() == 0 then
-		outputChatBox("Failed to download avatar: "..tostring(responseInfo.statusCode), player, 255, 0, 0)
-		outputDebugString("Failed to download avatar: "..tostring(responseInfo.statusCode), 3)
+		outputChatBox("Failed to download avatar: error "..tostring(responseInfo.statusCode), player, 255, 0, 0)
+		outputDebugString("Failed to download avatar: error "..tostring(responseInfo.statusCode), 3)
 		return
 	end
 	
@@ -154,13 +153,22 @@ local function VipAvatarCallback(responseData, responseInfo, player, reqID)
 end
 
 local function VipAvatarHeadCallback(responseData, responseInfo, avatar, player, reqID)
+	local pdata = g_Players[player]
+	if not pdata then return end
+	if pdata.avatarReq ~= reqID then return end
+
+	if not responseInfo.success then
+		outputChatBox("Failed to download avatar: error "..tostring(responseInfo.statusCode), player, 255, 0, 0)
+		outputDebugString("Failed to download avatar: error "..tostring(responseInfo.statusCode), 3)
+		return
+	end
 	local len = tonumber(responseInfo.headers['Content-Length'])
 	if not len or len > MAX_AVATAR_SIZE_B then
 		if not len then
 			outputDebugString("Expected Content-Length header for avatar "..tostring(avatar), 2)
 		end
 		outputChatBox("Maximal avatar size is 64 KB!", player, 255, 0, 0)
-		outputDebugString("Avatar too big: "..tostring(len), 3)
+		outputDebugString("Avatar is too big: "..tostring(len), 3)
 		return
 	end
 	local args = { player, reqID }
