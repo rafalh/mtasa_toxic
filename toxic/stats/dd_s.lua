@@ -153,7 +153,7 @@ function DdPreloadPersonalTops(mapId, playerIdList, needsPos)
 					'SELECT COUNT(*) FROM '..VictoriesTable..' AS v2 '..
 					'WHERE v2.map=v1.map AND v2.victCount>=v1.victCount) AS pos '..
 				'FROM '..VictoriesTable..' v1 '..
-				'WHERE v1.map=? AND v1.player IN (??)', map:getId(), table.concat(idList, ','))
+				'WHERE v1.map=? AND v1.player IN (??)', mapId, table.concat(idList, ','))
 		else
 			rows = DbQuery(
 				'SELECT player, victCount '..
